@@ -14,7 +14,7 @@ extern int exp_log_threshold;
 Uint32 fullsession_start_time;
 #endif //POPUP_AIDE_FR
 #ifdef FR_VERSION
-int affixp;
+extern int affixp;
 #endif //FR_VERSION
 
 void fill_session_win(void);
