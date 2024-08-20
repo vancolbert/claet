@@ -1,0 +1,376 @@
+LICENCE DU LOGICIEL ET DES DONNEES DU CLIENT DE LANDES ETERNELLES
+
+I. Licence  commune des  clients de  Landes Eternelles  et et  de Eternal Lands,
+version 1.0 (traduction de la licence originale, que vous trouverez en III)
+
+Cette licence est une version légèrement  modifiée de la licence QTPL, qui  peut
+être trouvée à l'adresse http://opensource.org/licenses/qtpl.php.
+
+Cette licence concerne  uniquement le  client du jeu Landes Eternelles,  dont le
+code  source est  public. Elle  a été  rédigée par  les auteurs  de la   version
+originale  du logiciel,  Radu Privantu  et Maura  Privantu. Toute  personne est
+autorisée à copier et distribuer cette licence.
+
+Cette licence a pour but d'établir les droits d'utilisation, de distribution  et
+de modification de Landes Eternelles, sur le modèle de l'open source.
+
+Définitions pour la présente licence :  
+
+- Par  le  Logiciel, nous  entendons  le  code  source  (ou l'exécutable  compilé)
+uniquement. 
+- Par les Données, nous  entendons les autres fichiers  du  client  du
+jeu  (2d, 3d,  animation, sons,  musique, cartes, histoires,  etc.) et  tout  ce
+qui n'est  pas du  code source  ou un  exécutable compilé.
+
+Les Données sont la propriété des auteurs de la version originale et ne  doivent
+pas être utilisées sans leur accord préalable.
+
+Cette licence s'applique à tout logiciel contenant une notice indiquant  qu'elle
+doit  être  distribuée  sous  les  termes de  la  licence  du  client  de Landes
+Eternelles ou de Eternal Lands, version 1.0.   Ce type de  logiciel est considéré  
+ici comme faisant partie du Logiciel. 
+
+Cette  licence  couvre donc  la  modification et  la  distribution du  Logiciel,
+l'utilisation de tierces applications basées sur le Logiciel et le développement
+de logiciels libres utilisant le Logiciel.
+
+Droits autorisés par la licence :  
+
+1. Vous êtes recevez, par cette  licence, des droits non exclusifs  à  condition
+d'accepter   l'entiereté  de  cette   licence.  Une  distribution  entière    ou
+partielle  du  Logiciel,  ou  d'objets  liés  au Logiciel,  quelle qu'elle soit,
+exige l'acceptation de cette licence.
+
+2. Vous êtes autorisés  à copier et à  distribuer le Logiciel dans  sa forme non
+modifiée,  à condition  que l'ensemble  du Logiciel,  incluant la  licence, les
+notices  et  le  copyright  tels qu'ils  sont  dans  la  version officiellement
+distribuée, le soit.
+
+3.  Vous  êtes autorisés  à  apporter des  modifications  au Logiciel  et  à les
+distribuer, à condition que celles-ci soient fournies dans une forme séparée  du
+Logiciel, par exemple par le  biais de patches. Les restrictions  suivantes sont
+applicables aux modifications apportées :
+
+a.  Les  modifications  ne  doivent pas  altérer  ni  supprimer  les notices  de
+copyright présentes dans le Logiciel.
+
+b. Si les modifications apportées sont publiées sous cette licence, un droit non
+exclusif libre de royalties est donné aux développeurs initiaux du Logiciel  qui
+leur  permet  de distribuer  ces  modifications  dans  des  versions futures  du
+Logiciel  à condition  que de   telles versions  restent  disponibles  sous les
+termes de cette licence et de n'importe quelle licence appartenant aux développeurs 
+initiaux.
+
+c. Les fichiers  modifiés doivent comporter  des notices claires,  indiquant que
+ces  fichiers  ont été  modifiés  et à  quelle  date ces  modifications  ont été
+réalisées.
+
+4. Vous êtes autorisés à distribuer des exécutables compilés du Logiciel ou  des
+formes  non  compilées  du  Logiciel,  à  condition  que  vous  respectiez   les
+restrictions suivantes :
+
+a. Votre distribution doit contenir la présente licence.
+
+b. Vous  devez vous  assurer que  toutes les  personnes récipiendaires  de votre
+distribution soient  aussi capables  d'avoir accès  aux codes  sources complets du
+Logiciel,  incluant  toutes  les  modifications  de  manière  libre  et gratuite
+(excepté les coûts  afférant à la  transmission des données),  et incluant aussi
+des notices expliquant cela.
+
+c. Vous devez vous assurer que toutes les modifications apportées à l'exécutable
+compilé sont disponibles sous les termes de cette licence.
+
+5. Vous pouvez utiliser la version originale ou une version modifiée du Logiciel
+pour compiler  et exécuter  les programmes  d'applications légalement développés
+par vous ou d'autres personnes.
+
+6.  Vous  pouvez  développer  des  programmes  d'applications,  des   composants
+réutilisables et d'autres objets logiciels qui font appel à la version originale
+ou à une  version modifiée du  Logiciel.  Ces objets  logiciels, si distribuées,
+font l'objet des restrictions suivantes :
+
+a. Vous devez vous assurer que tous les récipiendaires des exécutables  compilés
+de ces objets sont  aussi capables de recevoir  et d'utiliser les codes  sources
+complets de ces objets logiciels, librement et gratuitement (à l'exceptions  des
+coûts liés à la transmission des données).
+
+b. Vous devez explicitement transmettre la licence à tous les récipiendaires  de
+vos  objets  logiciels,  permettant d'utiliser  et  de  redistribuer la  version
+originale  ou une  version modifiée  de ces  objets logiciels,  dans leur  forme
+compilée ou  non compilée.   Les récipiendaires  doivent être  capables de faire
+cela de manière libre et gratuite, et doivent être capables de redistribuer  ces
+objets aux personnes qu'ils désirent.
+
+c. Si les objets  ne sont pas accessibles  publiquement et que les  développeurs
+initiaux  du Logiciel  exigent une  copie de  ces objets,  vous devez  les leur
+fournir.
+
+Restrictions imposées par  la licence: 
+
+1.  Vous n'êtes pas  autorisés à utiliser les Données qui sont fournies avec  le
+client officiel de Landes Eternelles, sans autorisation explicite des auteurs de
+la version originale. 2. Vous  n'êtes pas autorisés à distribuer les Données  du
+Logiciel dans vos versions modifiées, sans autorisation explicite des auteurs de
+la version originale. 3. Vous  n'êtes pas autorisés à  utiliser les  marques  de
+copyright  (Eternal    Lands  (TM))    dans  vos   versions   modifiées,    sans
+autorisation  explicite   des  auteurs   de  la  version  originale.  Vous devez
+ajouter une  notice  indiquant  que le  code que  vous  auriez  modifié est  une
+version  modifiée du  client officiel  de Landes Eternelles. 4. Vous n'êtes  pas
+autorisés à  utiliser des  versions modifiées  pour vous   connecter au  serveur
+Eternal Lands sans  autorisation explicite des auteurs de  la version
+originale.
+
+Responsabilité  limitée  :  En   aucun  cas,  les  développeurs   initiaux  sont
+responsables de  dommages incluant  (de manière  non exhaustive)  des pertes  de
+revenus  ou  de   profits  ainsi  que   d'autre  dommages  directs,   indirects,
+particuliers, accidentels, même s'ils ont été indiqués comme probables.
+
+Sans garantie :  Le Logiciel et  sa licence sont  fournis sans aucune  garantie,
+qu'il s'agisse de garanties commerciales ou autres.
+
+Reponsabilité juridique : Cette licence a été écrite dans le respect des Lois de
+l'Etat de Pennsylvanie, USA.
+
+
+II. Licence des modifications apportées  à Landes Eternelles, qui n'ont  pas été
+apportées à Eternal Lands
+
+Cette licence est une version légèrement  modifiée de la licence QTPL, qui  peut
+être trouvée à l'adresse http://opensource.org/licenses/qtpl.php.
+
+Cette  licence  concerne  uniquement   les  modifications  apportées  à   Landes
+Eternelles  qui n'ont  pas été  apportées au  client de  la version  originale,
+Eternal Lands.   Le code  source de  ces modifications  est public.   Elle a été
+rédigée par  l'A.S.B.L. Association  des Landes  Eternelles. Toute  personne est
+autorisée à copier et distribuer cette licence.
+
+Cette licence a pour but d'établir les droits d'utilisation, de distribution  et
+de modification des  modifications apportées à  Landes Eternelles qui  n'ont pas
+été apportées au client de la version originale, sur le modèle de l'open source.
+
+Définitions pour la présente licence :  
+
+- Par le Logiciel, nous entendons le  code source  des  modifications  apportées
+par  rapport à  la  version originale  (ou l'exécutable compilé)  uniquement. 
+- Par  les Données,  nous entendons   les autres fichiers modifiés du client  du
+jeu  par  rapport à  la version  originale  (2d,  3d, animation,  sons, musique,
+cartes, histoires, etc.)  et tout ce qui n'est pas  du
+code source ou un exécutable compilé.
+
+Les Données sont la propriété de l'A.S.B.L. Association des Landes Eternelles et
+ne doivent pas être utilisées sans leur accord préalable.
+
+Cette licence s'applique à tout logiciel contenant une notice indiquant  qu'elle
+doit  être  distribuée  sous  les  termes de  la  licence  du  client  de Landes
+Eternelles, version 1.0.   Ce type de  logiciel est considéré  ici comme faisant
+partie du Logiciel. 
+
+Cette  licence  couvre donc  la  modification et  la  distribution du  Logiciel,
+l'utilisation de tierces applications basées sur le Logiciel et le développement
+de logiciels libres utilisant le Logiciel.
+
+Droits autorisés par la licence : 
+
+1. Vous  recevez, par  cette licence,  des droits  non  exclusifs   à  condition
+d'accepter   l'entiereté  de   cette  licence.    Une distribution  entière  ou
+partielle  du Logiciel,  ou d'objets  liés au Logiciel,
+quelle qu'elle soit, exige l'acceptation de cette licence.
+
+2. Vous êtes autorisés  à copier et à  distribuer le Logiciel dans  sa forme non
+modifiée,  à condition  que l'ensemble  du Logiciel,  incluant la  licence, les
+notices  et  le  copyright,  tels qu'ils  sont  dans  la  version officiellement
+distribuée.
+
+3.  Vous  êtes autorisés  à  apporter des  modifications  au Logiciel  et  à les
+distribuer, à condition que celles-ci soient fournies dans une forme séparée  du
+Logiciel, par exemple par le  biais de patches. Les restrictions  suivantes sont
+applicables aux modifications apportées :
+
+a.  Les  modifications  ne  doivent pas  altérer  ni  supprimer  les notices  de
+copyright présentes dans le Logiciel.
+
+b. Si les modifications apportées sont publiées sous cette licence, un droit  de
+royalties non exclusif est donné à l'A.S.B.L. Association des Landes  Eternelles
+qui lui  permet de  distribuer ces  modifications dans  des versions  futures du
+Logiciel à condition que de telles versions restent disponibles sous les  termes
+de  cette  licence  et  de n'importe  quelle  licence  appartenant  à l'A.S.B.L.
+Association des Landes Eternelles.
+
+c. Les fichiers  modifiés doivent comporter  des notices claires,  indiquant que
+ces  fichiers  ont été  modifiés  et à  quelle  date ces  modifications  ont été
+réalisées.
+
+4. Vous êtes autorisés à distribuer des exécutables compilés du Logiciel ou  des
+formes  non  compilées  du  Logiciel,  à  condition  que  vous  respectiez   les
+restrictions suivantes :
+
+a. Votre distribution doit contenir la présente licence.
+
+b. Vous  devez vous  assurer que  toutes les  personnes récipiendaires  de votre
+distribution sont  aussi capables  d'avoir accès  aux codes  sources complets du
+Logiciel,  incluant  toutes  les  modifications  de  manière  libre  et gratuite
+(excepté les coûts  afférant à la  transmission des données),  et incluant aussi
+des notices expliquant cela.
+
+c. Vous devez vous assurer que toutes les modifications apportées à l'exécutable
+compilé sont disponibles sous les termes de cette licence.
+
+5. Vous pouvez utiliser la version originale ou une version modifiée du Logiciel
+pour compiler  et exécuter  les programmes  d'applications légalement développés
+par vous ou d'autres personnes.
+
+6.  Vous  pouvez  développer  des  programmes  d'applications,  des   composants
+réutilisables et d'autres objets logiciels qui font appel à la version originale
+ou à une  version modifiée du  Logiciel.  Ces objets  logiciels, si distribuées,
+font l'objet des restrictions suivantes :
+
+a. Vous devez vous assurer que tous les récipiendaires des exécutables  compilés
+de ces objets sont  aussi capables de recevoir  et d'utiliser les codes  sources
+complets de ces objets logiciels, librement et gratuitement (à l'exceptions  des
+coûts liés à la transmission des données).
+
+b. Vous devez explicitement transmettre la licence à tous les récipiendaires  de
+vos  objets  logiciels,  permettant d'utiliser  et  de  redistribuer la  version
+originale  ou une  version modifiée  de ces  objets logiciels,  dans leur  forme
+compilée ou  non compilée.   Les récipiendaires  doivent être  capables de faire
+cela de manière libre et gratuite, et doivent être capables de redistribuer  ces
+objets aux personnes qu'ils désirent.
+
+c.  Si  les  objets  ne sont  pas  accessibles  publiquement  et que  l'A.S.B.L.
+Association des Landes Eternelles exige une copie de ces objets, vous devez  les
+leur fournir.
+
+Restrictions imposées par  la licence: 1.  Vous n'êtes pas  autorisés à utiliser
+les Données qui sont fournies avec le client officiel de Landes Eternelles, sans
+autorisation explicite de l'A.S.B.L. Association des Landes Eternelles.
+
+2. Vous  n'êtes pas  autorisés à  distribuer les  Données du  Logiciel dans  vos
+versions modifiées,  sans autorisation  explicite de  l'A.S.B.L. Association des
+Landes Eternelles.
+
+3.  Vous  n'êtes pas  autorisés  à utiliser  des  versions modifiées  pour  vous
+connecter  au  serveur  Landes Eternelles  ou  Eternal  Lands sans  autorisation
+explicite de l'A.S.B.L. Association des Landes Eternelles
+
+Responsabilité  limitée  :  En  aucun  cas,  l'A.S.B.L.  Association  des Landes
+Eternelles n'est responsable  de dommages incluant  (de manière non  exhaustive)
+des  pertes  de  revenus  ou de  profits  ainsi  que  d'autre dommages  directs,
+indirects,  particuliers,  accidentels,  même  s'ils  ont  été  indiqués   comme
+probables.
+
+Sans garantie :  Le Logiciel et  sa licence sont  fournis sans aucune  garantie,
+qu'il s'agisse de garanties commerciales ou autres.
+
+Reponsabilité juridique : Cette licence a été écrite dans le respect des Lois du
+Royaume de Belgique.
+
+
+III. Licence originale du logiciel Eternal Lands
+
+The Eternal Lands license is a slightly modified QTPL license (the QTPL  license
+can be found here http://opensource.org/licenses/qtpl.php)
+
+The Eternal  Lands Client  Public License  Version 1.0  Copyright (C) 2003, Radu
+Privantu and Maura Privantu. Everyone  is permitted to copy and  distribute this
+license document. 
+
+The intent  of this  license is  to establish  freedom to  share and  change the
+software regulated by this license under the open source model.
+
+Definitions: 
+
+- Software means  the Source Code  (or compiled binary)  but does not
+include anything  else. 
+- Binary  Data means  the art  (2d, 3d, animations, sound, music, maps, stories,
+etc.)  and anything that is  not source or compiled  code.
+
+The Binary Data is propietary, and should not be used without our permission.
+
+This license applies to any software containing a notice placed by the copyright
+holder saying that it  may be distributed under  the terms of the  Eternal Lands
+Client Public License version  1.0. Such software is  herein referred to as  the
+Software. This license covers modification and distribution of the Software, use
+of third-party application  programs based on  the Software, and  development of
+free software which uses the Software.
+
+Granted Rights 
+
+1.   You are  granted  the  non-exclusive rights   set forth  in  this  license
+provided  you   agree to  and   comply with  any   and all  conditions   in this
+license. Whole or partial distribution  of the Software, or software  items that
+link with the Software, in any form signifies acceptance of this license.
+
+2. You may copy and distribute the Software in unmodified form provided that the
+entire package, including - but not restricted to - copyright, trademark notices
+and  disclaimers, as  released by  the initial  developer of  the Software,  is
+distributed.
+
+3. You may make modifications to the Software and distribute your modifications,
+in a form  that is separate  from the Software,  such as patches.  The following
+restrictions apply to modifications:
+
+a. Modifications must not alter or remove any copyright notices in the Software.
+
+b. When modifications  to the Software  are released under  this license, a  non
+-exclusive  royalty-free  right  is  granted to  the  initial  developer  of the
+Software to  distribute your  modification in  future versions  of the  Software
+provided such  versions remain  available under  these terms  in addition to any
+other license(s) of the initial developer.
+
+c. You must cause the modified files to carry prominent notices stating that you
+changed the files and the date of any change.
+
+4.  You  may distribute  machine-executable  forms of  the  Software or  machine
+-executable forms of modified versions  of the Software, provided that  you meet
+these restrictions:
+
+a. You must include this license document in the distribution.
+
+b. You must ensure that all recipients of the machine-executable forms are  also
+able to  receive the  complete machine-readable  source code  to the distributed
+Software, including all  modifications, without any  charge beyond the  costs of
+data transfer, and place prominent notices in the distribution explaining this.
+
+c. You  must ensure  that all  modifications included  in the machine-executable
+forms are available under the terms of this license.
+
+5. You may  use the original  or modified versions  of the Software  to compile,
+link and run application programs legally developed by you or by others.
+
+6. You may develop application programs, reusable components and other  software
+items that link with  the original or modified  versions of the Software.  These
+items, when distributed, are subject to the following requirements:
+
+a. You  must ensure  that all  recipients of  machine-executable forms  of these
+items are also able to receive and use the complete machine-readable source code
+to the items without any charge beyond the costs of data transfer.
+
+b.  You must  explicitly license  all recipients  of your  items to  use and  re
+-distribute  original  and  modified  versions  of  the  items  in  both machine
+-executable and source code forms. The recipients must be able to do so  without
+any charges whatsoever, and  they must be able  to re-distribute to anyone  they
+choose.
+
+c.  If the  items are  not available  to the  general public,  and the  initial
+developer of the  Software requests a  copy of the  items, then you  must supply
+one.
+
+Restrictions: 1. You are not allowed to use the Binary Data that comes with  the
+Official  Eternal  Lands Client  without  our prior  approval.  2. You  may  not
+distribute our Binary Data in  your modified versions, without our  approval. 3.
+You may not use our Trademarks (such as Eternal Lands(TM)) in modifed  versions,
+without our approval. You can (and must) add a notice stating that the code is a
+Modified Version of the  the Eternal Lands Official  Client. 4. You may  not use
+modified versions to connect to the Eternal Lands server, without our approval.
+
+Limitations of Liability In no  event shall the initial developers  or copyright
+holders be liable for any damages whatsoever, including - but not restricted  to
+- lost  revenue or  profits or  other direct,  indirect, special,  incidental or
+consequential damages, even if they have been advised of the possibility of such
+damages, except to the extent invariable law, if any, provides otherwise.
+
+No Warranty The Software  and this license document  are provided AS IS  with NO
+WARRANTY OF  ANY KIND,  INCLUDING THE  WARRANTY OF  DESIGN, MERCHANTABILITY  AND
+FITNESS FOR A PARTICULAR PURPOSE.
+
+Choice of Law This license is governed by the Laws of Pennsylvania, USA.

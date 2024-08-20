@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Client" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="RELEASE">
+				<Option output="..\Client\Client" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="..\Client" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Compiler>
+					<Add option="-march=i686" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-W" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="DEBUG">
+				<Option platforms="Windows;" />
+				<Option output="..\Client\Client_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="E:\landes_eternelles\Client" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option parameters="test" />
+				<Compiler>
+					<Add option="-march=i686" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-W" />
+				</Compiler>
+			</Target>
+			<Target title="DEBUG_ERROR">
+				<Option platforms="Windows;" />
+				<Option output="..\Client\Client_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="E:\landes_eternelles\Client" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option parameters="test" />
+				<Compiler>
+					<Add option="-march=i686" />
+					<Add option="-w" />
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="RCM">
+				<Option output="..\Client\Client_rcm" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="..\Client" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Compiler>
+					<Add option="-march=i686" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-W" />
+					<Add option="-DFR_RCM_WRAITH" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-march=i686" />
+			<Add option="-Wall" />
+			<Add option="-D_WIN32" />
+			<Add option="-D__MINGW32__" />
+			<Add option="-D__WIN32__" />
+			<Add option="-DWINDOWS" />
+			<Add option="-DWINVER=0x0501" />
+			<Add option="-DELC" />
+			<Add option="-DCLUSTER_INSIDES" />
+			<Add option="-DFUZZY_PATHS" />
+			<Add option="-DNEW_SOUND" />
+			<Add option="-DLARGE_TEXTURES" />
+			<Add option="-DPNG_SCREENSHOT" />
+			<Add option="-DTEXT_ALIASES" />
+			<Add option="-DUSE_INLINE" />
+			<Add option="-DFSAA" />
+			<Add option="-DNEW_NEW_CHAR_WINDOW" />
+			<Add option="-D_7ZIP_ST" />
+			<Add option="-DFASTER_MAP_LOAD" />
+			<Add option="-DDEPOT_EXTEND" />
+			<Add option="-DFASTER_STARTUP" />
+			<Add option="-DMIDDLE_MOUSE_PASTE" />
+			<Add option="-DFR_VERSION" />
+			<Add option="-DFR_MASQUE" />
+			<Add option="-DMEDAILLON_DUEL_VIEW" />
+			<Add option="-DNECK_ITEMS" />
+			<Add option="-DFR_FENETRE_NECRO" />
+			<Add option="-DFR_FENETRE_STATS" />
+			<Add option="-DNEW_TEXTURES" />
+			<Add option="-DATTACHED_ACTORS" />
+			<Add option="-DFR_NEXUS" />
+			<Add option="-DFR_CLIC_DROIT_LONG" />
+			<Add option="-DFR_NEW_ANIM" />
+			<Add option="-DFR_ATTRIBUTS_SECONDAIRE" />
+			<Add option="-DFR_FAST_SPELL" />
+			<Add option="-DDISPLAY_MANAPOINT" />
+			<Add option="-DSHOW_ATTR_BOOSTED" />
+			<Add option="-DSHOW_COORD_SETTER" />
+			<Add option="-DWITHDRAW_LIST" />
+			<Add option="-DWALK_AFTER_SPELL_FR" />
+			<Add option="-DTOO_MANY_SPELL_BUG_PATCH" />
+			<Add option="-DFR_NECRO_RECETTES" />
+			<Add option="-DADD_SPELL_EFFECT_IMU_RESI_MAGIE" />
+			<Add directory="..\Librairie\LE_libs\Iconv" />
+			<Add directory="..\Librairie\LE_libs\SDL-1.2.14\include" />
+			<Add directory="..\Librairie\LE_libs\SDL_net\include" />
+			<Add directory="..\Librairie\LE_includes\OpenAL" />
+			<Add directory="..\Librairie\LE_includes\Xml\" />
+			<Add directory="..\Librairie\LE_libs\Ogg\include" />
+			<Add directory="..\Librairie\LE_includes\libpng13" />
+			<Add directory="..\Librairie\LE_libs\SDL_image" />
+			<Add directory="..\Librairie\LE_includes" />
+			<Add directory="..\Librairie\LE_libs\OpenAL 1.1 SDK\include" />
+			<Add directory="..\Librairie\LE_libs\Vorbis\include" />
+			<Add directory="..\Librairie\LE_libs\SDL-1.2.14\include\SDL" />
+			<Add directory="..\Librairie\LE_includes\OpenGL" />
+			<Add directory="..\Librairie\LE_libs\Zlib" />
+		</Compiler>
+		<Linker>
+			<Add option="../Librairie/LE_libs/libxslt/libxslt.lib" />
+			<Add option="../Librairie/LE_libs/Xml2/libxml2.lib" />
+			<Add library="shell32" />
+			<Add library="libogg" />
+			<Add library="libvorbisfile" />
+			<Add library="libvorbis" />
+			<Add library="User32" />
+			<Add library="SDL_net" />
+			<Add library="kernel32" />
+			<Add library="opengl32" />
+			<Add library="SDL" />
+			<Add library="stdc++" />
+			<Add library="OpenAL32" />
+			<Add library="iconv" />
+			<Add library="cal3d" />
+			<Add library="glu32" />
+			<Add library="png13" />
+			<Add library="zlib1" />
+			<Add library="SDL_image" />
+			<Add directory="..\Librairie\LE_libs\Cal3d" />
+			<Add directory="..\Librairie\LE_libs\Iconv" />
+			<Add directory="..\Librairie\LE_libs\Ogg" />
+			<Add directory="..\Librairie\LE_libs\OpenAL" />
+			<Add directory="..\Librairie\LE_libs\Png" />
+			<Add directory="..\Librairie\LE_libs\SDL-1.2.14\lib" />
+			<Add directory="..\Librairie\LE_libs\SDL_image" />
+			<Add directory="..\Librairie\LE_libs\SDL_net" />
+			<Add directory="..\Librairie\LE_libs\Vorbis" />
+			<Add directory="..\Librairie\LE_libs\Xml2" />
+			<Add directory="..\Librairie\LE_libs\OpenAL 1.1 SDK\libs\Win32" />
+			<Add directory="..\Librairie\LE_libs\Zlib" />
+		</Linker>
+		<Unit filename="2d_objects.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="2d_objects.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3d_objects.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3d_objects.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Classes\SDLmain.h" />
+		<Unit filename="Makefile.bsd">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Makefile.bsdg">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Makefile.linux">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Makefile.osx">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Makefile.win">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="achievements.cpp" />
+		<Unit filename="achievements.h" />
+		<Unit filename="actor_init.cpp" />
+		<Unit filename="actor_init.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="actor_scripts.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="actor_scripts.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="actors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="actors.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="alphamap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="alphamap.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="asc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="asc.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="astrology.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="astrology.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bags.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bags.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bbox_tree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bbox_tree.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\fontdef.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\fontdef.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\parser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\parser.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\symbols.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\symbols.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\types.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\typesetter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="books\typesetter.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buddy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buddy.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buffs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buffs.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cache.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cal.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cal3d_wrapper.cpp" />
+		<Unit filename="cal3d_wrapper.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cal_types.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="calc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="calc.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="calstripper.c">
+			<Option compilerVar="CC" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="calstripper.h" />
+		<Unit filename="chat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="chat.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="client_serv.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cluster.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cluster.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="colors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="colors.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="command_queue.cpp" />
+		<Unit filename="command_queue.h" />
+		<Unit filename="console.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="console.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="consolewin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="consolewin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="context_menu.cpp" />
+		<Unit filename="context_menu.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="counters.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="counters.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cursors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cursors.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="custom_update.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="custom_update.h" />
+		<Unit filename="dbuffer.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dds.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dds.h" />
+		<Unit filename="ddsimage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ddsimage.h" />
+		<Unit filename="dialogues.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dialogues.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="draw_scene.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="draw_scene.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="e3d.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="e3d_object.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elc_private.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elc_private.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="elc_private.res" />
+		<Unit filename="elconfig.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elconfig.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elglext.h" />
+		<Unit filename="elloggingwrapper.cpp" />
+		<Unit filename="elloggingwrapper.h" />
+		<Unit filename="elmemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elmemory.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elwindows.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="elwindows.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="emotes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="emotes.h" />
+		<Unit filename="encyclopedia.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="encyclopedia.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="engine\hardwarebuffer.cpp" />
+		<Unit filename="engine\hardwarebuffer.hpp" />
+		<Unit filename="engine\logging.cpp" />
+		<Unit filename="engine\logging.hpp" />
+		<Unit filename="errors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="errors.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="events.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="events.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="exceptions\extendedexception.cpp" />
+		<Unit filename="exceptions\extendedexception.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_bag.cpp" />
+		<Unit filename="eye_candy\effect_bag.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_breath.cpp" />
+		<Unit filename="eye_candy\effect_breath.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_campfire.cpp" />
+		<Unit filename="eye_candy\effect_campfire.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_candle.cpp" />
+		<Unit filename="eye_candy\effect_candle.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_cloud.cpp" />
+		<Unit filename="eye_candy\effect_cloud.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_firefly.cpp" />
+		<Unit filename="eye_candy\effect_firefly.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_fountain.cpp" />
+		<Unit filename="eye_candy\effect_fountain.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_glow.cpp" />
+		<Unit filename="eye_candy\effect_glow.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_harvesting.cpp" />
+		<Unit filename="eye_candy\effect_harvesting.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_impact.cpp" />
+		<Unit filename="eye_candy\effect_impact.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_lamp.cpp" />
+		<Unit filename="eye_candy\effect_lamp.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_mines.cpp" />
+		<Unit filename="eye_candy\effect_mines.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_missile.cpp" />
+		<Unit filename="eye_candy\effect_missile.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_ongoing.cpp" />
+		<Unit filename="eye_candy\effect_ongoing.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_selfmagic.cpp" />
+		<Unit filename="eye_candy\effect_selfmagic.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_smoke.cpp" />
+		<Unit filename="eye_candy\effect_smoke.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_staff.cpp" />
+		<Unit filename="eye_candy\effect_staff.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_summon.cpp" />
+		<Unit filename="eye_candy\effect_summon.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_sword.cpp" />
+		<Unit filename="eye_candy\effect_sword.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_targetmagic.cpp" />
+		<Unit filename="eye_candy\effect_targetmagic.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_teleporter.cpp" />
+		<Unit filename="eye_candy\effect_teleporter.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\effect_wind.cpp" />
+		<Unit filename="eye_candy\effect_wind.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\eye_candy.cpp" />
+		<Unit filename="eye_candy\eye_candy.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\kepler_orbit.cpp" />
+		<Unit filename="eye_candy\kepler_orbit.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\math_cache.cpp" />
+		<Unit filename="eye_candy\math_cache.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\orbital_mover.cpp" />
+		<Unit filename="eye_candy\orbital_mover.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy\types.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy_debugwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy_debugwin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy_types.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eye_candy_wrapper.cpp" />
+		<Unit filename="eye_candy_wrapper.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="filter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="filter.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="font.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="font.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fr_quickitems.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fr_quickitems.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="framebuffer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="framebuffer.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="frustum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fsaa\fsaa.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fsaa\fsaa_dummy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gamewin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gamewin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gl_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gl_init.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="glext.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="global.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hash.h" />
+		<Unit filename="help.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="help.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="highlight.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="highlight.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hud.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hud.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hud_timer.cpp" />
+		<Unit filename="hud_timer.h" />
+		<Unit filename="icon_window.cpp" />
+		<Unit filename="icon_window.h" />
+		<Unit filename="ignore.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ignore.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="image.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="image.h" />
+		<Unit filename="image_loading.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="image_loading.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="info_combat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="info_combat.h" />
+		<Unit filename="init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="init.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="interface.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="interface.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\allio.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\cal3d_io_wrapper.cpp" />
+		<Unit filename="io\cal3d_io_wrapper.h" />
+		<Unit filename="io\cal_animation_cache.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\crypt.h" />
+		<Unit filename="io\e3d_io.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\e3d_io.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elc_io.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elc_io.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\eldatasource.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elfile.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elfilewrapper.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elfilewrapper.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elpathwrapper.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\elpathwrapper.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\fileutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\fileutil.h" />
+		<Unit filename="io\half.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\half.h" />
+		<Unit filename="io\ioapi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\ioapi.h" />
+		<Unit filename="io\map_io.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\map_io.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\memorybuffer.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\normal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\normal.h" />
+		<Unit filename="io\unzip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\unzip.h" />
+		<Unit filename="io\xmlcallbacks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\xmlcallbacks.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\zip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\zip.h" />
+		<Unit filename="io\zipfilesystem.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\ziputil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="io\ziputil.h" />
+		<Unit filename="item_info.cpp" />
+		<Unit filename="item_info.h" />
+		<Unit filename="item_lists.cpp" />
+		<Unit filename="item_lists.h" />
+		<Unit filename="items.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="items.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keys.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="knowledge.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="knowledge.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="langselwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="langselwin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lights.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lights.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="list.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="load_gl_extensions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="load_gl_extensions.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="loading_win.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="loading_win.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="loginwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="loginwin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="make.defaults">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="makeargv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="makeargv.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="manufacture.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="manufacture.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="map.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="map.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mapwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mapwin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="md5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="md5.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="memory.h" />
+		<Unit filename="mines.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mines.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="minimap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="minimap.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="misc.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="missiles.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="missiles.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="multiplayer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="multiplayer.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="named_colours.cpp" />
+		<Unit filename="named_colours.h" />
+		<Unit filename="new_actors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="new_actors.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="new_character.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="new_character.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="new_update.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="new_update.h" />
+		<Unit filename="notepad.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="notepad.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="openingwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="openingwin.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="optimizer.cpp" />
+		<Unit filename="optimizer.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="particles.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="particles.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="paste.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="paste.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pathfinder.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pathfinder.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amx.h" />
+		<Unit filename="pawn\amxaux.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amxaux.h" />
+		<Unit filename="pawn\amxcons.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amxcons.h" />
+		<Unit filename="pawn\amxel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amxel.h" />
+		<Unit filename="pawn\amxfloat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amxfloat.h" />
+		<Unit filename="pawn\amxstring.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\amxstring.h" />
+		<Unit filename="pawn\elpawn.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pawn\elpawn.h" />
+		<Unit filename="pawn\osdefs.h" />
+		<Unit filename="pawn\sclinux.h" />
+		<Unit filename="pawn_scripts\console.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="platform.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pm_log.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pm_log.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="popup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="popup.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="quest_log.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="questlog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="questlog.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="queue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="queue.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="reflection.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="reflection.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="roche.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="roche.h" />
+		<Unit filename="rules.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rules.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="select.cpp" />
+		<Unit filename="sendvideoinfo.cpp" />
+		<Unit filename="sendvideoinfo.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="serverpopup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="serverpopup.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="servers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="servers.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="session.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="session.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shader\noise.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shader\noise.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shader\shader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shader\shader.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shadows.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="shadows.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="skeletons.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="skeletons.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="skills.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="skills.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sky.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sky.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sort.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sound.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sound.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="special_effects.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="special_effects.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="spells.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="spells.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stats.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stats.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="storage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="storage.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="symbol_table.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="symbol_table.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tabs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tabs.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="templates\el_shared_ptr.hpp" />
+		<Unit filename="text.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="text.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="text_aliases.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="text_aliases.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="textures.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="textures.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="themes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="themes.h" />
+		<Unit filename="threads.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tile_map.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tiles.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="timers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="timers.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="trade.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="trade.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="trade_log.cpp" />
+		<Unit filename="trade_log.h" />
+		<Unit filename="translate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="translate.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="update.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="update.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="url.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="url.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="user_menus.cpp" />
+		<Unit filename="user_menus.h" />
+		<Unit filename="vmath.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="weather.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="weather.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="widgets.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="widgets.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xml\xmlhelper.cpp" />
+		<Unit filename="xml\xmlhelper.hpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\7zCrc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\7zCrc.h" />
+		<Unit filename="xz\7zCrcOpt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Alloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Alloc.h" />
+		<Unit filename="xz\Bra.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Bra.h" />
+		<Unit filename="xz\Bra86.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\BraIA64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\CpuArch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\CpuArch.h" />
+		<Unit filename="xz\Delta.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Delta.h" />
+		<Unit filename="xz\LzFind.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\LzFind.h" />
+		<Unit filename="xz\LzHash.h" />
+		<Unit filename="xz\Lzma2Dec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Lzma2Dec.h" />
+		<Unit filename="xz\Lzma2Enc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Lzma2Enc.h" />
+		<Unit filename="xz\LzmaDec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\LzmaDec.h" />
+		<Unit filename="xz\LzmaEnc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\LzmaEnc.h" />
+		<Unit filename="xz\RotateDefs.h" />
+		<Unit filename="xz\Sha256.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Sha256.h" />
+		<Unit filename="xz\Types.h" />
+		<Unit filename="xz\Xz.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\Xz.h" />
+		<Unit filename="xz\XzCrc64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\XzCrc64.h" />
+		<Unit filename="xz\XzDec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\XzEnc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xz\XzEnc.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

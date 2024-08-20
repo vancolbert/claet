@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A8BD2ECB-3BA4-49E1-8942-887788C4D4D8</string>
+	<key>IDESourceControlProjectName</key>
+	<string>LandesEternelles</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>2138dc04-60e8-db11-9ded-00508bec7832</key>
+		<string>svn://jeu.landes-eternelles.com/NouveauClient</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>trunk/client_sources/LandesEternelles.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>2138dc04-60e8-db11-9ded-00508bec7832</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>2138dc04-60e8-db11-9ded-00508bec7832</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>2138dc04-60e8-db11-9ded-00508bec7832</string>
+			<key>IDESourceControlWCCName</key>
+			<string>NouveauClient</string>
+		</dict>
+	</array>
+</dict>
+</plist>
