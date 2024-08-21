@@ -444,6 +444,8 @@ int my_tcp_send (TCPsocket my_socket, const Uint8 *str, int len)
 
 	new_str[0] = str[0];	//copy the protocol byte
 	*((short *)(new_str+1)) = SDL_SwapLE16((Uint16)len);//the data length
+	if (len + 4 > sizeof(new_str))
+		return 1;
 		// copy the rest of the data
 		memcpy(&new_str[3], &str[1], len-1);
 #ifdef	OLC
