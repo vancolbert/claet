@@ -1824,7 +1824,7 @@ int display_necro_handler(window_info *win)
 #ifdef FR_NECRO_RECETTES
 int chargement_necro_recettes(int choix)
 {
-    int encours;
+    int encours = 0;
     int k = 0;
     char prov[30] = "";
     int bestiole_en_cours = 0;
@@ -3067,7 +3067,7 @@ default:
 
 void remove_spell_from_quickbar (int pos)
 {
-	int i;
+	int i = 0;
 
 #ifdef ENGLISH
 	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) {

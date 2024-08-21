@@ -429,7 +429,7 @@ void display_special_effect(special_effect *marker) {
 	// x and y are the location for the effect
 	//	center_offset_x&y are for radial distance from actor in ground plane
 	//	base_offset_z is for height off the ground (z)
-	float x,y/*,center_offset_x, center_offset_y, base_offset_z*/;
+	float x = 0.0f, y = 0.0f/*,center_offset_x, center_offset_y, base_offset_z*/;
 
 	// height of terrain at the effect's location
 	float z = get_tile_height(marker->x, marker->y);
