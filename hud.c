@@ -2909,8 +2909,9 @@ void handle_stats_selection(int stat, Uint32 flags)
 			{
 				if (watch_this_stats[i] == stat)
 				{
-					if (i<max_disp_stats-1)
-						memmove(&(watch_this_stats[i]), &(watch_this_stats[i+1]), (max_disp_stats-i-1) * sizeof(int));
+					int n = max_disp_stats - 1 - i;
+					if (n > 0 && i < MAX_WATCH_STATS - 1)
+						memmove(watch_this_stats + i, watch_this_stats + i + 1, n * sizeof(int));
 					watch_this_stats[max_disp_stats-1] = 0;
 				}
 			}
