@@ -207,17 +207,13 @@ const char *strmrchr(const char *s, const char *begin, int c)
 {
 	char *copy = strdup(s);
 	char *cbegin = copy+(begin-s);
-	char *result;
+	const char *result;
 
 	*cbegin = '\0';
-	result = strrchr(copy, c);
+	if ((result = strrchr(copy, c)))
+		result = s+(result-copy);
 	free(copy);
-
-	if(result == NULL) {
-		return NULL;
-	} else {
-		return s+(result-copy);
-	}
+	return result;
 }
 
 enum compl_type {
