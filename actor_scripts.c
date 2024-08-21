@@ -3334,13 +3334,13 @@ int parse_actor_shirt(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 		const xmlNode *default_node = get_default_node(cfg, defaults);
 
 		if(default_node){
-			if(shirt->arms_name==NULL || *shirt->arms_name=='\0')
+			if (!*shirt->arms_name)
 				get_item_string_value(shirt->arms_name, sizeof(shirt->arms_name), default_node, (xmlChar*)"arms");
-			if(shirt->model_name==NULL || *shirt->model_name=='\0'){
+			if (!*shirt->model_name){
 				get_item_string_value(shirt->model_name, sizeof(shirt->model_name), default_node, (xmlChar*)"mesh");
 				shirt->mesh_index= cal_load_mesh(act, shirt->model_name, "shirt");
 			}
-			if(shirt->torso_name==NULL || *shirt->torso_name=='\0')
+			if (!*shirt->torso_name)
 				get_item_string_value(shirt->torso_name, sizeof(shirt->torso_name), default_node, (xmlChar*)"torso");
 		}
 	}
@@ -3406,9 +3406,9 @@ int parse_actor_skin (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 		const xmlNode *default_node= get_default_node(cfg, defaults);
 
 		if(default_node){
-			if(skin->hands_name==NULL || *skin->hands_name=='\0')
+			if (!*skin->hands_name)
 				get_item_string_value(skin->hands_name, sizeof(skin->hands_name), default_node, (xmlChar*)"hands");
-			if(skin->head_name==NULL || *skin->head_name=='\0')
+			if (!*skin->head_name)
 				get_item_string_value(skin->head_name, sizeof(skin->head_name), default_node, (xmlChar*)"head");
 		}
 	}
@@ -3472,9 +3472,9 @@ int parse_actor_legs (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 		const xmlNode *default_node = get_default_node(cfg, defaults);
 
 		if(default_node){
-			if(legs->legs_name==NULL || *legs->legs_name=='\0')
+			if (!*legs->legs_name)
 				get_item_string_value(legs->legs_name, sizeof(legs->legs_name), default_node, (xmlChar*)"skin");
-			if(legs->model_name==NULL || *legs->model_name=='\0'){
+			if (!*legs->model_name){
 				get_item_string_value(legs->model_name, sizeof(legs->model_name), default_node, (xmlChar*)"mesh");
 				legs->mesh_index= cal_load_mesh(act, legs->model_name, "legs");
 			}
@@ -3763,14 +3763,14 @@ int parse_actor_weapon(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 		const xmlNode *default_node= get_default_node(cfg, defaults);
 
 		if(default_node){
-			if(weapon->skin_name==NULL || *weapon->skin_name=='\0')
+			if (!*weapon->skin_name)
 				get_item_string_value(weapon->skin_name, sizeof(weapon->skin_name), default_node, (xmlChar*)"skin");
 #ifdef ENGLISH
 			if(type_idx!=GLOVE_FUR && type_idx!=GLOVE_LEATHER){ // these dont have meshes
 #else
 			if(type_idx!=GLOVE_FUR && type_idx!=GLOVE_LEATHER && type_idx!=GANTS_CUIR_NOIR && type_idx!=GLOVE_FUR_LEO && type_idx!=GLOVE_LEATHER_3){ // these dont have meshes
 #endif
-				if(weapon->model_name==NULL || *weapon->model_name=='\0'){
+				if (!*weapon->model_name){
 					get_item_string_value(weapon->model_name, sizeof(weapon->model_name), default_node, (xmlChar*)"mesh");
 					weapon->mesh_index= cal_load_weapon_mesh(act, weapon->model_name, "weapon");
 				}
@@ -3829,11 +3829,11 @@ int parse_actor_body_part (actor_types *act, body_part *part, const xmlNode *cfg
 
 	// check for default entries, if found, use them to fill in missing data
 	if(default_node){
-		if(part->skin_name==NULL || *part->skin_name=='\0')
+		if (!*part->skin_name)
 			if(strcmp(part_name, "head")){ // heads don't have separate skins here
 				get_item_string_value(part->skin_name, sizeof(part->skin_name), default_node, (xmlChar*)"skin");
 			}
-		if(part->model_name==NULL || *part->model_name=='\0'){
+		if (!*part->model_name){
 			get_item_string_value(part->model_name, sizeof(part->model_name), default_node, (xmlChar*)"mesh");
 			if(strcmp("shield",part_name)==0)
 				part->mesh_index= cal_load_weapon_mesh(act, part->model_name, part_name);
@@ -4071,7 +4071,7 @@ int parse_actor_shield_part (actor_types *act, shield_part *part, const xmlNode 
 
 	// check for default entries, if found, use them to fill in missing data
 	if(default_node){
-		if(part->model_name==NULL || *part->model_name=='\0'){
+		if (!*part->model_name){
 			get_item_string_value(part->model_name, sizeof(part->model_name), default_node, (xmlChar*)"mesh");
 			part->mesh_index= cal_load_weapon_mesh(act, part->model_name, "shield");
 		}
@@ -4654,9 +4654,9 @@ int parse_actor_boots (actor_types *act, const xmlNode *cfg, const xmlNode *defa
 		const xmlNode *default_node = get_default_node(cfg, defaults);
 
 		if(default_node){
-			if(boots->boots_name==NULL || *boots->boots_name=='\0')
+			if (!*boots->boots_name)
 				get_item_string_value(boots->boots_name, sizeof(boots->boots_name), default_node, (xmlChar*)"skin");
-			if(boots->model_name==NULL || *boots->model_name=='\0'){
+			if (!*boots->model_name){
 				get_item_string_value(boots->model_name, sizeof(boots->model_name), default_node, (xmlChar*)"mesh");
 				boots->mesh_index= cal_load_mesh(act, boots->model_name, "boots");
 			}
