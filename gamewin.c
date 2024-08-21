@@ -1574,7 +1574,7 @@ int display_game_handler (window_info *win)
 	{
 		int msg, offset, filter;
 #ifndef ENGLISH
-        int ytext;
+        int ytext = 20;
         if (use_windowed_chat ==1)
         {
             if (nb_ligne_tabs == 1)
@@ -1585,10 +1585,6 @@ int display_game_handler (window_info *win)
             {
                 ytext = 45;
             }
-        }
-        else
-        {
-            ytext = 20;
         }
 #endif //ENGLISH
 		filter = use_windowed_chat == 1 ? current_filter : FILTER_ALL;
