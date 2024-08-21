@@ -827,7 +827,7 @@ char ** formatage_lignes(char *str, int max_width, float zoom, int align)
 // Ajoute du texte dans le livre
 void ajout_texte_xml (struct_livres * livre_actuel, char * noeud, int align, couleur_rvb couleur_texte, int type)
 {
-    char ** lignes_de_texte;
+    char ** lignes_de_texte = 0;
     char ** texte_tempo;
 	char ** numero_ligne = NULL;
     int i, k;
