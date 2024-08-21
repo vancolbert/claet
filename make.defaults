@@ -134,6 +134,6 @@ CXXWARN=-Wall
 #EXTRA_LIBS=-lz
 #EXTRA_STATICLIBS=libs/zlib.a
 
-CC=gcc
-CXX=g++
-LINK=gcc
+CC ?= gcc
+CXX ?= g++
+LINK ?= gcc
