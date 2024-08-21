@@ -372,10 +372,10 @@ void init_video()
 	//try to see if we get hardware acceleration, or the windows generic shit
 	{
 		int len;
-		GLubyte *my_string;
+		const char *my_string;
 		int have_hardware;
 
-		my_string=(GLubyte *)glGetString(GL_RENDERER);
+		my_string=(const char *)glGetString(GL_RENDERER);
         if (my_string == NULL) {
             len = 0;
             have_hardware = 0;
@@ -402,7 +402,7 @@ void init_video()
 			SDL_SetVideoMode(window_width, window_height, bpp, flags);
 			have_stencil=0;
 
-			my_string=(GLubyte *)glGetString(GL_RENDERER);
+			my_string=(const char *)glGetString(GL_RENDERER);
             if (my_string == NULL) {
                 len = 0;
                 have_hardware = 0;
@@ -432,7 +432,7 @@ void init_video()
 				bpp=32;
 				SDL_SetVideoMode(window_width, window_height, bpp, flags);
 				//see if it worked...
-				my_string=(GLubyte *)glGetString(GL_RENDERER);
+				my_string=(const char *)glGetString(GL_RENDERER);
                 if (my_string == NULL) {
                     len = 0;
                     have_hardware = 0;
