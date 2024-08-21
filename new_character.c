@@ -222,7 +222,7 @@ int old_use_windowed_chat;
 #endif
 int display_time=0;
 
-struct input_text {
+static struct input_text {
 	char str[40];
 	int pos;
 } inputs[3] = {
