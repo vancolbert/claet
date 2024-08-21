@@ -2,6 +2,7 @@
 
 Copie du [code source du client](http://jeu.landes-eternelles.com/~ale/downloads.html)
 pour le jeu de rôle en ligne [Landes Eternelles](http://www.landes-eternelles.com/).
+J'ai fait quelques modifications mineures au but d'être compatible avec les compilateurs et bibliothèques récents. 
 
 ## Compilation sous Linux
 ```

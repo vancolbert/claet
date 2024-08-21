@@ -2,6 +2,7 @@
 
 Github mirror of the game client [source code](http://jeu.landes-eternelles.com/~ale/downloads.html)
 for the French online roleplaying game [Landes Eternelles](http://www.landes-eternelles.com/).
+I have made minor changes for recent compilers and libraries.
 
 ## Building on Linux
 ```
