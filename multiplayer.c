@@ -2760,7 +2760,7 @@ int get_message_from_server(void *thread_args)
 				safe_snprintf(str, sizeof(str), "<%1d:%02d>: %s: [%s]", tgm/60, tgm%60, disconnected_from_server, SDLNet_GetError());
 		 	else
 				safe_snprintf(str, sizeof(str), "<%1d:%02d>: %s", tgm/60, tgm%60, disconnected_from_server);
-				LOG_TO_CONSOLE(c_red2, str);
+			LOG_TO_CONSOLE(c_red2, str);
 			LOG_TO_CONSOLE(c_red2, alt_x_quit);
 			in_data_used = 0;
 			disconnected = 1;
