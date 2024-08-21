@@ -1847,8 +1847,9 @@ int keypress_namepass_handler (window_info *win, int mx, int my, Uint32 key, Uin
 			if(active == 0 && !strcasecmp(t->str, "player")) t->pos= 0;
 
 			// add the character to the buffer
-			t->str[t->pos++]=ch;
-			t->str[t->pos]=0;
+			char *p = t->str + t->pos++;
+			*p++ = ch;
+			*p = 0;
 			ret=1;	//Reused to show that a letter has been added
 		}
 	}
