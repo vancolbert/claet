@@ -2317,7 +2317,7 @@ int clique_fenetre_livre(window_info *win, int mx, int my, Uint32 flags)
 		// au serveur d'afficher la suite
 		if (livre_actuel->serveur)
 		{
-		    char str[6];
+		    char str[16];
 			str[0]=CONTINUE_LIVRE;
 			*((Uint16*)(str+1)) = SDL_SwapLE16(livre_actuel->num);
 			*((Uint16*)(str+3)) = SDL_SwapLE16(nb_pages);
