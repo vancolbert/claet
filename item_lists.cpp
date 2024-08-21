@@ -802,7 +802,7 @@ namespace ItemLists
 	{
 		if (!last_mod_time)
 			return;
-		if (force || (last_mod_time && abs((long int) SDL_GetTicks() - last_mod_time) > 5000))
+		if (force || (last_mod_time && SDL_GetTicks() > last_mod_time + 5000))
 			save();
 	}
 
