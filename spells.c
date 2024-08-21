@@ -1629,7 +1629,7 @@ int display_necro_handler(window_info *win)
     int messages_invoc_x;
     int messages_invoc_y;
     int objet_recette[6][3] = {0};
-    int total;
+    int total = 0;
     if(nb_recettes_necro > 0)
     {
 	blocage_invoc_x = 13;
