@@ -4470,68 +4470,28 @@ CHECK_GL_ERRORS();
 	    show_help("*", loc + width, 5 + quickspells_dim);
 	}
 #endif
-#ifndef FR_MORE_MQB
-	if (quickspell_over > 0 && mqb_data[quickspell_over])
-	{
-		if (quickspells_dir == VERTICAL)
-			show_help(mqb_data[quickspell_over]->spell_name, -5 - strlen(mqb_data[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-		else
-			show_help(mqb_data[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-	}
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		if (quickspell_over > 0 && mqb_data[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data[quickspell_over]->spell_name, -5 - strlen(mqb_data[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	case 1:
-		if (quickspell_over > 0 && mqb_data2[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data2[quickspell_over]->spell_name, -5 - strlen(mqb_data2[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data2[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	case 2:
-		if (quickspell_over > 0 && mqb_data3[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data3[quickspell_over]->spell_name, -5 - strlen(mqb_data3[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data3[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	case 3:
-		if (quickspell_over > 0 && mqb_data4[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data4[quickspell_over]->spell_name, -5 - strlen(mqb_data4[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data4[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	case 4:
-		if (quickspell_over > 0 && mqb_data5[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data5[quickspell_over]->spell_name, -5 - strlen(mqb_data5[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data5[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	
-	default:
-		break;
+	mqbdata **m = mqb_data;
+#ifdef FR_MORE_MQB
+	mqbdata **ml[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5};
+	if ((unsigned)quickspell_mqb_selected < 5) {
+		m = ml[quickspell_mqb_selected];
 	}
 #endif //FR_MORE_MQB
-
+	mqbdata *d = m[quickspell_over];
+	if (quickspell_over > 0 && d) {
+		const char *n = d->spell_name;
+		for (int i = 0; i < SPELLS_NO; ++i) {
+			if (spells_list[i].id == d->spell_id) {
+				n = spells_list[i].name;
+				break;
+			}
+		}
+		if (quickspells_dir == VERTICAL) {
+			show_help(n, -5 - strlen(n)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
+		} else {
+			show_help(n, over + width, 5 + quickspells_dim);
+		}
+	}
 #else //FR_VERSION
 	if(quickspell_over!=-1 && mqb_data[quickspell_over])
 		show_help(mqb_data[quickspell_over]->spell_name,-10-strlen(mqb_data[quickspell_over]->spell_name)*8,(quickspell_over-1)*30+10);
