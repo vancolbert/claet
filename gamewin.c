@@ -2137,6 +2137,13 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	else if (action_spell_keys(key))
 	{
 	}
+	else if (key == K_SPELLTARGET) {
+		if (set_fast_spell_target ^= 1) {
+			LOG_TO_CONSOLE(c_yellow1, "Sélectionne un sort pour le ciblage automatique.");
+		} else {
+			fast_spell_decible();
+		}
+	}
 	// hide all windows
 	else if(key==K_HIDEWINS)
 	{

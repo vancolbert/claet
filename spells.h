@@ -270,6 +270,7 @@ int command_buff_duration(char *text, int len);
   void fast_spell_cible(int spell_id);
   void fast_spell_decible(void);
 #endif
+extern int set_fast_spell_target;
 
 #ifdef __cplusplus
 } // extern "C"

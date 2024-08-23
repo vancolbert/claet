@@ -100,6 +100,7 @@ int selected_spell_sent = 0;
 int selected_spell_target = -1;
 int fast_spell_cible_bool = 0;
 #endif
+int set_fast_spell_target;
 
 sigil_def sigils_list[SIGILS_NO];
 int sigils_text;
@@ -4700,169 +4701,37 @@ default:
 		cm_show_direct(cm_quickspells_win_id, quickspell_win, -1);
 		return 1;
 	}
-#ifndef FR_MORE_MQB
+	mqbdata **m = mqb_data;
+#ifdef FR_MORE_MQB
+	mqbdata **ml[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5};
+	if ((unsigned)quickspell_mqb_selected < 5) {
+		m = ml[quickspell_mqb_selected];
+	}
+#endif //FR_MORE_MQB
 	// actions sur un raccourci (clic gauche)
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data[pos]->spell_str, mqb_data[pos]->spell_str[1]+2);
+	mqbdata *d = m[pos];
+	if (pos > 0 && d && d->spell_name[0]) {
+		if (!ctrl_on && !shift_on) {
+			if (!d->spell_str[0]) return 0;
+			if (set_fast_spell_target) {
+				fast_spell_cible(pos);
+				set_fast_spell_target = 0;
+			} else {
+				send_spell(d->spell_str, d->spell_str[1]+2);
+			}
 			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
+		} else if (!ctrl_on && shift_on) {
 			remove_spell_from_quickbar(pos);
 			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
+		} else if (ctrl_on && !shift_on) {
 			move_spell_on_quickbar(pos, 2); // en premier
 			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
+		} else if (ctrl_on && shift_on) {
 			move_spell_on_quickbar(pos, 3); // en dernier
 			return 1;
 		}
 	}
-#else //FR_MORE_MQB
-switch (quickspell_mqb_selected)
-{
-case 0:
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data[pos]->spell_str, mqb_data[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 1:
-	if (pos > 0 && mqb_data2[pos] && mqb_data2[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data2[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data2[pos]->spell_str, mqb_data2[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 2:
-	if (pos > 0 && mqb_data3[pos] && mqb_data3[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data3[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data3[pos]->spell_str, mqb_data3[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 3:
-	if (pos > 0 && mqb_data4[pos] && mqb_data4[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data4[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data4[pos]->spell_str, mqb_data4[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 4:
-	if (pos > 0 && mqb_data5[pos] && mqb_data5[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data5[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data5[pos]->spell_str, mqb_data5[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-
-default:
-	break;
-}
+#ifdef FR_MORE_MQB
 	if(pos==0){
 		if(quickspells_dir != VERTICAL){
 			if(mx >= 0 && mx <= 8 && my >= 0 && my <= 10){
@@ -5089,6 +4958,11 @@ int action_spell_keys(Uint32 key)
 #endif //FR_VERSION
 		if(key == keys[i])
 		{
+			if (set_fast_spell_target) {
+				fast_spell_cible(i + 1);
+				set_fast_spell_target = 0;
+				return 1;
+			}
 #ifndef FR_MORE_MQB
 			if(mqb_data[i+1] && mqb_data[i+1]->spell_str[0])
 				send_spell(mqb_data[i+1]->spell_str, mqb_data[i+1]->spell_str[1]+2);
@@ -5775,73 +5649,21 @@ CHECK_GL_ERRORS();
      fast_spell_cible_bool = 1;
      selected_spell = spell_id;
    }
-#ifndef FR_MORE_MQB
-   if(mqb_data[spell_id]) {
-     if(fast_spell_cible_bool) {
-       safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data[spell_id]->spell_name);
+   mqbdata **m = mqb_data;
+#ifdef FR_MORE_MQB
+   mqbdata **ml[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5};
+   if ((unsigned)quickspell_mqb_selected < 5) {
+     m = ml[quickspell_mqb_selected];
+   }
+#endif //FR_MORE_MQB
+   if (m[spell_id]) {
+     if (fast_spell_cible_bool) {
+       safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", m[spell_id]->spell_name);
        LOG_TO_CONSOLE(c_green1, str);
      } else {
-       LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
+       LOG_TO_CONSOLE(c_orange1, "Tu ne séléctionne plus aucuns sorts.");
      }
    }
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		   if(mqb_data[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 1:
-		   if(mqb_data2[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data2[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 2:
-		   if(mqb_data3[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data3[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 3:
-		   if(mqb_data4[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data4[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 4:
-		   if(mqb_data5[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data5[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	
-	default:
-		break;
-	}
-#endif //FR_MORE_MQB
  }
 
  void fast_spell_cast(void) {
@@ -5870,4 +5692,10 @@ CHECK_GL_ERRORS();
      my_tcp_send (my_socket, str, 5);
    }
  }
+
+void fast_spell_decible(void) {
+    fast_spell_cible_bool = 0;
+    selected_spell = -1;
+    LOG_TO_CONSOLE(c_orange1, "Tu ne séléctionne plus aucuns sorts.");
+}
 #endif

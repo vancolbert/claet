@@ -152,6 +152,7 @@ extern Uint32 K_SPELL12;
 extern Uint32 K_PREVQUICKSPELLBAR;
 extern Uint32 K_NEXTQUICKSPELLBAR;
 #endif
+extern Uint32 K_SPELLTARGET;
 /*! @} */
 
 /*!
