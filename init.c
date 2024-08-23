@@ -1480,4 +1480,7 @@ void init_stuff()
 	popup_init();
 
 	LOG_DEBUG("Init done!");
+	LOG_TO_CONSOLE(c_yellow2, "ATTENTION: Ceci est une version du programme non officielle, fournie pour tester.");
+	LOG_TO_CONSOLE(c_red2, "   ***   Il n'y a aucune garantie de stabilité ou exactitude.   ***");
+	LOG_TO_CONSOLE(c_grey2, "En cas de problème ou si vous avez des questions, faites signaler sur le fil correspondant du forum, ou bien sur: https://github.com/vancolbert/claet");
 }
