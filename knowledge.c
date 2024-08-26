@@ -305,6 +305,7 @@ int display_knowledge_handler(window_info *win)
         }
 		draw_string_zoomed(4, 2+saut_ligne*i, (unsigned char*)categories[i].nom, 1, 0.8);
     }
+	float max_name_x = win->len_x - x - 32;
 #else //FR_VERSION
 	int rx = win->len_x - 15;
 	int lx = win->len_x - 15 - (455-330);
@@ -512,7 +513,7 @@ int display_knowledge_handler(window_info *win)
 #endif //FR_VERSION
 
 #ifdef FR_VERSION
-		draw_string_zoomed(x, y, (unsigned char*)liste_courante[i].name, 1, 0.7);
+		draw_string_zoomed_width(x, y, (unsigned char*)liste_courante[i].name, max_name_x, 1, 0.7);
         y += saut_ligne;
 #else //FR_VERSION
 		/* truncate the string if it is too long */
