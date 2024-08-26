@@ -207,85 +207,25 @@ static void load_entrable_list()
 void load_knowledge_list()
 {
 	FILE *f = NULL;
-	int i=0;
 	char strLine[255];
-#ifndef ENGLISH
-    char * espace1Ligne;
-    char * espace2Ligne;
-    char * espace3Ligne;
-    char * espace4Ligne;
-    char strLineType[10];
-    char strLineId[10];
-    char strLineStorage[10];
-    char strLineAffiche[10];
-#else //ENGLISH
-	char *out;
-#endif //ENGLISH
-
 	memset(knowledge_list, 0, sizeof(knowledge_list));
-	i= 0;
-	knowledge_count= 0;
+	knowledge_count = 0;
 	// try the language specific knowledge list
 	f=open_file_lang("knowledge.lst", "rb");
 	if(f == NULL){
 		LOG_ERROR("%s: %s \"knowledge.lst\": %s\n", reg_error_str, cant_open_file, strerror(errno));
 		return;
 	}
-	while(1)
-		{
-			if(!fgets(strLine, sizeof(strLine), f)) {
-				break;
-			}
+	char format[64];
+	snprintf(format, sizeof(format), "%%hhd %%hd %%hhd %%hhd %%%zu[^\n]", sizeof(knowledge_list->name) - 1);
+	while (fgets(strLine, sizeof(strLine), f)) {
+		knowledge *k = knowledge_list + knowledge_count++;
 #ifdef ENGLISH
-			out = knowledge_list[i].name;
-			my_xmlStrncopy(&out, strLine, sizeof(knowledge_list[i].name)-1);
+		my_xmlStrncopy(&k->name, strLine, sizeof(k->name) - 1);
 #else //ENGLISH
-            // On recherche dans chaque les lignes les espaces qui delimitent les champs
-            espace1Ligne = strchr(strLine,' ');
-            if (espace1Ligne != NULL)
-            {
-                espace2Ligne = strchr(espace1Ligne+1,' ');
-                if (espace2Ligne != NULL)
-                {
-                    espace3Ligne = strchr(espace2Ligne+1,' ');
-                    if (espace3Ligne != NULL)
-                    {
-                        espace4Ligne = strchr(espace3Ligne+1,' ');
-                     }
-                     else
-                     {
-                        break;
-                     }
-                }
-                else
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break;
-            }
-            // On recupere le type de la connaissance
-			safe_strncpy(strLineType, strLine, strlen(strLine) - strlen(espace1Ligne) + 1);
-            knowledge_list[i].type = atoi (strLineType);
-            // On recupere l'id du livre
-			safe_strncpy(strLineId, espace1Ligne + 1, strlen(espace1Ligne) - strlen(espace2Ligne));
-            knowledge_list[i].id = atoi (strLineId);
-            // On recupere le flag sur le depot
-			safe_strncpy(strLineStorage, espace2Ligne + 1, strlen(espace2Ligne) - strlen(espace3Ligne));
-            knowledge_list[i].is_stored = atoi (strLineStorage);
-            // On recupere le fait d'afficher ou non la connaissance
-			safe_strncpy(strLineAffiche, espace3Ligne + 1, strlen(espace3Ligne) - strlen(espace4Ligne));
-            knowledge_list[i].affiche = atoi (strLineAffiche);
-            // On recupere le nom de la connaissance
-			strncpy(knowledge_list[i].name, espace4Ligne +1 , strlen(espace4Ligne) - 2);
+		sscanf(strLine, format, &k->type, &k->id, &k->is_stored, &k->affiche, &k->name);
 #endif //ENGLISH
-			i++;
-		}
-	// memorize the count
-	knowledge_count= i;
-	// close the file
+	}
 	fclose(f);
 #ifndef ENGLISH
 	// On initialise la liste des categories
