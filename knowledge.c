@@ -152,7 +152,7 @@ int handle_knowledge_book()
 
 void check_book_known()
 {
-	static int last_checked_book = -1;
+	static Uint16 last_checked_book = -1;
 	if (your_info.researching != last_checked_book)
 	{
 		last_checked_book = your_info.researching;
@@ -336,7 +336,7 @@ int display_knowledge_handler(window_info *win)
 		research_string = knowledge_list[your_info.researching].name;
 #endif //FR_VERSION
 	}
-	else if (your_info.researching < sizeof(knowledge_list))
+	else if (your_info.researching < KNOWLEDGE_LIST_SIZE)
 	{
 		research_string = unknown_book_short_str;
 	}
