@@ -395,7 +395,7 @@ int display_knowledge_handler(window_info *win)
 	draw_string_small(4,210,(unsigned char*)knowledge_string,4);
 	glColor3f(1.0f,1.0f,1.0f);
 	draw_string_small(10,320,(unsigned char*)researching_str,1);
-	draw_string_small(100,320,(unsigned char*)research_string,1);
+	draw_string_scaled(100,320,(unsigned char*)research_string,328,1,SMALL_FONT_X_LEN,SMALL_FONT_Y_LEN);
 	draw_string_small(480,320,(unsigned char*)points_string,1);
 #else //FR_VERSION
 	//progress bar

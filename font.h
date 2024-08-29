@@ -176,6 +176,7 @@ int reset_soft_breaks (char *str, int len, int size, float zoom, int width, int 
  * \callgraph
  */
 #ifdef FR_VERSION
+int draw_string_scaled(int x, int y, const unsigned char * our_string, int max_width, int max_lines, float displayed_font_x_size, float displayed_font_y_size);
 int draw_string_small(int x, int y,const unsigned char * our_string,int max_lines);
 int draw_string_small_shadowed(int x, int y,const unsigned char * our_string,int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
 int draw_string_legende(int x, int y,const unsigned char * our_string,int max_lines);
