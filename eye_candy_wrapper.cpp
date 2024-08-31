@@ -395,20 +395,6 @@ extern "C" void ec_idle()
 
 	if (use_eye_candy && ec_last_time % 1000000 >= ec_cur_time % 1000000)
 		ec_heartbeat();
-
-#if 0
-	// Put debugging effects here.
-	if (ec_last_time % 100000 >= ec_cur_time % 100000)
-	{
-		float test_x = 31.0 + ec::randfloat(6.0);
-		float test_y = 36.0 + ec::randfloat(6.0);
-		if (rand() & 1)
-			ec_create_bag_pickup(test_x, test_y, 0.0, 10);
-		else
-			ec_create_bag_drop(test_x, test_y, 0.0, 10);
-	}
-#endif
-
 	if ((unsigned int)(ec::get_time() % 1000000) >= (unsigned int)(1000000 * idle_cycles_this_second / max_idle_cycles_per_second))
 	{
 		eye_candy.idle();

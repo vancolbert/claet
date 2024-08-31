@@ -867,28 +867,6 @@ void draw_point_particle_sys(particle_sys *system_id)
 	glTexEnvf(GL_POINT_SPRITE_NV,GL_COORD_REPLACE_NV,GL_TRUE);
 	glPointSize(system_id->def->part_size*(5.5f-zoom_level)*4.4f);
 	bind_texture(particle_textures[system_id->def->part_texture]);
-#if 0
-	//#ifdef USE_VERTEX_ARRAYS
-	// This might be useful if we allow more particles per system.
-	// It does, however, render free particles...
-	if(use_vertex_array)
-		{
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_NORMAL_ARRAY);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-			glEnableClientState(GL_COLOR_ARRAY);
-			LOCK_PARTICLES_LIST(); //lock it to avoid timing issues
-			glVertexPointer(3,GL_FLOAT,sizeof(particle),&(system_id->particles[0].x));
-			glColorPointer(4,GL_FLOAT,sizeof(particle),&(system_id->particles[0].r));
-			glDrawArrays(GL_POINTS,0,system_id->total_particle_no);
-			UNLOCK_PARTICLES_LIST();// release now that we are done
-			glDisableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_COLOR_ARRAY);
-
-		}
-	else
-#endif
- {
 	glBegin(GL_POINTS);
 	LOCK_PARTICLES_LIST();	//lock it to avoid timing issues
 	for(i=0,p=&system_id->particles[0];i<system_id->def->total_particle_no;i++,p++)
@@ -901,7 +879,6 @@ void draw_point_particle_sys(particle_sys *system_id)
 	  }
 	UNLOCK_PARTICLES_LIST();	// release now that we are done
 	glEnd();
- }
 	glDisable(GL_POINT_SPRITE_NV);
 	CHECK_GL_ERRORS();
 }

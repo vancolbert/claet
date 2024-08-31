@@ -201,14 +201,12 @@ int HandleEvent (SDL_Event *event)
                 circonflexe = 0;
             }
 #ifdef WINDOWS
-               //#ifdef FR_TRINITA_DEBUG
                // correction bug mantis num 254
                //@TRINITA 2010 le ` est inutile !
             else if ((event->key.keysym.unicode == 96) && (circonflexe == 0)){
                 event->key.keysym.unicode  = 0;
                 circonflexe = 0;
             }
-               //#endif
 #endif
             // Si rien n'est appuyé après la touche "^" sauf les choix fais
             // plus haut, on revient à la normale

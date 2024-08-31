@@ -359,24 +359,6 @@ static int mouseover_dialogue_handler(window_info *win, int mx, int my)
 
 int mon_acteur=-1;
 
-#if 0
-/* just for debug */
-static void show_response_list(void)
-{
-	size_t i;
-	printf("Responses:-\n");
-	for (i=saved_response_list_top; saved_response_list_bot<MAX_SAVED_RESPONSES; i--)
-	{
-		printf("[%s] %s\n", saved_responses[i].text, ((i==saved_response_list_cur) ?"*" :""));
-		if (i == saved_response_list_bot)
-			break;
-		if (i == 0)
-			i = MAX_SAVED_RESPONSES;
-	}
-	printf("\n");
-}
-#endif
-
 static void save_response(const response *last_response)
 {
 	size_t i;

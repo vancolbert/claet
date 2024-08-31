@@ -491,20 +491,6 @@ static __inline__ void disable_water_texgen()
 
 }
 
-#if 0
-/* not used */
-static __inline__ void disable_noise_texgen()
-{
-	ELglActiveTextureARB(GL_TEXTURE3);
-
-	glDisable(GL_TEXTURE_GEN_S);
-	glDisable(GL_TEXTURE_GEN_T);
-
-	ELglActiveTextureARB(base_unit);
-
-}
-#endif
-
 void display_3d_reflection()
 {
 	GLint view_port[4];

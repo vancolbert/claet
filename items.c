@@ -486,13 +486,6 @@ int display_items_handler(window_info *win)
 
 	glEnable(GL_TEXTURE_2D);
 
-	/*
-	* Labrat: I never realised that a store all patch had been posted to Berlios by Awn in February '07
-	* Thanks to Awn for his earlier efforts (but this is not a derivative of his earlier work)
-	*
-	*My next step will be to code an #ifdef STORE_ALL section to save the 0-35 loop in the click handler for future proofing
-	*  ready for server side implementation
-	*/
 	// draw the button labels
 	but_labels[BUT_MIX] = (items_mix_but_all) ?mix_all_str :mix_one_str;
 	for (i=0; i<NUMBUT; i++) {

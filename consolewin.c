@@ -323,9 +323,7 @@ void update_console_win (text_message * msg)
 				scroll_up_lines = DISPLAY_TEXT_BUFFER_SIZE;
 			}
 		}
-//#ifdef ENGLISH
 		total_nr_lines += nlines;
-//#endif //ENGLISH
 	}
 }
 

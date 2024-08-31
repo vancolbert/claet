@@ -34,13 +34,6 @@ static __inline__ int pf_heuristic(int dx, int dy)
 	// may therefore be slightly too long, but it's much faster than the
 	// more accurate heuristic below (mainly because it expands fewer nodes)
 	return 10 * (dx + dy);
-#if 0
-	// Grum: Is the cost of a diagonal move really sqrt(2) times that of
-	// an aligned move? If not, the below should simply be max(dx, dy), and
-	// the cost function in pf_add_tile_to_open_list() should also be
-	// updated.
-	return dx < dy ? 14*dx + 10*(dy-dx) : 14*dy + 10*(dx-dy);
-#endif
 }
 
 #define pf_get_tile(x, y) \

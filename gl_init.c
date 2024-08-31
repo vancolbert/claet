@@ -832,19 +832,8 @@ void init_gl_extensions()
 		LOG_DEBUG("%s\n",str);
 	}
 	/*	GL_EXT_texture_filter_anisotropic	*/
-
-#if	0
-	// Disabled because of bad drivers
-	if (have_extension(ext_framebuffer_object))
-	{
-		check_fbo_formats();
-	}
-#endif
 	init_shaders();
-
-
 	gl_extensions_loaded = 1;
-
 	CHECK_GL_ERRORS();
 }
 
@@ -999,13 +988,7 @@ int print_gl_errors(const char *file, int line)
 	while ((glErr=glGetError()) != GL_NO_ERROR )
 	 {
 		anyErr=glErr;
-//#ifdef	GLUT
-//FIXME: this appears to be a GLU call, not GLUT, and we link with GLU normally...
-//unless this causes an error on some other compiler, the commented parts should be removed
 		log_error(file, line, "OpenGL %s", gluErrorString(glErr));
-//#else
-//		log_error_detailed("OpenGL error %d", file, func, line, glErr);
-//#endif // GLUT
 	}
 	return anyErr;
 }

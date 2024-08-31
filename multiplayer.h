@@ -129,9 +129,6 @@ void send_login_info();
  * \param pass_str          the password for the char
  * \param skin              the skin id used by the char
  * \param hair              the hair id used by the char
- #ifdef NEW_EYES
- * \param eyes              the eyes id used by the char
- #endif //NEW_EYES
  * \param shirt             the shirt id used by the char
  * \param pants             the pants id used by the char
  * \param boots             the boots id used by the char

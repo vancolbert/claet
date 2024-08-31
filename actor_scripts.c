@@ -272,12 +272,6 @@ void animate_actors()
 				if (actors_list[i]->rotate_time_left <= 0) { //we rotated all the way
 					actors_list[i]->rotating= 0;//don't rotate next time, ok?
                     tmp_time_diff = time_diff + actors_list[i]->rotate_time_left;
-/*
-#ifdef MORE_ATTACHED_ACTORS
-					if(actors_list[i]->actor_id==yourself) printf("%i, rot: %i\n",thecount,actors_list[i]->rotating);
-					if(actors_list[i]->actor_id<0) printf("%i, (horse) rot: %i\n",thecount,actors_list[i]->rotating);
-#endif
-*/
                 }
                 else {
                     tmp_time_diff = time_diff;
@@ -561,18 +555,7 @@ void next_command()
 						actors_list[i]->stop_animation=1;
 						break;
 					}
-/*					case pain2: {
-#ifdef ATTACHED_ACTORS
-						attachment_props *att_props = get_attachment_props_if_held(actors_list[i]);
-						if (att_props)
-							cal_actor_set_anim(i, att_props->cal_frames[cal_attached_pain_frame]);
-						else
-#endif // ATTACHED_ACTORS
-							cal_actor_set_anim(i,actors_defs[actor_type].cal_frames[cal_actor_pain2_frame]);
-						actors_list[i]->stop_animation=1;
-						break;
-					}
-*/					case pick:
+					case pick:
 						cal_actor_set_anim(i,actors_defs[actor_type].cal_frames[cal_actor_pick_frame]);
 						actors_list[i]->stop_animation=1;
 						break;
@@ -619,24 +602,6 @@ void next_command()
 						actors_list[i]->fighting=fight_k;
 						}
 						break;
-/*					case leave_combat:
-#ifdef MORE_ATTACHED_ACTORS
-						if(HAS_HORSE(i)){
-							cal_actor_set_anim(i,actors_defs[actor_type].cal_frames[cal_actor_out_combat_held_frame]);
-							//rotate counterclowwise horse and actor
-							add_rotation_to_actor(i,HORSE_FIGHT_ROTATION,HORSE_FIGHT_TIME);
-							rotate_actor(MY_HORSE_ID(i),HORSE_FIGHT_ROTATION,HORSE_FIGHT_TIME);
-
-							cal_actor_set_anim(MY_HORSE_ID(i),actors_defs[MY_HORSE(i)->actor_type].cal_frames[cal_actor_out_combat_frame]);
-							MY_HORSE(i)->stop_animation=1;
-							MY_HORSE(i)->fighting=0;
-						} else
-#endif
-						cal_actor_set_anim(i,actors_defs[actor_type].cal_frames[cal_actor_out_combat_frame]);
-						actors_list[i]->stop_animation=1;
-						actors_list[i]->fighting=0;
-						break;
-*/
 					case attack_up_1:
 					case attack_up_2:
 					case attack_up_3:

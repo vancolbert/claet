@@ -657,42 +657,6 @@ namespace ec
 
 			void from_matrix(const GLfloat* matrix)
 			{
-#if 0		// Assumedly slower but equivalent version
-				const angle_t trace = matrix[0] + matrix[5] + matrix[10] + 1;
-				if (trace> 0)
-				{
-					const angle_t s = 0.5 / std::sqrt(trace);
-					scalar = 0.25 / s;
-					vec = Vec3(matrix[9] - matrix[6], matrix[2] - matrix[8], matrix[4] - matrix[1]) * s;
-				}
-				else
-				{
-					if ((matrix[0]> matrix[5]) && (matrix[0]> matrix[10]))
-					{
-						const angle_t s = 2.0 * std::sqrt(1.0 + matrix[0] - matrix[5] - matrix[10]);
-						vec.x = 0.5 / s;
-						vec.y = (matrix[1] + matrix[4]) / s;
-						vec.z = (matrix[2] + matrix[8]) / s;
-						scalar = (matrix[6] + matrix[9]) / s;
-					}
-					else if (matrix[5]> matrix[10])
-					{
-						const angle_t s = 2.0 * std::sqrt(1.0 + matrix[5] - matrix[0] - matrix[10]);
-						vec.x = (matrix[1] + matrix[4]) / s;
-						vec.y = 0.5 / s;
-						vec.z = (matrix[6] + matrix[9]) / s;
-						scalar = (matrix[2] + matrix[8]) / s;
-					}
-					else
-					{
-						const angle_t s = 2.0 * std::sqrt(1.0 + matrix[10] - matrix[0] - matrix[5]);
-						vec.x = (matrix[2] + matrix[8]) / s;
-						vec.y = (matrix[6] + matrix[9]) / s;
-						vec.z = 0.5 / s;
-						scalar = (matrix[1] + matrix[4]) / s;
-					}
-				}
-#else
 				scalar = std::sqrt(fmax( 0, 1 + matrix[0] + matrix[5] + matrix[10])) / 2;
 				vec.x = std::sqrt(fmax( 0, 1 + matrix[0] - matrix[5] - matrix[10])) / 2;
 				vec.y = std::sqrt(fmax( 0, 1 - matrix[0] + matrix[5] - matrix[10])) / 2;
@@ -700,7 +664,6 @@ namespace ec
 				vec.x = copysign(vec.x, matrix[9] - matrix[6]);
 				vec.y = copysign(vec.y, matrix[2] - matrix[8]);
 				vec.z = copysign(vec.z, matrix[4] - matrix[1]);
-#endif
 			}
 			;
 

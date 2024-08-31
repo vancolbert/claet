@@ -110,9 +110,6 @@ void build_glow_color_table();
  * \param	actor_type The race and sex
  * \param	skin The skin type
  * \param	hair The hair type
- #ifdef NEW_EYES
- * \param	eyes The eyes type
- #endif //NEW_EYES
  * \param	shirt The shirt type
  * \param	pants The pants type
  * \param	boots The type of boots

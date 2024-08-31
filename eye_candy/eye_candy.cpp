@@ -1210,15 +1210,9 @@ namespace ec
 	Vec3 ParticleMover::vec_shift(const Vec3 src, const Vec3 dest,
 		const percent_t percent) const
 	{
-#if 0	// Slow but clear version.  Consider this a comment.
-		const coord_t magnitude = src.magnitude();
-		Vec3 ret = nonpreserving_vec_shift(src, dest, percent);
-		ret.normalize(magnitude);
-#else	// Fast but obfuscated
 		const coord_t magnitude_squared = src.magnitude_squared();
 		Vec3 ret = nonpreserving_vec_shift(src, dest, percent);
 		ret /= std::sqrt(ret.magnitude_squared() / magnitude_squared);
-#endif
 		return ret;
 	}
 
@@ -1257,11 +1251,7 @@ namespace ec
 		if (gradient_velocity.magnitude_squared() > 10000.0)
 			gradient_velocity.normalize(100.0);
 		p.velocity = gradient_velocity + get_obstruction_gradient(p) * scalar;
-#if 0	// Slow but clear version.  Consider this a comment.
-		p.velocity.normalize(gradient_velocity.magnitude() + 0.000001);
-#else	// Fast but obfuscated
 		p.velocity /= std::sqrt(p.velocity.magnitude_squared() / (gradient_velocity.magnitude_squared() + 0.000001));
-#endif
 		p.pos += p.velocity * scalar;
 	}
 
@@ -1423,19 +1413,11 @@ namespace ec
 			+ energy_difference;
 		if (new_velocity_energy >= 0)
 		{
-#if 0	// Slow but clear.  Consider this a comment.
-			const coord_t new_velocity = std::sqrt(2.0 * new_velocity_energy);
-			if (new_velocity)
-			p.velocity.normalize(new_velocity + 0.000001);
-			else
-			p.velocity = Vec3(0.0, 0.0, 0.0);
-#else	// Fast but obfuscated
 			const coord_t new_velocity_squared = 2.0 * new_velocity_energy;
 			if (std::abs(new_velocity_squared) > 0.00001)
 				p.velocity /= std::sqrt(p.velocity.magnitude_squared() / new_velocity_squared + 0.000001);
 			else
 				p.velocity = Vec3(0.0, 0.0, 1.0);
-#endif
 		}
 
 		// Factor in the force gradient, if any.
@@ -1443,17 +1425,10 @@ namespace ec
 		Vec3 obstruction_velocity = gradient_velocity
 			+ get_obstruction_gradient(p);
 		const coord_t grad_mag_squared = gradient_velocity.magnitude_squared();
-#if 0	// Slow but clear.  Consider this a comment.
-		if (grad_mag_squared)
-		obstruction_velocity.normalize(gradient_velocity.magnitude() + 0.00001);
-		else
-		obstruction_velocity = Vec3(0.0, 0.0, 0.0);
-#else	// Fast but obfuscated.
 		if (std::abs(grad_mag_squared) > 0.00001)
 			obstruction_velocity /= std::sqrt(obstruction_velocity.magnitude_squared() / (grad_mag_squared + 0.00001) + 0.00001);
 		else
 			obstruction_velocity = Vec3(0.0, 0.0, 1.0);
-#endif
 		const coord_t obstruction_velocity_energy = 0.5
 			* obstruction_velocity.magnitude_squared();
 		p.energy += obstruction_velocity_energy - new_velocity_energy;

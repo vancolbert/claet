@@ -1158,19 +1158,6 @@ static void popup_send_to_server( popup_t *popup )
 		}
 	}
 	my_tcp_send(my_socket, buffer, bptr-buffer);
-
-#if 0
-	fprintf(stderr,"Sending packet: \n");
-	{
-		unsigned char *p = buffer;
-		while (p<bptr) {
-            fprintf(stderr,"%02x ",*p);
-            p++;
-		}
-	}
-    fprintf(stderr,"\n");
-#endif
-
 }
 
 /*!
