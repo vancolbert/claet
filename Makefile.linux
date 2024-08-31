@@ -1,43 +1,24 @@
-.PHONY: clean release docs
-
--include make.conf
-
-# basic compiling and linking - rarely changed
-OPTIONS = -DLINUX -DELC $(foreach FEATURE, $(FEATURES), -D$(FEATURE)) -D_7ZIP_ST
-
-# ajout des options nécessaires selon l'architecture (spécifiée par ARCH= ou détection auto de l'OS)
+.PHONY: clean release
+OPTIONS = -DLINUX -D_7ZIP_ST
 SUBARCH := $(shell uname -m | sed -e s/i.86/x86/)
 ARCH ?= $(SUBARCH)
-ifeq ($(ARCH),x86_64)
-	PLATFORM = -march=x86-64
-#	PLATFORM = -march=k8
-#	OPTIONS += -DX86_64
-else
 ifeq ($(ARCH),ppc)
-	PLATFORM = -mpowerpc -malign-natural
 	OPTIONS += -DEL_BIG_ENDIAN
-else
+endif
 ifeq ($(ARCH),ppc_64)
-	PLATFORM = -mpowerpc
 	OPTIONS += -DEL_BIG_ENDIAN
-#	OPTIONS += -DX86_64
 endif
-endif
-endif
-
-# Si on veut utiliser gprof décommenter la ligne suivante
-#OPTIONS += -pg
-
-CFLAGS=$(PLATFORM) $(CWARN) -O0 -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-_CFLAGS=$(PLATFORM) -O2 -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-CXXFLAGS=$(PLATFORM) $(CXXWARN) -O0 -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-_CXXFLAGS=$(PLATFORM) -O3 -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-
-PNG_SCREENSHOT_LIBS = $(shell pkg-config libpng --libs)
-LDFLAGS=$(shell sdl-config --libs) \
+f := -pipe -fno-strict-aliasing $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags) $(EXTRA_INCLUDES)
+#warn := -Wall -Werror -Wfatal-errors -Wno-unused-variable -Wno-deprecated-declarations
+CFLAGS := -O0 -ggdb $f $(warn)
+_CFLAGS := -O3 -fomit-frame-pointer -ffast-math $f
+CXXFLAGS := -O0 -ggdb $f $(warn)
+_CXXFLAGS := -O3 -fomit-frame-pointer -ffast-math $f
+LDFLAGS := $(shell sdl-config --libs) \
 	$(shell pkg-config libxml-2.0 --libs) \
 	$(shell pkg-config SDL_net --libs) \
 	$(shell pkg-config SDL_image --libs) \
+	$(shell pkg-config libpng --libs) \
 	$(shell pkg-config cal3d --libs) \
 	$(shell pkg-config gl --libs) \
 	$(shell pkg-config glu --libs) \
@@ -48,77 +29,18 @@ LDFLAGS=$(shell sdl-config --libs) \
 	$(foreach FEATURE, $(FEATURES), $($(FEATURE)_LIBS)) \
 	$(shell xslt-config --libs) \
 	$(shell pkg-config x11 --libs) -lm -lstdc++
-
 _LDFLAGS=$(XDIR) -lGL -lpthread -lstdc++ -lm -ldl
-
 LIBD=../libs
 STATICLIBS=$(LIBD)/libSDL_net.a $(LIBD)/libSDL.a $(LIBD)/libSDL_image.a $(LIBD)/libopenal.a $(LIBD)/libvorbisfile.a $(LIBD)/libvorbis.a $(LIBD)/libogg.a $(LIBD)/libxml2.a $(LIBD)/libcal3d.a $(LIBD)/libpng.a $(LIBD)/libasound.a $(LIBD)/libGLU.a $(LIBD)/libz.a $(EXTRA_STATICLIBS) -lX11
-
-# the objects we need
-TEXT_ALIASES_COBJ = text_aliases.o
-FR_VERSION_COBJ = themes.o fr_quickitems.o
-NEW_TEXTURES_COBJ = image_loading.o
-NEW_TEXTURES_CXXOBJ = engine/hardwarebuffer.o
-FSAA_COBJ = fsaa/fsaa_dummy.o fsaa/fsaa.o
-COBJS=2d_objects.o 3d_objects.o \
-	actor_scripts.o actors.o alphamap.o asc.o astrology.o \
-	bbox_tree.o books.o buddy.o buffs.o bags.o \
-	cache.o cal.o calc.o chat.o cluster.o colors.o console.o consolewin.o \
-	counters.o cursors.o dds.o ddsimage.o dialogues.o draw_scene.o \
-	elconfig.o elwindows.o encyclopedia.o errors.o events.o	\
-	filter.o font.o framebuffer.o frustum.o	\
-	gamewin.o gl_init.o hud.o help.o highlight.o	\
-	ignore.o info_combat.o init.o interface.o items.o io/fileutil.o	\
-	io/e3d_io.o io/elc_io.o	io/map_io.o io/elpathwrapper.o io/xmlcallbacks.o \
-	io/half.o io/normal.o io/elfilewrapper.o io/unzip.o io/ioapi.o io/zip.o io/ziputil.o	\
-	keys.o knowledge.o langselwin.o lights.o list.o load_gl_extensions.o loginwin.o loading_win.o	\
-	main.o manufacture.o map.o mapwin.o memory.o	\
-	md5.o minimap.o misc.o multiplayer.o	\
-	new_actors.o new_character.o notepad.o \
-	openingwin.o image.o roche.o \
-	shader/noise.o shader/shader.o	\
-	particles.o paste.o pathfinder.o pm_log.o	\
-	questlog.o queue.o reflection.o	rules.o	sky.o	\
-	skeletons.o skills.o serverpopup.o servers.o session.o shadows.o sound.o	\
-	spells.o stats.o storage.o special_effects.o	\
-	tabs.o text.o textures.o tile_map.o timers.o translate.o trade.o	\
-	update.o url.o weather.o widgets.o makeargv.o popup.o hash.o \
-	xz/7zCrc.o xz/7zCrcOpt.o xz/Alloc.o xz/Bra86.o xz/Bra.o xz/BraIA64.o	\
-	xz/CpuArch.o xz/Delta.o xz/LzFind.o xz/Lzma2Dec.o xz/Lzma2Enc.o	\
-	xz/LzmaDec.o xz/LzmaEnc.o xz/Sha256.o xz/Xz.o xz/XzCrc64.o xz/XzDec.o	\
-	xz/XzEnc.o	\
-	$(foreach FEATURE, $(FEATURES), $($(FEATURE)_COBJ))
-
-CXXOBJS=actor_init.o cal3d_wrapper.o context_menu.o optimizer.o sendvideoinfo.o	\
-	exceptions/extendedexception.o xml/xmlhelper.o quest_log.o\
-	hud_timer.o engine/logging.o elloggingwrapper.o item_info.o io/cal3d_io_wrapper.o \
-	user_menus.o select.o trade_log.o item_lists.o named_colours.o\
-	icon_window.o command_queue.o \
-	eye_candy_wrapper.o \
-	eye_candy/eye_candy.o eye_candy/math_cache.o eye_candy/effect_lamp.o \
-	eye_candy/effect_candle.o \
-	eye_candy/effect_campfire.o eye_candy/effect_fountain.o \
-	eye_candy/effect_teleporter.o eye_candy/effect_firefly.o \
-	eye_candy/effect_sword.o eye_candy/effect_summon.o \
-	eye_candy/effect_selfmagic.o eye_candy/effect_targetmagic.o \
-	eye_candy/effect_ongoing.o eye_candy/effect_impact.o \
-	eye_candy/effect_smoke.o eye_candy/effect_bag.o eye_candy/effect_cloud.o \
-	eye_candy/effect_harvesting.o eye_candy/effect_wind.o \
-	eye_candy/effect_breath.o eye_candy/effect_glow.o \
-	eye_candy/effect_mines.o eye_candy/effect_missile.o \
-	eye_candy/orbital_mover.o eye_candy/kepler_orbit.o	\
-	eye_candy/effect_staff.o \
-	$(foreach FEATURE, $(FEATURES), $($(FEATURE)_CXXOBJ))
-
+srcdirs := engine exceptions eye_candy fsaa io shader xml xz
+csrcs := $(wildcard *.c) $(foreach i,$(srcdirs),$(wildcard $i/*.c))
+cxxsrcs := $(wildcard *.cpp) $(foreach i,$(srcdirs),$(wildcard $i/*.cpp))
+COBJS := $(csrcs:%.c=%.o)
+CXXOBJS := $(cxxsrcs:%.cpp=%.o)
 OBJS=$(COBJS) $(CXXOBJS)
 HEADER_DIRS = . books eye_candy io pawn fsaa engine xz
-
-
 DEP_FILES=$(foreach OBJ, $(COBJS), .deps/$(OBJ).P) $(foreach OBJ, $(CXXOBJS), .deps/$(OBJ).P)
-#(shell echo $OBJ |sed s/\.o/\.P/))
-
 EXE=le.$(ARCH).linux.bin
-
 ifndef CC
 CC=gcc
 endif
@@ -128,70 +50,31 @@ endif
 ifndef LINK
 LINK=gcc
 endif
-
 all: $(EXE)
-
-# the compile targets
 $(EXE): $(OBJS)
 	@echo "  LINK $(EXE)"
-	@$(LINK) $(CFLAGS) -o $(EXE) $(OBJS) $(LDFLAGS)
-
-#recompile on Makefile or conf change
-#.depend $(OBJS): Makefile.linux make.conf
-
+	$(LINK) $(CFLAGS) -o $(EXE) $(OBJS) $(LDFLAGS)
 DEPS_MAGIC := $(shell mkdir .deps .deps/io .deps/shader .deps/eye_candy .deps/exceptions .deps/xz .deps/xml .deps/fsaa .deps/engine > /dev/null 2>&1 || :)
-
-$(COBJS): %.o: %.c Makefile.linux make.conf
+$(COBJS): %.o: %.c
 	@echo "  CC   $@"
-	@if $(CC) $(CFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
+	if $(CC) $(CFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
 		mv ".deps/$@.pp" ".deps/$@.P"; \
 	else rm -f ".deps/$@.pp"; exit 1; \
 	fi
-
-$(CXXOBJS): %.o: %.cpp Makefile.linux make.conf
+$(CXXOBJS): %.o: %.cpp
 	@echo "  CXX  $@"
-	@if $(CXX) $(CXXFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
+	if $(CXX) $(CXXFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
 		mv ".deps/$@.pp" ".deps/$@.P"; \
 	else rm -f ".deps/$@.pp"; exit 1; \
 	fi
-
 release:
 	@$(MAKE) -f Makefile.linux 'CFLAGS=$(_CFLAGS)' 'CXXFLAGS=$(_CXXFLAGS)'
-
 static:
 	@$(MAKE) -f Makefile.linux 'CFLAGS=$(_CFLAGS)' 'CXXFLAGS=$(_CXXFLAGS)' 'LDFLAGS=$(_LDFLAGS) -lGL' 'OBJS=$(OBJS) $(STATICLIBS)' 'EXE=le.$(ARCH).static.linux.bin'
-
 clean:
 	rm -f $(OBJS) $(EXE)
 	rm -rf .deps
-
-docs:
-	cd docs && doxygen Doxyfile
-
 .depend: $(foreach HEADER_DIR, $(HEADER_DIRS), $(wildcard $(HEADER_DIR)/*.h))
 	$(CC) $(CFLAGS) -MM $(patsubst %.o, %.c, $(COBJS)) >.depend
 	$(CXX) $(CXXFLAGS) -MM $(patsubst %.o, %.cpp, $(CXXOBJS)) >>.depend
-
-make.conf: make.defaults
-	@if (test -f $@ -a '$(UPDATE_CONF)' != 'yes'); \
-	then \
-		echo '**'; \
-		echo '* WARNING: $< is newer than $@!'; \
-		echo '* Proceeding in 10 seconds, hit Ctrl-C to abort...'; \
-		echo '*'; \
-		sleep 10; \
-	else \
-		cp $< $@; \
-	fi
-
-
-pawn_scripts/features.inc: make.conf
-	echo "#if defined _features_included" > $@; \
-	echo "\t#endinput" >> $@; \
-	echo "#endif" >> $@; \
-	echo "#define _features_included" >> $@; \
-	for feature in $(FEATURES); do \
-		echo "#define $$feature" >> $@; \
-	done
-
 -include $(DEP_FILES)

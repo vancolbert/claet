@@ -1,8 +1,7 @@
-include make.conf
 HOST ?= i686-w64-mingw32
 SYSROOT ?= ../sys.$(HOST)
 EXE ?= le_$(HOST).exe
-defs := $(FEATURES:%=-D%) -DELC -DWINDOWS -DWINVER=0x601 -D_7ZIP_ST -DLIBXML_STATIC -DAL_LIBTYPE_STATIC
+defs := -DWINDOWS -DWINVER=0x601 -D_7ZIP_ST -DLIBXML_STATIC -DAL_LIBTYPE_STATIC
 c := -pipe -fno-strict-aliasing -ffast-math
 #noprot := -fno-stack-protector -fno-stack-check -fno-stack-clash-protection -fcf-protection=none -mbranch-protection=none
 f := -O2 -g $c
@@ -18,60 +17,11 @@ extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis lib
 winlibdir := $(SYSROOT)/$(HOST)/lib
 winlibs := libopengl32 libglu32 libdxguid libgdi32 libwinmm libmincore libole32 libstdc++
 libs := $(extlibs:%=$(extlibdir)/%.a) $(winlibs:%=$(winlibdir)/%.a)
-TEXT_ALIASES_COBJ = text_aliases.o
-FR_VERSION_COBJ = themes.o fr_quickitems.o
-NEW_TEXTURES_COBJ = image_loading.o
-NEW_TEXTURES_CXXOBJ = engine/hardwarebuffer.o
-FSAA_COBJ = fsaa/fsaa_dummy.o fsaa/fsaa.o
-srcdirs := io shader eye_candy exceptions xz xml fsaa engine
-cobjs := 2d_objects.o 3d_objects.o \
-	actor_scripts.o actors.o alphamap.o asc.o astrology.o \
-	bbox_tree.o books.o buddy.o buffs.o bags.o \
-	cache.o cal.o calc.o chat.o cluster.o colors.o console.o consolewin.o \
-	counters.o cursors.o dds.o ddsimage.o dialogues.o draw_scene.o \
-	elconfig.o elwindows.o encyclopedia.o errors.o events.o	\
-	filter.o font.o framebuffer.o frustum.o	\
-	gamewin.o gl_init.o hud.o help.o highlight.o	\
-	ignore.o info_combat.o init.o interface.o items.o io/fileutil.o	\
-	io/e3d_io.o io/elc_io.o	io/map_io.o io/elpathwrapper.o io/xmlcallbacks.o \
-	io/half.o io/normal.o io/elfilewrapper.o io/unzip.o io/ioapi.o io/zip.o io/ziputil.o	\
-	keys.o knowledge.o langselwin.o lights.o list.o load_gl_extensions.o loginwin.o loading_win.o	\
-	main.o manufacture.o map.o mapwin.o memory.o	\
-	md5.o minimap.o misc.o multiplayer.o	\
-	new_actors.o new_character.o notepad.o \
-	openingwin.o image.o roche.o \
-	shader/noise.o shader/shader.o	\
-	particles.o paste.o pathfinder.o pm_log.o	\
-	questlog.o queue.o reflection.o	rules.o	sky.o	\
-	skeletons.o skills.o serverpopup.o servers.o session.o shadows.o sound.o	\
-	spells.o stats.o storage.o special_effects.o	\
-	tabs.o text.o textures.o tile_map.o timers.o translate.o trade.o	\
-	update.o url.o weather.o widgets.o makeargv.o popup.o hash.o \
-	xz/7zCrc.o xz/7zCrcOpt.o xz/Alloc.o xz/Bra86.o xz/Bra.o xz/BraIA64.o	\
-	xz/CpuArch.o xz/Delta.o xz/LzFind.o xz/Lzma2Dec.o xz/Lzma2Enc.o	\
-	xz/LzmaDec.o xz/LzmaEnc.o xz/Sha256.o xz/Xz.o xz/XzCrc64.o xz/XzDec.o	\
-	xz/XzEnc.o \
-	$(foreach i,$(FEATURES),$($i_COBJ))
-cxxobjs := actor_init.o cal3d_wrapper.o context_menu.o optimizer.o sendvideoinfo.o	\
-	exceptions/extendedexception.o xml/xmlhelper.o quest_log.o\
-	hud_timer.o engine/logging.o elloggingwrapper.o item_info.o io/cal3d_io_wrapper.o \
-	user_menus.o select.o trade_log.o item_lists.o named_colours.o\
-	icon_window.o command_queue.o \
-	eye_candy_wrapper.o \
-	eye_candy/eye_candy.o eye_candy/math_cache.o eye_candy/effect_lamp.o \
-	eye_candy/effect_candle.o \
-	eye_candy/effect_campfire.o eye_candy/effect_fountain.o \
-	eye_candy/effect_teleporter.o eye_candy/effect_firefly.o \
-	eye_candy/effect_sword.o eye_candy/effect_summon.o \
-	eye_candy/effect_selfmagic.o eye_candy/effect_targetmagic.o \
-	eye_candy/effect_ongoing.o eye_candy/effect_impact.o \
-	eye_candy/effect_smoke.o eye_candy/effect_bag.o eye_candy/effect_cloud.o \
-	eye_candy/effect_harvesting.o eye_candy/effect_wind.o \
-	eye_candy/effect_breath.o eye_candy/effect_glow.o \
-	eye_candy/effect_mines.o eye_candy/effect_missile.o \
-	eye_candy/orbital_mover.o eye_candy/kepler_orbit.o	\
-	eye_candy/effect_staff.o \
-	$(foreach i,$(FEATURES),$($i_CXXOBJ))
+srcdirs := engine exceptions eye_candy fsaa io shader xml xz
+csrcs := $(wildcard *.c) $(foreach i,$(srcdirs),$(wildcard $i/*.c))
+cxxsrcs := $(wildcard *.cpp) $(foreach i,$(srcdirs),$(wildcard $i/*.cpp))
+cobjs := $(csrcs:%.c=%.o)
+cxxobjs := $(cxxsrcs:%.cpp=%.o)
 objs := $(cobjs) $(cxxobjs)
 depdir := .deps
 depflags = -MT $@ -MMD -MP -MF $(depdir)/$@.d
