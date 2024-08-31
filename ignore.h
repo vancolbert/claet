@@ -5,18 +5,14 @@
  */
 #ifndef __IGNORE_H__
 #define __IGNORE_H__
-
 #include "interface.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*! \name Array size */
 /*! @{ */
 #define MAX_IGNORES 1000  /*!< defines the max. number of entries in ignore_list */
 /*! @} */
-
 //@tosh : types d'ignore
 #define IGN_ALL '0'
 #define IGN_MP '1'
@@ -24,18 +20,14 @@ extern "C" {
 /*!
  * Structure to store information on ignored players.
  */
-typedef struct
-{
-	char name[MAX_USERNAME_LENGTH +1]; /*!< name of the player to ignore */
+typedef struct {
+	char name[MAX_USERNAME_LENGTH + 1]; /*!< name of the player to ignore */
 	char ignore_type; //'0'=all, '1'=MP,  '2'=canal
 	char used; /*! flag, indicating whether this ignore_slot is in use or not */
-}ignore_slot;
-
+} ignore_slot;
 extern ignore_slot ignore_list[MAX_IGNORES]; /*!< global array of names to ignore */
-
 extern int save_ignores; /*!< flag, inidicating whether the ignores should be persisted between different executions. */
 extern int use_global_ignores; /*!< flag, indicating whether to use global ignores file or not */
-
 /*!
  * \ingroup actors_utils
  * \brief   Saves the given \a name in the \ref ignore_list.
@@ -49,7 +41,6 @@ extern int use_global_ignores; /*!< flag, indicating whether to use global ignor
  * \pre If \a name is already present in \ref ignore_list, the function will return -1.
  */
 int add_to_ignore_list(char *name, char save_name, char ignore_type);
-
 /*!
  * \ingroup actors_utils
  * \brief   Removes the given \a name from the \ref ignore_list.
@@ -60,8 +51,6 @@ int add_to_ignore_list(char *name, char save_name, char ignore_type);
  * \retval int  1, if the entry was found and removed, else -1
  */
 int remove_from_ignore_list(char *name);
-
-
 /*!
  * \ingroup actors_utils
  * \brief   Checks if \a name is ignored.
@@ -72,9 +61,7 @@ int remove_from_ignore_list(char *name);
  * \retval int          true (1) if \a name is ignored, else false (0).
  */
 //type permet d'indiquer le type du message reçu. (1==MP, 2==canal)
-int check_if_ignored (const char *name, int type);
-
-
+int check_if_ignored(const char *name, int type);
 /*!
  * \ingroup actors_utils
  * \brief   Checks if the sender of \a input_text is already ignored.
@@ -86,8 +73,7 @@ int check_if_ignored (const char *name, int type);
  * \param channel        the channel the message comes from
  * \retval int          true (1) if the sender of \a input_text is ignored, else false (0).
  */
-int pre_check_if_ignored (const char *input_text, int len, Uint8 channel);
-
+int pre_check_if_ignored(const char *input_text, int len, Uint8 channel);
 /*!
  * \ingroup loadsave
  * \brief   Loads the ignore lists. The function is called from \ref init_stuff.
@@ -97,7 +83,6 @@ int pre_check_if_ignored (const char *input_text, int len, Uint8 channel);
  * \callgraph
  */
 void load_ignores();
-
 /*!
  * \ingroup actors_utils
  * \brief   Lists the names that are currently ignored by the actor, or a message stating that the actor is not ignoring anyone.
@@ -106,9 +91,7 @@ void load_ignores();
  *
  */
 int list_ignores();
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

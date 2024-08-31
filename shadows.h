@@ -5,23 +5,17 @@
  */
 #ifndef __SHADOWS_H__
 #define __SHADOWS_H__
-
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern float sun_position[4];
-
 extern int shadows_on; /*!< flag indicating whether shadows are enabled or disabled */
 extern int is_day; /*!< this flag shows whether it's day or night */
-
 extern int use_shadow_mapping; /*!< flag whether to use shadow mapping or not */
 extern GLuint depth_map_id;
 extern GLenum depth_texture_target;
 extern int shadow_map_size; /*!< max. size of the shadow maps in byte */
-
 /*!
  * \ingroup shadows
  * \brief Computes the shadow transformation matrix
@@ -31,7 +25,6 @@ extern int shadow_map_size; /*!< max. size of the shadow maps in byte */
  * \callgraph
  */
 void calc_shadow_matrix();
-
 /*!
  * \ingroup shadows
  * \brief Redraws the scene with shadows casted by the sun.
@@ -43,7 +36,6 @@ void calc_shadow_matrix();
  * \callgraph
  */
 void draw_sun_shadowed_scene(int any_reflection);
-
 /*!
  * \ingroup shadows
  * \brief Render_light_view to be documented
@@ -53,7 +45,6 @@ void draw_sun_shadowed_scene(int any_reflection);
  * \callgraph
  */
 void render_light_view();
-
 /*!
  * \ingroup shadows
  * \brief Disables generation of textures
@@ -62,7 +53,6 @@ void render_light_view();
  *
  */
 void disable_texgen();
-
 /*!
  * \ingroup shadows
  * \brief Frees the shadow framebuffer.
@@ -72,7 +62,6 @@ void disable_texgen();
  * \callgraph
  */
 void free_shadow_framebuffer();
-
 /*!
  * \ingroup shadows
  * \brief Makes the shadow framebuffer.
@@ -82,7 +71,6 @@ void free_shadow_framebuffer();
  * \callgraph
  */
 void make_shadow_framebuffer();
-
 /*!
  * \ingroup shadows
  * \brief Changes the shadow framebuffer.
@@ -92,9 +80,7 @@ void make_shadow_framebuffer();
  * \callgraph
  */
 void change_shadow_framebuffer_size();
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

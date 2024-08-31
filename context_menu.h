@@ -1,17 +1,12 @@
 #if !defined(CONTEXMENU_H)
 #define CONTEXMENU_H
-
 #include "elwindows.h"
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 /* define an initialisation value for context menu id */
-#define CM_INIT_VALUE ((size_t) -1)
-
-
+#define CM_INIT_VALUE ((size_t)-1)
 /*!
  * \ingroup context_menu
  * \brief Creates a new context menu.
@@ -29,8 +24,6 @@ extern "C"
  * \retval size_t		returns the unique context menu id
  */
 size_t cm_create(const char *menu_list, int (*handler)(window_info *, int, int, int, int));
-
-
 /*!
  * \ingroup context_menu
  * \brief Deletes a context menu and all its activation entries; i.e. full_window, region or widgets.
@@ -39,8 +32,6 @@ size_t cm_create(const char *menu_list, int (*handler)(window_info *, int, int, 
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_destroy(size_t cm_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Test if a context menu id is valid.
@@ -49,8 +40,6 @@ int cm_destroy(size_t cm_id);
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_valid(size_t cm_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Open a context menu if there is a valid activation for the specified window.
@@ -63,8 +52,6 @@ int cm_valid(size_t cm_id);
  * \retval int 			1 for success a cm was opened , 0 for failure (invalid id) or no window opened
  */
 int cm_show_if_active(int window_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Opens a context menu without checking for window activation entries.
@@ -75,24 +62,18 @@ int cm_show_if_active(int window_id);
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_show_direct(size_t cm_id, int window_id, int widget_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Called by \ref click_in_windows to prepare for activation checks.
  * \retval int 			1 if the activation mouse state is true (i.e. right click), otherwise 0
  */
 int cm_pre_show_check(Uint32 flags);
-
-
 /*!
  * \ingroup context_menu
  * \brief Called by \ref click_in_windows to closes/hides any open context menu.
  * \param  force	if true always close regardless of internal state
  */
 void cm_post_show_check(int force);
-
-
 /*!
  * \ingroup context_menu
  * \brief Replace all context menu lines and the callback function.
@@ -102,8 +83,6 @@ void cm_post_show_check(int force);
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_set(size_t cm_id, const char *menu_list, int (*handler)(window_info *, int, int, int, int));
-
-
 /*!
  * \ingroup context_menu
  * \brief Add additional menu lines and optionally replace the callback function.
@@ -113,8 +92,6 @@ int cm_set(size_t cm_id, const char *menu_list, int (*handler)(window_info *, in
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_add(size_t cm_id, const char *menu_list, int (*handler)(window_info *, int, int, int, int));
-
-
 /*!
  * \ingroup context_menu
  * \brief Add/replacee the pre-show callback function.
@@ -123,8 +100,6 @@ int cm_add(size_t cm_id, const char *menu_list, int (*handler)(window_info *, in
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_set_pre_show_handler(size_t cm_id, void (*handler)(window_info *, int, int, int, window_info *));
-
-
 /*!
  * \ingroup context_menu
  * \brief Set the border and zoom properties of the specified context menu.
@@ -136,15 +111,11 @@ int cm_set_pre_show_handler(size_t cm_id, void (*handler)(window_info *, int, in
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_set_sizes(size_t cm_id, int border, int text_border, int line_sep, float zoom);
-
-
 /*!
  * \ingroup context_menu
  * \brief Enumerated type for context enu colour properties.
  */
-enum CM_COLOUR_NAME { CM_HIGHLIGHT_TOP, CM_HIGHLIGHT_BOTTOM, CM_TEXT, CM_GREY };
-
-
+enum CM_COLOUR_NAME {CM_HIGHLIGHT_TOP, CM_HIGHLIGHT_BOTTOM, CM_TEXT, CM_GREY, };
 /*!
  * \ingroup context_menu
  * \brief Set a context menu colour value
@@ -156,8 +127,6 @@ enum CM_COLOUR_NAME { CM_HIGHLIGHT_TOP, CM_HIGHLIGHT_BOTTOM, CM_TEXT, CM_GREY };
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_set_colour(size_t cm_id, enum CM_COLOUR_NAME colour_name, float r, float g, float b);
-
-
 /*!
  * \ingroup context_menu
  * \brief  Make a context menu line a tick box option.
@@ -173,8 +142,6 @@ int cm_set_colour(size_t cm_id, enum CM_COLOUR_NAME colour_name, float r, float 
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_bool_line(size_t cm_id, size_t line, int *control_var, const char *config_name);
-
-
 /*!
  * \ingroup context_menu
  * \brief Enable/disable a context menu line (disable - grey it out).
@@ -183,8 +150,6 @@ int cm_bool_line(size_t cm_id, size_t line, int *control_var, const char *config
  * \retval int 			1 for success, 0 for failure (invalid id)
  */
 int cm_grey_line(size_t cm_id, size_t line, int is_grey);
-
-
 /*!
  * \ingroup context_menu
  * \brief Add an activation entry for an entire window.
@@ -198,8 +163,6 @@ int cm_grey_line(size_t cm_id, size_t line, int is_grey);
  * \retval int 			1 for success, 0 for failure (invalid id or window)
  */
 int cm_add_window(size_t cm_id, int window_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Add an activation entry for a window region
@@ -218,8 +181,6 @@ int cm_add_window(size_t cm_id, int window_id);
  * \retval int 			1 for success, 0 for failure (invalid id or window)
  */
 int cm_add_region(size_t cm_id, int window_id, int posx, int posy, int lenx, int leny);
-
-
 /*!
  * \ingroup context_menu
  * \brief Add an activation entry over a window widget
@@ -235,8 +196,6 @@ int cm_add_region(size_t cm_id, int window_id, int posx, int posy, int lenx, int
  * \retval int 			1 for success, 0 for failure (invalid id, window or widget)
  */
 int cm_add_widget(size_t cm_id, int window_id, int widget_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Removes the activation for the specified window
@@ -244,8 +203,6 @@ int cm_add_widget(size_t cm_id, int window_id, int widget_id);
  * \retval int 			1 for success, 0 for failure (invalid window)
  */
 int cm_remove_window(int window_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Remove all activation regions for the specified window
@@ -253,8 +210,6 @@ int cm_remove_window(int window_id);
  * \retval int 			1 for success, 0 for failure (invalid window)
  */
 int cm_remove_regions(int window_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Remove activation for the specified window/widget
@@ -263,22 +218,16 @@ int cm_remove_regions(int window_id);
  * \retval int 			1 for success, 0 for failure (invalid window)
  */
 int cm_remove_widget(int window_id, int widget_id);
-
-
 /*!
  * \ingroup context_menu
  * \brief Show information about the context menu system state
  */
 void cm_showinfo(void);
-
-
 /*!
  * \ingroup context_menu
  * \brief Return the id the currently open context menu or CM_INIT_VALUE if none open.
  */
 size_t cm_window_shown(void);
-
-
 /*!
  * \ingroup context_menu
  * \brief Set the data pointer assiociated with a menu
@@ -286,8 +235,6 @@ size_t cm_window_shown(void);
  * \param  data 	the pointer to save
  */
 void cm_set_data(size_t cm_id, void *data);
-
-
 /*!
  * \ingroup context_menu
  * \brief Get the previously saved data pointer assiociated with a menu
@@ -295,10 +242,7 @@ void cm_set_data(size_t cm_id, void *data);
  * \retval void * 	NULL or the pointer previously set
  */
 void *cm_get_data(size_t cm_id);
-
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif

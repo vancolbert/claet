@@ -5,16 +5,12 @@
  */
 #ifndef __GAMEWIN_H__
 #define __GAMEWIN_H__
-
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define HUD_MARGIN_X 64
 #define HUD_MARGIN_Y 49
-
 /*! \name windows handlers
  * @{ */
 extern int game_root_win; /*!< the root (game) window */
@@ -31,9 +27,7 @@ void toggle_have_mouse();
 extern int cm_banner_disabled;
 extern int logo_click_to_url;
 extern int walk_after_spell;
-
 void draw_special_cursors();
-
 /*!
  * \ingroup events
  * \brief Converts a 32-bit key code to an unsigned character
@@ -44,8 +38,7 @@ void draw_special_cursors();
  * \retval Uint8
  * \callgraph
  */
-Uint8 key_to_char (Uint32 unikey);
-
+Uint8 key_to_char(Uint32 unikey);
 /*!
  * \brief Maintain an input string with key presses
  *
@@ -56,7 +49,6 @@ Uint8 key_to_char (Uint32 unikey);
  *
  */
 int string_input(char *text, size_t maxlen, char ch);
-
 /*!
  * \ingroup events
  * \brief Checks for a quit or full screen key press
@@ -67,8 +59,7 @@ int string_input(char *text, size_t maxlen, char ch);
  * \retval int
  * \callgraph
  */
-
-int check_quit_or_fullscreen (Uint32 key);
+int check_quit_or_fullscreen(Uint32 key);
 /*!
  * \ingroup events
  * \brief Common handler for normal character input
@@ -80,8 +71,7 @@ int check_quit_or_fullscreen (Uint32 key);
  * \retval int
  * \callgraph
  */
-int text_input_handler (Uint32 key, Uint32 unikey);
-
+int text_input_handler(Uint32 key, Uint32 unikey);
 /*!
  * \ingroup events
  * \brief Handles common keyboard events for the root window
@@ -93,8 +83,7 @@ int text_input_handler (Uint32 key, Uint32 unikey);
  * \retval int
  * \callgraph
  */
-int keypress_root_common (Uint32 key, Uint32 unikey);
-
+int keypress_root_common(Uint32 key, Uint32 unikey);
 /*!
  * \ingroup events
  * \brief treat key value as if it was a real key press
@@ -103,7 +92,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey);
  * \callgraph
  */
 void do_keypress(Uint32 key);
-
 /*!
  * \ingroup root_window
  * \brief Creates the game (root) window of the game.
@@ -114,10 +102,8 @@ void do_keypress(Uint32 key);
  * \param height the height of the window
  * \callgraph
  */
-void create_game_root_window (int width, int height);
-
+void create_game_root_window(int width, int height);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif // def __GAMEWIN_H__

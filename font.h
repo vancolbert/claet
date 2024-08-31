@@ -5,20 +5,17 @@
  */
 #ifndef __FONT_H__
 #define __FONT_H__
-
 #include "text.h"
 #include "widgets.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \name contstant sizes
  */
 /*! @{ */
-#define	INGAME_FONT_X_LEN 0.17
-#define	INGAME_FONT_Y_LEN 0.25
+#define INGAME_FONT_X_LEN 0.17
+#define INGAME_FONT_Y_LEN 0.25
 #define SMALL_INGAME_FONT_X_LEN 0.12
 #define SMALL_INGAME_FONT_Y_LEN 0.17
 #define ALT_INGAME_FONT_X_LEN 0.10
@@ -27,19 +24,14 @@ extern "C" {
 #define DEFAULT_FONT_Y_LEN 18.0f
 #define SMALL_FONT_X_LEN 8.0f
 #define SMALL_FONT_Y_LEN 15.0f
-#define DEFAULT_SMALL_RATIO (SMALL_FONT_X_LEN/DEFAULT_FONT_X_LEN)
+#define DEFAULT_SMALL_RATIO (SMALL_FONT_X_LEN / DEFAULT_FONT_X_LEN)
 #define LEGENDE_FONT_X_LEN 6.0f
 #define LEGENDE_FONT_Y_LEN 11.0f
 /*! @} */
-
-extern int	chat_font; /*!< font size used for chat font */
-extern int	name_font; /*!< font size used for name font */
-
+extern int chat_font;      /*!< font size used for chat font */
+extern int name_font;      /*!< font size used for name font */
 void recolour_message(text_message *msg);
-
 void recolour_messages(text_message *msgs);
-
-
 /*!
  * \ingroup text_font
  * \brief  draws messages in a buffer to the screen
@@ -62,8 +54,7 @@ void recolour_messages(text_message *msgs);
  *
  * \callgraph
  */
-void draw_messages (int x, int y, text_message *msgs, int msgs_size, Uint8 filter, int nr_start, int offset_start, int cursor, int width, int height, float text_zoom, select_info* select);
-
+void draw_messages(int x, int y, text_message *msgs, int msgs_size, Uint8 filter, int nr_start, int offset_start, int cursor, int width, int height, float text_zoom, select_info *select);
 /*!
  * \ingroup text_font
  * \brief   draws the given string \a our_string at the desired position (\a x, \a y).
@@ -77,12 +68,11 @@ void draw_messages (int x, int y, text_message *msgs, int msgs_size, Uint8 filte
  *
  * \callgraph
  */
-int draw_string(int x, int y, const unsigned char * our_string, int max_lines);
-
-int draw_string_shadowed (int x, int y, const unsigned char * our_string, int max_lines, float fr,float fg,float fb, float br,float bg,float bb);
-int draw_string_shadowed_width (int x, int y, const unsigned char * our_string, int max_width, int max_lines, float fr,float fg,float fb, float br,float bg,float bb);
-int draw_string_scaled_shadowed(int x, int y, const unsigned char * our_string, int max_lines, float displayed_font_x_size, float displayed_font_y_size, float fr,float fg,float fb, float br,float bg,float bb);
-int draw_string_zoomed_shadowed(int x, int y, const unsigned char * our_string, int max_lines, float text_zoom, float fr,float fg,float fb, float br,float bg,float bb);
+int draw_string(int x, int y, const unsigned char *our_string, int max_lines);
+int draw_string_shadowed(int x, int y, const unsigned char *our_string, int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
+int draw_string_shadowed_width(int x, int y, const unsigned char *our_string, int max_width, int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
+int draw_string_scaled_shadowed(int x, int y, const unsigned char *our_string, int max_lines, float displayed_font_x_size, float displayed_font_y_size, float fr, float fg, float fb, float br, float bg, float bb);
+int draw_string_zoomed_shadowed(int x, int y, const unsigned char *our_string, int max_lines, float text_zoom, float fr, float fg, float fb, float br, float bg, float bb);
 /*!
  * \ingroup text_font
  * \brief   draws the given string \a our_string at the desired position (\a x, \a y) with a zoom factor of \a text_zoom.
@@ -97,10 +87,9 @@ int draw_string_zoomed_shadowed(int x, int y, const unsigned char * our_string, 
  *
  * \callgraph
  */
-int draw_string_zoomed (int x, int y,const unsigned char * our_string,int max_lines, float text_zoom);
-
-int draw_string_zoomed_width (int x, int y, const unsigned char * our_string, int max_width, int max_lines, float text_zoom);
-int draw_string_width(int x, int y, const unsigned char * our_string, int max_width, int max_lines);
+int draw_string_zoomed(int x, int y, const unsigned char *our_string, int max_lines, float text_zoom);
+int draw_string_zoomed_width(int x, int y, const unsigned char *our_string, int max_width, int max_lines, float text_zoom);
+int draw_string_width(int x, int y, const unsigned char *our_string, int max_width, int max_lines);
 /*!
  * \ingroup text_font
  * \brief   draws the given string \a our_string at the desired position (\a x, \a y).
@@ -115,8 +104,7 @@ int draw_string_width(int x, int y, const unsigned char * our_string, int max_wi
  *
  * \callgraph
  */
-void draw_string_clipped(int x, int y, const unsigned char * our_string, int width, int height);
-
+void draw_string_clipped(int x, int y, const unsigned char *our_string, int width, int height);
 /*!
  * \ingroup text_font
  * \brief   draws the given string \a our_string at the desired position (\a x, \a y) with a zoom factor of \a text_zoom.
@@ -133,12 +121,10 @@ void draw_string_clipped(int x, int y, const unsigned char * our_string, int wid
  *
  * \callgraph
  */
-void draw_string_zoomed_clipped(int x, int y, const unsigned char * our_string, int cursor_pos, int width, int height, float text_zoom);
-
+void draw_string_zoomed_clipped(int x, int y, const unsigned char *our_string, int cursor_pos, int width, int height, float text_zoom);
 /*
-void draw_window_string (int x, int y, const unsigned char *str, int width, int height, float text_zoom);
-*/
-
+   void draw_window_string (int x, int y, const unsigned char *str, int width, int height, float text_zoom);
+ */
 /*!
  * \ingroup text_font
  * \brief   recompute where the line breaks in a string should occur
@@ -156,8 +142,7 @@ void draw_window_string (int x, int y, const unsigned char *str, int width, int 
  * \retval int the number of window lines the string will use
  * \callgraph
  */
-int reset_soft_breaks (char *str, int len, int size, float zoom, int width, int *cursor, float *max_line_width);
-
+int reset_soft_breaks(char *str, int len, int size, float zoom, int width, int *cursor, float *max_line_width);
 /*!
  * \ingroup text_font
  * \brief   draws the given string \a our_string at the desired position (\a x, \a y) using a small font.
@@ -171,10 +156,9 @@ int reset_soft_breaks (char *str, int len, int size, float zoom, int width, int 
  *
  * \callgraph
  */
-int draw_string_small(int x, int y,const unsigned char * our_string,int max_lines);
-int draw_string_small_shadowed(int x, int y,const unsigned char * our_string,int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
-int draw_string_legende(int x, int y,const unsigned char * our_string,int max_lines);
-
+int draw_string_small(int x, int y, const unsigned char *our_string, int max_lines);
+int draw_string_small_shadowed(int x, int y, const unsigned char *our_string, int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
+int draw_string_legende(int x, int y, const unsigned char *our_string, int max_lines);
 /*!
  * \ingroup text_font
  * \brief   draws the string \a our_string in-game at the desired position (\a x, \a y), with the specified font scalings.
@@ -190,9 +174,8 @@ int draw_string_legende(int x, int y,const unsigned char * our_string,int max_li
  *
  * \callgraph
  */
-void draw_ingame_string(float x, float y, const unsigned char * our_string, int max_lines, float font_x_scale, float font_y_scale);
-void draw_ortho_ingame_string(float x, float y, float z, const unsigned char * our_string, int max_lines, float font_x_scale, float font_y_scale);
-
+void draw_ingame_string(float x, float y, const unsigned char *our_string, int max_lines, float font_x_scale, float font_y_scale);
+void draw_ortho_ingame_string(float x, float y, float z, const unsigned char *our_string, int max_lines, float font_x_scale, float font_y_scale);
 /*!
  * \ingroup text_font
  * \brief   returns the width of \a cur_char
@@ -204,7 +187,6 @@ void draw_ortho_ingame_string(float x, float y, float z, const unsigned char * o
  * \callgraph
  */
 int get_char_width(unsigned char cur_char);
-
 /*!
  * \ingroup text_font
  * \brief   returns the width of the string \a str.
@@ -218,7 +200,6 @@ int get_char_width(unsigned char cur_char);
  */
 int get_string_width(const unsigned char *str);
 int get_font_width(int chr);
-
 /*!
  * \ingroup text_font
  * \brief   sets the current font to the one given in \a num.
@@ -228,8 +209,7 @@ int get_font_width(int chr);
  * \param num       the index in the \see fonts variable that defines the font to be used.
  * \retval int
  */
-int	set_font(int num);
-
+int     set_font(int num);
 /*!
  * \ingroup other
  * \brief   intializes the font engine
@@ -241,7 +221,6 @@ int	set_font(int num);
  * \callgraph
  */
 int init_fonts();
-
 /*!
  * \ingroup other
  * \brief   loads the font textures
@@ -253,17 +232,11 @@ int init_fonts();
  * \retval int 0 on failure, 1 on success
  * \callgraph
  */
-int load_font_textures ();
-
-
+int load_font_textures();
 void cleanup_fonts(void);
-
 int get_font_char(unsigned char cur_char);
-
 void libere_memoire_livres();
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

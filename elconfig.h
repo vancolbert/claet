@@ -5,14 +5,11 @@
  */
 #ifndef __ELCONFIG_H__
 #define __ELCONFIG_H__
-
 #include "queue.h"
 #include "translate.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int elconfig_win;
 extern int elconfig_menu_x;
 extern int elconfig_menu_y;
@@ -21,17 +18,13 @@ extern int show_game_seconds;
 extern int skybox_update_delay;
 extern int skybox_local_weather;
 extern Uint32 max_actor_texture_handles;
-
 extern int write_ini_on_exit; /*< variable that determines if el.ini file is rewritten on exit of the program */
-
 extern int gx_adjust;
 extern int gy_adjust;
-
 /*!
  * The different kinds of options
  */
-typedef enum
-{
+typedef enum {
 	OPT_BOOL = 1,      // Change variable                   func(int*)
 	OPT_STRING,        // Change string                     func(char*,char*)
 	OPT_FLOAT,         // Change float                      func(float*,float*)
@@ -39,30 +32,26 @@ typedef enum
 	OPT_SPECINT = OPT_INT, // Multiple ints, non-default func   func(int*,int)
 	OPT_MULTI,         // INT with multiselect widget
 	OPT_MULTI_H,       // INT with multiselect widget, horizontal
-	OPT_PASSWORD,
-	OPT_FLOAT_F,       // Change float with functions that returns max and min values  func(float*,float*), max/min float func()
+	OPT_PASSWORD, OPT_FLOAT_F,       // Change float with functions that returns max and min values  func(float*,float*), max/min float func()
 	OPT_INT_F,         // Change int with functions that returns max and min values    func(int*,int), max/min int func()
 	OPT_BOOL_INI,      // Boolean value that is only read from and written to the ini file
 	OPT_INT_INI,       // Int value that is only read from the ini file
 	OPT_STRING_INI,     // String value that is only read from the ini file
-	OPT_FLOAT_INI
+	OPT_FLOAT_INI,
 } option_type;
-
-
 /*!
  * var_struct stores the data for a single configuration entry.
  */
-typedef struct
-{
+typedef struct {
 	option_type type; /*!< type of the variable */
-	char	*name; /*!< name of the variable */
-	int 	nlen; /*!< length of the \a name */
-	char 	*shortname; /*!< shortname of the variable */
-	int 	snlen; /*!< length of the \a shortname */
-	void 	(*func)(); /*!< routine to execute when this variable is selected. */
-	void 	*var; /*!< data for this variable */
-	int 	len; /*!< length of the variable */
-	int	saved;
+	char *name;    /*!< name of the variable */
+	int nlen;     /*!< length of the \a name */
+	char *shortname;    /*!< shortname of the variable */
+	int snlen;     /*!< length of the \a shortname */
+	void (*func)();    /*!< routine to execute when this variable is selected. */
+	void *var;    /*!< data for this variable */
+	int len;     /*!< length of the variable */
+	int saved;
 //	char 	*message; /*!< In case you want a message to be written when a setting is changed */
 	dichar display;
 	struct {
@@ -72,38 +61,28 @@ typedef struct
 	} widgets;
 	queue_t *queue; /*!< Queue that holds info for certain widget types. */
 } var_struct;
-
 /*!
  * a list of variables of type \see var_struct
  */
-struct variables
-{
+struct variables {
 	int no; /*!< current number of allocated \see var_struct in \a var */
-	var_struct * var[200]; /*!< fixed array of \a no \see var_struct structures */
+	var_struct *var[200];  /*!< fixed array of \a no \see var_struct structures */
 };
-
 /*!
  * The type of variable name.
  */
-typedef enum
-{
-	COMMAND_LINE_SHORT_VAR,	/*!< for abbreviated variable names from the command line */
-	COMMAND_LINE_LONG_VAR,	/*!< for full variable names from the command line */
-	INI_FILE_VAR,		/*!< for variables names from el.ini */
-	IN_GAME_VAR		/*!< for names of variables changed in the games */
+typedef enum {
+	COMMAND_LINE_SHORT_VAR, /*!< for abbreviated variable names from the command line */
+	COMMAND_LINE_LONG_VAR,  /*!< for full variable names from the command line */
+	INI_FILE_VAR,           /*!< for variables names from el.ini */
+	IN_GAME_VAR,            /*!< for names of variables changed in the games */
 } var_name_type;
-
 extern struct variables our_vars; /*!< global variable containing all defined variables */
-
 extern int delai_sauve_min;     /*!< Délai en minutes entre 2 sauvegardes */
 extern int delai_sauve_ms;      /*!< Délai en millisecondes entre 2 sauvegardes */
 extern int derniere_sauvegarde; /*!< Temps a laquelle a été faite le derniere sauvegarde */
-
 void display_elconfig_win(void);
-
-
 void change_language(const char *new_lang);
-
 /*!
  * \ingroup config
  * \brief   returns the long description of the variable with the given \a str name and the given \a type.
@@ -113,10 +92,9 @@ void change_language(const char *new_lang);
  * \retval str       the long description or NULL
  *
  * \callgraph
-*/
+ */
 const char *get_option_description(const char *str, var_name_type type);
-int find_var (const char *str, var_name_type type);
-
+int find_var(const char *str, var_name_type type);
 /*!
  * \ingroup config
  * \brief   checks whether we have a variable with the given \a str as name and the given \a type.
@@ -130,8 +108,7 @@ int find_var (const char *str, var_name_type type);
  * \sa read_command_line
  * \sa read_config
  */
-int check_var(char * str, var_name_type type);
-
+int check_var(char *str, var_name_type type);
 /*!
  * \ingroup other
  * \brief   initializes the global \see our_vars variable.
@@ -141,7 +118,6 @@ int check_var(char * str, var_name_type type);
  * \callgraph
  */
 void init_vars();
-
 /*!
  * \ingroup other
  * \brief   frees the global \see our_vars variable.
@@ -151,7 +127,6 @@ void init_vars();
  * \sa start_rendering
  */
 void free_vars();
-
 /*!
  * \ingroup config
  * \brief   Reads the el.ini configuration file
@@ -161,8 +136,7 @@ void free_vars();
  * \retval int      0 if reading fails, 1 if successful
  *
  */
-int read_el_ini ();
-
+int read_el_ini();
 /*!
  * \ingroup config
  * \brief   Writes the el.ini configuration file
@@ -172,8 +146,7 @@ int read_el_ini ();
  * \retval int      0 if writing fails, 1 if successful
  *
  */
-int write_el_ini ();
-
+int write_el_ini();
 /*!
  * \ingroup other
  * \brief   Checkes the option-vars.
@@ -183,7 +156,6 @@ int write_el_ini ();
  * \callgraph
  */
 void check_options();
-
 /*!
  * \ingroup other
  * \brief   Toggles the root window of some windows.
@@ -193,7 +165,6 @@ void check_options();
  * \callgraph
  */
 void change_windows_on_top(int *var);
-
 /*!
  * \ingroup other
  * \brief   Adds another option to a multi-var.
@@ -203,10 +174,8 @@ void change_windows_on_top(int *var);
  * \param name       the name of the variable to add to
  * \param str      the text for the option
  */
-void add_multi_option(char * name, char * str);
-
-void change_windowed_chat (int *wc, int val);
-
+void add_multi_option(char *name, char *str);
+void change_windowed_chat(int *wc, int val);
 /*!
  * \ingroup other
  * brief Sets the specfied variable (if valid) to unsaved.
@@ -215,7 +184,6 @@ void change_windowed_chat (int *wc, int val);
  * \retval	1 if sucessfull, 0 if option does not exist
  */
 int set_var_unsaved(const char *str, var_name_type type);
-
 /*!
  * \ingroup other
  * brief Toggle the specfied OPT_BOOL variable (if valid) and save.
@@ -223,7 +191,6 @@ int set_var_unsaved(const char *str, var_name_type type);
  * \retval	1 if sucessfull, 0 if name is invalid
  */
 int toggle_OPT_BOOL_by_name(const char *str);
-
 /*!
  * \ingroup other
  * brief Sets the specfied OPT_INT variable's value.
@@ -232,13 +199,10 @@ int toggle_OPT_BOOL_by_name(const char *str);
  * \retval	1 if sucessfull, 0 if option not found
  */
 int set_var_OPT_INT(const char *str, int new_value);
-
-void toggle_follow_cam(int * fc);
-void toggle_ext_cam(int * ec);
+void toggle_follow_cam(int *fc);
+void toggle_ext_cam(int *ec);
 void options_loaded(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

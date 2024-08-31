@@ -5,63 +5,49 @@
  */
 #ifndef __PATHFINDER_H__
 #define __PATHFINDER_H__
-
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \name Pathfinder limitting
  * @{
  *      This limits the number of attempts the pathfinder will make before giving up.
  */
-#define	MAX_PATHFINDER_ATTEMPTS 200000
+#define MAX_PATHFINDER_ATTEMPTS 200000
 /*! @} */
-
 /*!
  * \name Pathfinder states
  * @{
  *      This enumeration declares the different states the pathfinder can be in.
  */
 enum {
-	PF_STATE_NONE=0,
-	PF_STATE_OPEN,
-	PF_STATE_CLOSED
+	PF_STATE_NONE=0, PF_STATE_OPEN, PF_STATE_CLOSED,
 };
 /*! @} */
-
 /*!
  * a structure to store the data of tiles related to pathfinding
  */
-typedef struct
-{
+typedef struct {
 	Uint32 open_pos;
 	Sint32 x;
 	Sint32 y;
 	Uint16 f;
 	Uint16 g;
-
 	Uint8 state; /*!< the current state pathfinder states */
 	Uint8 z;
-
 	void *parent;
 } PF_TILE;
-
 /*!
  * this list stores information about open (non-blocked) paths
  */
-typedef struct
-{
+typedef struct {
 	PF_TILE **tiles; /*!< an array of \see PF_TILE structures */
 	int count; /*!< number of elements in tiles */
 } PF_OPEN_LIST;
-
 extern PF_TILE *pf_tile_map; /*!< a list of \see PF_TILE structures that form the path */
 extern PF_TILE *pf_dst_tile; /*!< the \see PF_TILE struct that defines our destination tile of the path */
 extern int pf_follow_path; /*!< flag, that indicates whether we should follow the path or not */
-
 /*!
  * \ingroup move_actors
  * \brief Finds a path to the given position
@@ -74,7 +60,6 @@ extern int pf_follow_path; /*!< flag, that indicates whether we should follow th
  * \callgraph
  */
 int pf_find_path(int x, int y);
-
 /*!
  * \ingroup move_actors
  * \brief Clears the current path and frees up the memory used
@@ -83,7 +68,6 @@ int pf_find_path(int x, int y);
  *
  */
 void pf_destroy_path();
-
 /*!
  * \ingroup move_actors
  * \brief Moves the actor along the calculated path
@@ -93,7 +77,6 @@ void pf_destroy_path();
  * \callgraph
  */
 void pf_move();
-
 /*!
  * \ingroup move_actors
  * \brief Moves the actor to the mouse position where the last click occurred
@@ -103,7 +86,6 @@ void pf_move();
  * \callgraph
  */
 void pf_move_to_mouse_position();
-
 /*!
  * \ingroup move_actors
  * \brief Calculates the tile coordinates of the given mouse position
@@ -119,8 +101,7 @@ void pf_move_to_mouse_position();
  *
  * \callgraph
  */
-int pf_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py);
-
+int pf_get_mouse_position(int mouse_x, int mouse_y, int *px, int *py);
 /*!
  * \ingroup move_actors
  * \brief Calculates the tile coordinates of the given mouse position
@@ -138,12 +119,9 @@ int pf_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py);
  *
  * \callgraph
  */
-int pf_get_mouse_position_extended(int mouse_x, int mouse_y, int * px, int * py, int tile_x, int tile_y);
-
-void pf_move_to_position(int x_dest, int y_dest) ;
-
+int pf_get_mouse_position_extended(int mouse_x, int mouse_y, int *px, int *py, int tile_x, int tile_y);
+void pf_move_to_position(int x_dest, int y_dest);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif /* __PATHFINDER_H__ */

@@ -7,34 +7,27 @@
 #define __BUDDY_H__
 #include <time.h>
 #include "queue.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define	MAX_BUDDY	100
-
+#define MAX_BUDDY       100
 /*!
  * The buddy structure containing the name and the type.
  */
-typedef struct
-{
-   char name[32]; /*!< name of your buddy */
-   unsigned char type;
-}_buddy;
-
+typedef struct {
+	char name[32]; /*!< name of your buddy */
+	unsigned char type;
+} _buddy;
 /*!
  * \name windows handlers
  */
 /*! @{ */
 extern int buddy_win; /*!< The identifier of the buddy window */
 /*! @} */
-
 extern int buddy_menu_x;
 extern int buddy_menu_y;
 extern int buddy_menu_x_len;
 extern int buddy_menu_y_len;
-
 /*!
  * \ingroup	other
  * \brief	Initiates the buddy list
@@ -44,7 +37,6 @@ extern int buddy_menu_y_len;
  * \sa init_stuff
  */
 void init_buddy();
-
 /*!
  * \ingroup	buddy_window
  * \brief	Initiates the buddy window
@@ -54,7 +46,6 @@ void init_buddy();
  * \callgraph
  */
 void display_buddy();
-
 /*!
  * \ingroup	network_text
  * \brief	Adds a buddy to the buddy list
@@ -67,8 +58,7 @@ void display_buddy();
  *
  * \sa process_message_from_server
  */
-void add_buddy (const char *name, int type, int len);
-
+void add_buddy(const char *name, int type, int len);
 /*!
  * \ingroup	network_text
  * \brief	Removes a buddy from the network data
@@ -80,8 +70,7 @@ void add_buddy (const char *name, int type, int len);
  *
  * \sa process_message_from_server
  */
-void del_buddy (const char *name, int len);
-
+void del_buddy(const char *name, int len);
 /*!
  * \ingroup	other
  * \brief	Clears the buddy list
@@ -89,20 +78,13 @@ void del_buddy (const char *name, int len);
  * 		Clears the buddy list
  */
 void clear_buddy();
-
 void add_buddy_confirmation(char *name);
-
 int is_in_buddylist(const char *name);
-
 extern queue_t *buddy_request_queue;
-
 //BUDDY-FIXME: once server-side offline buddies are supported, the next line can go
 extern time_t c_time;
-
 extern _buddy buddy_list[];
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

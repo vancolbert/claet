@@ -5,60 +5,33 @@
  */
 #ifndef __TEXTURES_H__
 #define __TEXTURES_H__
-
 #include "cache.h"
 #include "platform.h"
  #include "actors.h"
   #include "draw_scene.h"
 #include "image_loading.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-typedef enum
-{
-	tt_gui = 0,
-	tt_font,
-	tt_image,
-	tt_mesh,
-	tt_atlas
+typedef enum {
+	tt_gui = 0, tt_font, tt_image, tt_mesh, tt_atlas,
 } texture_type;
-
-typedef enum
-{
-	tft_auto = 0,
-	tft_rgba4,
-	tft_rgb8,
-	tft_r5g6b5,
-	tft_rgba8,
-	tft_rgb5_a1,
-	tft_a8,
-	tft_l8,
-	tft_la8,
-	tft_dxt1,
-	tft_dxt3,
-	tft_dxt5,
-	tft_ati1,
-	tft_ati2
+typedef enum {
+	tft_auto = 0, tft_rgba4, tft_rgb8, tft_r5g6b5, tft_rgba8, tft_rgb5_a1, tft_a8, tft_l8, tft_la8, tft_dxt1, tft_dxt3, tft_dxt5, tft_ati1, tft_ati2,
 } texture_format_type;
-
 /*!
  * we use a separate cache structure to cache textures.
  */
-typedef struct
-{
-	char file_name[128];		/*!< the filename of the texture */
-	cache_item_struct *cache_ptr;	/*!< a pointer to the cached item */
-	GLuint id;			/*!< the id of the texture */
-	Uint32 hash;			/*!< hash value of the name */
-	Uint32 size;			/*!< size of the texture */
-	texture_type type;		/*!< the texture type, needed for loading and unloading */
-	Uint8 load_err;			/*!< if true, we tried to load this texture before and failed */
-	Uint8 alpha;			/*!< the texture has an alpha channel */
+typedef struct {
+	char file_name[128];            /*!< the filename of the texture */
+	cache_item_struct *cache_ptr;   /*!< a pointer to the cached item */
+	GLuint id;                      /*!< the id of the texture */
+	Uint32 hash;                    /*!< hash value of the name */
+	Uint32 size;                    /*!< size of the texture */
+	texture_type type;              /*!< the texture type, needed for loading and unloading */
+	Uint8 load_err;                 /*!< if true, we tried to load this texture before and failed */
+	Uint8 alpha;                    /*!< the texture has an alpha channel */
 } texture_cache_t;
-
 /*!
  * \ingroup 	textures
  * \brief 	Loads a texture for non-gui use.
@@ -70,8 +43,7 @@ typedef struct
  * \retval GLuint  	The texture handle in the cache.
  * \callgraph
  */
-Uint32 load_texture_cached(const char* file_name, const texture_type type);
-
+Uint32 load_texture_cached(const char *file_name, const texture_type type);
 /*!
  * \ingroup 	textures
  * \brief 	Reloads the texture cache
@@ -81,7 +53,6 @@ Uint32 load_texture_cached(const char* file_name, const texture_type type);
  * \callgraph
  */
 void init_texture_cache();
-
 /*!
  * \ingroup 	textures
  * \brief 	Unloads the texture cache
@@ -91,7 +62,6 @@ void init_texture_cache();
  * \callgraph
  */
 void unload_texture_cache();
-
 /*!
  * \ingroup 	textures
  * \brief 	Reloads the texture cache
@@ -101,7 +71,6 @@ void unload_texture_cache();
  * \callgraph
  */
 void free_texture_cache();
-
 /*!
  * \ingroup 	textures
  * \brief 	Binds the texture
@@ -112,7 +81,6 @@ void free_texture_cache();
  * \callgraph
  */
 void bind_texture_id(const GLuint id);
-
 /*!
  * \ingroup 	textures
  * \brief 	Binds the texture
@@ -123,7 +91,6 @@ void bind_texture_id(const GLuint id);
  * \callgraph
  */
 void bind_texture(const Uint32 handle);
-
 /*!
  * \ingroup 	textures
  * \brief 	Binds the texture
@@ -136,7 +103,6 @@ void bind_texture(const Uint32 handle);
  * \callgraph
  */
 void bind_texture_unbuffered(const Uint32 handle);
-
 /*!
  * \ingroup 	textures
  * \brief 	Gets the texture alpha
@@ -148,35 +114,27 @@ void bind_texture_unbuffered(const Uint32 handle);
  * \callgraph
  */
 Uint32 get_texture_alpha(const Uint32 handle);
-
-
 /*!
  * we use a separate cache structure to cache textures.
  */
-typedef struct
-{
+typedef struct {
 	char pants_tex[MAX_FILE_PATH];
 	char pants_mask[MAX_FILE_PATH];
-
 	char boots_tex[MAX_FILE_PATH];
 	char boots_mask[MAX_FILE_PATH];
-
 	char torso_tex[MAX_FILE_PATH];
 	char arms_tex[MAX_FILE_PATH];
 	char torso_mask[MAX_FILE_PATH];
 	char arms_mask[MAX_FILE_PATH];
-
 	char hands_tex[MAX_FILE_PATH];
 	char head_tex[MAX_FILE_PATH];
 	char hands_mask[MAX_FILE_PATH];
 	char head_mask[MAX_FILE_PATH];
-
 	char head_base[MAX_FILE_PATH];
 	char body_base[MAX_FILE_PATH];
 	char arms_base[MAX_FILE_PATH];
 	char legs_base[MAX_FILE_PATH];
 	char boots_base[MAX_FILE_PATH];
-
 	char hair_tex[MAX_FILE_PATH];
 	char weapon_tex[MAX_FILE_PATH];
 	char shield_tex[MAX_FILE_PATH];
@@ -185,35 +143,25 @@ typedef struct
 	char cape_tex[MAX_FILE_PATH];
 	char hands_tex_save[MAX_FILE_PATH];
 } enhanced_actor_images_t;
-
-typedef enum
-{
-	tst_unloaded = 0,
-	tst_image_loading,
-	tst_image_loaded,
-	tst_texture_loading,
-	tst_texture_loaded
+typedef enum {
+	tst_unloaded = 0, tst_image_loading, tst_image_loaded, tst_texture_loading, tst_texture_loaded,
 } texture_state_type;
-
 #define MAX_ACTOR_NAME 24
-
 /*!
  * we use a separate cache structure to cache textures.
  */
-typedef struct
-{
-	enhanced_actor_images_t files;	/*!< the files used for the texture */
-	char name[MAX_ACTOR_NAME];	/*!< used as an uid.... */
-	SDL_mutex* mutex;		/*!< the mutex used for this structure */
-	image_t image;			/*!< the image for the texture */
-	GLuint id;			/*!< the id of the texture */
-	GLuint new_id;			/*!< the id of the new texture */
-	Uint32 hash;			/*!< hash value of the files */
-	Uint32 used;			/*!< if this is used at the moment? */
-	Uint32 access_time;		/*!< last time used */
-	texture_state_type state;	/*!< the texture states e.g. loading */
+typedef struct {
+	enhanced_actor_images_t files;  /*!< the files used for the texture */
+	char name[MAX_ACTOR_NAME];      /*!< used as an uid.... */
+	SDL_mutex *mutex;               /*!< the mutex used for this structure */
+	image_t image;                  /*!< the image for the texture */
+	GLuint id;                      /*!< the id of the texture */
+	GLuint new_id;                  /*!< the id of the new texture */
+	Uint32 hash;                    /*!< hash value of the files */
+	Uint32 used;                    /*!< if this is used at the moment? */
+	Uint32 access_time;             /*!< last time used */
+	texture_state_type state;       /*!< the texture states e.g. loading */
 } actor_texture_cache_t;
-
 /*!
  * \ingroup 	textures
  * \brief 	Loads the actors texture
@@ -225,8 +173,7 @@ typedef struct
  * \retval	Uint32 The actor texture handle.
  * \callgraph
  */
-Uint32 load_enhanced_actor(const enhanced_actor* actor, const char* name);
-
+Uint32 load_enhanced_actor(const enhanced_actor *actor, const char *name);
 /*!
  * \ingroup 	textures
  * \brief 	Binds the actors texture
@@ -239,8 +186,7 @@ Uint32 load_enhanced_actor(const enhanced_actor* actor, const char* name);
  * \retval	Uint32 Returns one if the texture is loaded, zero else.
  * \callgraph
  */
-Uint32 bind_actor_texture(const Uint32 handle, char* alpha);
-
+Uint32 bind_actor_texture(const Uint32 handle, char *alpha);
 /*!
  * \ingroup 	textures
  * \brief 	Frees the actors texture
@@ -251,7 +197,6 @@ Uint32 bind_actor_texture(const Uint32 handle, char* alpha);
  * \callgraph
  */
 void free_actor_texture(const Uint32 handle);
-
 /*!
  * \ingroup 	textures
  * \brief 	Returns if the actor texture is ready
@@ -263,7 +208,6 @@ void free_actor_texture(const Uint32 handle);
  * \callgraph
  */
 Uint32 get_actor_texture_ready(const Uint32 handle);
-
 /*!
  * \ingroup 	textures
  * \brief 	Use the new actor texture
@@ -274,7 +218,6 @@ Uint32 get_actor_texture_ready(const Uint32 handle);
  * \callgraph
  */
 void use_ready_actor_texture(const Uint32 handle);
-
 /*!
  * \ingroup 	textures
  * \brief 	Changes the actors texture
@@ -286,8 +229,7 @@ void use_ready_actor_texture(const Uint32 handle);
  * \param   	actor A pointer to the enhanced_actor structure
  * \callgraph
  */
-void change_enhanced_actor(const Uint32 handle, enhanced_actor* actor);
-
+void change_enhanced_actor(const Uint32 handle, enhanced_actor *actor);
 /*!
  * \ingroup 	textures
  * \brief 	Unloads the actor texture cache
@@ -297,30 +239,19 @@ void change_enhanced_actor(const Uint32 handle, enhanced_actor* actor);
  * \callgraph
  */
 void unload_actor_texture_cache();
-
-
-
-
-typedef struct
-{
-  GLsizei width;
-  GLsizei height;
-
-  GLenum format;
-  GLint internalFormat;
-  GLuint id;
-
-  GLubyte *texels;
-
+typedef struct {
+	GLsizei width;
+	GLsizei height;
+	GLenum format;
+	GLint internalFormat;
+	GLuint id;
+	GLubyte *texels;
 } gl_texture_t;
-
 // --- Charge & Affiche le png
-GLuint loadPNGTexture (const char *);
+GLuint loadPNGTexture(const char *);
 // --- Charge un png et renvoie la texture declare plus haut
-gl_texture_t *ReadPNGFromFile (const char *);
-
+gl_texture_t *ReadPNGFromFile(const char *);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

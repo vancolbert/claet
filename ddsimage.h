@@ -1,21 +1,17 @@
 /****************************************************************************
- *            ddsimage.h
- *
- * Author: 2011  Daniel Jungmann <el.3d.source@googlemail.com>
- * Copyright: See COPYING file that comes with this distribution
- ****************************************************************************/
-
-#ifndef	UUID_69a52b29_73df_40f9_b176_7bb53e97d035
-#define	UUID_69a52b29_73df_40f9_b176_7bb53e97d035
-
+*            ddsimage.h
+*
+* Author: 2011  Daniel Jungmann <el.3d.source@googlemail.com>
+* Copyright: See COPYING file that comes with this distribution
+****************************************************************************/
+#ifndef UUID_69a52b29_73df_40f9_b176_7bb53e97d035
+#define UUID_69a52b29_73df_40f9_b176_7bb53e97d035
 #include "platform.h"
 #include "io/elfilewrapper.h"
 #include "image_loading.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /**
  * @ingroup textures
  * @brief Checks if the ID is from a DDS image.
@@ -27,7 +23,6 @@ extern "C" {
  * @callgraph
  */
 Uint32 check_dds(const Uint8 *ID);
-
 /**
  * @ingroup textures
  * @brief Loads a dds image.
@@ -46,10 +41,7 @@ Uint32 check_dds(const Uint8 *ID);
  * @see texture_compression_type
  * @callgraph
  */
-Uint32 load_dds(el_file_ptr file, const Uint32 compression, const Uint32 unpack,
-	const Uint32 strip_mipmaps, const Uint32 base_level,
-	image_t* image);
-
+Uint32 load_dds(el_file_ptr file, const Uint32 compression, const Uint32 unpack, const Uint32 strip_mipmaps, const Uint32 base_level, image_t *image);
 /**
  * @ingroup textures
  * @brief Gets dds information.
@@ -62,11 +54,8 @@ Uint32 load_dds(el_file_ptr file, const Uint32 compression, const Uint32 unpack,
  * @return Returns one if everything is ok, zero else.
  * @callgraph
  */
-Uint32 get_dds_information(el_file_ptr file, image_t* image);
-
+Uint32 get_dds_information(el_file_ptr file, image_t *image);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif	/* UUID_69a52b29_73df_40f9_b176_7bb53e97d035 */
-
+#endif  /* UUID_69a52b29_73df_40f9_b176_7bb53e97d035 */

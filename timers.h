@@ -5,18 +5,13 @@
  */
 #ifndef __TIMERS_H__
 #define __TIMERS_H__
-
 #include <SDL_timer.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern int	my_timer_adjust;             /*!< my_timer_adjust */
-
+extern int my_timer_adjust;                  /*!< my_timer_adjust */
 extern SDL_TimerID draw_scene_timer;     /*!< draw_scene_timer */
 extern SDL_TimerID misc_timer;           /*!< misc_timer */
-
 /*!
  * \ingroup 	thread
  * \brief 	The main timer - handles animations and such.
@@ -28,8 +23,7 @@ extern SDL_TimerID misc_timer;           /*!< misc_timer */
  * \retval Uint32  	Uint32 The delay before it's called the next time
  * \callgraph
  */
-Uint32 my_timer(Uint32 some_int, void * data);
-
+Uint32 my_timer(Uint32 some_int, void *data);
 /*!
  * \ingroup 	thread
  * \brief 	Checks miscellaneous things such as the AFK time and makes sure that the client stays connected.
@@ -41,10 +35,8 @@ Uint32 my_timer(Uint32 some_int, void * data);
  * \retval Uint32  	Uint32 The next interval
  * \callgraph
  */
-Uint32 check_misc(Uint32 interval, void * data);
-
+Uint32 check_misc(Uint32 interval, void *data);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

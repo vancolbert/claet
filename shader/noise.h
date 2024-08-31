@@ -1,8 +1,6 @@
-#ifndef	_NOISE_H_
-#define	_NOISE_H_
-
+#ifndef _NOISE_H_
+#define _NOISE_H_
 #include "../platform.h"
-
 /**
  * @brief Builds a 3d noise textures.
  *
@@ -14,5 +12,4 @@
  * a 2d dnoise and 3 is a 3d dnoise.
  */
 GLuint build_3d_noise_texture(int size, int frequency, int dimensions);
-
-#endif	// _NOISE_H_
+#endif  // _NOISE_H_

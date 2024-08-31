@@ -6,21 +6,17 @@
 #include "client_serv.h"
 #include "text.h"
 #include "errors.h"
-
-const char* gl_versions_str[] = { "1.1", "1.2", "1.3", "1.4", "1.5", "2.0", "2.1" };
-const Uint16 gl_versions[] = { 0x0101, 0x0102, 0x0103, 0x0104, 0x0105, 0x0200, 0x0201 };
-
+const char *gl_versions_str[] = {"1.1", "1.2", "1.3", "1.4", "1.5", "2.0", "2.1"};
+const Uint16 gl_versions[] = {0x0101, 0x0102, 0x0103, 0x0104, 0x0105, 0x0200, 0x0201};
 Uint32 gl_version = 0;
 Uint64 extensions = 0;
 GLint texture_units = 1;
-
 /*	GL_VERSION_1_2		*/
 PFNGLCOPYTEXSUBIMAGE3DPROC ELglCopyTexSubImage3D = NULL;
 PFNGLDRAWRANGEELEMENTSPROC ELglDrawRangeElements = NULL;
 PFNGLTEXIMAGE3DPROC ELglTexImage3D = NULL;
 PFNGLTEXSUBIMAGE3DPROC ELglTexSubImage3D = NULL;
 /*	GL_VERSION_1_2		*/
-
 /*	GL_VERSION_1_3		*/
 PFNGLACTIVETEXTUREPROC ELglActiveTexture = NULL;
 PFNGLCLIENTACTIVETEXTUREPROC ELglClientActiveTexture = NULL;
@@ -69,7 +65,6 @@ PFNGLMULTITEXCOORD4SPROC ELglMultiTexCoord4s = NULL;
 PFNGLMULTITEXCOORD4SVPROC ELglMultiTexCoord4sv = NULL;
 PFNGLSAMPLECOVERAGEPROC ELglSampleCoverage = NULL;
 /*	GL_VERSION_1_3		*/
-
 /*	GL_VERSION_1_4		*/
 PFNGLBLENDCOLORPROC ELglBlendColor = NULL;
 PFNGLBLENDEQUATIONPROC ELglBlendEquation = NULL;
@@ -117,7 +112,6 @@ PFNGLWINDOWPOS3IVPROC ELglWindowPos3iv = NULL;
 PFNGLWINDOWPOS3SPROC ELglWindowPos3s = NULL;
 PFNGLWINDOWPOS3SVPROC ELglWindowPos3sv = NULL;
 /*	GL_VERSION_1_4		*/
-
 /*	GL_VERSION_1_5		*/
 PFNGLBEGINQUERYPROC ELglBeginQuery = NULL;
 PFNGLBINDBUFFERPROC ELglBindBuffer = NULL;
@@ -139,7 +133,6 @@ PFNGLISQUERYPROC ELglIsQuery = NULL;
 PFNGLMAPBUFFERPROC ELglMapBuffer = NULL;
 PFNGLUNMAPBUFFERPROC ELglUnmapBuffer = NULL;
 /*	GL_VERSION_1_5		*/
-
 /*	GL_VERSION_2_0		*/
 PFNGLATTACHSHADERPROC ELglAttachShader = NULL;
 PFNGLBINDATTRIBLOCATIONPROC ELglBindAttribLocation = NULL;
@@ -235,7 +228,6 @@ PFNGLVERTEXATTRIB4UIVPROC ELglVertexAttrib4uiv = NULL;
 PFNGLVERTEXATTRIB4USVPROC ELglVertexAttrib4usv = NULL;
 PFNGLVERTEXATTRIBPOINTERPROC ELglVertexAttribPointer = NULL;
 /*	GL_VERSION_2_0		*/
-
 /*	GL_VERSION_2_1		*/
 PFNGLUNIFORMMATRIX2X3FVPROC ELglUniformMatrix2x3fv = NULL;
 PFNGLUNIFORMMATRIX2X4FVPROC ELglUniformMatrix2x4fv = NULL;
@@ -244,80 +236,62 @@ PFNGLUNIFORMMATRIX3X4FVPROC ELglUniformMatrix3x4fv = NULL;
 PFNGLUNIFORMMATRIX4X2FVPROC ELglUniformMatrix4x2fv = NULL;
 PFNGLUNIFORMMATRIX4X3FVPROC ELglUniformMatrix4x3fv = NULL;
 /*	GL_VERSION_2_1		*/
-
 GLboolean is_GL_VERSION_1_2 = GL_FALSE;
 GLboolean is_GL_VERSION_1_3 = GL_FALSE;
 GLboolean is_GL_VERSION_1_4 = GL_FALSE;
 GLboolean is_GL_VERSION_1_5 = GL_FALSE;
 GLboolean is_GL_VERSION_2_0 = GL_FALSE;
 GLboolean is_GL_VERSION_2_1 = GL_FALSE;
-
-int vertex_program_problem=0;
-int multitexture_problem=0;
-
-static void check_for_problem_drivers()
-{
+int vertex_program_problem = 0;
+int multitexture_problem = 0;
+static void check_for_problem_drivers() {
 	const char *my_string;
-	int is_intel=0;
-
-
-	my_string = (const char*) glGetString (GL_VENDOR);
-	if(strstr(my_string,"Intel"))is_intel=1;
-	else
-	if(strstr(my_string,"SiS"))
-		{
-			multitexture_problem=1;
-		}
-	else
-	if(strstr(my_string,"S3 "))
-		{
-			multitexture_problem=1;
-		}
-
-	my_string = (const char*) glGetString (GL_VERSION);
+	int is_intel = 0;
+	my_string = (const char *)glGetString(GL_VENDOR);
+	if (strstr(my_string, "Intel")) {
+		is_intel = 1;
+	} else if (strstr(my_string, "SiS")) {
+		multitexture_problem = 1;
+	} else if (strstr(my_string, "S3 ")) {
+		multitexture_problem = 1;
+	}
+	my_string = (const char *)glGetString(GL_VERSION);
 /*
-	//should be fixed now
-	//OpenGL Version Format: 2.0.0
-	if(is_nvidia)
-		{
-			if(my_string[0]=='1')vertex_program_problem=1;
-			if(my_string[0]=='2' && my_string[2]=='0')vertex_program_problem=1;
+        //should be fixed now
+        //OpenGL Version Format: 2.0.0
+        if(is_nvidia)
+                {
+                        if(my_string[0]=='1')vertex_program_problem=1;
+                        if(my_string[0]=='2' && my_string[2]=='0')vertex_program_problem=1;
+                }
+ */
+	if (is_intel) {
+		my_string = (const char *)glGetString(GL_RENDERER);
+		if (strstr(my_string, "965") || strstr(my_string, "945")) {
+			vertex_program_problem = 1;
 		}
-*/
-	if(is_intel)
-		{
-			my_string = (const char*) glGetString (GL_RENDERER);
-			if(strstr(my_string,"965") || strstr(my_string,"945"))vertex_program_problem=1;
-		}
+	}
 	//log the problems
-	if(vertex_program_problem)
-	LOG_TO_CONSOLE (c_red2, "Your card reports having vertex program capabilities, but the support is buggy, so we disabled it.");
-
-	if(multitexture_problem)
-	LOG_TO_CONSOLE (c_red2, "Your card reports having multitexturing capabilities, but the support is buggy, so we disabled it.");
-
+	if (vertex_program_problem) {
+		LOG_TO_CONSOLE(c_red2, "Your card reports having vertex program capabilities, but the support is buggy, so we disabled it.");
+	}
+	if (multitexture_problem) {
+		LOG_TO_CONSOLE(c_red2, "Your card reports having multitexturing capabilities, but the support is buggy, so we disabled it.");
+	}
 }
-
-
 /*	GL_VERSION_1_2		*/
-static GLboolean el_init_GL_VERSION_1_2()
-{
+static GLboolean el_init_GL_VERSION_1_2() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglCopyTexSubImage3D = (PFNGLCOPYTEXSUBIMAGE3DPROC)SDL_GL_GetProcAddress("glCopyTexSubImage3D")) != NULL) && r;
 	r = ((ELglDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)SDL_GL_GetProcAddress("glDrawRangeElements")) != NULL) && r;
 	r = ((ELglTexImage3D = (PFNGLTEXIMAGE3DPROC)SDL_GL_GetProcAddress("glTexImage3D")) != NULL) && r;
 	r = ((ELglTexSubImage3D = (PFNGLTEXSUBIMAGE3DPROC)SDL_GL_GetProcAddress("glTexSubImage3D")) != NULL) && r;
-
 	return r;
 }
 /*	GL_VERSION_1_2		*/
-
 /*	GL_VERSION_1_3		*/
-static GLboolean el_init_GL_VERSION_1_3()
-{
+static GLboolean el_init_GL_VERSION_1_3() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglActiveTexture = (PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture")) != NULL) && r;
 	r = ((ELglClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glClientActiveTexture")) != NULL) && r;
 	r = ((ELglCompressedTexImage1D = (PFNGLCOMPRESSEDTEXIMAGE1DPROC)SDL_GL_GetProcAddress("glCompressedTexImage1D")) != NULL) && r;
@@ -364,16 +338,12 @@ static GLboolean el_init_GL_VERSION_1_3()
 	r = ((ELglMultiTexCoord4s = (PFNGLMULTITEXCOORD4SPROC)SDL_GL_GetProcAddress("glMultiTexCoord4s")) != NULL) && r;
 	r = ((ELglMultiTexCoord4sv = (PFNGLMULTITEXCOORD4SVPROC)SDL_GL_GetProcAddress("glMultiTexCoord4sv")) != NULL) && r;
 	r = ((ELglSampleCoverage = (PFNGLSAMPLECOVERAGEPROC)SDL_GL_GetProcAddress("glSampleCoverage")) != NULL) && r;
-
 	return r;
 }
 /*	GL_VERSION_1_3		*/
-
 /*	GL_VERSION_1_4		*/
-static GLboolean el_init_GL_VERSION_1_4()
-{
+static GLboolean el_init_GL_VERSION_1_4() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBlendColor = (PFNGLBLENDCOLORPROC)SDL_GL_GetProcAddress("glBlendColor")) != NULL) && r;
 	r = ((ELglBlendEquation = (PFNGLBLENDEQUATIONPROC)SDL_GL_GetProcAddress("glBlendEquation")) != NULL) && r;
 	r = ((ELglBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)SDL_GL_GetProcAddress("glBlendFuncSeparate")) != NULL) && r;
@@ -419,16 +389,12 @@ static GLboolean el_init_GL_VERSION_1_4()
 	r = ((ELglWindowPos3iv = (PFNGLWINDOWPOS3IVPROC)SDL_GL_GetProcAddress("glWindowPos3iv")) != NULL) && r;
 	r = ((ELglWindowPos3s = (PFNGLWINDOWPOS3SPROC)SDL_GL_GetProcAddress("glWindowPos3s")) != NULL) && r;
 	r = ((ELglWindowPos3sv = (PFNGLWINDOWPOS3SVPROC)SDL_GL_GetProcAddress("glWindowPos3sv")) != NULL) && r;
-
 	return r;
 }
 /*	GL_VERSION_1_4		*/
-
 /*	GL_VERSION_1_5		*/
-static GLboolean el_init_GL_VERSION_1_5()
-{
+static GLboolean el_init_GL_VERSION_1_5() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBeginQuery = (PFNGLBEGINQUERYPROC)SDL_GL_GetProcAddress("glBeginQuery")) != NULL) && r;
 	r = ((ELglBindBuffer = (PFNGLBINDBUFFERPROC)SDL_GL_GetProcAddress("glBindBuffer")) != NULL) && r;
 	r = ((ELglBufferData = (PFNGLBUFFERDATAPROC)SDL_GL_GetProcAddress("glBufferData")) != NULL) && r;
@@ -448,16 +414,12 @@ static GLboolean el_init_GL_VERSION_1_5()
 	r = ((ELglIsQuery = (PFNGLISQUERYPROC)SDL_GL_GetProcAddress("glIsQuery")) != NULL) && r;
 	r = ((ELglMapBuffer = (PFNGLMAPBUFFERPROC)SDL_GL_GetProcAddress("glMapBuffer")) != NULL) && r;
 	r = ((ELglUnmapBuffer = (PFNGLUNMAPBUFFERPROC)SDL_GL_GetProcAddress("glUnmapBuffer")) != NULL) && r;
-
 	return r;
 }
 /*	GL_VERSION_1_5		*/
-
 /*	GL_VERSION_2_0		*/
-static GLboolean el_init_GL_VERSION_2_0()
-{
+static GLboolean el_init_GL_VERSION_2_0() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader")) != NULL) && r;
 	r = ((ELglBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)SDL_GL_GetProcAddress("glBindAttribLocation")) != NULL) && r;
 	r = ((ELglBlendEquationSeparate = (PFNGLBLENDEQUATIONSEPARATEPROC)SDL_GL_GetProcAddress("glBlendEquationSeparate")) != NULL) && r;
@@ -551,27 +513,21 @@ static GLboolean el_init_GL_VERSION_2_0()
 	r = ((ELglVertexAttrib4uiv = (PFNGLVERTEXATTRIB4UIVPROC)SDL_GL_GetProcAddress("glVertexAttrib4uiv")) != NULL) && r;
 	r = ((ELglVertexAttrib4usv = (PFNGLVERTEXATTRIB4USVPROC)SDL_GL_GetProcAddress("glVertexAttrib4usv")) != NULL) && r;
 	r = ((ELglVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)SDL_GL_GetProcAddress("glVertexAttribPointer")) != NULL) && r;
-
 	return r;
 }
 /*	GL_VERSION_2_0		*/
-
 /*	GL_VERSION_2_1		*/
-static GLboolean el_init_GL_VERSION_2_1()
-{
+static GLboolean el_init_GL_VERSION_2_1() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglUniformMatrix2x3fv = (PFNGLUNIFORMMATRIX2X3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2x3fv")) != NULL) && r;
 	r = ((ELglUniformMatrix2x4fv = (PFNGLUNIFORMMATRIX2X4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2x4fv")) != NULL) && r;
 	r = ((ELglUniformMatrix3x2fv = (PFNGLUNIFORMMATRIX3X2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3x2fv")) != NULL) && r;
 	r = ((ELglUniformMatrix3x4fv = (PFNGLUNIFORMMATRIX3X4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3x4fv")) != NULL) && r;
 	r = ((ELglUniformMatrix4x2fv = (PFNGLUNIFORMMATRIX4X2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4x2fv")) != NULL) && r;
 	r = ((ELglUniformMatrix4x3fv = (PFNGLUNIFORMMATRIX4X3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4x3fv")) != NULL) && r;
-
 	return r;
 }
 /*	GL_VERSION_2_1		*/
-
 /*	GL_ARB_multitexture	*/
 PFNGLACTIVETEXTUREARBPROC ELglActiveTextureARB = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC ELglClientActiveTextureARB = NULL;
@@ -608,21 +564,17 @@ PFNGLMULTITEXCOORD4IVARBPROC ELglMultiTexCoord4ivARB = NULL;
 PFNGLMULTITEXCOORD4SARBPROC ELglMultiTexCoord4sARB = NULL;
 PFNGLMULTITEXCOORD4SVARBPROC ELglMultiTexCoord4svARB = NULL;
 /*	GL_ARB_multitexture		*/
-
 /*	GL_EXT_compiled_vertex_array	*/
 PFNGLLOCKARRAYSEXTPROC ELglLockArraysEXT = NULL;
 PFNGLUNLOCKARRAYSEXTPROC ELglUnlockArraysEXT = NULL;
 /*	GL_EXT_compiled_vertex_array	*/
-
 /*	GL_EXT_draw_range_elements	*/
 PFNGLDRAWRANGEELEMENTSEXTPROC ELglDrawRangeElementsEXT = NULL;
 /*	GL_EXT_draw_range_elements	*/
-
 /*	GL_ARB_point_parameters		*/
 PFNGLPOINTPARAMETERFARBPROC ELglPointParameterfARB = NULL;
 PFNGLPOINTPARAMETERFVARBPROC ELglPointParameterfvARB = NULL;
 /*	GL_ARB_point_parameters		*/
-
 /*	GL_ARB_vertex_buffer_object	*/
 PFNGLBINDBUFFERARBPROC ELglBindBufferARB = NULL;
 PFNGLBUFFERDATAARBPROC ELglBufferDataARB = NULL;
@@ -636,7 +588,6 @@ PFNGLISBUFFERARBPROC ELglIsBufferARB = NULL;
 PFNGLMAPBUFFERARBPROC ELglMapBufferARB = NULL;
 PFNGLUNMAPBUFFERARBPROC ELglUnmapBufferARB = NULL;
 /*	GL_ARB_vertex_buffer_object	*/
-
 /*	GL_EXT_framebuffer_object	*/
 PFNGLBINDFRAMEBUFFEREXTPROC ELglBindFramebufferEXT = NULL;
 PFNGLBINDRENDERBUFFEREXTPROC ELglBindRenderbufferEXT = NULL;
@@ -656,7 +607,6 @@ PFNGLISFRAMEBUFFEREXTPROC ELglIsFramebufferEXT = NULL;
 PFNGLISRENDERBUFFEREXTPROC ELglIsRenderbufferEXT = NULL;
 PFNGLRENDERBUFFERSTORAGEEXTPROC ELglRenderbufferStorageEXT = NULL;
 /*	GL_EXT_framebuffer_object	*/
-
 /*	GL_ARB_texture_compression	*/
 PFNGLCOMPRESSEDTEXIMAGE1DARBPROC ELglCompressedTexImage1DARB = NULL;
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC ELglCompressedTexImage2DARB = NULL;
@@ -666,7 +616,6 @@ PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC ELglCompressedTexSubImage2DARB = NULL;
 PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC ELglCompressedTexSubImage3DARB = NULL;
 PFNGLGETCOMPRESSEDTEXIMAGEARBPROC ELglGetCompressedTexImageARB = NULL;
 /*	GL_ARB_texture_compression	*/
-
 /*	GL_ARB_occlusion_query		*/
 PFNGLBEGINQUERYARBPROC ELglBeginQueryARB = NULL;
 PFNGLDELETEQUERIESARBPROC ELglDeleteQueriesARB = NULL;
@@ -677,7 +626,6 @@ PFNGLGETQUERYOBJECTUIVARBPROC ELglGetQueryObjectuivARB = NULL;
 PFNGLGETQUERYIVARBPROC ELglGetQueryivARB = NULL;
 PFNGLISQUERYARBPROC ELglIsQueryARB = NULL;
 /*	GL_ARB_occlusion_query		*/
-
 /*	GL_ARB_vertex_program		*/
 PFNGLBINDPROGRAMARBPROC ELglBindProgramARB = NULL;
 PFNGLDELETEPROGRAMSARBPROC ELglDeleteProgramsARB = NULL;
@@ -742,13 +690,11 @@ PFNGLVERTEXATTRIB4UIVARBPROC ELglVertexAttrib4uivARB = NULL;
 PFNGLVERTEXATTRIB4USVARBPROC ELglVertexAttrib4usvARB = NULL;
 PFNGLVERTEXATTRIBPOINTERARBPROC ELglVertexAttribPointerARB = NULL;
 /*	GL_ARB_vertex_program		*/
-
 /*	GL_ARB_vertex_shader		*/
 PFNGLBINDATTRIBLOCATIONARBPROC ELglBindAttribLocationARB = NULL;
 PFNGLGETACTIVEATTRIBARBPROC ELglGetActiveAttribARB = NULL;
 PFNGLGETATTRIBLOCATIONARBPROC ELglGetAttribLocationARB = NULL;
 /*	GL_ARB_vertex_shader		*/
-
 /*	GL_ARB_shader_objects		*/
 PFNGLATTACHOBJECTARBPROC ELglAttachObjectARB = NULL;
 PFNGLCOMPILESHADERARBPROC ELglCompileShaderARB = NULL;
@@ -790,7 +736,6 @@ PFNGLUNIFORMMATRIX4FVARBPROC ELglUniformMatrix4fvARB = NULL;
 PFNGLUSEPROGRAMOBJECTARBPROC ELglUseProgramObjectARB = NULL;
 PFNGLVALIDATEPROGRAMARBPROC ELglValidateProgramARB = NULL;
 /*	GL_ARB_shader_objects		*/
-
 /*	GL_EXT_fog_coord		*/
 PFNGLFOGCOORDPOINTEREXTPROC ELglFogCoordPointerEXT = NULL;
 PFNGLFOGCOORDDEXTPROC ELglFogCoorddEXT = NULL;
@@ -798,16 +743,12 @@ PFNGLFOGCOORDDVEXTPROC ELglFogCoorddvEXT = NULL;
 PFNGLFOGCOORDFEXTPROC ELglFogCoordfEXT = NULL;
 PFNGLFOGCOORDFVEXTPROC ELglFogCoordfvEXT = NULL;
 /*	GL_EXT_fog_coord		*/
-
 /*	GL_EXT_gpu_program_parameters	*/
 PFNGLPROGRAMENVPARAMETERS4FVEXTPROC ELglProgramEnvParameters4fvEXT = NULL;
 PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC ELglProgramLocalParameters4fvEXT = NULL;
 /*	GL_EXT_gpu_program_parameters	*/
-
-static GLboolean el_init_GL_ARB_multitexture()
-{
+static GLboolean el_init_GL_ARB_multitexture() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)SDL_GL_GetProcAddress("glActiveTextureARB")) != NULL) && r;
 	r = ((ELglClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)SDL_GL_GetProcAddress("glClientActiveTextureARB")) != NULL) && r;
 	r = ((ELglMultiTexCoord1dARB = (PFNGLMULTITEXCOORD1DARBPROC)SDL_GL_GetProcAddress("glMultiTexCoord1dARB")) != NULL) && r;
@@ -842,14 +783,10 @@ static GLboolean el_init_GL_ARB_multitexture()
 	r = ((ELglMultiTexCoord4ivARB = (PFNGLMULTITEXCOORD4IVARBPROC)SDL_GL_GetProcAddress("glMultiTexCoord4ivARB")) != NULL) && r;
 	r = ((ELglMultiTexCoord4sARB = (PFNGLMULTITEXCOORD4SARBPROC)SDL_GL_GetProcAddress("glMultiTexCoord4sARB")) != NULL) && r;
 	r = ((ELglMultiTexCoord4svARB = (PFNGLMULTITEXCOORD4SVARBPROC)SDL_GL_GetProcAddress("glMultiTexCoord4svARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_texture_compression()
-{
+static GLboolean el_init_GL_ARB_texture_compression() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglCompressedTexImage1DARB = (PFNGLCOMPRESSEDTEXIMAGE1DARBPROC)SDL_GL_GetProcAddress("glCompressedTexImage1DARB")) != NULL) && r;
 	r = ((ELglCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)SDL_GL_GetProcAddress("glCompressedTexImage2DARB")) != NULL) && r;
 	r = ((ELglCompressedTexImage3DARB = (PFNGLCOMPRESSEDTEXIMAGE3DARBPROC)SDL_GL_GetProcAddress("glCompressedTexImage3DARB")) != NULL) && r;
@@ -857,24 +794,16 @@ static GLboolean el_init_GL_ARB_texture_compression()
 	r = ((ELglCompressedTexSubImage2DARB = (PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC)SDL_GL_GetProcAddress("glCompressedTexSubImage2DARB")) != NULL) && r;
 	r = ((ELglCompressedTexSubImage3DARB = (PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC)SDL_GL_GetProcAddress("glCompressedTexSubImage3DARB")) != NULL) && r;
 	r = ((ELglGetCompressedTexImageARB = (PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)SDL_GL_GetProcAddress("glGetCompressedTexImageARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_point_parameters()
-{
+static GLboolean el_init_GL_ARB_point_parameters() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglPointParameterfARB = (PFNGLPOINTPARAMETERFARBPROC)SDL_GL_GetProcAddress("glPointParameterfARB")) != NULL) && r;
 	r = ((ELglPointParameterfvARB = (PFNGLPOINTPARAMETERFVARBPROC)SDL_GL_GetProcAddress("glPointParameterfvARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_vertex_buffer_object()
-{
+static GLboolean el_init_GL_ARB_vertex_buffer_object() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBindBufferARB = (PFNGLBINDBUFFERARBPROC)SDL_GL_GetProcAddress("glBindBufferARB")) != NULL) && r;
 	r = ((ELglBufferDataARB = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB")) != NULL) && r;
 	r = ((ELglBufferSubDataARB = (PFNGLBUFFERSUBDATAARBPROC)SDL_GL_GetProcAddress("glBufferSubDataARB")) != NULL) && r;
@@ -886,14 +815,10 @@ static GLboolean el_init_GL_ARB_vertex_buffer_object()
 	r = ((ELglIsBufferARB = (PFNGLISBUFFERARBPROC)SDL_GL_GetProcAddress("glIsBufferARB")) != NULL) && r;
 	r = ((ELglMapBufferARB = (PFNGLMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glMapBufferARB")) != NULL) && r;
 	r = ((ELglUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glUnmapBufferARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_occlusion_query()
-{
+static GLboolean el_init_GL_ARB_occlusion_query() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBeginQueryARB = (PFNGLBEGINQUERYARBPROC)SDL_GL_GetProcAddress("glBeginQueryARB")) != NULL) && r;
 	r = ((ELglDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC)SDL_GL_GetProcAddress("glDeleteQueriesARB")) != NULL) && r;
 	r = ((ELglEndQueryARB = (PFNGLENDQUERYARBPROC)SDL_GL_GetProcAddress("glEndQueryARB")) != NULL) && r;
@@ -902,14 +827,10 @@ static GLboolean el_init_GL_ARB_occlusion_query()
 	r = ((ELglGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC)SDL_GL_GetProcAddress("glGetQueryObjectuivARB")) != NULL) && r;
 	r = ((ELglGetQueryivARB = (PFNGLGETQUERYIVARBPROC)SDL_GL_GetProcAddress("glGetQueryivARB")) != NULL) && r;
 	r = ((ELglIsQueryARB = (PFNGLISQUERYARBPROC)SDL_GL_GetProcAddress("glIsQueryARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_vertex_program()
-{
+static GLboolean el_init_GL_ARB_vertex_program() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBindProgramARB = (PFNGLBINDPROGRAMARBPROC)SDL_GL_GetProcAddress("glBindProgramARB")) != NULL) && r;
 	r = ((ELglDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC)SDL_GL_GetProcAddress("glDeleteProgramsARB")) != NULL) && r;
 	r = ((ELglDisableVertexAttribArrayARB = (PFNGLDISABLEVERTEXATTRIBARRAYARBPROC)SDL_GL_GetProcAddress("glDisableVertexAttribArrayARB")) != NULL) && r;
@@ -972,25 +893,17 @@ static GLboolean el_init_GL_ARB_vertex_program()
 	r = ((ELglVertexAttrib4uivARB = (PFNGLVERTEXATTRIB4UIVARBPROC)SDL_GL_GetProcAddress("glVertexAttrib4uivARB")) != NULL) && r;
 	r = ((ELglVertexAttrib4usvARB = (PFNGLVERTEXATTRIB4USVARBPROC)SDL_GL_GetProcAddress("glVertexAttrib4usvARB")) != NULL) && r;
 	r = ((ELglVertexAttribPointerARB = (PFNGLVERTEXATTRIBPOINTERARBPROC)SDL_GL_GetProcAddress("glVertexAttribPointerARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_vertex_shader()
-{
+static GLboolean el_init_GL_ARB_vertex_shader() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBindAttribLocationARB = (PFNGLBINDATTRIBLOCATIONARBPROC)SDL_GL_GetProcAddress("glBindAttribLocationARB")) != NULL) && r;
 	r = ((ELglGetActiveAttribARB = (PFNGLGETACTIVEATTRIBARBPROC)SDL_GL_GetProcAddress("glGetActiveAttribARB")) != NULL) && r;
 	r = ((ELglGetAttribLocationARB = (PFNGLGETATTRIBLOCATIONARBPROC)SDL_GL_GetProcAddress("glGetAttribLocationARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_ARB_shader_objects()
-{
+static GLboolean el_init_GL_ARB_shader_objects() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglAttachObjectARB = (PFNGLATTACHOBJECTARBPROC)SDL_GL_GetProcAddress("glAttachObjectARB")) != NULL) && r;
 	r = ((ELglCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)SDL_GL_GetProcAddress("glCompileShaderARB")) != NULL) && r;
 	r = ((ELglCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glCreateProgramObjectARB")) != NULL) && r;
@@ -1030,33 +943,21 @@ static GLboolean el_init_GL_ARB_shader_objects()
 	r = ((ELglUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC)SDL_GL_GetProcAddress("glUniformMatrix4fvARB")) != NULL) && r;
 	r = ((ELglUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glUseProgramObjectARB")) != NULL) && r;
 	r = ((ELglValidateProgramARB = (PFNGLVALIDATEPROGRAMARBPROC)SDL_GL_GetProcAddress("glValidateProgramARB")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_EXT_compiled_vertex_array()
-{
+static GLboolean el_init_GL_EXT_compiled_vertex_array() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglLockArraysEXT = (PFNGLLOCKARRAYSEXTPROC)SDL_GL_GetProcAddress("glLockArraysEXT")) != NULL) && r;
 	r = ((ELglUnlockArraysEXT = (PFNGLUNLOCKARRAYSEXTPROC)SDL_GL_GetProcAddress("glUnlockArraysEXT")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_EXT_draw_range_elements()
-{
+static GLboolean el_init_GL_EXT_draw_range_elements() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglDrawRangeElementsEXT = (PFNGLDRAWRANGEELEMENTSEXTPROC)SDL_GL_GetProcAddress("glDrawRangeElementsEXT")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_EXT_framebuffer_object()
-{
+static GLboolean el_init_GL_EXT_framebuffer_object() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT")) != NULL) && r;
 	r = ((ELglBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindRenderbufferEXT")) != NULL) && r;
 	r = ((ELglCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatusEXT")) != NULL) && r;
@@ -1074,88 +975,58 @@ static GLboolean el_init_GL_EXT_framebuffer_object()
 	r = ((ELglIsFramebufferEXT = (PFNGLISFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsFramebufferEXT")) != NULL) && r;
 	r = ((ELglIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsRenderbufferEXT")) != NULL) && r;
 	r = ((ELglRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)SDL_GL_GetProcAddress("glRenderbufferStorageEXT")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_EXT_fog_coord()
-{
+static GLboolean el_init_GL_EXT_fog_coord() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglFogCoordPointerEXT = (PFNGLFOGCOORDPOINTEREXTPROC)SDL_GL_GetProcAddress("glFogCoordPointerEXT")) != NULL) && r;
 	r = ((ELglFogCoorddEXT = (PFNGLFOGCOORDDEXTPROC)SDL_GL_GetProcAddress("glFogCoorddEXT")) != NULL) && r;
 	r = ((ELglFogCoorddvEXT = (PFNGLFOGCOORDDVEXTPROC)SDL_GL_GetProcAddress("glFogCoorddvEXT")) != NULL) && r;
 	r = ((ELglFogCoordfEXT = (PFNGLFOGCOORDFEXTPROC)SDL_GL_GetProcAddress("glFogCoordfEXT")) != NULL) && r;
 	r = ((ELglFogCoordfvEXT = (PFNGLFOGCOORDFVEXTPROC)SDL_GL_GetProcAddress("glFogCoordfvEXT")) != NULL) && r;
-
 	return r;
 }
-
-static GLboolean el_init_GL_EXT_gpu_program_parameters()
-{
+static GLboolean el_init_GL_EXT_gpu_program_parameters() {
 	GLboolean r = GL_TRUE;
-
 	r = ((ELglProgramEnvParameters4fvEXT = (PFNGLPROGRAMENVPARAMETERS4FVEXTPROC)SDL_GL_GetProcAddress("glProgramEnvParameters4fvEXT")) != NULL) && r;
 	r = ((ELglProgramLocalParameters4fvEXT = (PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC)SDL_GL_GetProcAddress("glProgramLocalParameters4fvEXT")) != NULL) && r;
-
 	return r;
 }
-
-void init_opengl_extensions()
-{
+void init_opengl_extensions() {
 	GLboolean e;
-	char* extensions_string;
-
+	char *extensions_string;
 	check_for_problem_drivers();
-
 	is_GL_VERSION_1_2 = el_init_GL_VERSION_1_2();
 	is_GL_VERSION_1_3 = is_GL_VERSION_1_2 && el_init_GL_VERSION_1_3();
 	is_GL_VERSION_1_4 = is_GL_VERSION_1_3 && el_init_GL_VERSION_1_4();
 	is_GL_VERSION_1_5 = is_GL_VERSION_1_4 && el_init_GL_VERSION_1_5();
 	is_GL_VERSION_2_0 = is_GL_VERSION_1_5 && el_init_GL_VERSION_2_0();
 	is_GL_VERSION_2_1 = is_GL_VERSION_2_0 && el_init_GL_VERSION_2_1();
-
 	gl_version = 0;
-
-	if (is_GL_VERSION_1_2)
-	{
+	if (is_GL_VERSION_1_2) {
 		gl_version++;
 	}
-
-	if (is_GL_VERSION_1_3)
-	{
+	if (is_GL_VERSION_1_3) {
 		gl_version++;
 	}
-
-	if (is_GL_VERSION_1_4)
-	{
+	if (is_GL_VERSION_1_4) {
 		gl_version++;
 	}
-
-	if (is_GL_VERSION_1_5)
-	{
+	if (is_GL_VERSION_1_5) {
 		gl_version++;
 	}
-
-	if (is_GL_VERSION_2_0)
-	{
+	if (is_GL_VERSION_2_0) {
 		gl_version++;
 	}
-
-	if (is_GL_VERSION_2_1)
-	{
+	if (is_GL_VERSION_2_1) {
 		gl_version++;
 	}
-
-	extensions_string = (char*)glGetString(GL_EXTENSIONS);
-
+	extensions_string = (char *)glGetString(GL_EXTENSIONS);
 /*	GL_ARB_multitexture			*/
 	texture_units = 1;
-	if (strstr(extensions_string, "GL_ARB_multitexture") != NULL && !multitexture_problem)
-	{
+	if (strstr(extensions_string, "GL_ARB_multitexture") != NULL && !multitexture_problem) {
 		e = el_init_GL_ARB_multitexture();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_multitexture;
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &texture_units);
 		}
@@ -1163,275 +1034,218 @@ void init_opengl_extensions()
 	LOG_DEBUG("GL_MAX_TEXTURE_UNITS_ARB: %d", texture_units);
 /*	GL_ARB_multitexture			*/
 /*	GL_ARB_texture_compression		*/
-	if (strstr(extensions_string, "GL_ARB_texture_compression") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_compression") != NULL) {
 		e = el_init_GL_ARB_texture_compression();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_texture_compression;
 		}
 	}
 /*	GL_ARB_texture_compression		*/
 /*	GL_ARB_point_parameters			*/
-	if (strstr(extensions_string, "GL_ARB_point_parameters") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_point_parameters") != NULL) {
 		e = el_init_GL_ARB_point_parameters();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_point_parameters;
 		}
 	}
 /*	GL_ARB_point_parameters			*/
 /*	GL_ARB_point_sprite			*/
-	if (strstr(extensions_string, "GL_ARB_point_sprite") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_point_sprite") != NULL) {
 		extensions |= 1 << arb_point_sprite;
 	}
 /*	GL_ARB_point_sprite			*/
 /*	GL_ARB_vertex_buffer_object		*/
-	if (strstr(extensions_string, "GL_ARB_vertex_buffer_object") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_vertex_buffer_object") != NULL) {
 		e = el_init_GL_ARB_vertex_buffer_object();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_vertex_buffer_object;
 		}
 	}
 /*	GL_ARB_vertex_buffer_object		*/
 /*	GL_ARB_shadow				*/
-	if (strstr(extensions_string, "GL_ARB_shadow") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_shadow") != NULL) {
 		extensions |= 1 << arb_shadow;
 	}
 /*	GL_ARB_shadow				*/
 /*	GL_ARB_texture_env_combine		*/
-	if (strstr(extensions_string, "GL_ARB_texture_env_combine") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_env_combine") != NULL) {
 		extensions |= 1 << arb_texture_env_combine;
 	}
 /*	GL_ARB_texture_env_combine		*/
 /*	GL_ARB_texture_env_crossbar		*/
-	if (strstr(extensions_string, "GL_ARB_texture_env_crossbar") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_env_crossbar") != NULL) {
 		extensions |= 1 << arb_texture_env_crossbar;
 	}
 /*	GL_ARB_texture_env_crossbar		*/
 /*	GL_ARB_texture_env_dot3			*/
-	if (strstr(extensions_string, "GL_ARB_texture_env_dot3") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_env_dot3") != NULL) {
 		extensions |= 1 << arb_texture_env_dot3;
 	}
 /*	GL_ARB_texture_env_dot3			*/
 /*	GL_ARB_occlusion_query			*/
-	if (strstr(extensions_string, "GL_ARB_occlusion_query") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_occlusion_query") != NULL) {
 		e = el_init_GL_ARB_occlusion_query();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_occlusion_query;
 		}
 	}
 /*	GL_ARB_occlusion_query			*/
 /*	GL_ARB_depth_texture			*/
-	if (strstr(extensions_string, "GL_ARB_depth_texture") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_depth_texture") != NULL) {
 		extensions |= 1 << arb_depth_texture;
 	}
 /*	GL_ARB_depth_texture			*/
 /*	GL_ARB_fragment_program			*/
-	if (strstr(extensions_string, "GL_ARB_fragment_program") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_fragment_program") != NULL) {
 		extensions |= 1 << arb_fragment_program;
 	}
 /*	GL_ARB_fragment_program			*/
 /*	GL_ARB_vertex_program			*/
-	if (strstr(extensions_string, "GL_ARB_vertex_program") != NULL && !vertex_program_problem)
-	{
+	if (strstr(extensions_string, "GL_ARB_vertex_program") != NULL && !vertex_program_problem) {
 		e = el_init_GL_ARB_vertex_program();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_vertex_program;
 		}
 	}
 /*	GL_ARB_vertex_program			*/
 /*	GL_ARB_fragment_shader			*/
-	if (strstr(extensions_string, "GL_ARB_fragment_shader") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_fragment_shader") != NULL) {
 		extensions |= 1 << arb_fragment_shader;
 	}
 /*	GL_ARB_fragment_shader			*/
 /*	GL_ARB_vertex_shader			*/
-	if (strstr(extensions_string, "GL_ARB_vertex_shader") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_vertex_shader") != NULL) {
 		e = el_init_GL_ARB_vertex_shader();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_vertex_shader;
 		}
 	}
 /*	GL_ARB_vertex_shader			*/
 /*	GL_ARB_shader_objects			*/
-	if (strstr(extensions_string, "GL_ARB_shader_objects") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_shader_objects") != NULL) {
 		e = el_init_GL_ARB_shader_objects();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << arb_shader_objects;
 		}
 	}
 /*	GL_ARB_shader_objects			*/
 /*	GL_ARB_shading_language_100		*/
-	if (strstr(extensions_string, "GL_ARB_shading_language_100") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_shading_language_100") != NULL) {
 		extensions |= 1 << arb_shading_language_100;
 	}
 /*	GL_ARB_shading_language_100		*/
-	if (strstr(extensions_string, "GL_ARB_texture_non_power_of_two") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_non_power_of_two") != NULL) {
 		extensions |= 1 << arb_texture_non_power_of_two;
 	}
 /*	GL_EXT_compiled_vertex_array		*/
-	if (strstr(extensions_string, "GL_EXT_compiled_vertex_array") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_compiled_vertex_array") != NULL) {
 		e = el_init_GL_EXT_compiled_vertex_array();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << ext_compiled_vertex_array;
 		}
 	}
 /*	GL_EXT_compiled_vertex_array		*/
 /*	GL_EXT_draw_range_elements		*/
-	if (strstr(extensions_string, "GL_EXT_draw_range_elements") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_draw_range_elements") != NULL) {
 		e = el_init_GL_EXT_draw_range_elements();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << ext_draw_range_elements;
 		}
 	}
 /*	GL_EXT_draw_range_elements		*/
 /*	GL_EXT_framebuffer_object		*/
-	if (strstr(extensions_string, "GL_EXT_framebuffer_object") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_framebuffer_object") != NULL) {
 		e = el_init_GL_EXT_framebuffer_object();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << ext_framebuffer_object;
 		}
 	}
 /*	GL_EXT_framebuffer_object		*/
 /*	GL_EXT_texture_compression_s3tc		*/
-	if (strstr(extensions_string, "GL_EXT_texture_compression_s3tc") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_texture_compression_s3tc") != NULL) {
 		extensions |= 1 << ext_texture_compression_s3tc;
 	}
 /*	GL_EXT_texture_compression_s3tc		*/
 /*	GL_EXT_texture_filter_anisotropic	*/
-	if (strstr(extensions_string, "GL_EXT_texture_filter_anisotropic") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_texture_filter_anisotropic") != NULL) {
 		extensions |= 1 << ext_texture_filter_anisotropic;
 	}
 /*	GL_EXT_texture_filter_anisotropic	*/
 /*	GL_SGIS_generate_mipmap			*/
-	if (strstr(extensions_string, "GL_SGIS_generate_mipmap") != NULL)
-	{
+	if (strstr(extensions_string, "GL_SGIS_generate_mipmap") != NULL) {
 		extensions |= 1 << sgis_generate_mipmap;
 	}
 /*	GL_SGIS_generate_mipmap			*/
 /*	GL_ARB_texture_mirrored_repeat		*/
-	if (strstr(extensions_string, "GL_ARB_texture_mirrored_repeat") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_mirrored_repeat") != NULL) {
 		extensions |= 1 << arb_texture_mirrored_repeat;
 	}
 /*	GL_ARB_texture_mirrored_repeat		*/
 /*	GL_ARB_texture_rectangle		*/
-	if (strstr(extensions_string, "GL_ARB_texture_rectangle") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_rectangle") != NULL) {
 		extensions |= 1 << arb_texture_rectangle;
 	}
 /*	GL_ARB_texture_rectangle		*/
 /*	GL_EXT_fog_coord			*/
-	if (strstr(extensions_string, "GL_EXT_fog_coord") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_fog_coord") != NULL) {
 		e = el_init_GL_EXT_fog_coord();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= 1 << ext_fog_coord;
 		}
 	}
 /*	GL_EXT_fog_coord			*/
 /*	GL_ATI_texture_compression_3dc		*/
-	if (strstr(extensions_string, "GL_ATI_texture_compression_3dc") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ATI_texture_compression_3dc") != NULL) {
 		extensions |= 1 << ati_texture_compression_3dc;
 	}
 /*	GL_ATI_texture_compression_3dc		*/
 /*	GL_EXT_texture_compression_latc		*/
-	if (strstr(extensions_string, "GL_EXT_texture_compression_latc") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_texture_compression_latc") != NULL) {
 		extensions |= 1 << ext_texture_compression_latc;
 	}
 /*	GL_EXT_texture_compression_latc		*/
 /*	GL_EXT_texture_compression_rgtc		*/
-	if (strstr(extensions_string, "GL_EXT_texture_compression_rgtc") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_texture_compression_rgtc") != NULL) {
 		extensions |= 1 << ext_texture_compression_rgtc;
 	}
 /*	GL_EXT_texture_compression_rgtc		*/
 /*	GL_ARB_texture_cube_map			*/
-	if (strstr(extensions_string, "GL_ARB_texture_cube_map") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_cube_map") != NULL) {
 		extensions |= 1 << arb_texture_cube_map;
 	}
 /*	GL_ARB_texture_cube_map			*/
 /*	GL_ARB_texture_float			*/
-	if (strstr(extensions_string, "GL_ARB_texture_float") != NULL)
-	{
+	if (strstr(extensions_string, "GL_ARB_texture_float") != NULL) {
 		extensions |= 1 << arb_texture_float;
 	}
 /*	GL_ARB_texture_float			*/
 /*	GL_EXT_abgr			*/
-	if (strstr(extensions_string, "GL_EXT_abgr") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_abgr") != NULL) {
 		extensions |= ((Uint64)1) << ext_abgr;
 	}
 /*	GL_EXT_abgr			*/
 /*	GL_EXT_gpu_program_parameters	*/
-	if (strstr(extensions_string, "GL_EXT_gpu_program_parameters") != NULL)
-	{
+	if (strstr(extensions_string, "GL_EXT_gpu_program_parameters") != NULL) {
 		e = el_init_GL_EXT_gpu_program_parameters();
-		if (e == GL_TRUE)
-		{
+		if (e == GL_TRUE) {
 			extensions |= ((Uint64)1) << ext_gpu_program_parameters;
 		}
 	}
 /*	GL_EXT_gpu_program_parameters	*/
 }
-
-Uint32 have_extension(extension_enum extension)
-{
+Uint32 have_extension(extension_enum extension) {
 	return (extensions & (1 << extension)) != 0;
 }
-
-Uint32 get_texture_units()
-{
+Uint32 get_texture_units() {
 	return texture_units;
 }
-
-const char* get_gl_version_str()
-{
+const char *get_gl_version_str() {
 	return gl_versions_str[gl_version];
 }
-
-GLboolean supports_gl_version(Uint8 major, Uint8 minor)
-{
-	if (gl_versions[gl_version] >= ((major << 8) + minor))
-	{
+GLboolean supports_gl_version(Uint8 major, Uint8 minor) {
+	if (gl_versions[gl_version] >= ((major << 8) + minor)) {
 		return GL_TRUE;
-	}
-	else
-	{
+	} else {
 		return GL_FALSE;
 	}
 }
-

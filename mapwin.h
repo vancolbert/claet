@@ -5,32 +5,27 @@
  */
 #ifndef __MAPWIN_H__
 #define __MAPWIN_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*! \name windows handlers
  * @{ */
 extern int map_root_win; /*!< handler for the map window */
 /*! @} */
-
 /*!
  * Stores the position and the text for markings on the map.
  * \todo this struct should be moved to some place where it belongs, like map.h or sector.h
  */
-typedef struct
-{
-    /*! \name marking position */
-    /*! @{ */
-    int x ;
-    int y;
-    /*! @} */
-    char text[512]; /*!< text of the marking */
-    char server_side;
-    int r,g,b; //color of the marker
-}marking;
-
+typedef struct {
+	/*! \name marking position */
+	/*! @{ */
+	int x;
+	int y;
+	/*! @} */
+	char text[512]; /*!< text of the marking */
+	char server_side;
+	int r, g, b; //color of the marker
+} marking;
 #define MAX_MARKINGS 300
 #define MAX_USER_MARKS 250
 extern int adding_mark; /*!< flag that indicates we are currently adding a mark to a map */
@@ -41,14 +36,13 @@ extern int temp_tile_map_size_x; /*!< The tile map size in the x direction */
 extern int temp_tile_map_size_y; /*!< The tile map size in the y direction */
 extern marking marks[MAX_MARKINGS]; /*!< a global array of marks */
 extern marking temp_marks[MAX_USER_MARKS]; /*!< a global array of temporary marks */
-extern int curmark_r,curmark_g,curmark_b; //current mark color
-
+extern int curmark_r, curmark_g, curmark_b; //current mark color
 extern int reload_tab_map; /*!< flag that indicates the tabmap needs to be reloaded */
 extern char inspect_map_name[128]; /*!< current inspected map name (used for marks edition) */
 extern int inspect_tile_map_size_x; /*!< The tile map size in the x direction for the inspected map */
 extern int inspect_tile_map_size_y; /*!< The tile map size in the y direction for the inspected map */
 // Fonction identique à pf_get_mouse_position mais utilisant les dimensions des cartes observées
-int map_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py);
+int map_get_mouse_position(int mouse_x, int mouse_y, int *px, int *py);
 /*!
  * \ingroup interface_map
  * \brief Creates the map window
@@ -59,15 +53,11 @@ int map_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py);
  * \param height the height of the window
  * \callgraph
  */
-void create_map_root_window (int width, int height);
-
+void create_map_root_window(int width, int height);
 /* controls TAB map mark filtering */
 extern int mark_filter_active;    /* true when filter active */
 extern char mark_filter_text[];   /* the text of the current filter */
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif // def __MAPWIN_H__

@@ -5,14 +5,10 @@
  */
 #ifndef __ACTOR_SCRIPTS_H__
 #define __ACTOR_SCRIPTS_H__
-
 #include <SDL_types.h>
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \ingroup	move_actors
  * \brief	Gives the motion vector of an actor for a given move.
@@ -26,7 +22,6 @@ extern "C" {
  *
  */
 int get_motion_vector(int move_cmd, int *dx, int *dy);
-
 /*!
  * \ingroup	move_actors
  * \brief	Finds the next frame in the md2-file for the current command.
@@ -35,7 +30,6 @@ int get_motion_vector(int move_cmd, int *dx, int *dy);
  *
  */
 void move_to_next_frame();
-
 /*!
  * \ingroup	move_actors
  * \brief	This function is called from the display/network loop to animate actors.
@@ -45,7 +39,6 @@ void move_to_next_frame();
  *
  */
 void animate_actors();
-
 /*!
  * \ingroup	move_actors
  * \brief	This function sets the good idle animation for an actor according to its current state.
@@ -53,7 +46,6 @@ void animate_actors();
  * \callgraph
  */
 void set_on_idle(int actor_idx);
-
 /*!
  * \ingroup	move_actors
  * \brief	This function parses through the command queue (actors->que) and sets the cur_frame accordingly
@@ -63,13 +55,11 @@ void set_on_idle(int actor_idx);
  * \callgraph
  */
 void next_command();
-
 /*!
  * \brief Free all the data that is contained in an actor
  * \param actor_index the index of the actor in the actors_list array
  */
 void free_actor_data(int actor_index);
-
 /*!
  * \ingroup	network_actors
  * \brief	The function destroys the actor with the given actor_id (server-side actor ID).
@@ -82,7 +72,6 @@ void free_actor_data(int actor_index);
  * \sa		actors_list
  */
 void destroy_actor(int actor_id);
-
 /*!
  * \ingroup	network_actors
  * \brief	The function destroys all actors.
@@ -92,7 +81,6 @@ void destroy_actor(int actor_id);
  * \sa		destroy_actor
  */
 void destroy_all_actors();
-
 /*!
  * \ingroup	network_actors
  * \brief	The function adds a command to the actor.
@@ -105,8 +93,6 @@ void destroy_all_actors();
  * \callgraph
  */
 void add_command_to_actor(int actor_id, unsigned char command);
-
-
 /*!
  * \ingroup	network_actors
  * \brief	Sets the actor max health.
@@ -117,7 +103,6 @@ void add_command_to_actor(int actor_id, unsigned char command);
  * \param	damage The damage given by the actor
  */
 void get_actor_damage(int actor_id, int damage, int sante);
-
 /*!
  * \ingroup	network_actors
  * \brief	Sets the actor damage and removes the health from the actor.
@@ -128,7 +113,6 @@ void get_actor_damage(int actor_id, int damage, int sante);
  * \param	damage The damage given by the actor
  */
 void get_actor_health(int actor_id, int damage, int sante);
-
 /*!
  * \ingroup	network_actors
  * \brief	Heals the player with the actor_id.
@@ -139,7 +123,6 @@ void get_actor_health(int actor_id, int damage, int sante);
  * \param	quantity The amount of healthpoints healed.
  */
 void get_actor_heal(int actor_id, int quantity, int sante);
-
 /*!
  * \ingroup	events_actors
  * \brief	Moves the actor 1 step forward.
@@ -149,7 +132,6 @@ void get_actor_heal(int actor_id, int quantity, int sante);
  * \callgraph
  */
 void move_self_forward();
-
 /*!
  * \ingroup other
  * \brief initializes the actor_def list
@@ -159,7 +141,6 @@ void move_self_forward();
  * \callgraph
  */
 void init_actor_defs();
-
 /*!
  * \ingroup events_actors
  * \brief   Executes the sit down command
@@ -168,7 +149,6 @@ void init_actor_defs();
  *
  */
 void you_sit_down();
-
 /*!
  * \ingroup events_actors
  * \brief   Executes the stand up command
@@ -177,7 +157,6 @@ void you_sit_down();
  *
  */
 void you_stand_up();
-
 /*!
  * \ingroup other
  * \brief frees the actor_def list
@@ -187,12 +166,8 @@ void you_stand_up();
  * \callgraph
  */
 void free_actor_defs();
-
 int checkvisitedlist(int x, int y);
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

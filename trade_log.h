@@ -1,16 +1,12 @@
 #ifndef __TRADE_LOG_H
 #define __TRADE_LOG_H
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include "trade.h"
-
 // The trade log mode, set by the options window, as described in the enum
 extern int trade_log_mode;
-enum { TRADE_LOG_NONE = 0, TRADE_LOG_CONSOLE, TRADE_LOG_FILE, TRADE_LOG_BOTH };
-
+enum {TRADE_LOG_NONE = 0, TRADE_LOG_CONSOLE, TRADE_LOG_FILE, TRADE_LOG_BOTH, };
 /**
  * @ingroup trade_log
  * @brief We are sending the server "Accept" for the second time.
@@ -22,7 +18,6 @@ enum { TRADE_LOG_NONE = 0, TRADE_LOG_CONSOLE, TRADE_LOG_FILE, TRADE_LOG_BOTH };
  * @callgraph
  */
 void trade_accepted(const char *name, const trade_item *yours, const trade_item *others, int max_items);
-
 /**
  * @ingroup trade_log
  * @brief server has sent the GET_TRADE_EXIT command.
@@ -30,7 +25,6 @@ void trade_accepted(const char *name, const trade_item *yours, const trade_item 
  * @callgraph
  */
 void trade_exit(void);
-
 /**
  * @ingroup trade_log
  * @brief server has sent the trade window abort text message
@@ -39,7 +33,6 @@ void trade_exit(void);
  * @callgraph
  */
 void trade_aborted(const char *message);
-
 /**
  * @ingroup trade_log
  * @brief server has sent the STORAGE_ITEMS command.
@@ -47,7 +40,6 @@ void trade_aborted(const char *message);
  * @callgraph
  */
 void trade_post_storage(void);
-
 /**
  * @ingroup trade_log
  * @brief server has sent the HERE_YOUR_INVENTORY command.
@@ -55,9 +47,7 @@ void trade_post_storage(void);
  * @callgraph
  */
 void trade_post_inventory(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

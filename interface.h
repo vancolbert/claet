@@ -5,19 +5,14 @@
  */
 #ifndef __INTERFACE_H__
 #define __INTERFACE_H__
-
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 // How long a username is allowed to be. This define allows for the trailing NULL
 #define MAX_USERNAME_LENGTH (15 + 1)
-
 extern int have_a_map;  /*!< flag indicating whether a map is available or not */
 extern int auto_camera; /*!< if this is true, we are using the auto camera */
-
 /*! \name Action types */
 /*! @{ */
 #define ACTION_WALK 0
@@ -28,21 +23,17 @@ extern int auto_camera; /*!< if this is true, we are using the auto camera */
 #define ACTION_ATTACK 5
 #define ACTION_WAND 6
 /*! @} */
-
 extern int action_mode; /*!< contains the current action type */
-
 /*! \name Mouse movement coordinates
  * @{ */
 extern int mouse_x; /*!< current x coordinate of the mouse */
 extern int mouse_y; /*!< current y coordinate of the mouse */
-
 /*! \name Mouse buttons
  * @{ */
 extern int right_click; /*!< indicates the right mouse button was clicked */
 extern int middle_click; /*!< indicates the middle mouse button was clicked */
 extern int left_click; /*!< indicates the left mouse button was clicked */
 /*! @} */
-
 extern int view_health_bar; /*!< indicates whether we should display the health bar or not */
 extern int view_names; /*!< indicates whether the names of actors should be displayed or not */
 extern int view_hp; /*!< indicates whether the current/max material points of an actor should be displayed or not */
@@ -52,52 +43,39 @@ extern int select_with_mouse_on_banner;
 extern int voir_pdv; /*!< afficher les points de vie ou le niveau de vie */
 extern int voir_musique_carte; /*!< afficher les zones de musiques sur les cartes */
 extern int view_chat_text_as_overtext; /*!< if this is true, then any text an actor is saying will be additionally displayed in a bubble over its head */
-
 extern char username_box_selected; /*!< true, if the cursor is currently in the username input field */
 extern char password_box_selected; /*!< true, if the cursor is currently in the password input field */
-
 extern char username_str[20]; /*!< the username of the actor */
 extern char password_str[20]; /*!< the password of the actor */
 extern char display_password_str[20]; /*!< a string that will be displayed when entering a password */
-
 extern int cons_text;
 extern int icons_text;
 extern int hud_text;
-
-
 /*!
  * A flag for a mode, that show whether a mode is supported and/or selected.
  */
-typedef struct
-{
+typedef struct {
 	int supported; /*!< 0 if this mode is supported, else != 0 */
 	int selected; /*!< 0 if this mode is selected, else != 0 */
-}mode_flag;
-
+} mode_flag;
 /*!
  * Defintions for the video modes
  */
-typedef struct
-{
+typedef struct {
 	int width;
 	int height;
 	int bpp;
 	char *name;
 	mode_flag flags;
 } video_mode_t;
-
 extern video_mode_t video_modes[]; /*!< global array of available video modes */
 extern const int video_modes_count;
-
 extern Uint32 click_time;
-
 extern int ati_click_workaround; /*!< if non-zero, arbitrarily multiply the read depth value by 256 to hopefully get a more reasonable value */
-
 /*!
  * Stores the start and end coordinates of a map
  */
-struct draw_map
-{
+struct draw_map {
 	short cont;
 	unsigned short x_start;
 	unsigned short y_start;
@@ -105,17 +83,12 @@ struct draw_map
 	unsigned short y_end;
 	char *name;
 };
-
 extern int cur_map; /*!< id of the map we are currently on */
 extern GLuint legend_text;
-
 extern struct draw_map *continent_maps; /*!< global array of maps for the continents */
-
 extern GLuint inspect_map_text;
 extern int show_continent_map_boundaries;
-
 extern float mapmark_zoom; /*!< scaling factor for the mapmark text */
-
 /*!
  * \ingroup loadsave
  * \brief Read the map info file
@@ -125,9 +98,7 @@ extern float mapmark_zoom; /*!< scaling factor for the mapmark text */
  *
  * \callgraph
  */
-void read_mapinfo ();
-
-
+void read_mapinfo();
 /*!
  * \brief   Store the current OpenGL viewport and modelview and projection matrices
  *
@@ -135,8 +106,7 @@ void read_mapinfo ();
  *
  * \callgraph
  */
-void save_scene_matrix ();
-
+void save_scene_matrix();
 /*!
  * \ingroup interfaces
  * \brief   Gets the world \c x and \c y coordinates from window (mouse click) coordinates.
@@ -148,8 +118,7 @@ void save_scene_matrix ();
  *
  * \callgraph
  */
-void get_world_x_y (short *scene_x, short *scene_y);
-
+void get_world_x_y(short *scene_x, short *scene_y);
 /*!
  * \ingroup interfaces
  * \brief   Gets the world \c x and \c y coordinates from window (mouse click) coordinates.
@@ -160,10 +129,8 @@ void get_world_x_y (short *scene_x, short *scene_y);
  *
  * \pre If there is no active actor, this function returns immediately.
  */
-void get_old_world_x_y (short *scene_x, short *scene_y);
-
+void get_old_world_x_y(short *scene_x, short *scene_y);
 //void check_menus_out_of_screen();
-
 /*!
  * \ingroup interfaces
  * \brief   Puts the client into 2D mode.
@@ -173,7 +140,6 @@ void get_old_world_x_y (short *scene_x, short *scene_y);
  */
 void Enter2DMode();
 void Enter2DModeExtended(int width, int height);
-
 /*!
  * \ingroup interfaces
  * \brief   Puts the client back into 3D mode.
@@ -182,7 +148,6 @@ void Enter2DModeExtended(int width, int height);
  *
  */
 void Leave2DMode();
-
 /*!
  * \ingroup other
  * \brief   Checks the available video modes and initializes the \ref video_modes array.
@@ -192,7 +157,6 @@ void Leave2DMode();
  * \sa init_video
  */
 void build_video_mode_array();
-
 /*!
  * \ingroup interfaces
  * \brief   Sets the texture given in \a which_texture and draws it.
@@ -204,7 +168,6 @@ void build_video_mode_array();
  * \callgraph
  */
 void draw_console_pic(int which_texture);
-
 /*!
  * \ingroup interfaces
  * \brief   Adds the char \a ch to the \ref username_str.
@@ -214,7 +177,6 @@ void draw_console_pic(int which_texture);
  * \param ch    the char to add to \ref username_str
  */
 void add_char_to_username(unsigned char ch);
-
 /*!
  * \ingroup interface
  * \brief   Adds the char \a ch to the \ref password_str.
@@ -224,7 +186,6 @@ void add_char_to_username(unsigned char ch);
  * \param ch    the char to add to \ref password_str
  */
 void add_char_to_password(unsigned char ch);
-
 /*!
  * \ingroup display_2d
  * \brief   Draws a rectangular area with the given texture and scene coordinates.
@@ -240,9 +201,7 @@ void add_char_to_password(unsigned char ch);
  * \param x_end     x coordinate of the scene end
  * \param y_end     y coordinate of the scene end
  */
-void draw_2d_thing(float u_start,float v_start,float u_end,float v_end,int x_start,
-int y_start,int x_end,int y_end);
-
+void draw_2d_thing(float u_start, float v_start, float u_end, float v_end, int x_start, int y_start, int x_end, int y_end);
 /*!
  * \ingroup display_2d
  * \brief   Draws a rectangular area with the given texture and scene coordinates in reverse mode.
@@ -259,9 +218,7 @@ int y_start,int x_end,int y_end);
  * \param y_end     y coordinate of the scene end
  *
  */
-void draw_2d_thing_r(float u_start,float v_start,float u_end,float v_end,int x_start,
-int y_start,int x_end,int y_end);
-
+void draw_2d_thing_r(float u_start, float v_start, float u_end, float v_end, int x_start, int y_start, int x_end, int y_end);
 /*!
  * \ingroup interfaces
  * \brief   Draws the in-game interface.
@@ -271,7 +228,6 @@ int y_start,int x_end,int y_end);
  * \callgraph
  */
 void draw_ingame_interface();
-
 /*!
  * \ingroup interface_map
  * \brief   Switches to the map interface.
@@ -282,7 +238,6 @@ void draw_ingame_interface();
  * \callgraph
  */
 int switch_to_game_map();
-
 /*!
  * \ingroup interface_map
  * \brief   Switches back from map interface to game interface.
@@ -291,7 +246,6 @@ int switch_to_game_map();
  *
  */
 void switch_from_game_map();
-
 /*!
  * \ingroup interface_map
  * \brief   Draws the map interface.
@@ -303,8 +257,7 @@ void switch_from_game_map();
  * \sa draw_scene
  * \callgraph
  */
-void draw_game_map (int map, int mouse_mini);
-
+void draw_game_map(int map, int mouse_mini);
 /*!
  * \ingroup interfaces
  * \brief   Saves the user defined markings on maps.
@@ -313,7 +266,6 @@ void draw_game_map (int map, int mouse_mini);
  *
  */
 void save_markings();
-
 /*!
  * \ingroup interfaces
  * \brief   Deletes the mark at the current mouse position and saves the changes.
@@ -325,7 +277,6 @@ void save_markings();
  * \pre If the mouse is outside the map area, this function will return without performing any actions.
  */
 void delete_mark_on_map_on_mouse_position();
-
 /*!
  * \ingroup interfaces
  * \brief   Adds a mark at the given position.
@@ -341,8 +292,7 @@ void delete_mark_on_map_on_mouse_position();
  *
  * \pre If the position is outside the map area, this function will return without performing any actions.
  */
-int put_mark_on_position(int map_x, int map_y, char * name);
-
+int put_mark_on_position(int map_x, int map_y, char *name);
 /*!
  * \ingroup interfaces
  * \brief   Adds a mark at the current mouse position.
@@ -352,7 +302,6 @@ int put_mark_on_position(int map_x, int map_y, char * name);
  * \pre If the mouse is outside the map area, this function will return without performing any actions.
  */
 void put_mark_on_map_on_mouse_position();
-
 /*!
  * \ingroup interfaces
  * \brief   Adds a mark at the actors current position.
@@ -368,7 +317,6 @@ void put_mark_on_map_on_mouse_position();
  */
 int put_mark_on_current_position(char *name);
 void edit_mark_on_map_on_mouse_position();
-
 extern int cur_cont_map;
 void switch_continent();
 /*!
@@ -379,8 +327,7 @@ void switch_continent();
  *
  * \callgraph
  */
-void destroy_all_root_windows ();
-
+void destroy_all_root_windows();
 /*!
  * \ingroup interfaces
  * \brief   Hides all of the root windows if necessary.
@@ -389,8 +336,7 @@ void destroy_all_root_windows ();
  *
  * \callgraph
  */
-void hide_all_root_windows ();
-
+void hide_all_root_windows();
 /*!
  * \ingroup interfaces
  * \brief   Resizes all of the root windows to the new width \a w and height \a h, if necessary.
@@ -402,10 +348,8 @@ void hide_all_root_windows ();
  *
  * \callgraph
  */
-void resize_all_root_windows (Uint32 w, Uint32 h);
-
+void resize_all_root_windows(Uint32 w, Uint32 h);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

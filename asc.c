@@ -10,119 +10,97 @@
 #include "md5.h"
 #include "io/elfilewrapper.h"
 # include "misc.h"
-
 /* NOTE: This file contains implementations of the following, currently unused and commented functions:
  *          Look at the end of the file.
  *
  * Sint32 get_string_after_string(const Uint8*, const Uint8*, Sint32, Uint*, int);
  */
-
-int my_UTF8Toisolat1(char **dest, size_t * lu, char **src, size_t * len);
-
+int my_UTF8Toisolat1(char **dest, size_t *lu, char **src, size_t *len);
 // http://www.developpez.net/forums/d8335/c-cpp/c/equivalent-fonction-trim/
-char *trim (char *str)
-{
+char *trim(char *str) {
 	char *ibuf, *obuf;
-	if (str)
-	{
-		for (ibuf = obuf = str; *ibuf; )
-		{
-			while (*ibuf && (isspace (*ibuf))) ibuf++;
-			if (*ibuf && (obuf != str)) *(obuf++) = ' ';
-			while (*ibuf && (!isspace (*ibuf))) *(obuf++) = *(ibuf++);
+	if (str) {
+		for (ibuf = obuf = str; *ibuf; ) {
+			while (*ibuf && (isspace(*ibuf))) {
+				ibuf++;
+			}
+			if (*ibuf && (obuf != str)) {
+				*(obuf++) = ' ';
+			}
+			while (*ibuf && (!isspace(*ibuf))) {
+				*(obuf++) = *(ibuf++);
+			}
 		}
 		*obuf = '\0';
 	}
-	return (str);
+	return str;
 }
-
-xmlChar *xmlTrim (xmlChar *str)
-{
+xmlChar *xmlTrim(xmlChar *str) {
 	xmlChar *ibuf, *obuf;
-	if (str)
-	{
-		for (ibuf = obuf = str; *ibuf; )
-		{
-			while (*ibuf && (isspace (*ibuf))) ibuf++;
-			if (*ibuf && (obuf != str)) *(obuf++) = ' ';
-			while (*ibuf && (!isspace (*ibuf))) *(obuf++) = *(ibuf++);
+	if (str) {
+		for (ibuf = obuf = str; *ibuf; ) {
+			while (*ibuf && (isspace(*ibuf))) {
+				ibuf++;
+			}
+			if (*ibuf && (obuf != str)) {
+				*(obuf++) = ' ';
+			}
+			while (*ibuf && (!isspace(*ibuf))) {
+				*(obuf++) = *(ibuf++);
+			}
 		}
 		*obuf = '\0';
 	}
-	return (str);
+	return str;
 }
-
 // find the first occurance of needle in haystack, and return the distance to
 // that string. If beggining is 1, it returns the offset to the beginning of
 // the string otherwise it returns the offset to the end of the string. Needle
 // must be null-terminated. hyastack need not be, but must be at least max_len
 // bytes long
-
-Sint32 get_string_occurance (const char* needle, const char* haystack, const Uint32 max_len, const char beginning)
-{
-   int i;
-   int n_len;
-
-   n_len = strlen(needle);
-
-
-   if (max_len < n_len)
-   {
+Sint32 get_string_occurance(const char *needle, const char *haystack, const Uint32 max_len, const char beginning) {
+	int i;
+	int n_len;
+	n_len = strlen(needle);
+	if (max_len < n_len) {
 		return -1;
 	}
-   for(i = 0; i < max_len; i++)
-   {
-      if(my_strncompare(needle, haystack + i, n_len))
-      {
-         if(beginning)
-         {
-            return i;
-         }
-         else
-         {
-            while(i < max_len && (*(haystack + i) == ' ' || *(haystack + i) == '='))
-               i++;
-            return i + n_len;
-         }
-      }
-   }
-   return -1;
+	for (i = 0; i < max_len; i++) {
+		if (my_strncompare(needle, haystack + i, n_len)) {
+			if (beginning) {
+				return i;
+			} else {
+				while (i < max_len && (*(haystack + i) == ' ' || *(haystack + i) == '=')) {
+					i++;
+				}
+				return i + n_len;
+			}
+		}
+	}
+	return -1;
 }
-
-
-char* safe_strncpy(char *dest, const char * source, const size_t len)
-{
-	if (len > 0)
-	{
+char *safe_strncpy(char *dest, const char *source, const size_t len) {
+	if (len > 0) {
 		strncpy(dest, source, len - 1);
 		dest[len - 1] = '\0';
 	}
 	return dest;
 }
-
-char* safe_strncpy2(char *dest, const char * source, const size_t dest_len, const size_t src_len)
-{
-	if (dest_len > 0)
-	{
-		if (src_len >= dest_len)
-		{
+char *safe_strncpy2(char *dest, const char *source, const size_t dest_len, const size_t src_len) {
+	if (dest_len > 0) {
+		if (src_len >= dest_len) {
 			strncpy(dest, source, dest_len - 1);
 			dest[dest_len - 1] = '\0';
-		}
-		else
-		{
+		} else {
 			strncpy(dest, source, src_len);
 			dest[src_len] = '\0';
 		}
 	}
 	return dest;
 }
-
-int safe_snprintf(char *dest, const size_t len, const char* format, ...)
-{
+int safe_snprintf(char *dest, const size_t len, const char *format, ...) {
 	int ret;
-	if (len > 0)
-	{
+	if (len > 0) {
 		va_list ap;
 		va_start(ap, format);
 #ifdef __MINGW32__
@@ -136,624 +114,486 @@ int safe_snprintf(char *dest, const size_t len, const char* format, ...)
 #endif
 		va_end(ap);
 		dest[len - 1] = '\0';
-		if ((ret < 0) || (ret >= len))
+		if ((ret < 0) || (ret >= len)) {
 			return len;
+		}
 		return ret;
 	}
 	return 0;
 }
-
-char* safe_strcat (char* dest, const char* src, size_t len)
-{
-	size_t start_pos = strlen (dest);
-	if (start_pos < len)
-		safe_strncpy (dest+start_pos, src, len-start_pos);
+char *safe_strcat(char *dest, const char *src, size_t len) {
+	size_t start_pos = strlen(dest);
+	if (start_pos < len) {
+		safe_strncpy(dest + start_pos, src, len - start_pos);
+	}
 	return dest;
 }
-
-char* safe_strcasestr (const char* haystack, size_t haystack_len, const char* needle, size_t needle_len)
-{
-	if (haystack_len >= needle_len)
-	{
-		const char* res;
+char *safe_strcasestr(const char *haystack, size_t haystack_len, const char *needle, size_t needle_len) {
+	if (haystack_len >= needle_len) {
+		const char *res;
 		size_t istart;
 		size_t imax = haystack_len - needle_len;
-
-		for (istart = 0, res = haystack; istart <= imax && *res; istart++, res++)
-		{
-			if (strncasecmp (res, needle, needle_len) == 0)
-				return (char*) res;
+		for (istart = 0, res = haystack; istart <= imax && *res; istart++, res++) {
+			if (strncasecmp(res, needle, needle_len) == 0) {
+				return (char *)res;
+			}
 		}
 	}
-
 	return NULL;
 }
-
-void my_strcp(char *dest,const char * source)
-{
-	while(*source)
-	{
-		*dest++=*source++;
-	}
-	*dest='\0';
-}
-
-void my_strncp (char *dest, const char *source, size_t len)
-{
-	while (*source != '\0' && --len > 0)
-	{
+void my_strcp(char *dest, const char *source) {
+	while (*source) {
 		*dest++ = *source++;
 	}
 	*dest = '\0';
 }
-
-void my_strcat(char *dest,const char * source)
-{
-	int i,l,dl;
-
-	l=strlen(source);
-	dl=strlen(dest);
-	for(i=0;i<l;i++)dest[dl+i]=source[i];
-	dest[dl+i]='\0';
+void my_strncp(char *dest, const char *source, size_t len) {
+	while (*source != '\0' && --len > 0) {
+		*dest++ = *source++;
+	}
+	*dest = '\0';
 }
-
-Sint32 my_strncompare(const char *dest, const char *src, Sint32 len)
-{
+void my_strcat(char *dest, const char *source) {
+	int i, l, dl;
+	l = strlen(source);
+	dl = strlen(dest);
+	for (i = 0; i < l; i++) {
+		dest[dl + i] = source[i];
+	}
+	dest[dl + i] = '\0';
+}
+Sint32 my_strncompare(const char *dest, const char *src, Sint32 len) {
 	int i;
-	char ch1,ch2;
-
-	for(i=0;i<len;i++)
-		{
-			ch1=src[i];
-			ch2=dest[i];
-			if(ch1>=65 && ch1<=90)ch1+=32;//make lowercase
-			if(ch2>=65 && ch2<=90)ch2+=32;//make lowercase
-			if(ch1!=ch2)break;
+	char ch1, ch2;
+	for (i = 0; i < len; i++) {
+		ch1 = src[i];
+		ch2 = dest[i];
+		if (ch1 >= 65 && ch1 <= 90) {
+			ch1 += 32;                    //make lowercase
 		}
-	if(i!=len)return 0;
-	else return 1;
+		if (ch2 >= 65 && ch2 <= 90) {
+			ch2 += 32;                    //make lowercase
+		}
+		if (ch1 != ch2) {
+			break;
+		}
+	}
+	if (i != len) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
-
-Sint32 my_strcompare(const char *dest, const char *src)
-{
+Sint32 my_strcompare(const char *dest, const char *src) {
 	Uint32 len;
-
-	len=strlen(dest);
-	if(len!=strlen(src))return 0;
-	return(my_strncompare(dest, src, len));
+	len = strlen(dest);
+	if (len != strlen(src)) {
+		return 0;
+	}
+	return my_strncompare(dest, src, len);
 }
-
 // is this string more then one character and all alpha in it are CAPS?
-Sint32 my_isupper(const char *src, int len)
-{
-	int alpha=0;
-	if (len < 0)	len=strlen(src);
-	if(!src || !src[0] || !src[1] || !src[2] || len == 0) return 0;
-	while(*src && len > 0)
-		{
-            if(isalpha((unsigned char)*src)) alpha++;
-            if((isdigit((unsigned char)*src)&&alpha<len/2) || *src != toupper(*src)) return 0;    //at least one lower
-            src++;
-			len--;
+Sint32 my_isupper(const char *src, int len) {
+	int alpha = 0;
+	if (len < 0) {
+		len = strlen(src);
+	}
+	if (!src || !src[0] || !src[1] || !src[2] || len == 0) {
+		return 0;
+	}
+	while (*src && len > 0) {
+		if (isalpha((unsigned char)*src)) {
+			alpha++;
 		}
-	return 1;	// is all upper or all num
+		if ((isdigit((unsigned char)*src) && alpha < len / 2) || *src != toupper(*src)) {
+			return 0;                                                                 //at least one lower
+		}
+		src++;
+		len--;
+	}
+	return 1;       // is all upper or all num
 }
-
-char *my_tolower (char *src)
-{
+char *my_tolower(char *src) {
 	char *dest = src;
-
-	if (dest == NULL || dest[0] == '\0')
+	if (dest == NULL || dest[0] == '\0') {
 		return dest;
-	while (*src)
-	{
-		*src = tolower (*src);
+	}
+	while (*src) {
+		*src = tolower(*src);
 		src++;
 	}
-
 	return dest;
 }
-
 /*Wraps the lines*/
-
-char ** get_lines_dialogue(char * str, int chars_per_line)
-{
-	char ** my_str=NULL;
-	char * cur=NULL;
-	int lines=0;
-	int i=0;
-    int j;
-
-	if(str)
-    {
-		for(lines = 0; *str; lines++)
-        {
-			my_str=(char **)realloc(my_str,(lines+2)*sizeof(char *));
-			cur=my_str[lines]=(char*)calloc(chars_per_line+3,sizeof(char));
-
-		 	for(i = 0; i < chars_per_line && str[i]; i++)
-            {
-				if(str[i] == '\r')
-                {
-                    i++;
-                }
-				if (str[i] == '\n')
-                {
+char **get_lines_dialogue(char *str, int chars_per_line) {
+	char **my_str = NULL;
+	char *cur = NULL;
+	int lines = 0;
+	int i = 0;
+	int j;
+	if (str) {
+		for (lines = 0; *str; lines++) {
+			my_str = (char **)realloc(my_str, (lines + 2) * sizeof(char *));
+			cur = my_str[lines] = (char *)calloc(chars_per_line + 3, sizeof(char));
+			for (i = 0; i < chars_per_line && str[i]; i++) {
+				if (str[i] == '\r') {
+					i++;
+				}
+				if (str[i] == '\n') {
 					i++;
 					break;
 				}
-				cur[i]=str[i];
+				cur[i] = str[i];
 			}
-
-			if (i >= chars_per_line)//Wrap it
-            {
-                j = i;
-
+			if (i >= chars_per_line) {//Wrap it
+				j = i;
 				//go back to the last space
-				while(i){
-                    if ( i + 1 <= j)
-                    {
-					    if (str[i]=='/' || str[i]=='-' || str[i]=='?' || str[i]=='!' || (str[i]==' ' && (str[i+1]!=':' && str[i+1]!=';' && str[i+1]!='?' && str[i+1]!='!' && str[i+1]!='"')) || str[i]=='\n' || str[i]=='\r')
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-					    if(str[i-1]=='\n' || str[i]=='/' || str[i]=='-' || str[i]=='?' || str[i]=='!' || str[i]==' ' || str[i]=='\n' || str[i]=='\r')
-                        {
-                            break;
-                        }
-                    }
+				while (i) {
+					if ( i + 1 <= j) {
+						if (str[i] == '/' || str[i] == '-' || str[i] == '?' || str[i] == '!' || (str[i] == ' ' && (str[i + 1] != ':' && str[i + 1] != ';' && str[i + 1] != '?' && str[i + 1] != '!' && str[i + 1] != '"')) || str[i] == '\n' || str[i] == '\r') {
+							break;
+						}
+					} else {
+						if (str[i - 1] == '\n' || str[i] == '/' || str[i] == '-' || str[i] == '?' || str[i] == '!' || str[i] == ' ' || str[i] == '\n' || str[i] == '\r') {
+							break;
+						}
+					}
 					i--;
 				}
-
-				if(!i)
-                {
+				if (!i) {
 					//Force a break then...
-					i=chars_per_line;
+					i = chars_per_line;
 				}
 			}
-			str+=i;
-			cur[i]=0;
+			str += i;
+			cur[i] = 0;
 		}
-		if(my_str)my_str[lines]=NULL;//Used to get the bounds for displaying each line
+		if (my_str) {
+			my_str[lines] = NULL;//Used to get the bounds for displaying each line
+		}
 	}
 	return my_str;
 }
-
-char ** get_lines(char * str, int chars_per_line)
-{
-	char ** my_str=NULL;
-	char * cur=NULL;
-	int lines=0;
-	int i=0;
-    int j;
-	if(str){
-		for(lines = 0; *str; lines++) {
-			my_str=(char **)realloc(my_str,(lines+2)*sizeof(char *));
-			cur=my_str[lines]=(char*)calloc(chars_per_line+3,sizeof(char));
-
-			for(i = 0; i < chars_per_line && str[i]; i++){
-				if(str[i] == '\r') i++;
-				if (str[i] == '\n'){
+char **get_lines(char *str, int chars_per_line) {
+	char **my_str = NULL;
+	char *cur = NULL;
+	int lines = 0;
+	int i = 0;
+	int j;
+	if (str) {
+		for (lines = 0; *str; lines++) {
+			my_str = (char **)realloc(my_str, (lines + 2) * sizeof(char *));
+			cur = my_str[lines] = (char *)calloc(chars_per_line + 3, sizeof(char));
+			for (i = 0; i < chars_per_line && str[i]; i++) {
+				if (str[i] == '\r') {
+					i++;
+				}
+				if (str[i] == '\n') {
 					i++;
 					break;
 				}
-				cur[i]=str[i];
+				cur[i] = str[i];
 			}
-			if(i >= chars_per_line){//Wrap it
-                j = i;
+			if (i >= chars_per_line) {//Wrap it
+				j = i;
 				//go back to the last space
-				while(i){
-                    if ( i + 1 <= j)
-                    {
-					    if(str[i]=='/' || str[i]=='-' || str[i]=='?' || str[i]=='!' || (str[i]==' ' && (str[i+1]!=':' && str[i+1]!=';' && str[i+1]!='?' && str[i+1]!='!' && str[i+1]!='"')) || str[i]=='\n' || str[i]=='\r')
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-					    if(str[i]=='/' || str[i]=='-' || str[i]=='?' || str[i]=='!' || str[i]==' ' || str[i]=='\n' || str[i]=='\r')
-                        {
-                            break;
-                        }
-                    }
+				while (i) {
+					if ( i + 1 <= j) {
+						if (str[i] == '/' || str[i] == '-' || str[i] == '?' || str[i] == '!' || (str[i] == ' ' && (str[i + 1] != ':' && str[i + 1] != ';' && str[i + 1] != '?' && str[i + 1] != '!' && str[i + 1] != '"')) || str[i] == '\n' || str[i] == '\r') {
+							break;
+						}
+					} else {
+						if (str[i] == '/' || str[i] == '-' || str[i] == '?' || str[i] == '!' || str[i] == ' ' || str[i] == '\n' || str[i] == '\r') {
+							break;
+						}
+					}
 					i--;
 				}
-				if(i){
+				if (i) {
 					i++;
-					if(str[i]==' ')str++;
+					if (str[i] == ' ') {
+						str++;
+					}
 				} else {
 					//Force a break then...
-					i=chars_per_line;
+					i = chars_per_line;
 				}
 			}
-			str+=i;
-			cur[i]=0;
+			str += i;
+			cur[i] = 0;
 		}
-		if(my_str)my_str[lines]=NULL;//Used to get the bounds for displaying each line
+		if (my_str) {
+			my_str[lines] = NULL;//Used to get the bounds for displaying each line
+		}
 	}
 	return my_str;
 }
-
 // File utilities
-Uint32 clean_file_name (char *dest, const char *src, Uint32 max_len)
-{
-	char *dptr, *dend = dest + (max_len-1);
+Uint32 clean_file_name(char *dest, const char *src, Uint32 max_len) {
+	char *dptr, *dend = dest + (max_len - 1);
 	const char *sptr;
-
-	for (dptr = dest, sptr = src; dptr < dend && *sptr; dptr++, sptr++)
+	for (dptr = dest, sptr = src; dptr < dend && *sptr; dptr++, sptr++) {
 		*dptr = *sptr == '\\' ? '/' : tolower(*sptr);
+	}
 	// always place a null at the end
 	*dptr = '\0';
-
-	return dptr-dest;
+	return dptr - dest;
 }
-
 /*XML*/
-
-float xmlGetFloat(xmlNode * n, xmlChar * c)
-{
-	char * t=(char*)xmlGetProp(n,c);
-	float f=t?atof(t):0.0f;
+float xmlGetFloat(xmlNode *n, xmlChar *c) {
+	char *t = (char *)xmlGetProp(n, c);
+	float f = t?atof(t):0.0f;
 	xmlFree(t);
 	return f;
 }
-
-int xmlGetInt(xmlNode *n, xmlChar *c)
-{
-	char *t=(char*)xmlGetProp(n,c);
-	int i=t?atoi(t):0;
+int xmlGetInt(xmlNode *n, xmlChar *c) {
+	char *t = (char *)xmlGetProp(n, c);
+	int i = t?atoi(t):0;
 	xmlFree(t);
 	return i;
 }
-
-int my_xmlStrncopy(char ** out, const char * in, int len)
-{
-	if(in) {
-		size_t lin=0;
-		size_t lout=0;
-		int l1=0;
-		int l2=0;
-		int retval=1;
+int my_xmlStrncopy(char **out, const char *in, int len) {
+	if (in) {
+		size_t lin = 0;
+		size_t lout = 0;
+		int l1 = 0;
+		int l2 = 0;
+		int retval = 1;
 		char *inbuf;
 		char *inbuf2;
 		char *outbuf;
 		char *outbuf2;
-
-		lin=strlen(in);
-		l2=xmlUTF8Strlen((xmlChar*)in);
-
-		if(l2<0) lout=l1;
-		else if (len>0 && len<l2) lout=len;
-		else lout=l2;
-
-		inbuf=inbuf2=(char *)malloc((lin+1)*sizeof(char));
-		outbuf=outbuf2=(char *)malloc((lout+1)*sizeof(char));
-
-		memcpy(inbuf,in,lin);
-
-		l1=lin;
-		l2=lout;
-
-		if(my_UTF8Toisolat1(&outbuf2,&lout,&inbuf2,&lin)<0) {
-			retval=-1;
+		lin = strlen(in);
+		l2 = xmlUTF8Strlen((xmlChar *)in);
+		if (l2 < 0) {
+			lout = l1;
+		} else if (len > 0 && len < l2) {
+			lout = len;
+		} else {
+			lout = l2;
 		}
-
+		inbuf = inbuf2 = (char *)malloc((lin + 1) * sizeof(char));
+		outbuf = outbuf2 = (char *)malloc((lout + 1) * sizeof(char));
+		memcpy(inbuf, in, lin);
+		l1 = lin;
+		l2 = lout;
+		if (my_UTF8Toisolat1(&outbuf2, &lout, &inbuf2, &lin) < 0) {
+			retval = -1;
+		}
 		free(inbuf);
-
-		outbuf[l2]=0;
-
-		if(*out) {
-			memcpy(*out,outbuf,l2+1);
+		outbuf[l2] = 0;
+		if (*out) {
+			memcpy(*out, outbuf, l2 + 1);
 			free(outbuf);
 		} else {
-			*out=outbuf;
+			*out = outbuf;
 		}
-
-		return retval<0?-1:l2;
-	} else return -1;
+		return retval < 0?-1:l2;
+	} else {
+		return -1;
+	}
 }
-
-int my_UTF8Toisolat1(char **dest, size_t * lu, char **src, size_t * l)
-{
-	iconv_t t=iconv_open("ISO_8859-1","UTF-8");
-
+int my_UTF8Toisolat1(char **dest, size_t *lu, char **src, size_t *l) {
+	iconv_t t = iconv_open("ISO_8859-1", "UTF-8");
 	iconv(t, src, l, dest, lu);
-
 	iconv_close(t);
 	return 1;
 }
-
 /* return true if digest calculated */
-int get_file_digest(const char * filename, Uint8 digest[16])
-{
+int get_file_digest(const char *filename, Uint8 digest[16]) {
 	MD5 md5;
 	el_file_ptr file = NULL;
-
 	file = el_open(filename);
-
-	memset (digest, 0, 16);
-
-	if (file == NULL)
-	{
+	memset(digest, 0, 16);
+	if (file == NULL) {
 		LOG_ERROR("MD5Digest: Unable to open %s (%d)", filename, errno);
 		return 0;
 	}
-
-	if (el_get_pointer(file) == NULL)
-	{
+	if (el_get_pointer(file) == NULL) {
 		el_close(file);
 		return 0;
 	}
-
 	MD5Open(&md5);
 	MD5Digest(&md5, el_get_pointer(file), el_get_size(file));
 	MD5Close(&md5, digest);
-
 	el_close(file);
-
 	return 1;
 }
-
-int find_description_index (const dict_elem dict[], const char *elem, const char *desc) {
+int find_description_index(const dict_elem dict[], const char *elem, const char *desc) {
 	int idx = 0;
 	const char *key;
-
 	while ((key = dict[idx].desc) != NULL) {
-		if (strcasecmp (key, elem) == 0)
+		if (strcasecmp(key, elem) == 0) {
 			return dict[idx].index;
+		}
 		idx++;
 	}
-
 	LOG_ERROR("Unknown %s \"%s\"\n", desc, elem);
 	return -1;
 }
-
-void get_string_value(char *buf, size_t maxlen, const xmlNode *node)
-{
-	if (!node)
-	{
+void get_string_value(char *buf, size_t maxlen, const xmlNode *node) {
+	if (!node) {
 		LOG_ERROR("Node is null!");
 		buf[0] = '\0';
 		return;
 	}
-
-	if (!node->children)
+	if (!node->children) {
 		buf[0] = '\0';
-	else
-		my_strncp(buf, (const char*)node->children->content, maxlen);
+	} else {
+		my_strncp(buf, (const char *)node->children->content, maxlen);
+	}
 }
-
-void get_item_string_value(char *buf, size_t maxlen, const xmlNode *item,
-	const unsigned char *name)
-{
+void get_item_string_value(char *buf, size_t maxlen, const xmlNode *item, const unsigned char *name) {
 	const xmlNode *node;
-
-	if (!item)
-	{
+	if (!item) {
 		LOG_ERROR("Item is null!");
 		buf[0] = '\0';
 		return;
 	}
-
 	// look for this entry in the children
-	for (node = item->children; node; node = node->next)
-	{
-		if (node->type == XML_ELEMENT_NODE
-			&& xmlStrcasecmp(node->name, name) == 0)
-			{
-				get_string_value(buf, maxlen, node);
-				return;
-			}
+	for (node = item->children; node; node = node->next) {
+		if (node->type == XML_ELEMENT_NODE && xmlStrcasecmp(node->name, name) == 0) {
+			get_string_value(buf, maxlen, node);
+			return;
 		}
+	}
 }
-
-int get_bool_value(const xmlNode *node)
-{
+int get_bool_value(const xmlNode *node) {
 	const xmlChar *tval;
-
-	if (!node)
-	{
+	if (!node) {
 		LOG_ERROR("Node is null!");
 		return 0;
 	}
-
-	if (!node->children)
+	if (!node->children) {
 		return 0;
-
+	}
 	tval = xmlTrim(node->children->content);
-	return (xmlStrcasecmp(tval, (xmlChar*)"yes") == 0) ||
-		(xmlStrcasecmp(tval, (xmlChar*)"true") == 0) ||
-		(xmlStrcasecmp(tval, (xmlChar*)"oui") == 0) ||
-		(xmlStrcasecmp(tval, (xmlChar*)"vrai") == 0) ||
-		(xmlStrcasecmp(tval, (xmlChar*)"1") == 0);
+	return (xmlStrcasecmp(tval, (xmlChar *)"yes") == 0) || (xmlStrcasecmp(tval, (xmlChar *)"true") == 0) || (xmlStrcasecmp(tval, (xmlChar *)"oui") == 0) || (xmlStrcasecmp(tval, (xmlChar *)"vrai") == 0) || (xmlStrcasecmp(tval, (xmlChar *)"1") == 0);
 }
-
-int get_int_value(const xmlNode *node)
-{
-	if (!node)
-	{
+int get_int_value(const xmlNode *node) {
+	if (!node) {
 		LOG_ERROR("Node is null!");
 		return 0;
 	}
-
-	if (!node->children)
+	if (!node->children) {
 		return 0;
-
-	return atoi((const char*)node->children->content);
+	}
+	return atoi((const char *)node->children->content);
 }
-
-double get_float_value(const xmlNode *node)
-{
-	if (!node)
-	{
+double get_float_value(const xmlNode *node) {
+	if (!node) {
 		LOG_ERROR("Node is null!");
 		return 0.0;
 	}
-
-	if (!node->children)
+	if (!node->children) {
 		return 0.0;
-
-	return atof((const char*)node->children->content);
+	}
+	return atof((const char *)node->children->content);
 }
-
-int get_int_property(const xmlNode *node, const char *prop)
-{
+int get_int_property(const xmlNode *node, const char *prop) {
 	const xmlAttr *attr;
-
-	if (!node)
-	{
+	if (!node) {
 		LOG_ERROR("Node is null!");
 		return 0;
 	}
-
-	for (attr = node->properties; attr; attr = attr->next)
-	{
-		if (attr->type == XML_ATTRIBUTE_NODE &&
-			xmlStrcasecmp(attr->name, (const xmlChar*)prop) == 0)
-		{
-			return atoi((const char*)attr->children->content);
+	for (attr = node->properties; attr; attr = attr->next) {
+		if (attr->type == XML_ATTRIBUTE_NODE && xmlStrcasecmp(attr->name, (const xmlChar *)prop) == 0) {
+			return atoi((const char *)attr->children->content);
 		}
 	}
-
 	return -1;
 }
-
-int get_property(const xmlNode *node, const char *prop, const char *desc,
-	const dict_elem dict[])
-{
+int get_property(const xmlNode *node, const char *prop, const char *desc, const dict_elem dict[]) {
 	const xmlAttr *attr;
-
-	if (!node)
-	{
+	if (!node) {
 		LOG_ERROR("Node is null!");
 		return 0;
 	}
-
-	for (attr = node->properties; attr; attr = attr->next)
-	{
-		if (attr->type == XML_ATTRIBUTE_NODE &&
-			xmlStrcasecmp (attr->name, (const xmlChar*)prop) == 0)
-		{
-			return find_description_index(dict,
-				(const char*)attr->children->content, desc);
+	for (attr = node->properties; attr; attr = attr->next) {
+		if (attr->type == XML_ATTRIBUTE_NODE && xmlStrcasecmp(attr->name, (const xmlChar *)prop) == 0) {
+			return find_description_index(dict, (const char *)attr->children->content, desc);
 		}
 	}
-
 	LOG_ERROR("Unable to find property %s in node %s\n", prop, node->name);
 	return -1;
 }
-
-const char *get_string_property(const xmlNode *node, const char *prop)
-{
+const char *get_string_property(const xmlNode *node, const char *prop) {
 	const xmlAttr *attr;
-
-	if (node == NULL)
-	{
+	if (node == NULL) {
 		LOG_ERROR("Node is null!");
 		return "";
 	}
-
-	for (attr = node->properties; attr; attr = attr->next)
-	{
-		if (attr->type == XML_ATTRIBUTE_NODE &&
-			xmlStrcasecmp (attr->name, (xmlChar *)prop) == 0)
-		{
-			return fromUTF8(attr->children->content, strlen((const char*)attr->children->content));
+	for (attr = node->properties; attr; attr = attr->next) {
+		if (attr->type == XML_ATTRIBUTE_NODE && xmlStrcasecmp(attr->name, (xmlChar *)prop) == 0) {
+			return fromUTF8(attr->children->content, strlen((const char *)attr->children->content));
 		}
 	}
-
 	return "";
 }
-
-void append_char(char** s, char c, int* len, int* max_len)
-{
-	if (*len >= *max_len)
-	{
-		*s = (char*) realloc(*s, *max_len + APPEND_CHAR_BLOCK);
+void append_char(char **s, char c, int *len, int *max_len) {
+	if (*len >= *max_len) {
+		*s = (char *)realloc(*s, *max_len + APPEND_CHAR_BLOCK);
 		*max_len += APPEND_CHAR_BLOCK;
 	}
 	(*s)[(*len)++] = c;
 }
-
-xmlChar* toUTF8 (const char* str, int len)
-{
-	int out_size = 2*len;
+xmlChar *toUTF8(const char *str, int len) {
+	int out_size = 2 * len;
 	int out_len;
-	xmlChar* out = calloc (out_size, sizeof (xmlChar));
-
-	while (1)
-	{
+	xmlChar *out = calloc(out_size, sizeof(xmlChar));
+	while (1) {
 		int in_len = len;
 		out_len = out_size;
-
-		if (isolat1ToUTF8 (out, &out_len, BAD_CAST str, &in_len) < 0)
-		{
+		if (isolat1ToUTF8(out, &out_len, BAD_CAST str, &in_len) < 0) {
 			// Conversion error
-			free (out);
+			free(out);
 			return NULL;
 		}
-		if (in_len >= len)
+		if (in_len >= len) {
 			break;
-
+		}
 		out_size *= 2;
-		out = realloc (out, out_size * sizeof (xmlChar));
+		out = realloc(out, out_size * sizeof(xmlChar));
 	}
-
-	if (out_len >= out_size)
+	if (out_len >= out_size) {
 		// drats, no space to store a terminator
-		out = realloc (out, (out_size + 1) * sizeof (xmlChar));
+		out = realloc(out, (out_size + 1) * sizeof(xmlChar));
+	}
 	out[out_len] = '\0';
-
 	return out;
 }
-
-char* fromUTF8 (const xmlChar* str, int len)
-{
-	int out_size = len+1;
+char *fromUTF8(const xmlChar *str, int len) {
+	int out_size = len + 1;
 	int out_len = out_size;
 	int in_len = len;
-	char* out = calloc (out_size, 1);
-
-	if (UTF8Toisolat1 (BAD_CAST out, &out_len, str, &in_len) < 0)
-	{
+	char *out = calloc(out_size, 1);
+	if (UTF8Toisolat1(BAD_CAST out, &out_len, str, &in_len) < 0) {
 		// Conversion error
-		free (out);
+		free(out);
 		return NULL;
 	}
-
 	out[out_len] = '\0';
-
 	return out;
 }
-
-
 /* whether you pass in a NULL pointer or your own allocated memory for
  * out_str, you need to free the memory yourself */
-char *substitute_char_with_string(const char *str, char **out_str, char to_sub, const char* with_sub)
-{
+char *substitute_char_with_string(const char *str, char **out_str, char to_sub, const char *with_sub) {
 	int amp_count = 0;
 	const char *start_ptr;
 	char *end_ptr;
 	int out_len = 0;
 	size_t alloc_len = 0;
-
-	for (start_ptr = str; (start_ptr = strchr(start_ptr, to_sub)) != NULL; start_ptr++)
+	for (start_ptr = str; (start_ptr = strchr(start_ptr, to_sub)) != NULL; start_ptr++) {
 		amp_count++;
-
-	alloc_len = strlen(str) + amp_count*(strlen(with_sub)-1) + 1;
+	}
+	alloc_len = strlen(str) + amp_count * (strlen(with_sub) - 1) + 1;
 	*out_str = (char *)realloc(*out_str, alloc_len);
 	**out_str = '\0';
-
-	for (start_ptr = str; (end_ptr = strchr(start_ptr, to_sub)) != NULL; )
-	{
-		while (start_ptr < end_ptr)
+	for (start_ptr = str; (end_ptr = strchr(start_ptr, to_sub)) != NULL; ) {
+		while (start_ptr < end_ptr) {
 			(*out_str)[out_len++] = *start_ptr++;
+		}
 		(*out_str)[out_len] = '\0';
-
 		safe_strcat(*out_str, with_sub, alloc_len);
 		out_len = strlen(*out_str);
 		start_ptr++;
@@ -761,32 +601,25 @@ char *substitute_char_with_string(const char *str, char **out_str, char to_sub, 
 	safe_strcat(*out_str, start_ptr, alloc_len);
 	return *out_str;
 }
-
-
 /* Return a copy of source truncated to be no longer than max_len_x including the append_str on the end. */
-char *truncated_string(char *dest, const char *source, size_t dest_max_len, const char *append_str, float max_len_x, float font_ratio)
-{
+char *truncated_string(char *dest, const char *source, size_t dest_max_len, const char *append_str, float max_len_x, float font_ratio) {
 	float string_width = 0;
 	size_t dest_len = 0;
-	float append_len_x = get_string_width((unsigned char*)append_str) * font_ratio;
+	float append_len_x = get_string_width((unsigned char *)append_str) * font_ratio;
 	char *dest_p = dest;
-
-	while ((*source != '\0') && (dest_len < dest_max_len-1))
-	{
+	while ((*source != '\0') && (dest_len < dest_max_len - 1)) {
 		float char_width = get_char_width(*source) * font_ratio;
-		if ((string_width + char_width) > (max_len_x - append_len_x))
+		if ((string_width + char_width) > (max_len_x - append_len_x)) {
 			break;
+		}
 		*dest_p++ = *source++;
 		dest_len++;
 		string_width += char_width;
 	}
-
-	while ((*append_str != '\0') && (dest_len < dest_max_len-1))
-	{
+	while ((*append_str != '\0') && (dest_len < dest_max_len - 1)) {
 		*dest_p++ = *append_str++;
 		dest_len++;
 	}
-
 	*dest_p = '\0';
 	return dest;
 }

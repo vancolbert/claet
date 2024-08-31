@@ -1,23 +1,17 @@
 #ifndef LIST_H__
 #define LIST_H__
-
 #include <stddef.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef struct list_node {
 	struct list_node *next;
 	struct list_node *prev;
 	void *data;
 } list_node_t;
-
-typedef void (*list_free_func_t)(void*);
-
-#define list_for_each_node( node, list ) \
-    for ( node = list; node; node=node->next )
-
+typedef void (*list_free_func_t)(void *);
+#define list_for_each_node(node, list) \
+	for ( node = list; node; node = node->next )
 list_node_t *list_push(list_node_t **head, void *data);
 void *list_pop(list_node_t **head);
 void list_destroy(list_node_t *head);
@@ -57,9 +51,7 @@ void list_remove_node(list_node_t **head, list_node_t *node);
  * \param free_function The function to be called to free data.
  * \returns nothing
  */
-
 void list_remove_node_and_free_data(list_node_t **head, list_node_t *node, list_free_func_t free_function);
-
 /*!
  * \ingroup misc
  * \brief Append to a linked list
@@ -71,9 +63,7 @@ void list_remove_node_and_free_data(list_node_t **head, list_node_t *node, list_
  * \returns The node appended
  */
 list_node_t *list_append(list_node_t **head, void *data);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif //LIST_H__

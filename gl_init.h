@@ -5,19 +5,15 @@
  */
 #ifndef __GL_INIT_H__
 #define __GL_INIT_H__
-
 #include "load_gl_extensions.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*! \name window dimensions
  * @{ */
 extern int window_width; /*!< width of the window */
 extern int window_height; /*!< height of the window */
 /*! @} */
-
 extern int bpp; /*!< color depth to use */
 extern int video_mode; /*!< currently selected video mode */
 extern int video_user_width; /*!< userdefined window width */
@@ -32,7 +28,6 @@ extern float perspective; /*!< The perspective "angle". Higher values mean highe
 extern float far_plane; /*!< The distance of the far clipping plane to your actor. */
 extern float far_reflection_plane; /*!< The distance of the far clipping plane to your actor. */
 extern float near_plane; /*!< The distance of the near clipping plane to your actor (devided by zoom_level). */
-
 /*! \name OpenGL extensions variables
  * @{ */
 extern int have_stencil; /*!< flag that indicates whether we have the stencil extension or not. \todo shouldn't this go to gl_init.h to all the other OpenGL related variables? */
@@ -57,7 +52,6 @@ extern int gl_extensions_loaded; /*< specifies if the OpenGL extensions were loa
  * \sa init_video
  */
 void setup_video_mode(int fs, int mode);
-
 /*!
  * \ingroup video
  * \brief   Switch to a different video mode or switch fullscreen state
@@ -66,7 +60,6 @@ void setup_video_mode(int fs, int mode);
  *	    True otherwise
  */
 int switch_video(int mode, int full_screen);
-
 /*!
  * \ingroup video
  * \brief   initializes the video engine.
@@ -76,7 +69,6 @@ int switch_video(int mode, int full_screen);
  * \callgraph
  */
 void init_video();
-
 /*!
  * \ingroup video
  * \brief   checks and initializes available OpenGL extensions (GLX)
@@ -86,7 +78,6 @@ void init_video();
  * \callgraph
  */
 void init_gl_extensions();
-
 /*!
  * \ingroup video
  * \brief   resizes the window to the selected mode.
@@ -95,7 +86,6 @@ void init_gl_extensions();
  *
  */
 void resize_root_window();
-
 /*!
  * \ingroup video
  * \brief   sets \a mode to be the new video mode. If \a fs is 0, the new mode will be fullscreen, else it will be a windowed mode.
@@ -107,8 +97,7 @@ void resize_root_window();
  *
  * \callgraph
  */
-void set_new_video_mode(int fs,int mode);
-
+void set_new_video_mode(int fs, int mode);
 /*!
  * \ingroup video
  * \brief   toggles the display from fullscreen to windowed mode and vice versa.
@@ -118,7 +107,6 @@ void set_new_video_mode(int fs,int mode);
  * \callgraph
  */
 void toggle_full_screen();
-
 /*!
  * \ingroup video
  * \brief       prints OpenGL related errors
@@ -131,16 +119,13 @@ void toggle_full_screen();
  * \callgraph
  */
 int print_gl_errors(const char *file, int line);
-
 /*!
  * \name CHECK_GL_ERRORS macro
  */
 /*! @{ */
-#define CHECK_GL_ERRORS()	/*!< NOP */
+#define CHECK_GL_ERRORS()       /*!< NOP */
 /*! @} */
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

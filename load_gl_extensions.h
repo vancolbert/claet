@@ -1,73 +1,30 @@
-#ifndef	_LOAD_GL_EXTENSIONS_H_
-#define	_LOAD_GL_EXTENSIONS_H_
-
+#ifndef _LOAD_GL_EXTENSIONS_H_
+#define _LOAD_GL_EXTENSIONS_H_
 #include "platform.h"
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 #ifndef GL_ATI_texture_compression_3dc
 #define GL_ATI_texture_compression_3dc 1
-
 #define GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI     0x8837
-
 #endif /* GL_ATI_texture_compression_3dc */
-
 #ifndef GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT
 #define GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT 0x8C72
 #endif
-
 #ifndef GL_COMPRESSED_LUMINANCE_LATC1_EXT
 #define GL_COMPRESSED_LUMINANCE_LATC1_EXT  0x8C70
 #endif
-
 typedef enum {
-	arb_multitexture = 0,
-	arb_texture_compression = 1,
-	arb_point_parameters = 2,
-	arb_point_sprite = 3,
-	arb_vertex_buffer_object = 4,
-	arb_shadow = 5,
-	arb_texture_env_combine = 6,
-	arb_texture_env_crossbar = 7,
-	arb_texture_env_dot3 = 8,
-	arb_occlusion_query = 9,
-	arb_depth_texture = 10,
-	arb_fragment_program = 11,
-	arb_vertex_program = 12,
-	arb_fragment_shader = 13,
-	arb_vertex_shader = 14,
-	arb_shader_objects = 15,
-	arb_shading_language_100 = 16,
-	arb_texture_non_power_of_two = 17,
-	ext_compiled_vertex_array = 18,
-	ext_draw_range_elements = 19,
-	ext_framebuffer_object = 20,
-	ext_texture_compression_s3tc = 21,
-	ext_texture_filter_anisotropic = 22,
-	sgis_generate_mipmap = 23,
-	arb_texture_mirrored_repeat = 24,
-	arb_texture_rectangle = 25,
-	ext_fog_coord = 26,
-	ati_texture_compression_3dc = 27,
-	ext_texture_compression_latc = 28,
-	ext_texture_compression_rgtc = 29,
-	arb_texture_cube_map = 30,
-	arb_texture_float = 31,
-	ext_abgr = 32,
-	ext_gpu_program_parameters = 33
+	arb_multitexture = 0, arb_texture_compression = 1, arb_point_parameters = 2, arb_point_sprite = 3, arb_vertex_buffer_object = 4, arb_shadow = 5, arb_texture_env_combine = 6, arb_texture_env_crossbar = 7, arb_texture_env_dot3 = 8, arb_occlusion_query = 9, arb_depth_texture = 10, arb_fragment_program = 11, arb_vertex_program = 12, arb_fragment_shader = 13, arb_vertex_shader = 14, arb_shader_objects = 15, arb_shading_language_100 = 16, arb_texture_non_power_of_two = 17, ext_compiled_vertex_array = 18, ext_draw_range_elements = 19, ext_framebuffer_object = 20, ext_texture_compression_s3tc = 21, ext_texture_filter_anisotropic = 22, sgis_generate_mipmap = 23, arb_texture_mirrored_repeat = 24, arb_texture_rectangle = 25, ext_fog_coord = 26, ati_texture_compression_3dc = 27, ext_texture_compression_latc = 28, ext_texture_compression_rgtc = 29, arb_texture_cube_map = 30, arb_texture_float = 31, ext_abgr = 32, ext_gpu_program_parameters = 33,
 } extension_enum;
-
 /*	GL_VERSION_1_2		*/
 extern PFNGLCOPYTEXSUBIMAGE3DPROC ELglCopyTexSubImage3D;
 extern PFNGLDRAWRANGEELEMENTSPROC ELglDrawRangeElements;
 extern PFNGLTEXIMAGE3DPROC ELglTexImage3D;
 extern PFNGLTEXSUBIMAGE3DPROC ELglTexSubImage3D;
 /*	GL_VERSION_1_2		*/
-
 /*	GL_VERSION_1_3		*/
 extern PFNGLACTIVETEXTUREPROC ELglActiveTexture;
 extern PFNGLCLIENTACTIVETEXTUREPROC ELglClientActiveTexture;
@@ -116,7 +73,6 @@ extern PFNGLMULTITEXCOORD4SPROC ELglMultiTexCoord4s;
 extern PFNGLMULTITEXCOORD4SVPROC ELglMultiTexCoord4sv;
 extern PFNGLSAMPLECOVERAGEPROC ELglSampleCoverage;
 /*	GL_VERSION_1_3		*/
-
 /*	GL_VERSION_1_4		*/
 extern PFNGLBLENDCOLORPROC ELglBlendColor;
 extern PFNGLBLENDEQUATIONPROC ELglBlendEquation;
@@ -164,7 +120,6 @@ extern PFNGLWINDOWPOS3IVPROC ELglWindowPos3iv;
 extern PFNGLWINDOWPOS3SPROC ELglWindowPos3s;
 extern PFNGLWINDOWPOS3SVPROC ELglWindowPos3sv;
 /*	GL_VERSION_1_4		*/
-
 /*	GL_VERSION_1_5		*/
 extern PFNGLBEGINQUERYPROC ELglBeginQuery;
 extern PFNGLBINDBUFFERPROC ELglBindBuffer;
@@ -186,7 +141,6 @@ extern PFNGLISQUERYPROC ELglIsQuery;
 extern PFNGLMAPBUFFERPROC ELglMapBuffer;
 extern PFNGLUNMAPBUFFERPROC ELglUnmapBuffer;
 /*	GL_VERSION_1_5		*/
-
 /*	GL_VERSION_2_0		*/
 extern PFNGLATTACHSHADERPROC ELglAttachShader;
 extern PFNGLBINDATTRIBLOCATIONPROC ELglBindAttribLocation;
@@ -282,7 +236,6 @@ extern PFNGLVERTEXATTRIB4UIVPROC ELglVertexAttrib4uiv;
 extern PFNGLVERTEXATTRIB4USVPROC ELglVertexAttrib4usv;
 extern PFNGLVERTEXATTRIBPOINTERPROC ELglVertexAttribPointer;
 /*	GL_VERSION_2_0		*/
-
 /*	GL_VERSION_2_1		*/
 extern PFNGLUNIFORMMATRIX2X3FVPROC ELglUniformMatrix2x3fv;
 extern PFNGLUNIFORMMATRIX2X4FVPROC ELglUniformMatrix2x4fv;
@@ -291,7 +244,6 @@ extern PFNGLUNIFORMMATRIX3X4FVPROC ELglUniformMatrix3x4fv;
 extern PFNGLUNIFORMMATRIX4X2FVPROC ELglUniformMatrix4x2fv;
 extern PFNGLUNIFORMMATRIX4X3FVPROC ELglUniformMatrix4x3fv;
 /*	GL_VERSION_2_1		*/
-
 /*	GL_ARB_multitexture	*/
 extern PFNGLACTIVETEXTUREARBPROC ELglActiveTextureARB;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC ELglClientActiveTextureARB;
@@ -328,21 +280,17 @@ extern PFNGLMULTITEXCOORD4IVARBPROC ELglMultiTexCoord4ivARB;
 extern PFNGLMULTITEXCOORD4SARBPROC ELglMultiTexCoord4sARB;
 extern PFNGLMULTITEXCOORD4SVARBPROC ELglMultiTexCoord4svARB;
 /*	GL_ARB_multitexture	*/
-
 /*	GL_EXT_compiled_vertex_array	*/
 extern PFNGLLOCKARRAYSEXTPROC ELglLockArraysEXT;
 extern PFNGLUNLOCKARRAYSEXTPROC ELglUnlockArraysEXT;
 /*	GL_EXT_compiled_vertex_array	*/
-
 /*	GL_EXT_draw_range_elements	*/
 extern PFNGLDRAWRANGEELEMENTSEXTPROC ELglDrawRangeElementsEXT;
 /*	GL_EXT_draw_range_elements	*/
-
 /*	GL_ARB_point_parameters		*/
 extern PFNGLPOINTPARAMETERFARBPROC ELglPointParameterfARB;
 extern PFNGLPOINTPARAMETERFVARBPROC ELglPointParameterfvARB;
 /*	GL_ARB_point_parameters		*/
-
 /*	GL_ARB_vertex_buffer_object	*/
 extern PFNGLBINDBUFFERARBPROC ELglBindBufferARB;
 extern PFNGLBUFFERDATAARBPROC ELglBufferDataARB;
@@ -356,7 +304,6 @@ extern PFNGLISBUFFERARBPROC ELglIsBufferARB;
 extern PFNGLMAPBUFFERARBPROC ELglMapBufferARB;
 extern PFNGLUNMAPBUFFERARBPROC ELglUnmapBufferARB;
 /*	GL_ARB_vertex_buffer_object	*/
-
 /*	GL_EXT_framebuffer_object	*/
 extern PFNGLBINDFRAMEBUFFEREXTPROC ELglBindFramebufferEXT;
 extern PFNGLBINDRENDERBUFFEREXTPROC ELglBindRenderbufferEXT;
@@ -376,7 +323,6 @@ extern PFNGLISFRAMEBUFFEREXTPROC ELglIsFramebufferEXT;
 extern PFNGLISRENDERBUFFEREXTPROC ELglIsRenderbufferEXT;
 extern PFNGLRENDERBUFFERSTORAGEEXTPROC ELglRenderbufferStorageEXT;
 /*	GL_EXT_framebuffer_object	*/
-
 /*	GL_ARB_texture_compression	*/
 extern PFNGLCOMPRESSEDTEXIMAGE1DARBPROC ELglCompressedTexImage1DARB;
 extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC ELglCompressedTexImage2DARB;
@@ -386,7 +332,6 @@ extern PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC ELglCompressedTexSubImage2DARB;
 extern PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC ELglCompressedTexSubImage3DARB;
 extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC ELglGetCompressedTexImageARB;
 /*	GL_ARB_texture_compression	*/
-
 /*	GL_ARB_occlusion_query		*/
 extern PFNGLBEGINQUERYARBPROC ELglBeginQueryARB;
 extern PFNGLDELETEQUERIESARBPROC ELglDeleteQueriesARB;
@@ -397,7 +342,6 @@ extern PFNGLGETQUERYOBJECTUIVARBPROC ELglGetQueryObjectuivARB;
 extern PFNGLGETQUERYIVARBPROC ELglGetQueryivARB;
 extern PFNGLISQUERYARBPROC ELglIsQueryARB;
 /*	GL_ARB_occlusion_query		*/
-
 /*	GL_ARB_vertex_program		*/
 extern PFNGLBINDPROGRAMARBPROC ELglBindProgramARB;
 extern PFNGLDELETEPROGRAMSARBPROC ELglDeleteProgramsARB;
@@ -462,13 +406,11 @@ extern PFNGLVERTEXATTRIB4UIVARBPROC ELglVertexAttrib4uivARB;
 extern PFNGLVERTEXATTRIB4USVARBPROC ELglVertexAttrib4usvARB;
 extern PFNGLVERTEXATTRIBPOINTERARBPROC ELglVertexAttribPointerARB;
 /*	GL_ARB_vertex_program		*/
-
 /*	GL_ARB_vertex_shader		*/
 extern PFNGLBINDATTRIBLOCATIONARBPROC ELglBindAttribLocationARB;
 extern PFNGLGETACTIVEATTRIBARBPROC ELglGetActiveAttribARB;
 extern PFNGLGETATTRIBLOCATIONARBPROC ELglGetAttribLocationARB;
 /*	GL_ARB_vertex_shader		*/
-
 /*	GL_ARB_shader_objects		*/
 extern PFNGLATTACHOBJECTARBPROC ELglAttachObjectARB;
 extern PFNGLCOMPILESHADERARBPROC ELglCompileShaderARB;
@@ -510,7 +452,6 @@ extern PFNGLUNIFORMMATRIX4FVARBPROC ELglUniformMatrix4fvARB;
 extern PFNGLUSEPROGRAMOBJECTARBPROC ELglUseProgramObjectARB;
 extern PFNGLVALIDATEPROGRAMARBPROC ELglValidateProgramARB;
 /*	GL_ARB_shader_objects		*/
-
 /*	GL_EXT_fog_coord		*/
 extern PFNGLFOGCOORDPOINTEREXTPROC ELglFogCoordPointerEXT;
 extern PFNGLFOGCOORDDEXTPROC ELglFogCoorddEXT;
@@ -518,21 +459,16 @@ extern PFNGLFOGCOORDDVEXTPROC ELglFogCoorddvEXT;
 extern PFNGLFOGCOORDFEXTPROC ELglFogCoordfEXT;
 extern PFNGLFOGCOORDFVEXTPROC ELglFogCoordfvEXT;
 /*	GL_EXT_fog_coord		*/
-
 /*	GL_EXT_gpu_program_parameters	*/
 extern PFNGLPROGRAMENVPARAMETERS4FVEXTPROC ELglProgramEnvParameters4fvEXT;
 extern PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC ELglProgramLocalParameters4fvEXT;
 /*	GL_EXT_gpu_program_parameters	*/
-
 extern void init_opengl_extensions();
 extern Uint32 have_extension(extension_enum extension);
 extern Uint32 get_texture_units();
-
-extern const char* get_gl_version_str();
+extern const char *get_gl_version_str();
 extern GLboolean supports_gl_version(Uint8 major, Uint8 minor);
-
 #ifdef __cplusplus
 }
 #endif
-
-#endif	//_LOAD_GL_EXTENSIONS_H_
+#endif  //_LOAD_GL_EXTENSIONS_H_

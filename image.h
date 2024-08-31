@@ -1,34 +1,25 @@
 /****************************************************************************
- *            image.h
- *
- * Author: 2011  Daniel Jungmann <dsj@gmx.net>
- * Copyright: See COPYING file that comes with this distribution
- ****************************************************************************/
-
+*            image.h
+*
+* Author: 2011  Daniel Jungmann <dsj@gmx.net>
+* Copyright: See COPYING file that comes with this distribution
+****************************************************************************/
 #ifndef UUID_26e27c11_f811_40c6_81a5_d01cf7aa36ee
 #define UUID_26e27c11_f811_40c6_81a5_d01cf7aa36ee
-
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \file
  * \ingroup     load
  * \brief 	Image manipulation functions
  */
-
-static inline Uint32 popcount(const Uint32 x)
-{
+static inline Uint32 popcount(const Uint32 x) {
 	Uint32 r;
-
 	r = x - ((x >> 1) & 033333333333) - ((x >> 2) & 011111111111);
-
 	return ((r + (r >> 3)) & 030707070707) % 63;
 }
-
 /*!
  * \ingroup 	textures
  * \brief 	Unpacks the given image
@@ -44,9 +35,7 @@ static inline Uint32 popcount(const Uint32 x)
  * \param	dest The buffer for the unpacked image. Must be RGBA8.
  * \callgraph
  */
-void fast_unpack(const Uint8* source, const Uint32 size, const Uint32 red,
-	const Uint32 green, const Uint32 blue, const Uint32 alpha, Uint8* dest);
-
+void fast_unpack(const Uint8 *source, const Uint32 size, const Uint32 red, const Uint32 green, const Uint32 blue, const Uint32 alpha, Uint8 *dest);
 /*!
  * \ingroup 	textures
  * \brief 	Replaces the alpha values
@@ -58,8 +47,7 @@ void fast_unpack(const Uint8* source, const Uint32 size, const Uint32 red,
  * \param   	source The source image to use. Format must be RGBA8.
  * \callgraph
  */
-void fast_replace_a8_rgba8(const Uint8* alpha, const Uint32 size, Uint8* source);
-
+void fast_replace_a8_rgba8(const Uint8 *alpha, const Uint32 size, Uint8 *source);
 /*!
  * \ingroup 	textures
  * \brief 	Replaces the alpha values
@@ -71,8 +59,7 @@ void fast_replace_a8_rgba8(const Uint8* alpha, const Uint32 size, Uint8* source)
  * \param   	source The source image to use. Format must be RGBA8.
  * \callgraph
  */
-void fast_replace_alpha_rgba8(const Uint8 alpha, const Uint32 size, Uint8* source);
-
+void fast_replace_alpha_rgba8(const Uint8 alpha, const Uint32 size, Uint8 *source);
 /*!
  * \ingroup 	textures
  * \brief 	Blend two images
@@ -86,12 +73,8 @@ void fast_replace_alpha_rgba8(const Uint8 alpha, const Uint32 size, Uint8* sourc
  * \param	dest The buffer for the blended image. Format must be RGBA8.
  * \callgraph
  */
-void fast_blend(const Uint8* alpha, const Uint32 size, const Uint8* source0,
-	const Uint8* source1, Uint8* dest);
-
+void fast_blend(const Uint8 *alpha, const Uint32 size, const Uint8 *source0, const Uint8 *source1, Uint8 *dest);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif /* UUID_26e27c11_f811_40c6_81a5_d01cf7aa36ee */
-

@@ -3,242 +3,211 @@
  * \ingroup elwindows
  * \brief EL window manager.
  */
-#ifndef	__EL_WINDOWS_H
-#define	__EL_WINDOWS_H
-
+#ifndef __EL_WINDOWS_H
+#define __EL_WINDOWS_H
 #include "keys.h"
 #include "widgets.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \name Title bar & other constants
  */
 /*! @{ */
-#define	ELW_TITLE_HEIGHT	16
-#define	ELW_BOX_SIZE		20
+#define ELW_TITLE_HEIGHT        16
+#define ELW_BOX_SIZE            20
 #define ELW_TITLE_SIZE 35
-#define ELW_CM_MENU_LEN		3
+#define ELW_CM_MENU_LEN         3
 /*! @} */
-
 /*!
  * A simple window handler setup to reduce the code needed to do windows
  *
  */
-typedef	struct	{
-	int	window_id;	/*!< the unique window id */
-	int	order;		/*!< the order the windows are to be displayed (layering) */
-	int	pos_id;		/*!< id of parent window, pos_id < 0 for normal windows */
-	int	pos_loc;	/*!< where is it compared to the pos id?	NOT SUPPORTED YET */
-	int	pos_x, pos_y;	/*!< logical location on screen */
-	int	len_x, len_y;	/*!< the size of the window in pixels */
-	int	orig_len_x, orig_len_y;	/*!< the size of the original window in pixels */
-	int	min_len_x, min_len_y;	/*!< for resizable windows, the minimum width and height */
-	int	cur_x, cur_y;	/*!< current location on screen */
-	int scroll_id;		/*!< id of the scroll widget, if window is scrollable */
-	int scroll_yoffset;	/*!< scroll bar will be placed below any close box, this is any additional y offset */
-
-	Uint32	flags; /*!< window flags */
-
-	float	back_color[4];		/*!< r,g,b,a for the background */
-	float	border_color[4];	/*!< r,g,b,a for the border */
-	float	line_color[4];		/*!< r,g,b,a for any internal lines */
-
-	char	window_name[ELW_TITLE_SIZE];	/*!< should be a unique name suitable for display */
-
-	char	displayed;	/*!< is the window currently being displayed? */
+typedef struct  {
+	int window_id;          /*!< the unique window id */
+	int order;              /*!< the order the windows are to be displayed (layering) */
+	int pos_id;             /*!< id of parent window, pos_id < 0 for normal windows */
+	int pos_loc;            /*!< where is it compared to the pos id?	NOT SUPPORTED YET */
+	int pos_x, pos_y;       /*!< logical location on screen */
+	int len_x, len_y;       /*!< the size of the window in pixels */
+	int orig_len_x, orig_len_y;     /*!< the size of the original window in pixels */
+	int min_len_x, min_len_y;       /*!< for resizable windows, the minimum width and height */
+	int cur_x, cur_y;       /*!< current location on screen */
+	int scroll_id;          /*!< id of the scroll widget, if window is scrollable */
+	int scroll_yoffset;     /*!< scroll bar will be placed below any close box, this is any additional y offset */
+	Uint32 flags;  /*!< window flags */
+	float back_color[4];            /*!< r,g,b,a for the background */
+	float border_color[4];          /*!< r,g,b,a for the border */
+	float line_color[4];            /*!< r,g,b,a for any internal lines */
+	char window_name[ELW_TITLE_SIZE];       /*!< should be a unique name suitable for display */
+	char displayed;         /*!< is the window currently being displayed? */
 	//char	collapsed;	// is it collapsed or expanded?
-	char	dragged;	/*!< are we dragging the window? */
-	char	resized;	/*!< are we resizing the window? */
-	char	drag_in;	/*!< are we dragging inside the window? */
-	char	reinstate;	/*!< reinstate this window if the parent is shown again */
-	int		opaque;		/*!< if non-zero, window is drawn opaque */
-	char	owner_drawn_title_bar; /*the title bar is drawn by the window itself*/
-	size_t	cm_id; 				/*!< optional context menu activated by right-clicking title */
-
-    /*!
+	char dragged;           /*!< are we dragging the window? */
+	char resized;           /*!< are we resizing the window? */
+	char drag_in;           /*!< are we dragging inside the window? */
+	char reinstate;         /*!< reinstate this window if the parent is shown again */
+	int opaque;                     /*!< if non-zero, window is drawn opaque */
+	char owner_drawn_title_bar;    /*the title bar is drawn by the window itself*/
+	size_t cm_id;                           /*!< optional context menu activated by right-clicking title */
+	/*!
 	 * \name the handlers
-     */
-    /*! @{ */
-	int (*init_handler)();		/*!< init, scaling, etc */
-	int (*display_handler)();	/*!< display the window */
-	int (*pre_display_handler)();	/*!< display the window, before body (e.g. scissor) */
-	int (*click_handler)();		/*!< handle mouse clicks */
-	int (*drag_handler)();		/*!< handle dragging inside windows */
-	int (*mouseover_handler)();	/*!< handle mouseovers */
-	int (*resize_handler)();	/*!< handle window resize events */
-	int (*keypress_handler)();	/*!< handle key presses */
-	int (*close_handler)();		/*!< executed after window is closed */
-	int (*destroy_handler)();	/*!< executed upon window destruction */
-	int (*show_handler)();		/*!< executed before the window is shown */
-	int (*after_show_handler)();		/*!< executed after the window is shown */
-	int (*hide_handler)();		/*!< executed after the window is hidden */
-    /*! @} */
-
+	 */
+	/*! @{ */
+	int (*init_handler)();          /*!< init, scaling, etc */
+	int (*display_handler)();       /*!< display the window */
+	int (*pre_display_handler)();   /*!< display the window, before body (e.g. scissor) */
+	int (*click_handler)();         /*!< handle mouse clicks */
+	int (*drag_handler)();          /*!< handle dragging inside windows */
+	int (*mouseover_handler)();     /*!< handle mouseovers */
+	int (*resize_handler)();        /*!< handle window resize events */
+	int (*keypress_handler)();      /*!< handle key presses */
+	int (*close_handler)();         /*!< executed after window is closed */
+	int (*destroy_handler)();       /*!< executed upon window destruction */
+	int (*show_handler)();          /*!< executed before the window is shown */
+	int (*after_show_handler)();            /*!< executed after the window is shown */
+	int (*hide_handler)();          /*!< executed after the window is hidden */
+	/*! @} */
 	/*
-	// and optional list/data storage - future expansion??
-	void	*list;
-	int	list_size;	// width of list items
-	int	num_list;	// number of items usable in list
-	int	max_list;	// amount of space allocated in list
-	int	data_value;	// a simple data value associated with this window
-	*/
-	void * data; /*!< data for this window */
+	   // and optional list/data storage - future expansion??
+	   void	*list;
+	   int	list_size;	// width of list items
+	   int	num_list;	// number of items usable in list
+	   int	max_list;	// amount of space allocated in list
+	   int	data_value;	// a simple data value associated with this window
+	 */
+	void *data;  /*!< data for this window */
 	widget_list *widgetlist; /*!< list of widgets for this window */
 } window_info;
-
 /*!
  * \name property flags in create
  */
 /*! @{ */
-#define	ELW_TITLE_NONE	0x0000
-#define	ELW_TITLE_BAR	0x0001
-#define	ELW_TITLE_NAME	0x0002
-#define	ELW_CLOSE_BOX	0x0004
-
-#define	ELW_SHOW		0x0010
-#define	ELW_DRAGGABLE	0x0020
+#define ELW_TITLE_NONE  0x0000
+#define ELW_TITLE_BAR   0x0001
+#define ELW_TITLE_NAME  0x0002
+#define ELW_CLOSE_BOX   0x0004
+#define ELW_SHOW                0x0010
+#define ELW_DRAGGABLE   0x0020
 //#define	ELW_COLLAPSABLE	0x0040
-#define	ELW_SHOW_LAST	0x0080
-#define ELW_RESIZEABLE	0x0100
-
-#define	ELW_USE_BACKGROUND	0x0200
-#define	ELW_USE_BORDER		0x0400
+#define ELW_SHOW_LAST   0x0080
+#define ELW_RESIZEABLE  0x0100
+#define ELW_USE_BACKGROUND      0x0200
+#define ELW_USE_BORDER          0x0400
 //#define	ELW_USE_LINES		0x0800
-
-#define ELW_CLICK_TRANSPARENT	0x1000
-
+#define ELW_CLICK_TRANSPARENT   0x1000
 #define ELW_ALPHA_BORDER      0x2000
 #define ELW_SWITCHABLE_OPAQUE 0x4000
 #define ELW_SCROLLABLE        0x8000
 /*! @} */
-
 /*!
  * \name predefined window flags
  */
 /*! @{ */
-#define	ELW_WIN_DEFAULT (ELW_TITLE_BAR|ELW_CLOSE_BOX|ELW_DRAGGABLE|ELW_USE_BACKGROUND|ELW_USE_BORDER|ELW_SHOW|ELW_TITLE_NAME|ELW_ALPHA_BORDER|ELW_SWITCHABLE_OPAQUE)
-#define	ELW_WIN_INVISIBLE	(ELW_TITLE_NONE|ELW_SHOW)
+#define ELW_WIN_DEFAULT (ELW_TITLE_BAR | ELW_CLOSE_BOX | ELW_DRAGGABLE | ELW_USE_BACKGROUND | ELW_USE_BORDER | ELW_SHOW | ELW_TITLE_NAME | ELW_ALPHA_BORDER | ELW_SWITCHABLE_OPAQUE)
+#define ELW_WIN_INVISIBLE       (ELW_TITLE_NONE | ELW_SHOW)
 /*! @} */
-
 /*!
  * \name window position flags
  */
 /*! @{ */
-#define	ELW_VUPPER	0x00
-#define	ELW_VCENTER	0x04
-#define	ELW_VLOWER	0x08
-#define	ELW_VAUTO	0x0C	//reserved
-#define	ELW_HLEFT	0x00
-#define	ELW_HCENTER	0x01
-#define	ELW_HRIGHT	0x02
-#define	ELW_HAUTO	0x03	//reserved
-
-#define	ELW_POS_UL	(ELW_VUPPER|ELW_HLEFT)
-#define	ELW_POS_UC	(ELW_VUPPER|ELW_HCENTER)
-#define	ELW_POS_UR	(ELW_VUPPER|ELW_HRIGHT)
-
-#define	ELW_POS_CL	(ELW_VCENTER|ELW_HLEFT)
-#define	ELW_POS_CC	(ELW_VCENTER|ELW_HCENTER)
-#define	ELW_POS_CR	(ELW_VCENTER|ELW_HRIGHT)
-
-#define	ELW_POS_LL	(ELW_VLOWER|ELW_HLEFT)
-#define	ELW_POS_LC	(ELW_VLOWER|ELW_HCENTER)
-#define	ELW_POS_LR	(ELW_VLOWER|ELW_HRIGHT)
+#define ELW_VUPPER      0x00
+#define ELW_VCENTER     0x04
+#define ELW_VLOWER      0x08
+#define ELW_VAUTO       0x0C    //reserved
+#define ELW_HLEFT       0x00
+#define ELW_HCENTER     0x01
+#define ELW_HRIGHT      0x02
+#define ELW_HAUTO       0x03    //reserved
+#define ELW_POS_UL      (ELW_VUPPER | ELW_HLEFT)
+#define ELW_POS_UC      (ELW_VUPPER | ELW_HCENTER)
+#define ELW_POS_UR      (ELW_VUPPER | ELW_HRIGHT)
+#define ELW_POS_CL      (ELW_VCENTER | ELW_HLEFT)
+#define ELW_POS_CC      (ELW_VCENTER | ELW_HCENTER)
+#define ELW_POS_CR      (ELW_VCENTER | ELW_HRIGHT)
+#define ELW_POS_LL      (ELW_VLOWER | ELW_HLEFT)
+#define ELW_POS_LC      (ELW_VLOWER | ELW_HCENTER)
+#define ELW_POS_LR      (ELW_VLOWER | ELW_HRIGHT)
 /*! @} */
-
 /*!
  * \name window alignment flags
  */
 /*! @{ */
-#define	ELW_ALIGN_UL	((ELW_VUPPER|ELW_HLEFT)<<8)
-#define	ELW_ALIGN_UC	((ELW_VUPPER|ELW_HCENTER)<<8)
-#define	ELW_ALIGN_UR	((ELW_VUPPER|ELW_RIGHT)<<8)
-
-#define	ELW_ALIGN_CL	((ELW_VCENTER|ELW_HLEFT)<<8)
-#define	ELW_ALIGN_CC	((ELW_VCENTER|ELW_HCENTER)<<8)
-#define	ELW_ALIGN_CR	((ELW_VCENTER|ELW_HRIGHT)<<8)
-
-#define	ELW_ALIGN_LL	((ELW_VLOWER|ELW_HLEFT)<<8)
-#define	ELW_ALIGN_LC	((ELW_VLOWER|ELW_HCENTER)<<8)
-#define	ELW_ALIGN_LR	((ELW_VLOWER|ELW_HRIGHT)<<8)
+#define ELW_ALIGN_UL    ((ELW_VUPPER | ELW_HLEFT) << 8)
+#define ELW_ALIGN_UC    ((ELW_VUPPER | ELW_HCENTER) << 8)
+#define ELW_ALIGN_UR    ((ELW_VUPPER | ELW_RIGHT) << 8)
+#define ELW_ALIGN_CL    ((ELW_VCENTER | ELW_HLEFT) << 8)
+#define ELW_ALIGN_CC    ((ELW_VCENTER | ELW_HCENTER) << 8)
+#define ELW_ALIGN_CR    ((ELW_VCENTER | ELW_HRIGHT) << 8)
+#define ELW_ALIGN_LL    ((ELW_VLOWER | ELW_HLEFT) << 8)
+#define ELW_ALIGN_LC    ((ELW_VLOWER | ELW_HCENTER) << 8)
+#define ELW_ALIGN_LR    ((ELW_VLOWER | ELW_HRIGHT) << 8)
 /*! @} */
-
 /*!
  * \name predefined flags
  */
 /*! @{ */
-#define	ELW_POS		ELW_POS_UL
-#define	ELW_ALIGN	ELW_ALIGN_UL
-#define	ELW_RELATIVE	(ELW_POS|ELW_ALIGN)
+#define ELW_POS         ELW_POS_UL
+#define ELW_ALIGN       ELW_ALIGN_UL
+#define ELW_RELATIVE    (ELW_POS | ELW_ALIGN)
 /*! @} */
-
 /*!
  * \name window color id's
  */
 /*! @{ */
-#define	ELW_COLOR_BACK	0
-#define	ELW_COLOR_BORDER	1
-#define	ELW_COLOR_LINE	2
+#define ELW_COLOR_BACK  0
+#define ELW_COLOR_BORDER        1
+#define ELW_COLOR_LINE  2
 /*! @} */
-
 /*!
  * \name window handler id's
  */
 /*! @{ */
-#define	ELW_HANDLER_INIT	0
-#define	ELW_HANDLER_DISPLAY	1
-#define	ELW_HANDLER_CLICK	2
-#define	ELW_HANDLER_DRAG	3
-#define	ELW_HANDLER_MOUSEOVER	4
-#define	ELW_HANDLER_RESIZE	5
-#define	ELW_HANDLER_KEYPRESS	6
-#define	ELW_HANDLER_CLOSE	7
-#define	ELW_HANDLER_DESTROY	8
-#define	ELW_HANDLER_SHOW	9
-#define	ELW_HANDLER_HIDE	10
-#define	ELW_HANDLER_AFTER_SHOW	11
-#define	ELW_HANDLER_PRE_DISPLAY	12
+#define ELW_HANDLER_INIT        0
+#define ELW_HANDLER_DISPLAY     1
+#define ELW_HANDLER_CLICK       2
+#define ELW_HANDLER_DRAG        3
+#define ELW_HANDLER_MOUSEOVER   4
+#define ELW_HANDLER_RESIZE      5
+#define ELW_HANDLER_KEYPRESS    6
+#define ELW_HANDLER_CLOSE       7
+#define ELW_HANDLER_DESTROY     8
+#define ELW_HANDLER_SHOW        9
+#define ELW_HANDLER_HIDE        10
+#define ELW_HANDLER_AFTER_SHOW  11
+#define ELW_HANDLER_PRE_DISPLAY 12
 /*! @} */
-
 /*!
  * \name mouse click flags - first ones from events
  */
 /*! @{ */
-#define	ELW_SHIFT		SHIFT
-#define	ELW_CTRL		CTRL
-#define	ELW_ALT			ALT
-#define ELW_META		KMOD_LMETA
-#define ELW_RIGHT_MOUSE		(1<<28)
-#define ELW_MID_MOUSE		(1<<27)	// future expansion
-#define ELW_LEFT_MOUSE		(1<<26)
-#define ELW_MOUSE_BUTTON	(ELW_RIGHT_MOUSE|ELW_MID_MOUSE|ELW_LEFT_MOUSE)
-#define ELW_DBL_CLICK		(1<<25)	// future expansion
-#define ELW_WHEEL_UP		(1<<24)
-#define ELW_WHEEL_DOWN		(1<<23)
-#define ELW_WHEEL               (ELW_WHEEL_UP|ELW_WHEEL_DOWN)
-#define ELW_MOUSE_BUTTON_WHEEL  (ELW_MOUSE_BUTTON|ELW_WHEEL)
+#define ELW_SHIFT               SHIFT
+#define ELW_CTRL                CTRL
+#define ELW_ALT                 ALT
+#define ELW_META                KMOD_LMETA
+#define ELW_RIGHT_MOUSE         (1 << 28)
+#define ELW_MID_MOUSE           (1 << 27) // future expansion
+#define ELW_LEFT_MOUSE          (1 << 26)
+#define ELW_MOUSE_BUTTON        (ELW_RIGHT_MOUSE | ELW_MID_MOUSE | ELW_LEFT_MOUSE)
+#define ELW_DBL_CLICK           (1 << 25) // future expansion
+#define ELW_WHEEL_UP            (1 << 24)
+#define ELW_WHEEL_DOWN          (1 << 23)
+#define ELW_WHEEL               (ELW_WHEEL_UP | ELW_WHEEL_DOWN)
+#define ELW_MOUSE_BUTTON_WHEEL  (ELW_MOUSE_BUTTON | ELW_WHEEL)
 /*! @} */
-
 /*!
  * structure containing data for all windows used.
  */
-typedef	struct	{
-	window_info	*window; /*!< an array of \ref window_info windows */
-	int	num_windows;	/*!< highest item used */
-	int max_windows;	/*!< number of windows allocated */
-	int	display_level;
+typedef struct  {
+	window_info *window;     /*!< an array of \ref window_info windows */
+	int num_windows;        /*!< highest item used */
+	int max_windows;        /*!< number of windows allocated */
+	int display_level;
 } windows_info;
-
-extern	windows_info	windows_list; /*!< global variable defining the list of windows */
+extern windows_info windows_list;     /*!< global variable defining the list of windows */
 extern int windows_on_top; /*!< global variable for whether windows appear on top of the console */
 extern int top_SWITCHABLE_OPAQUE_window_drawn; /*!< the id of the top opaque switchable window */
 extern int opaque_window_backgrounds;
-
 // windows manager function
-
 /*!
  * \ingroup elwindows
  * \brief   Displays all active windows
@@ -248,8 +217,7 @@ extern int opaque_window_backgrounds;
  * \param level     the display level to display
  * \callgraph
  */
-void	display_windows(int level);
-
+void    display_windows(int level);
 /*!
  * \ingroup elwindows
  * \brief   callback function used when a mouse click happens in a window.
@@ -262,8 +230,7 @@ void	display_windows(int level);
  * \retval int
  * \callgraph
  */
-int		click_in_windows(int mx, int my, Uint32 flags);
-
+int             click_in_windows(int mx, int my, Uint32 flags);
 /*!
  * \ingroup elwindows
  * \brief   callback function used when a drag event happens in a window.
@@ -278,8 +245,7 @@ int		click_in_windows(int mx, int my, Uint32 flags);
  * \retval int
  * \callgraph
  */
-int		drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy);
-
+int             drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy);
 /*!
  * \ingroup elwindows
  * \brief   Handles dragging and resizing of a window
@@ -293,8 +259,7 @@ int		drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy);
  * \retval int      the id of the window being dragged or resized
  * \callgraph
  */
-int		drag_windows(int mx, int my, int dx, int dy);
-
+int             drag_windows(int mx, int my, int dx, int dy);
 /*!
  * \ingroup elwindows
  * \brief   callback function used when a key is pressed in a window.
@@ -308,8 +273,7 @@ int		drag_windows(int mx, int my, int dx, int dy);
  * \retval int
  * \callgraph
  */
-int		keypress_in_windows(int x, int y, Uint32 key, Uint32 unikey);
-
+int             keypress_in_windows(int x, int y, Uint32 key, Uint32 unikey);
 /*!
  * \ingroup elwindows
  * \brief   Resets the states of all windows which are related to dragging
@@ -317,8 +281,7 @@ int		keypress_in_windows(int x, int y, Uint32 key, Uint32 unikey);
  *      Resets the dragged, resized and drag_in states of all windows.
  *
  */
-void	end_drag_windows();
-
+void    end_drag_windows();
 /*!
  * \ingroup elwindows
  * \brief   Selects the window given by \a win_id.
@@ -334,10 +297,8 @@ void	end_drag_windows();
  * \pre The parameter \a win_id must be equal the \ref window_info::window_id which is currently stored in \ref windows_list.
  * \pre The \ref window_info::order of the \ref windows_info::window stored at the index \a win_id, must be greater than 0.
  */
-int		select_window(int win_id);
-
+int             select_window(int win_id);
 // individual functions
-
 /*!
  * \ingroup elwindows
  * \brief   Creates a new window and calls \ref init_window to place it.
@@ -357,8 +318,7 @@ int		select_window(int win_id);
  *
  * \post    If this functions returns -1, it indicates an unhandled exception has occured.
  */
-int		create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, int size_x, int size_y, Uint32 property_flags);
-
+int             create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, int size_x, int size_y, Uint32 property_flags);
 /*!
  * \ingroup elwindows
  * \brief   Destroys the window with the given \a win_id.
@@ -370,8 +330,7 @@ int		create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int 
  * \pre If \a win_id is \<0 or \>\ref windows_info::num_windows this function returns without performing any actions.
  * \pre If the \ref window_info::window_id of the window stored at the index \a win_id into the \ref windows_list variable is not equal to \a win_id, this function returns without performing any actions.
  */
-void	destroy_window(int win_id);
-
+void    destroy_window(int win_id);
 /*!
  * \ingroup elwindows
  * \brief   Initializes a new window.
@@ -388,8 +347,7 @@ void	destroy_window(int win_id);
  * \retval int
  * \sa move_window
  */
-int		init_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, int size_x, int size_y);
-
+int             init_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, int size_x, int size_y);
 /*!
  * \ingroup elwindows
  * \brief   Moves the window given by \a win_id
@@ -409,9 +367,7 @@ int		init_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, i
  * \pre If \a win_id is greater than \ref windows_info::num_windows this function returns -1 without performing any actions
  * \pre If \a win_id is not equal \ref window_info::window_id of the window at the index \a win_id into \ref windows_list this functions returns -1, without performing any action.
  */
-int		move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y);
-
-
+int             move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y);
 /*!
  * \ingroup elwindows
  * \brief   Draws the window given by \a win_id
@@ -423,10 +379,8 @@ int		move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y);
  *
  * \param win_id        id for the window to move
  */
-int display_window (int win_id);
-
+int display_window(int win_id);
 //int	set_window_property(int win_id, Uint32 property_flag, int new_property);
-
 /*!
  * \ingroup elwindows
  * \brief   Sets the window (background) color to the given values.
@@ -451,8 +405,7 @@ int display_window (int win_id);
  * \pre If none of the above preconditions is true, but no action is performed else, this function returns 0.
  * \pre This functions only handles the \a color_id of \ref ELW_COLOR_BACK, \ref ELW_COLOR_BORDER and \ref ELW_COLOR_LINE.
  */
-int	set_window_color(int win_id, Uint32 color_id, float r, float g, float b, float a);
-
+int     set_window_color(int win_id, Uint32 color_id, float r, float g, float b, float a);
 /*!
  * \ingroup elwindows
  * \brief   Uses the color of the window \a win_id that is referred to by \a color_id.
@@ -473,8 +426,7 @@ int	set_window_color(int win_id, Uint32 color_id, float r, float g, float b, flo
  * \pre If none of the above preconditions is true, but no action is performed else, this function returns 0.
  * \pre This function only handles the \a color_id of \ref ELW_COLOR_BACK, \ref ELW_COLOR_BORDER and \ref ELW_COLOR_LINE.
  */
-int		use_window_color(int win_id, Uint32 color_id);
-
+int             use_window_color(int win_id, Uint32 color_id);
 /*!
  * \ingroup elwindows
  * \brief Sets the window's minimum size
@@ -490,8 +442,7 @@ int		use_window_color(int win_id, Uint32 color_id);
  * \pre If \a win_id is greater than \ref windows_info::num_windows this function returns 0 without performing any actions.
  * \pre If either \a width or \a height is less than 0 this function returns 0 without performing any actions.
  */
-int set_window_min_size (int win_id, int width, int height);
-
+int set_window_min_size(int win_id, int width, int height);
 /*!
  * \ingroup elwindows
  * \brief Sets one or more window flags
@@ -501,8 +452,7 @@ int set_window_min_size (int win_id, int width, int height);
  * \param win_id the number of the window
  * \param flag the flag(s) to set
  */
-int set_window_flag (int win_id, Uint32 flag);
-
+int set_window_flag(int win_id, Uint32 flag);
 /*!
  * \ingroup elwindows
  * \brief   Sets a new window handler callback function to be used for the given window.
@@ -520,8 +470,7 @@ int set_window_flag (int win_id, Uint32 flag);
  * \pre If \a handler_id is not one of \ref ELW_HANDLER_INIT, \ref ELW_HANDLER_DISPLAY, \ref ELW_HANDLER_CLICK, \ref ELW_HANDLER_DRAG, \ref ELW_HANDLER_MOUSEOVER, \ref ELW_HANDLER_RESIZE, \ref ELW_HANDLER_KEYPRESS or \ref ELW_HANDLER_DESTROY, this function returns NULL.
  *
  */
-void	*set_window_handler(int win_id, int handler_id, int (*handler)() );
-
+void *set_window_handler(int win_id, int handler_id, int (*handler)());
 /*!
  * \ingroup elwindows
  * \brief   Selects and shows the given window
@@ -536,8 +485,7 @@ void	*set_window_handler(int win_id, int handler_id, int (*handler)() );
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns without performing any actions.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns without performing any actions.
  */
-void	show_window(int win_id);
-
+void    show_window(int win_id);
 /*!
  * \ingroup elwindows
  * \brief   Hides the given window.
@@ -550,8 +498,7 @@ void	show_window(int win_id);
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns without performing any actions.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns without performing any actions.
  */
-void	hide_window(int win_id);
-
+void    hide_window(int win_id);
 /*!
  * \ingroup elwindows
  * \brief   Toggles the visibility of the given window.
@@ -566,8 +513,7 @@ void	hide_window(int win_id);
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns without performing any actions.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns without performing any actions.
  */
-void	toggle_window(int win_id);
-
+void    toggle_window(int win_id);
 /*!
  * \ingroup elwindows
  * \brief   Sets the new size of a resizable window.
@@ -586,8 +532,7 @@ void	toggle_window(int win_id);
  * \pre If \a new_width is less than the minimum width (\ref window_info::min_len_x) it will be adjusted accordingly before applying.
  * \pre If \a new_height is less than the minimum height (\ref window_info::min_len_y) it will be adjusted acoordingly before applying.
  */
-void resize_window (int win_id, int new_width, int new_height);
-
+void resize_window(int win_id, int new_width, int new_height);
 /*!
  * \ingroup elwindows
  * \brief   Checks whether a window is currently displayed and returns a proper boolean value.
@@ -601,8 +546,7 @@ void resize_window (int win_id, int new_width, int new_height);
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns false (0), without performing any actions.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns false (0), without performing any actions.
  */
-int		get_show_window(int win_id);
-
+int             get_show_window(int win_id);
 /*!
  * \ingroup elwindows
  * \brief   Checks whether a window is currently displayable and returns a proper boolean value.
@@ -616,11 +560,9 @@ int		get_show_window(int win_id);
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns false (0), without performing any actions.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns false (0), without performing any actions.
  */
-int		get_window_showable(int win_id);
-
+int             get_window_showable(int win_id);
 //void	collapse_window(int win_id);	// future expansion
 //void	expand_window(int win_id);		// future expansion
-
 /*!
  * \ingroup elwindows
  * \brief   Checks if the mouse coordinates are inside a window.
@@ -639,8 +581,7 @@ int		get_window_showable(int win_id);
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns -1, without performing any actions, indicating an error.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns -1 without performing any actions, indicating an error.
  */
-int		mouse_in_window(int win_id, int x, int y);	// is a coord in the window?
-
+int             mouse_in_window(int win_id, int x, int y);      // is a coord in the window?
 /*!
  * \ingroup elwindows
  * \brief   Checks if there is a click in a window at the given coordinates.
@@ -661,8 +602,7 @@ int		mouse_in_window(int win_id, int x, int y);	// is a coord in the window?
  * \pre If \a win_id is greater than \ref windows_info::num_windows, this function returns -1, without performing any actions, indicating an error.
  * \pre If \a win_id is not equal the \ref window_info::window_id of the window at index \a win_id into the \ref windows_list array, this function returns -1, without performing any actions, indicating an error.
  */
-int		click_in_window(int win_id, int x, int y, Uint32 flags);	// click in  a coord in the window
-
+int             click_in_window(int win_id, int x, int y, Uint32 flags);        // click in  a coord in the window
 /*!
  * \ingroup elwindows
  * \brief   Sets the length of the window's scrollbar
@@ -673,7 +613,6 @@ int		click_in_window(int win_id, int x, int y, Uint32 flags);	// click in  a coo
  * \param bar_len   The amount of pixels you want the bar to scroll.
  */
 void set_window_scroll_len(int win_id, int bar_len);
-
 /*!
  * \ingroup elwindows
  * \brief   Sets the scrollbar additional y offset
@@ -686,7 +625,6 @@ void set_window_scroll_len(int win_id, int bar_len);
  * \param yoffset   The number of pixels you want the bar moved down.
  */
 void set_window_scroll_yoffset(int win_id, int yoffset);
-
 /*!
  * \ingroup elwindows
  * \brief   Sets the scrollbar increment size
@@ -698,7 +636,6 @@ void set_window_scroll_yoffset(int win_id, int yoffset);
  * \param inc   The number of pixels moved when scrolling.
  */
 void set_window_scroll_inc(int win_id, int inc);
-
 /*!
  * \ingroup elwindows
  * \brief   Sets the scrollbar position
@@ -710,7 +647,6 @@ void set_window_scroll_inc(int win_id, int inc);
  * \param pos   The new position for the scrollbar.
  */
 void set_window_scroll_pos(int win_id, int pos);
-
 /*!
  * \ingroup elwindows
  * \brief   Get the scrollbar position
@@ -722,7 +658,6 @@ void set_window_scroll_pos(int win_id, int pos);
  * \retval int   The number of the pixels the window is currently offset.
  */
 int get_window_scroll_pos(int win_id);
-
 /*!
  * \ingroup elwindows
  * \brief   The callback for context menu clicks
@@ -737,21 +672,17 @@ int get_window_scroll_pos(int win_id);
  * \param my		The y coordinate as above
  * \param option	The menu line clicked, first line is 0
  * \retval int      1 if action was taken otherwise 0
-*/
+ */
 int cm_title_handler(window_info *win, int widget_id, int mx, int my, int option);
-
 // low level functions
 //window_info	*get_window_info(int win_id);
 //window_info	*get_window_by_name(const Uint8 *name);
-
 // default handlers - VERY basic
 //int	init_handler(window_info *win);
 //int	display_handler(window_info *win);
 //int	click_handler(window_info *win);
 //int	mouseover_handler(window_info *win);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif	//__EL_WINDOWS_H
+#endif  //__EL_WINDOWS_H

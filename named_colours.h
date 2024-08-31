@@ -1,14 +1,10 @@
 #ifndef __NAMED_COLOURS_H
 #define __NAMED_COLOURS_H
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include "platform.h"
-
 extern size_t ELGL_INVALID_COLOUR; /*!< The id return if the colour was not found by elglGetColourId() */
-
 /*!
  * \ingroup named_colours
  * \brief Initialise the named colours state, including reading from file.
@@ -16,7 +12,6 @@ extern size_t ELGL_INVALID_COLOUR; /*!< The id return if the colour was not foun
  * \callgraph
  */
 void init_named_colours(void);
-
 /*!
  * \ingroup named_colours
  * \brief Get the unique id for the named colour
@@ -26,7 +21,6 @@ void init_named_colours(void);
  * \callgraph
  */
 size_t elglGetColourId(const char *name);
-
 /*!
  * \ingroup named_colours
  * \brief Set the current GL colour.  This will be faster than using elglColourN().
@@ -35,7 +29,6 @@ size_t elglGetColourId(const char *name);
  * \callgraph
  */
 void elglColourI(size_t index);
-
 /*!
  * \ingroup named_colours
  * \brief Set the current GL colour.
@@ -44,7 +37,6 @@ void elglColourI(size_t index);
  * \callgraph
  */
 void elglColourN(const char *name);
-
 /*!
  * \ingroup named_colours
  * \brief Get the 3 GLfloat tuple of a colour.
@@ -54,7 +46,6 @@ void elglColourN(const char *name);
  * \callgraph
  */
 void elglGetColour3v(const char *name, GLfloat *buf);
-
 /*!
  * \ingroup named_colours
  * \brief Get the 4 GLfloat tuple of a colour.
@@ -64,10 +55,7 @@ void elglGetColour3v(const char *name, GLfloat *buf);
  * \callgraph
  */
 void elglGetColour4v(const char *name, GLfloat *buf);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif
-

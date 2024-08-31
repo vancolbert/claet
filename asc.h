@@ -5,27 +5,21 @@
  */
 #ifndef __ASC_H__
 #define __ASC_H__
-
 #include <SDL_types.h>
 #include <libxml/tree.h>
 #include "client_serv.h"
 #include "font.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-char *trim (char *str);
-xmlChar *xmlTrim (xmlChar *str);
-
+char *trim(char *str);
+xmlChar *xmlTrim(xmlChar *str);
 /*!
  * Check if a character is a color character
  */
-static __inline__ int is_color (Uint8 c)
-{
+static __inline__ int is_color(Uint8 c) {
 	return c >= 127 + c_lbound && c <= 127 + c_ubound;
 }
-
 /*!
  * \brief Get the color number from a color character
  *
@@ -36,11 +30,9 @@ static __inline__ int is_color (Uint8 c)
  * \retval int the color number
  * \sa is_color(), to_color_char()
  */
-static __inline__ int from_color_char (Uint8 c)
-{
-	return c-127;
+static __inline__ int from_color_char(Uint8 c) {
+	return c - 127;
 }
-
 /*!
  * \brief Convert a color number into a color character
  *
@@ -50,26 +42,20 @@ static __inline__ int from_color_char (Uint8 c)
  * \retval Uint8 The color character
  * \sa from_color_char()
  */
-static __inline__ Uint8 to_color_char (int color)
-{
-	return (Uint8) (color+127);
+static __inline__ Uint8 to_color_char(int color) {
+	return (Uint8)(color + 127);
 }
-
 /*!
  * Check if a character is printable. In this context, that means
  * printable ascii, or non-ascii if we know what symbol to use
  */
-static __inline__ int is_printable (Uint8 c)
-{
+static __inline__ int is_printable(Uint8 c) {
 	return get_font_char(c) >= 0;
 }
-
 /*!
  * A macro for the my_xmlstrncopy function that copies and converts an xml-string. Sets the length to 0, hence it will copy untill \\0 is reached.
  */
-#define MY_XMLSTRCPY(d,s) my_xmlStrncopy(d,s,0)
-
-
+#define MY_XMLSTRCPY(d, s) my_xmlStrncopy(d, s, 0)
 /*!
  * \ingroup	misc_utils
  * \brief	Gets the offset of a string in a char array
@@ -82,8 +68,7 @@ static __inline__ int is_printable (Uint8 c)
  * \param	beginning Whether it should return the offset to the beginning of the string or the end of the string
  * \retval Sint32	Returns either the offset to the beginning of the string or to the end of the string - if the string was not found in the char array it returns -1 on failure.
  */
-Sint32 get_string_occurance (const char *needle, const char *haystack, const Uint32 max_len, const char beginning);
-
+Sint32 get_string_occurance(const char *needle, const char *haystack, const Uint32 max_len, const char beginning);
 /*!
  * \ingroup	misc_utils
  * \brief	The function copies the string from source to dest, making sure it doesn't overflow and remains null terminated.  Strncpy doesn't guarantee the null termination.
@@ -92,8 +77,7 @@ Sint32 get_string_occurance (const char *needle, const char *haystack, const Uin
  * \param	source The source char array
  * \param	len The sizeof the array.
  */
-char* safe_strncpy(char *dest, const char * source, const size_t len);
-
+char *safe_strncpy(char *dest, const char *source, const size_t len);
 /*!
  * \ingroup	misc_utils
  * \brief	The function copies the string from source to dest, making sure it doesn't overflow and remains null terminated, and furthermore that it doesn't copy more than a certain number of chars.  Strncpy doesn't guarantee the null termination.
@@ -103,8 +87,7 @@ char* safe_strncpy(char *dest, const char * source, const size_t len);
  * \param	dest_len The sizeof the destination array.
  * \param	src_len The desired number of characters from source.
  */
-char* safe_strncpy2(char *dest, const char * source, const size_t dest_len, const size_t src_len);
-
+char *safe_strncpy2(char *dest, const char *source, const size_t dest_len, const size_t src_len);
 /*!
  * \ingroup	misc_utils
  * \brief	Like snprintf, but guarentees nul termination.
@@ -114,8 +97,7 @@ char* safe_strncpy2(char *dest, const char * source, const size_t dest_len, cons
  * \param	format A printf-style format string
  * \param	... arguments to be passed to snprintf
  */
-int safe_snprintf(char *dest, const size_t len, const char* format, ...);
-
+int safe_snprintf(char *dest, const size_t len, const char *format, ...);
 /*!
  * \ingroup     misc_utils
  * \brief       Append string src to dest, guaranteeing null-termination
@@ -135,8 +117,7 @@ int safe_snprintf(char *dest, const size_t len, const char* format, ...);
  * \param       len The maximum size of the result string
  * \retval char* Pointer to the concatenated string dest
  */
-char* safe_strcat (char *dest, const char *src, size_t len);
-
+char *safe_strcat(char *dest, const char *src, size_t len);
 /*!
  * \ingroup	misc_utils
  * \brief	Locate a substring in a case-insensitive matter
@@ -155,8 +136,7 @@ char* safe_strcat (char *dest, const char *src, size_t len);
  * \retval char* Pointer to the first occurence of the search string, or
  *		NULL when \a haystack does not contain \a needle.
  */
-char* safe_strcasestr (const char* haystack, size_t haystack_len, const char* needle, size_t needle_len);
-
+char *safe_strcasestr(const char *haystack, size_t haystack_len, const char *needle, size_t needle_len);
 /*!
  * \ingroup	misc_utils
  * \brief	The function copies the string from source to dest
@@ -167,8 +147,7 @@ char* safe_strcasestr (const char* haystack, size_t haystack_len, const char* ne
  * \param	source The source char array
  * \todo	We should just use strcpy instead...
  */
-void my_strcp(char *dest,const char * source);
-
+void my_strcp(char *dest, const char *source);
 /*!
  * \ingroup	misc_utils
  * \brief	The function copies the string from source to dest, but no more than n characters
@@ -179,8 +158,7 @@ void my_strcp(char *dest,const char * source);
  * \param	source The source char array
  * \param	len The number of bytes you wish to copy
  */
-void my_strncp (char *dest, const char *source, size_t len);
-
+void my_strncp(char *dest, const char *source, size_t len);
 /*!
  * \ingroup	misc_utils
  * \brief	The function concencates the source string to the dest string
@@ -191,8 +169,7 @@ void my_strncp (char *dest, const char *source, size_t len);
  * \param	source The source string
  * \todo	Err, use strcat instead...
  */
-void my_strcat(char *dest, const char * source);
-
+void my_strcat(char *dest, const char *source);
 /*!
  * \ingroup	misc_utils
  * \brief	Compares n bytes of the 2 strings (case insensitive)
@@ -205,7 +182,6 @@ void my_strcat(char *dest, const char * source);
  * \retval Sint32	Returns 1 on match, 0 if the strings doesn't match.
  */
 Sint32 my_strncompare(const char *dest, const char *src, Sint32 len);
-
 /*!
  * \ingroup	misc_utils
  * \brief	Compares the 2 strings
@@ -218,7 +194,6 @@ Sint32 my_strncompare(const char *dest, const char *src, Sint32 len);
  * \sa my_strncompare
  */
 Sint32 my_strcompare(const char *dest, const char *src);
-
 /*!
  * \ingroup	misc_utils
  * \brief	Checks if len/2 characters of the string is uppercase
@@ -230,7 +205,6 @@ Sint32 my_strcompare(const char *dest, const char *src);
  * \retval Sint32	Returns 1 if enough characters are uppercase, 0 if they are lowercase.
  */
 Sint32 my_isupper(const char *src, int len);
-
 /*!
  * \ingroup	misc_utils
  * \brief	Converts all characters in the string to lowercase
@@ -240,8 +214,7 @@ Sint32 my_isupper(const char *src, int len);
  * \param	src The string to convert
  * \retval char*	Returns the src-pointer.
  */
-char *my_tolower (char *src);
-
+char *my_tolower(char *src);
 /*!
  * \ingroup	misc_utils
  * \brief	Splits up the char array into multiple character arrays
@@ -252,10 +225,8 @@ char *my_tolower (char *src);
  * \param	chars_per_line The number of characters per line
  * \retval char**	Returns a char ** to the new array. You must free the memory yourself.
  */
-char ** get_lines(char * str, int chars_per_line);
-
-char ** get_lines_dialogue(char * str, int chars_per_line);
-
+char **get_lines(char *str, int chars_per_line);
+char **get_lines_dialogue(char *str, int chars_per_line);
 /*!
  * \ingroup	misc_utils
  * \brief	Goes through the file-name and replaces \\ with /
@@ -267,8 +238,7 @@ char ** get_lines_dialogue(char * str, int chars_per_line);
  * \param	max_len The maximum length
  * \retval Uint32	Returns the length of the string
  */
-Uint32 clean_file_name (char *dest, const char *src, Uint32 max_len);
-
+Uint32 clean_file_name(char *dest, const char *src, Uint32 max_len);
 /*!
  * \ingroup	xml_utils
  * \brief	Finds the xml-attribute with the identifier p in the xmlNode and returns it as a floating point value
@@ -279,8 +249,7 @@ Uint32 clean_file_name (char *dest, const char *src, Uint32 max_len);
  * \param	p The attribute name you wish to search for
  * \retval float	The floating point value of the string. Returns 0 on failure.
  */
-float xmlGetFloat(xmlNode * n, xmlChar * p);
-
+float xmlGetFloat(xmlNode *n, xmlChar *p);
 /*!
  * \ingroup	xml_utils
  * \brief	Finds the xml-attribute with the identifier p in the xmlNode and returns it as an integer value
@@ -292,7 +261,6 @@ float xmlGetFloat(xmlNode * n, xmlChar * p);
  * \retval int	The integer value of the string. Returns 0 on failure.
  */
 int xmlGetInt(xmlNode *n, xmlChar *p);
-
 /*!
  * \ingroup	xml_utils
  * \brief	Copies and converts the UTF8-string pointed to by src into the destination.
@@ -308,17 +276,14 @@ int xmlGetInt(xmlNode *n, xmlChar *p);
  * \retval int	Returns the number of characters that have been copied, or -1 on failure.
  * \sa my_UTF8Toisolat1
  */
-int my_xmlStrncopy(char ** dest, const char * src, int len);
-
-int get_file_digest(const char*, Uint8[16]);
-void get_string_digest(const char*, Uint8[16]);
-
+int my_xmlStrncopy(char **dest, const char *src, int len);
+int get_file_digest(const char *, Uint8[16]);
+void get_string_digest(const char *, Uint8[16]);
 // Element type and dictionaries for actor definitions
 typedef struct {
 	char *desc;
 	int index;
 } dict_elem;
-
 int find_description_index(const dict_elem dict[], const char *elem, const char *desc);
 void get_string_value(char *buf, size_t maxlen, const xmlNode *node);
 void get_item_string_value(char *buf, size_t maxlen, const xmlNode *node, const unsigned char *name);
@@ -328,7 +293,6 @@ double get_float_value(const xmlNode *node);
 int get_int_property(const xmlNode *node, const char *prop);
 const char *get_string_property(const xmlNode *node, const char *prop);
 int get_property(const xmlNode *node, const char *prop, const char *desc, const dict_elem dict[]);
-
 /*!
  * \brief Append char to the string given by s.
  *
@@ -341,14 +305,12 @@ int get_property(const xmlNode *node, const char *prop, const char *desc, const 
  *       be dynamically allocated and not a fixed size buffer, otherwise any
  *       necessary reallocations will fail.
  */
-void append_char(char** s, char c, int* len, int* max_len);
-
+void append_char(char **s, char c, int *len, int *max_len);
 /*!
  * \brief used in append_char(), buffer for string grows by this size when
  * reallocation is needed.
  */
 #define APPEND_CHAR_BLOCK 256
-
 /*!
  * \brief Convert a string to UTF-8
  *
@@ -361,8 +323,7 @@ void append_char(char** s, char c, int* len, int* max_len);
  * \return pointer to the UTF-8 encoded string if the conversion is
  *         successfull, NULL otherwise.
  */
-xmlChar* toUTF8 (const char* str, int len);
-
+xmlChar *toUTF8(const char *str, int len);
 /*!
  * \brief Convert a string from UTF-8
  *
@@ -377,8 +338,7 @@ xmlChar* toUTF8 (const char* str, int len);
  * \return pointer to the ISO Latin 1 encoded string if the conversion
  *         is successfull, NULL otherwise.
  */
-char* fromUTF8 (const xmlChar* str, int len);
-
+char *fromUTF8(const xmlChar *str, int len);
 /*!
  * \brief Replace all occurances of a character with a string
  *
@@ -394,12 +354,7 @@ char* fromUTF8 (const xmlChar* str, int len);
  * \param with_sub the string to substitute
  * \return a pointer to the output string
  */
-char *substitute_char_with_string(const char *str, char **out_str, char to_sub, const char* with_sub);
-
-
-
-
-
+char *substitute_char_with_string(const char *str, char **out_str, char to_sub, const char *with_sub);
 /*!
  * \brief Get a copy of a string truncated to be no wider than specified.
  *
@@ -417,9 +372,7 @@ char *substitute_char_with_string(const char *str, char **out_str, char to_sub, 
  * \return a pointer to the destination string
  */
 char *truncated_string(char *dest, const char *source, size_t dest_max_len, const char *append_str, float max_len_x, float font_ratio);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

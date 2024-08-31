@@ -5,18 +5,13 @@
  */
 #ifndef UUID_366fd032_5c72_48c3_9229_4089ad0bc93e
 #define UUID_366fd032_5c72_48c3_9229_4089ad0bc93e
-
 #include "../platform.h"
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 typedef struct el_file_t el_file_t;
-
-typedef el_file_t* el_file_ptr;
-
+typedef el_file_t *el_file_ptr;
 /*!
  * \brief Inits the zip archive system.
  *
@@ -25,7 +20,6 @@ typedef el_file_t* el_file_ptr;
  * \see el_open
  */
 void init_zip_archives();
-
 /*!
  * \brief Clears the zip archive system.
  *
@@ -33,7 +27,6 @@ void init_zip_archives();
  * called after any other el file function.
  */
 void clear_zip_archives();
-
 /*!
  * \brief Unload the zip archive.
  *
@@ -42,8 +35,7 @@ void clear_zip_archives();
  * \param file_name The file name of the zip file.
  * \see el_open
  */
-void unload_zip_archive(const char* file_name);
-
+void unload_zip_archive(const char *file_name);
 /*!
  * \brief Loads the zip file
  *
@@ -52,8 +44,7 @@ void unload_zip_archive(const char* file_name);
  * \param file_name The file name of the zip file.
  * \see el_open
  */
-void load_zip_archive(const char* file_name);
-
+void load_zip_archive(const char *file_name);
 /*!
  * \brief Opens a file.
  *
@@ -61,8 +52,7 @@ void load_zip_archive(const char* file_name);
  * \param file_name The name of the file to open. This function is thread save.
  * \return Returns a valid el file pointer or zero on failure.
  */
-el_file_ptr el_open(const char* file_name);
-
+el_file_ptr el_open(const char *file_name);
 /*!
  * \brief Opens a file.
  *
@@ -71,8 +61,7 @@ el_file_ptr el_open(const char* file_name);
  * \param file_name The name of the file to open.
  * \return Returns a valid el file pointer or zero on failure.
  */
-el_file_ptr el_open_custom(const char* file_name);
-
+el_file_ptr el_open_custom(const char *file_name);
 /*!
  * \brief Opens a file.
  *
@@ -82,8 +71,7 @@ el_file_ptr el_open_custom(const char* file_name);
  * \param file_name The name of the file to open.
  * \return Returns a valid el file pointer or zero on failure.
  */
-el_file_ptr el_open_anywhere(const char* file_name);
-
+el_file_ptr el_open_anywhere(const char *file_name);
 /*!
  * \brief Reads data from the file.
  *
@@ -94,7 +82,7 @@ el_file_ptr el_open_anywhere(const char* file_name);
  * \return Returns the number of read bytes.
  * \see el_open
  */
-Sint64 el_read(el_file_ptr file, Sint64 size, void* buffer);
+Sint64 el_read(el_file_ptr file, Sint64 size, void *buffer);
 /*!
  * \brief Read a float
  *
@@ -113,7 +101,6 @@ int el_read_float(el_file_ptr file, float *f);
  * \return 1 on success, 0 on failure
  */
 int el_read_int(el_file_ptr file, int *i);
-
 /*!
  * \brief Sets the position in the file.
  *
@@ -127,7 +114,6 @@ int el_read_int(el_file_ptr file, int *i);
  * \see el_open
  */
 Sint64 el_seek(el_file_ptr file, Sint64 offset, int seek_type);
-
 /*!
  * \brief Gets the position in the file.
  *
@@ -138,7 +124,6 @@ Sint64 el_seek(el_file_ptr file, Sint64 offset, int seek_type);
  * \see el_open
  */
 Sint64 el_tell(el_file_ptr file);
-
 /*!
  * \brief Gets the size of the file.
  *
@@ -149,7 +134,6 @@ Sint64 el_tell(el_file_ptr file);
  * \see el_open
  */
 Sint64 el_get_size(el_file_ptr file);
-
 /*!
  * \brief Closes a file.
  *
@@ -158,7 +142,6 @@ Sint64 el_get_size(el_file_ptr file);
  * \see el_open
  */
 void el_close(el_file_ptr file);
-
 /*!
  * \brief Gets a pointer to the file data.
  *
@@ -169,8 +152,7 @@ void el_close(el_file_ptr file);
  * \return Returns a memory pointer to the file data.
  * \see el_open
  */
-void* el_get_pointer(el_file_ptr file);
-
+void *el_get_pointer(el_file_ptr file);
 /*!
  * \brief Check if a file exists.
  *
@@ -180,8 +162,7 @@ void* el_get_pointer(el_file_ptr file);
  * \return Returns true if the file exists, else false.
  * \sa el_file_exists_anywhere()
  */
-int el_file_exists(const char* file_name);
-
+int el_file_exists(const char *file_name);
 /*!
  * \brief Check if a file exists.
  *
@@ -191,8 +172,7 @@ int el_file_exists(const char* file_name);
  * \return Returns true if the file exists, else false.
  * \sa el_file_exists_anywhere()
  */
-int el_custom_file_exists(const char* file_name);
-
+int el_custom_file_exists(const char *file_name);
 /*!
  * \brief Check if a file exists.
  *
@@ -202,8 +182,7 @@ int el_custom_file_exists(const char* file_name);
  * \return Returns true if the file exists, else false.
  * \sa el_file_exists()
  */
-int el_file_exists_anywhere(const char* file_name);
-
+int el_file_exists_anywhere(const char *file_name);
 /*!
  * \brief Gets the file name.
  *
@@ -213,8 +192,7 @@ int el_file_exists_anywhere(const char* file_name);
  * \return Returns the file name.
  * \see el_open
  */
-const char* el_file_name(const el_file_ptr file);
-
+const char *el_file_name(const el_file_ptr file);
 /*!
  * \brief Return the checksum of a file
  *
@@ -224,7 +202,6 @@ const char* el_file_name(const el_file_ptr file);
  * \return Returns the checksum.
  */
 Uint32 el_crc32(el_file_ptr file);
-
 /*!
  * \brief Read a line
  *
@@ -237,10 +214,7 @@ Uint32 el_crc32(el_file_ptr file);
  * \return \a str on success, NULL on failure
  */
 char *el_fgets(char *str, int size, el_file_ptr file);
-
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* UUID_366fd032_5c72_48c3_9229_4089ad0bc93e */
-
+#endif  /* UUID_366fd032_5c72_48c3_9229_4089ad0bc93e */

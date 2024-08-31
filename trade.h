@@ -5,33 +5,26 @@
  */
 #ifndef __TRADE_H__
 #define __TRADE_H__
-
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int trade_you_accepted; /*!< flag, indicating whether you have accepted the trade or not */
 extern int trade_other_accepted; /*!< flag, indicating whether the trade partner has accepted the trade or not */
-
 extern int trade_menu_x;
 extern int trade_menu_y;
-
 typedef struct {
 	int type;
 	int image_id;
 	int quantity;
 	Uint16 id;
 } trade_item;
-
 /*!
  * \name windows handlers
  */
 /*! @{ */
 extern int trade_win;   /*!< trade windows handler */
 /*! @} */
-
 /*!
  * \ingroup 	trade_window
  * \brief 	Displays the trade window.
@@ -41,9 +34,7 @@ extern int trade_win;   /*!< trade windows handler */
  * \callgraph
  */
 void display_trade_menu();
-
 //int check_trade_interface();
-
 /*!
  * \ingroup 	trade
  * \brief 	Gets the name of the trade partner.
@@ -53,8 +44,7 @@ void display_trade_menu();
  * \param   	player_name A char * to the network data
  * \param   	len The length of the network data
  */
-void get_trade_partner_name (const Uint8 *player_name, int len);
-
+void get_trade_partner_name(const Uint8 *player_name, int len);
 /*!
  * \ingroup 	trade
  * \brief 	Resets the trade objects and gets them from the data.
@@ -65,8 +55,7 @@ void get_trade_partner_name (const Uint8 *player_name, int len);
  *
  * \callgraph
  */
-void get_your_trade_objects (const Uint8 *data);
-
+void get_your_trade_objects(const Uint8 *data);
 /*!
  * \ingroup 	trade
  * \brief 	Puts n items on the trade
@@ -75,8 +64,7 @@ void get_your_trade_objects (const Uint8 *data);
  *
  * \param   	data The network data.
  */
-void put_item_on_trade (const Uint8 *data);
-
+void put_item_on_trade(const Uint8 *data);
 /*!
  * \ingroup 	trade
  * \brief 	Removes n items from the trade
@@ -85,10 +73,8 @@ void put_item_on_trade (const Uint8 *data);
  *
  * \param   	data The trade data
  */
-void remove_item_from_trade (const Uint8 *data);
-
+void remove_item_from_trade(const Uint8 *data);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

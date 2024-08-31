@@ -5,13 +5,10 @@
  */
 #ifndef __CURSORS_H__
 #define __CURSORS_H__
-
 #include "actors.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \name Cursor types
  */
@@ -30,7 +27,6 @@ extern "C" {
 #define CURSOR_WAND 11
 #define CURSOR_TEXT 12
 /*! @} */
-
 /*!
  * \name Type under the cursor
  */
@@ -42,24 +38,19 @@ extern "C" {
 #define UNDER_MOUSE_NOTHING 4
 #define UNDER_MOUSE_NO_CHANGE 5
 /*! @} */
-
 extern actor *actor_under_mouse;
 extern int object_under_mouse;
 extern int thing_under_the_mouse;
 extern int current_cursor;
 extern int elwin_mouse;
-
 /*!
  * A cursors_struct contains a Hot Spot and a pointer to the actual cursor.
  */
-struct cursors_struct
-{
+struct cursors_struct {
 	int hot_x; /*!< x coordinate of the hot spot point. */
 	int hot_y; /*!< y coordinate of the hot spot point. */
 	Uint8 *cursor_pointer; /*!< pointer to the actual cursor */
 };
-
-
 /*!
  * \ingroup other
  * \brief Load and initialize the list of harvestable objects
@@ -75,8 +66,7 @@ void load_harvestable_list(void);
  * \return Zero if the object is not in the harvestable list, non-zero
  *    otherwise.
  */
-int is_harvestable(const char* fname);
-
+int is_harvestable(const char *fname);
 /*!
  * \ingroup other
  * \brief Load and initialize the list of entrable objects
@@ -92,8 +82,7 @@ void load_entrable_list(void);
  * \return Zero if the object is not in the entrable list, non-zero
  *    otherwise.
  */
-int is_entrable(const char* fname);
-
+int is_entrable(const char *fname);
 /*!
  * \ingroup other
  * \brief loads and initializes the \see cursors_array global variable
@@ -102,7 +91,6 @@ int is_entrable(const char* fname);
  *
  */
 void load_cursors();
-
 /*!
  * \ingroup display_2d
  * \brief changes the current cursor to the cursor given in \a cursor_id.
@@ -112,7 +100,6 @@ void load_cursors();
  * \param cursor_id     the cursor to switch to
  */
 void change_cursor(int cursor_id);
-
 /*!
  * \ingroup other
  * \brief builds all the available cursors and stores them in \see cursors_array.
@@ -122,7 +109,6 @@ void change_cursor(int cursor_id);
  * \callgraph
  */
 void build_cursors();
-
 /*!
  * \ingroup display_2d
  * \brief checks if the cursor has changed and we need to update displays.
@@ -132,11 +118,8 @@ void build_cursors();
  * \callgraph
  */
 void check_cursor_change();
-
 void cursors_cleanup(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

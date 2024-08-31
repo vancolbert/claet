@@ -5,13 +5,10 @@
  */
 #ifndef __OPENINGWIN_H__
 #define __OPENINGWIN_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int opening_root_win; /*!< handler for the opening window */
-
 /*!
  * \ingroup interface_opening
  * \brief   Creates the root window for the opening interface
@@ -24,8 +21,7 @@ extern int opening_root_win; /*!< handler for the opening window */
  *
  * \pre If \ref opening_root_win is >=0, this function won't perform any actions. This means, the window has been created before.
  */
-void create_opening_root_window (int width, int height);
-
+void create_opening_root_window(int width, int height);
 /*!
  * \ingroup interface_opening
  * \brief Adjusts opening interface to new zoom value
@@ -36,9 +32,7 @@ void create_opening_root_window (int width, int height);
  * \callgraph
  */
 void opening_win_update_zoom();
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif // def __OPENINGWIN_H__

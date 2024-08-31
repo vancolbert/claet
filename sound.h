@@ -6,20 +6,15 @@
  */
 #ifndef __SOUND_H__
 #define __SOUND_H__
-
-
 #include "platform.h"
 #include "actors.h"
-
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
 #include <vorbis/vorbisfile.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define SOUNDS_NONE 0
 #define SOUNDS_ENVIRO 1
 #define SOUNDS_MAP 2
@@ -29,13 +24,11 @@ extern "C" {
 #define SOUNDS_GAMEWIN 6
 #define SOUNDS_WARNINGS 7
 #define SOUNDS_CLIENT 8
-
 extern int have_sound; /*!< flag indicating whether sound is available */
 extern int have_music; /*!< flag indicating whether music is available */
 extern int no_sound; /*!< flag indicating whether sounds are initialised and to be processed */
 extern int sound_on; /*!< flag indicating whether sound is enabled */
 extern int music_on; /*!< flag indicating whether music is enabled */
-
 extern ALfloat sound_gain; /*!< gain for sound effects */
 extern ALfloat music_gain; /*!< gain for playing music */
 extern ALfloat crowd_gain; /*!< gain for crowd sound effects */
@@ -45,19 +38,13 @@ extern ALfloat walking_gain; /*!< gain for walking sound effects */
 extern ALfloat gamewin_gain; /*!< gain for game window (items/inv etc) sound effects */
 extern ALfloat client_gain; /*!< gain for client sound effects */
 extern ALfloat warnings_gain; /*!< gain for user configured text warning sound effects */
-
 extern char sound_device[30];
 extern int afk_snd_warning;
-
 #define MAX_SOUND_NAME_LENGTH 40
-
 typedef unsigned long int SOUND_COOKIE;
-
 extern int have_sound_config; /*!< flag indicating whether the sound config was found */
 #define SOUND_CONFIG_PATH "sound/sound_config.xml"
 #define SOUND_WARNINGS_PATH "sound_warnings.txt"
-
-
 /*!
  * \ingroup other
  * \brief Initializes the sound system of EL
@@ -67,16 +54,14 @@ extern int have_sound_config; /*!< flag indicating whether the sound config was 
  * \callgraph
  */
 void init_sound();
-
 /*!
  * \ingroup other
  * \brief Closes the sound system of EL
  *
  *      Shuts down the sound system of EL.
  *
-*/
+ */
 void destroy_sound();
-
 /*!
  * \ingroup sound_effects
  * \brief Turns off playback of sound.
@@ -85,7 +70,6 @@ void destroy_sound();
  *
  */
 void turn_sound_off();
-
 /*!
  * \ingroup sound_effects
  * \brief Turns on playback of sound
@@ -94,7 +78,6 @@ void turn_sound_off();
  *
  */
 void turn_sound_on();
-
 /*!
  * \ingroup sound_effects
  * \brief Toggles the sound
@@ -103,7 +86,6 @@ void turn_sound_on();
  *
  */
 void toggle_sounds(int *var);
-
 /*!
  * \ingroup sound_effects
  * \brief Enables or disables the sound system
@@ -113,9 +95,7 @@ void toggle_sounds(int *var);
  *
  */
 void disable_sound(int *var);
-
-void setup_map_sounds (int map_num);
-
+void setup_map_sounds(int map_num);
 /*!
  * \ingroup sound_effects
  * \brief Adds \a sound_type at the position (\a x, \a y) to the list of sounds to play.
@@ -129,17 +109,15 @@ void setup_map_sounds (int map_num);
  * \callgraph
  */
 unsigned int add_sound_object(int type, int x, int y, int me);
-
 unsigned int add_walking_sound(int type, int x, int y, int me, float scale);
 unsigned int add_map_sound(int type, int x, int y);
 unsigned int add_particle_sound(int type, int x, int y);
 unsigned int add_spell_sound(int spell);
-unsigned int add_death_sound(actor * act);
-unsigned int add_battlecry_sound(actor * act);
+unsigned int add_death_sound(actor *act);
+unsigned int add_battlecry_sound(actor *act);
 unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial_gain);
 void initial_sound_init(void);
 void final_sound_exit(void);
-
 /*!
  * \ingroup sound_effects
  * \brief Maps a server sound type to a local sound type.
@@ -153,7 +131,6 @@ void final_sound_exit(void);
  * \callgraph
  */
 unsigned int add_server_sound(int type, int x, int y, int gain);
-
 /*!
  * \ingroup sound_effects
  * \brief Informs the sound subsystem that \a ms milliseconds have passed since the previous update.
@@ -164,7 +141,6 @@ unsigned int add_server_sound(int type, int x, int y, int gain);
  * \callgraph
  */
 void update_sound(int ms);
-
 /*!
  * \ingroup sound_effects
  * \brief Stops the specified source.
@@ -175,7 +151,6 @@ void update_sound(int ms);
  * \callgraph
  */
 void stop_sound(unsigned long int cookie);
-
 /*!
  * \ingroup sound_effects
  * \brief Deletes a source at the given location
@@ -187,7 +162,6 @@ void stop_sound(unsigned long int cookie);
  * \callgraph
  */
 void stop_sound_at_location(int x, int y);
-
 /*!
  * \ingroup sound_effects
  * \brief Stop all sound & music playback
@@ -197,7 +171,6 @@ void stop_sound_at_location(int x, int y);
  * \callgraph
  */
 void stop_all_sounds();
-
 /*!
  * \ingroup sound_effects
  * \brief Gets the index of the named sound type.
@@ -208,7 +181,6 @@ void stop_all_sounds();
  * \callgraph
  */
 int get_index_for_sound_type_name(const char *name);
-
 /*!
  * \ingroup sound_effects
  * \brief Gets the index of the sound for the named particle sound.
@@ -219,7 +191,6 @@ int get_index_for_sound_type_name(const char *name);
  * \callgraph
  */
 int get_sound_index_for_particle_file_name(const char *name);
-
 /*!
  * \ingroup sound_effects
  * \brief Gets the index of the sound for the given special effect num.
@@ -230,7 +201,6 @@ int get_sound_index_for_particle_file_name(const char *name);
  * \callgraph
  */
 int get_sound_index_for_sfx(int sfx);
-
 /*!
  * \ingroup sound_effects
  * \brief Gets the index of the sound for the image id
@@ -241,7 +211,6 @@ int get_sound_index_for_sfx(int sfx);
  * \callgraph
  */
 int get_index_for_inv_use_item_sound(int image_id);
-
 /*!
  * \ingroup sound_effects
  * \brief Gets the index of the sound for the image id's
@@ -253,7 +222,6 @@ int get_index_for_inv_use_item_sound(int image_id);
  * \callgraph
  */
 int get_index_for_inv_usewith_item_sound(int use_image_id, int with_image_id);
-
 /*!
  * \ingroup sound_effects
  * \brief Gets the index of the sound source for the given cookie.
@@ -265,7 +233,6 @@ int get_index_for_inv_usewith_item_sound(int use_image_id, int with_image_id);
  * \callgraph
  */
 int find_sound_source_from_cookie(unsigned int cookie);
-
 /*!
  * \ingroup sound_effects
  * \brief Sets the gain of a sound source
@@ -277,7 +244,6 @@ int find_sound_source_from_cookie(unsigned int cookie);
  * \callgraph
  */
 void sound_source_set_gain(unsigned long int cookie, float gain);
-
 /*!
  * \ingroup other
  * \brief Loads the configuration of the sound system for EL
@@ -286,52 +252,47 @@ void sound_source_set_gain(unsigned long int cookie, float gain);
  *
  * \param path		The path of the sounds configuration XML file.
  * \callgraph
-  */
-void load_sound_config_data (const char *path);
-
+ */
+void load_sound_config_data(const char *path);
 void clear_sound_data();
-
 void handle_walking_sound(actor *pActor, int def_snd);
 int check_sound_loops(unsigned int cookie);
-void check_sound_alerts(const Uint8* text, size_t len, Uint8 channel);
-
-static __inline__ void do_click_sound(){
+void check_sound_alerts(const Uint8 *text, size_t len, Uint8 channel);
+static __inline__ void do_click_sound() {
 	add_sound_object(get_index_for_sound_type_name("Button Click"), 0, 0, 1);
 }
-static __inline__ void do_drag_item_sound(){
+static __inline__ void do_drag_item_sound() {
 	add_sound_object(get_index_for_sound_type_name("Drag Item"), 0, 0, 1);
 }
-static __inline__ void do_alert1_sound(){
+static __inline__ void do_alert1_sound() {
 	add_sound_object(get_index_for_sound_type_name("alert1"), 0, 0, 1);
 }
-static __inline__ void do_drop_item_sound(){
+static __inline__ void do_drop_item_sound() {
 	add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
 }
-static __inline__ void do_get_item_sound(){
+static __inline__ void do_get_item_sound() {
 	add_sound_object(get_index_for_sound_type_name("Get Item"), 0, 0, 1);
 }
-static __inline__ void do_window_close_sound(){
+static __inline__ void do_window_close_sound() {
 	add_sound_object(get_index_for_sound_type_name("Window Close"), 0, 0, 1);
 }
-static __inline__ void do_icon_click_sound(){
+static __inline__ void do_icon_click_sound() {
 	add_sound_object(get_index_for_sound_type_name("Icon Click"), 0, 0, 1);
 }
-static __inline__ void do_error_sound(){
+static __inline__ void do_error_sound() {
 	add_sound_object(get_index_for_sound_type_name("Error"), 0, 0, 1);
 }
-static __inline__ void do_disconnect_sound(){
+static __inline__ void do_disconnect_sound() {
 	add_sound_object(get_index_for_sound_type_name("Disconnected"), 0, 0, 1);
 }
-static __inline__ void do_connect_sound(){
+static __inline__ void do_connect_sound() {
 	add_sound_object(get_index_for_sound_type_name("Connected"), 0, 0, 1);
 }
-static __inline__ void do_afk_sound(){
+static __inline__ void do_afk_sound() {
 	add_sound_object(get_index_for_sound_type_name("AFK Message"), 0, 0, 1);
 }
-
 /////// MUSIC FUNCTIONALITY ///////////
 ///////////////////////////////////////
-
 /*!
  * \ingroup music
  * \brief Affiche les zones de musiques des cartes
@@ -340,7 +301,6 @@ static __inline__ void do_afk_sound(){
  *
  */
 void voir_musique_sur_carte();
-
 /*!
  * \ingroup music
  * \brief Affiche la playlist
@@ -349,7 +309,6 @@ void voir_musique_sur_carte();
  *
  */
 void affiche_playlist();
-
 /*!
  * \ingroup music
  * \brief Modifie la playlist
@@ -358,7 +317,6 @@ void affiche_playlist();
  *
  */
 void modif_playlist(int num);
-
 /*!
  * \ingroup music
  * \brief Remise à zéro de la playlist
@@ -366,22 +324,18 @@ void modif_playlist(int num);
  *      Remet à zéro les informations de la playlist à partir du fichier pll
  *
  */
-void raz_playlist() ;
-
+void raz_playlist();
 #define MAX_NOMBRE_MUSIQUE  50     /* Nombre de musique maximum */
-typedef struct
-{
-    char nom[50];
-    char nom_fichier[80];
-    Uint8 selection;
+typedef struct {
+	char nom[50];
+	char nom_fichier[80];
+	Uint8 selection;
 } liste_musique;
-
 extern liste_musique liste_musiques[MAX_NOMBRE_MUSIQUE];
-
 extern int musique_carte;
 extern int fenetre_musique;
 extern int auto_serveur_musique;
-void affiche_fenetre_musique ();
+void affiche_fenetre_musique();
 /*!
  * \ingroup music
  * \brief Retrieves the playlist for the current map.
@@ -390,7 +344,6 @@ void affiche_fenetre_musique ();
  *
  */
 void get_map_playlist();
-
 /*!
  * \ingroup music
  * \brief Starts playing music according the entries in the given playlist
@@ -402,7 +355,6 @@ void get_map_playlist();
  * \callgraph
  */
 void play_music(int list);
-
 /*!
  * \ingroup music
  * \brief Updates the music and brings the sound system in sync.
@@ -414,7 +366,6 @@ void play_music(int list);
  * \callgraph
  */
 int update_streams(void *dummy);
-
 /*!
  * \ingroup music
  * \brief Turns music off and stops playback of music.
@@ -422,7 +373,6 @@ int update_streams(void *dummy);
  *      Turns music off and stops playback of music.
  */
 void turn_music_off();
-
 /*!
  * \ingroup music
  * \brief Turns music on and starts playback of music
@@ -430,7 +380,6 @@ void turn_music_off();
  *      Turns music on and starts playback of music.
  */
 void turn_music_on();
-
 /*!
  * \ingroup music
  * \brief Displays song title
@@ -439,7 +388,6 @@ void turn_music_on();
  *
  */
 int display_song_name();
-
 /*!
  * \ingroup music
  * \brief Toggles the music
@@ -447,11 +395,8 @@ int display_song_name();
  *      Toggles the status of the music option in the options dialog and starts or stops the music.
  *
  */
-void toggle_music(int * var);
-
-
+void toggle_music(int *var);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif // __SOUND_H__

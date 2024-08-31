@@ -5,28 +5,23 @@
  */
 #ifndef __UPDATE_H__
 #define __UPDATE_H__
-
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 // structure for requesting a file via http+thread
 struct http_get_struct {
-	char   server[128];
-	char   path[256];
-	Uint8  *md5;
-	FILE   *fp;
-	int    event;
-	int    status;
-	int    allow_restart;
+	char server[128];
+	char path[256];
+	Uint8 *md5;
+	FILE *fp;
+	int event;
+	int status;
+	int allow_restart;
 	size_t thread_index;
 };
-
-extern int update_root_win;			/* Handle for the update window */
-extern int update_countdown;		/* Counter until the client restarts after an update */
-
+extern int update_root_win;                     /* Handle for the update window */
+extern int update_countdown;            /* Counter until the client restarts after an update */
 /*!
  * \ingroup	update
  * \brief	Initialize the auto update system
@@ -34,7 +29,6 @@ extern int update_countdown;		/* Counter until the client restarts after an upda
  * 		The function initializes the auto update system and starts downloading if enabled
  */
 void    init_update();
-
 /*!
  * \ingroup	update
  * \brief	Clean up the auto update system
@@ -42,7 +36,6 @@ void    init_update();
  * 		The function cleans up the auto update system on client exit
  */
 void    clean_update();
-
 /*!
  * \ingroup	update
  * \brief   Check the results of having downloaded the updates file
@@ -51,7 +44,6 @@ void    clean_update();
  *  starts downloading again, start processing the file, or stops the process
  */
 void    handle_update_download(struct http_get_struct *get);
-
 /*!
  * \ingroup	update
  * \brief   Starts checking what files need updating
@@ -61,7 +53,6 @@ void    handle_update_download(struct http_get_struct *get);
  *  enqueues it to be downloaded.
  */
 void    do_updates();
-
 /*!
  * \ingroup	update
  * \brief   The background update & MD5 handler
@@ -69,15 +60,13 @@ void    do_updates();
  * 		The function to do the actual background processing of the update list file
  */
 int    do_threaded_update(void *ptr);
-
 /*!
  * \ingroup	update
  * \brief   Adds a file to the download queue
  *
  *      The functions adds a file to the download queue so that it can be downloaded
  */
- void   add_to_download(const char *filename, const Uint8 *md5);
-
+void   add_to_download(const char *filename, const Uint8 *md5);
 /*!
  * \ingroup	update
  * \brief   handle the results of a background download
@@ -85,7 +74,6 @@ int    do_threaded_update(void *ptr);
  * 		The function handles the result of a download for updating
  */
 void    handle_file_download(struct http_get_struct *get);
-
 /*!
  * \ingroup	update
  * \brief	A threaded implementation of the http-GET
@@ -100,7 +88,6 @@ void    handle_file_download(struct http_get_struct *get);
  * \param   event The SDL event to issue when the download is complete
  */
 void http_threaded_get_file(char *server, char *path, FILE *fp, Uint8 *md5, Uint32 event);
-
 /*!
  * \ingroup	update
  * \brief	The background download handler
@@ -110,8 +97,6 @@ void http_threaded_get_file(char *server, char *path, FILE *fp, Uint8 *md5, Uint
  * \param   spec The spec & event data to return when finished
  */
 int http_get_file_thread_handler(void *specs);
-
-
 /*!
  * \ingroup	update
  * \brief	A simple implementation of the http-GET
@@ -123,17 +108,14 @@ int http_get_file_thread_handler(void *specs);
  * \param	fp The file you're saving the file to...
  */
 int http_get_file(char *server, char *path, FILE *fp);
-
- /*!
+/*!
  * \ingroup	update
  * \brief   Traitement du fichier files_bl.lst
  *
  *
  */
-int file_in_bl( char *wget_file, Uint8 *wget_md5 );
-
+int file_in_bl(char *wget_file, Uint8 *wget_md5);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

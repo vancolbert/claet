@@ -3,16 +3,13 @@
  * \ingroup widgets
  * \brief Functions for the widgets used by EL
  */
-#ifndef	__WIDGETS_H
-#define	__WIDGETS_H
-
+#ifndef __WIDGETS_H
+#define __WIDGETS_H
 #include <SDL_types.h>
 #include "text.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef struct {
 	Sint8 label[64];
 	int content_id;
@@ -20,18 +17,16 @@ typedef struct {
 	float label_r, label_g, label_b;
 	char closable;
 } tab;
-
 typedef struct {
 	int tag_height, button_size;
 	int nr_tabs, max_tabs, cur_tab, tab_offset, tab_last_visible;
 	tab *tabs;
 } tab_collection;
-
 // The purpose of this implementation if to remove the need to edit
 // the implementation of the widgets to add a new client widget. It
 // also allows clients to be dynamically created and populated.
 struct WIDGET_TYPE {
-    // Function Pointers
+	// Function Pointers
 	int (*init)();
 	int (*draw)();
 	int (*click)();
@@ -40,12 +35,11 @@ struct WIDGET_TYPE {
 	int (*resize)();
 	int (*key)();
 	int (*destroy)();
-    // We can conceivably store other generic info here too
-} ;
-
+	// We can conceivably store other generic info here too
+};
 /*!
  * These are the type declarations for widgets.c
-  */
+ */
 extern const struct WIDGET_TYPE label_type;
 extern const struct WIDGET_TYPE image_type;
 extern const struct WIDGET_TYPE checkbox_type;
@@ -58,32 +52,28 @@ extern const struct WIDGET_TYPE text_field_type;
 extern const struct WIDGET_TYPE pword_field_type;
 extern const struct WIDGET_TYPE multiselect_type;
 extern const struct WIDGET_TYPE spinbutton_type;
-
 // Type Conversion Function - TODO : Document'
-int widget_set_type (int window_id, Uint32 widget_id, const struct WIDGET_TYPE *type);
-
+int widget_set_type(int window_id, Uint32 widget_id, const struct WIDGET_TYPE *type);
 typedef struct {
 	int pos, pos_inc, bar_len;
-}vscrollbar;
-
+} vscrollbar;
 /*!
  * The widget list structure - each window has a widget list.
  */
-typedef struct wl{
-    /*!
+typedef struct wl {
+	/*!
 	 * \name Common widget data
-     */
-    /*! @{ */
+	 */
+	/*! @{ */
 	Uint16 pos_x, pos_y, len_x, len_y; /*!< Widget area */
 	Uint32 id;                         /*!< Widget unique id */
 	int window_id; /*!< The id of the parent window */
 	const struct WIDGET_TYPE *type;  /*!< Specifies what properties the widget inherits from it's type */
-	void *spec;		/*!< The specific implementation info for this widget which is passed to type-nonspecific handlers*/
+	void *spec;             /*!< The specific implementation info for this widget which is passed to type-nonspecific handlers*/
 	Uint32 Flags;  /*!< Status flags... visible, enabled, etc */
 	float size;    /*!< Size of text, image, etc */
 	float r, g, b; /*!< Associated color */
-    /*! @} */
-
+	/*! @} */
 	/*! \name The specific widget handlers */
 	/*! \{ */
 	int (*OnDraw)();
@@ -95,73 +85,60 @@ typedef struct wl{
 	int (*OnKey)();
 	int (*OnDestroy)();
 	/*! \} */
-
 	void *widget_info; /*!< Pointer to specific widget data */
 	struct wl *next;   /*!< Pointer to the next widget in the window */
-}widget_list;
-
+} widget_list;
 /*!
  * \name	Generic flags for widgets
  */
 /*! \{ */
-#define WIDGET_INVISIBLE	0x40
-#define WIDGET_DISABLED		0x80
+#define WIDGET_INVISIBLE        0x40
+#define WIDGET_DISABLED         0x80
 #define WIDGET_CLICK_TRANSPARENT 0x100
 /*! \} */
-
 /*!
  * \name	Flags for the buttons
  */
 /*! \{ */
 #define BUTTON_ACTIVE 0x400
-
 /*!
  * \name	Flags for the text field
  */
 /*! \{ */
-#define TEXT_FIELD_BORDER	0x01
-#define TEXT_FIELD_EDITABLE	0x02
-#define TEXT_FIELD_NO_KEYPRESS	0x04
-#define TEXT_FIELD_CAN_GROW	0x08
-#define TEXT_FIELD_SCROLLBAR	0x10
+#define TEXT_FIELD_BORDER       0x01
+#define TEXT_FIELD_EDITABLE     0x02
+#define TEXT_FIELD_NO_KEYPRESS  0x04
+#define TEXT_FIELD_CAN_GROW     0x08
+#define TEXT_FIELD_SCROLLBAR    0x10
 #define TEXT_FIELD_IGNORE_RETURN 0x20
 #define TEXT_FIELD_MOUSE_EDITABLE 0x200
 /*! \} */
-
 #define TF_BLINK_DELAY 500
-
 /*!
  * Contains auxilary information for selection.
  */
-typedef struct
-{
+typedef struct {
 	int msg, chr;
 } text_field_line;
-
 /*!
  * Contains selection information for text_field.
  */
-typedef struct
-{
-	text_field_line* lines;
+typedef struct {
+	text_field_line *lines;
 	int sm, sc, em, ec;
 } select_info;
-
 /*!
  * Checks if selection is empty.
  */
 #define TEXT_FIELD_SELECTION_EMPTY(select) (((select)->em == -1) && ((select)->ec == -1))
-
 /*!
  * Makes given selection empty.
  */
 #define TEXT_FIELD_CLEAR_SELECTION(select) {(select)->em = (select)->ec = -1;}
-
 /*!
  * Text field structure
  */
-typedef struct
-{
+typedef struct {
 	int msg, offset;
 	int cursor, cursor_line;
 	int buf_size, buf_fill;
@@ -177,7 +154,6 @@ typedef struct
 	Uint32 next_blink;
 	select_info select;
 } text_field;
-
 typedef struct {
 	void *data;
 	char input_buffer[255];
@@ -185,12 +161,9 @@ typedef struct {
 	float min;
 	Uint8 type;
 	float interval;
-}spinbutton;
-
+} spinbutton;
 /* SPLIT INTO ELWIDGETS.C and ELWIDGETS.H */
-
 // Common widget functions
-
 /*!
  * \ingroup	widgets
  * \brief 	Creates a widget and adds it to the given window
@@ -214,10 +187,7 @@ typedef struct {
  * \param   S Pointer to specific implementation info
  * \retval int Returns the new widgets unique ID
  */
-Uint32 widget_add (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y,
-	Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b,
-	const struct WIDGET_TYPE *type, void *T, void *S);
-
+Uint32 widget_add(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, const struct WIDGET_TYPE *type, void *T, void *S);
 /*!
  * \ingroup	widgets
  * \brief 	Find a widget with the given widget_id
@@ -228,8 +198,7 @@ Uint32 widget_add (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 
  * \param   	widget_id The widget's unique ID
  * \retval widget_list*  	A widget_list pointer to the widget if found, otherwise NULL
  */
-widget_list * widget_find(int window_id, Uint32 widget_id);
-
+widget_list *widget_find(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	widgets
  * \brief 	Destroy a widget with a given ID
@@ -240,8 +209,7 @@ widget_list * widget_find(int window_id, Uint32 widget_id);
  * \param   	widget_id The widget's unique ID
  * \retval	int 1 on success, 0 on failure
  */
-int widget_destroy (int window_id, Uint32 widget_id);
-
+int widget_destroy(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's draw callback
@@ -256,7 +224,6 @@ int widget_destroy (int window_id, Uint32 widget_id);
  * \sa widget_find
  */
 int widget_set_OnDraw(int window_id, Uint32 widget_id, int (*handler)());
-
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's on-click handler
@@ -271,7 +238,6 @@ int widget_set_OnDraw(int window_id, Uint32 widget_id, int (*handler)());
  * \sa widget_find
  */
 int widget_set_OnClick(int window_id, Uint32 widget_id, int (*handler)());
-
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's on-drag handler
@@ -286,7 +252,6 @@ int widget_set_OnClick(int window_id, Uint32 widget_id, int (*handler)());
  * \sa widget_find
  */
 int widget_set_OnDrag(int window_id, Uint32 widget_id, int (*handler)());
-
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's on-mouse-over handler
@@ -301,7 +266,6 @@ int widget_set_OnDrag(int window_id, Uint32 widget_id, int (*handler)());
  * \sa widget_find
  */
 int widget_set_OnMouseover(int window_id, Uint32 widget_id, int (*handler)());
-
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's on-keypress handler
@@ -315,8 +279,7 @@ int widget_set_OnMouseover(int window_id, Uint32 widget_id, int (*handler)());
  *
  * \sa widget_find
  */
-int widget_set_OnKey ( int window_id, Uint32 widget_id, int (*handler)() );
-
+int widget_set_OnKey(int window_id, Uint32 widget_id, int (*handler)());
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's specific argument (passed to specific handlers)
@@ -330,8 +293,7 @@ int widget_set_OnKey ( int window_id, Uint32 widget_id, int (*handler)() );
  *
  * \sa widget_find
  */
-int widget_set_args (int window_id, Uint32 widget_id, void *spec);
-
+int widget_set_args(int window_id, Uint32 widget_id, void *spec);
 /*!
  * \ingroup 	widgets
  * \brief 	Moves the widget
@@ -347,7 +309,6 @@ int widget_set_args (int window_id, Uint32 widget_id, void *spec);
  * \sa widget_find
  */
 int widget_move(int window_id, Uint32 widget_id, Uint16 x, Uint16 y);
-
 /*!
  * \ingroup 	widgets
  * \brief 	Moves the widget to a new window
@@ -362,7 +323,6 @@ int widget_move(int window_id, Uint32 widget_id, Uint16 x, Uint16 y);
  * \sa widget_find
  */
 Uint32 widget_move_win(int window_id, Uint32 widget_id, int new_win_id);
-
 /*!
  * \ingroup 	widgets
  * \brief 	Moves the widget relative to it's current position
@@ -377,8 +337,7 @@ Uint32 widget_move_win(int window_id, Uint32 widget_id, int new_win_id);
  *
  * \sa widget_find
  */
-int widget_move_rel (int window_id, Uint32 widget_id, Sint16 dx, Sint16 dy);
-
+int widget_move_rel(int window_id, Uint32 widget_id, Sint16 dx, Sint16 dy);
 /*!
  * \ingroup	widgets
  * \brief 	Resizes the widget
@@ -394,7 +353,6 @@ int widget_move_rel (int window_id, Uint32 widget_id, Sint16 dx, Sint16 dy);
  * \sa widget_find
  */
 int widget_resize(int window_id, Uint32 widget_id, Uint16 x, Uint16 y);
-
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget's flags to f
@@ -409,7 +367,6 @@ int widget_resize(int window_id, Uint32 widget_id, Uint16 x, Uint16 y);
  * \sa widget_find
  */
 int widget_set_flags(int window_id, Uint32 widget_id, Uint32 f);
-
 /*!
  * \ingroup	widgets
  * \brief 	Unsets the specified flags
@@ -423,8 +380,7 @@ int widget_set_flags(int window_id, Uint32 widget_id, Uint32 f);
  *
  * \sa widget_find
  */
-int widget_unset_flags (int window_id, Uint32 widget_id, Uint32 f);
-
+int widget_unset_flags(int window_id, Uint32 widget_id, Uint32 f);
 /*!
  * \ingroup	widgets
  * \brief 	Set the widget's text size
@@ -439,7 +395,6 @@ int widget_unset_flags (int window_id, Uint32 widget_id, Uint32 f);
  * \sa widget_find
  */
 int widget_set_size(int window_id, Uint32 widget_id, float size);
-
 /*!
  * \ingroup	widgets
  * \brief 	Sets the widget colour
@@ -456,7 +411,6 @@ int widget_set_size(int window_id, Uint32 widget_id, float size);
  * \sa widget_find
  */
 int widget_set_color(int window_id, Uint32 widget_id, float r, float g, float b);
-
 /*!
  * \ingroup	widgets
  * \brief 	Return the widget width
@@ -469,8 +423,7 @@ int widget_set_color(int window_id, Uint32 widget_id, float r, float g, float b)
  *
  * \sa widget_find
  */
-int widget_get_width (int window_id, Uint32 widget_id);
-
+int widget_get_width(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	widgets
  * \brief 	Return the widget height
@@ -483,10 +436,8 @@ int widget_get_width (int window_id, Uint32 widget_id);
  *
  * \sa widget_find
  */
-int widget_get_height (int window_id, Uint32 widget_id);
-
+int widget_get_height(int window_id, Uint32 widget_id);
 // Label
-
 /*!
  * \ingroup	labels
  * \brief 	Creates an extended label widget
@@ -511,7 +462,6 @@ int widget_get_height (int window_id, Uint32 widget_id);
  * \sa lable_add
  */
 int label_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint32 Flags, float size, float r, float g, float b, const char *text);
-
 /*!
  * \ingroup	labels
  * \brief 	Creates a label and adds it to the given window.
@@ -528,7 +478,6 @@ int label_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uin
  * \sa		label_add_extended
  */
 int label_add(int window_id, int (*OnInit)(), const char *text, Uint16 x, Uint16 y);
-
 /*!
  * \ingroup	labels
  * \brief	Draws a label
@@ -540,7 +489,6 @@ int label_add(int window_id, int (*OnInit)(), const char *text, Uint16 x, Uint16
  * \callgraph
  */
 int label_draw(widget_list *W);
-
 /*!
  * \ingroup	labels
  * \brief 	Sets the text of the given widget
@@ -555,11 +503,7 @@ int label_draw(widget_list *W);
  * \sa widget_find
  */
 int label_set_text(int window_id, Uint32 widget_id, const char *text);
-
-
-
 // Image
-
 /*!
  * \ingroup	images
  * \brief 	Create an extended image widget
@@ -588,8 +532,7 @@ int label_set_text(int window_id, Uint32 widget_id, const char *text);
  *
  * \sa image_add
  */
-int image_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int id, float u1, float v1, float u2, float v2, float alpha);
-
+int image_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int id, float u1, float v1, float u2, float v2, float alpha);
 /*!
  * \ingroup	images
  * \brief 	Creates an image widget
@@ -612,7 +555,6 @@ int image_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, Ui
  * \sa image_add_extended
  */
 int image_add(int window_id, int (*OnInit)(), int id, Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, float u1, float v1, float u2, float v2);
-
 /*!
  * \ingroup	images
  * \brief 	Draws the image widget
@@ -624,7 +566,6 @@ int image_add(int window_id, int (*OnInit)(), int id, Uint16 x, Uint16 y, Uint16
  * \callgraph
  */
 int image_draw(widget_list *W);
-
 /*!
  * \ingroup	images
  * \brief 	Sets the texture ID
@@ -639,7 +580,6 @@ int image_draw(widget_list *W);
  * \sa widget_find
  */
 int image_set_id(int window_id, Uint32 widget_id, int id);
-
 /*!
  * \ingroup 	images
  * \brief 	Sets the UV coordinates of the image widget
@@ -657,11 +597,7 @@ int image_set_id(int window_id, Uint32 widget_id, int id);
  * \sa widget_find
  */
 int image_set_uv(int window_id, Uint32 widget_id, float u1, float v1, float u2, float v2);
-
-
-
 // Checkbox
-
 /*!
  * \ingroup	checkboxes
  * \brief 	Create an extended checkbox label
@@ -685,8 +621,7 @@ int image_set_uv(int window_id, Uint32 widget_id, float u1, float v1, float u2, 
  *
  * \sa checkbox_add
  */
-int checkbox_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int *checked);
-
+int checkbox_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int *checked);
 /*!
  * \ingroup	checkboxes
  * \brief 	Creates a checkbox
@@ -705,7 +640,6 @@ int checkbox_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x,
  * \sa checkbox_add_extended
  */
 int checkbox_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, int *checked);
-
 /*!
  * \ingroup	checkboxes
  * \brief 	Draws a checkbox
@@ -717,7 +651,6 @@ int checkbox_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, 
  * \callgraph
  */
 int checkbox_draw(widget_list *W);
-
 /*!
  * \ingroup	checkboxes
  * \brief 	Checks if the given checkbox is checked
@@ -731,7 +664,6 @@ int checkbox_draw(widget_list *W);
  * \sa widget_find
  */
 int checkbox_get_checked(int window_id, Uint32 widget_id);
-
 /*!
  * \ingroup	checkboxes
  * \brief 	Is used for setting the checkbox as checked or not
@@ -746,13 +678,9 @@ int checkbox_get_checked(int window_id, Uint32 widget_id);
  * \sa widget_find
  */
 int checkbox_set_checked(int window_id, Uint32 widget_id, int checked);
-
-
 //Button
-
 /* Config option: disables double click protection. */
 extern int disable_double_click;
-
 /*!
  * \ingroup	buttons
  * \brief 	Check for safety protected button press.
@@ -766,7 +694,6 @@ extern int disable_double_click;
  * \retval int			Returns 1 if the button press should be actioned, else 0.
  */
 int safe_button_click(Uint32 *last_click);
-
 /*!
  * \ingroup	buttons
  * \brief 	Creates an extended button widget
@@ -790,8 +717,7 @@ int safe_button_click(Uint32 *last_click);
  *
  * \sa button_add
  */
-int button_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, const char *text);
-
+int button_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, const char *text);
 /*!
  * \ingroup	buttons
  * \brief 	Creates a button widget
@@ -808,7 +734,6 @@ int button_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, U
  * \sa button_add_extended
  */
 int button_add(int window_id, int (*OnInit)(), const char *text, Uint16 x, Uint16 y);
-
 /*!
  * \ingroup	buttons
  * \brief 	Draws a smooth button
@@ -820,7 +745,6 @@ int button_add(int window_id, int (*OnInit)(), const char *text, Uint16 x, Uint1
  * \callgraph
  */
 int button_draw(widget_list *W);
-
 /*!
  * \ingroup	buttons
  * \brief 	Draws a square button
@@ -832,7 +756,6 @@ int button_draw(widget_list *W);
  * \callgraph
  */
 int square_button_draw(widget_list *W);
-
 /*!
  * \ingroup	buttons
  * \brief 	Sets the button text
@@ -847,11 +770,7 @@ int square_button_draw(widget_list *W);
  * \sa widget_find
  */
 int button_set_text(int window_id, Uint32 widget_id, char *text);
-
-
-
 // Progressbar
-
 /*!
  * \ingroup	progressbars
  * \brief 	Adds an extended progressbar widget
@@ -876,8 +795,7 @@ int button_set_text(int window_id, Uint32 widget_id, char *text);
  *
  * \sa progressbar_add
  */
-int progressbar_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, float progress, const float * colors);
-
+int progressbar_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, float progress, const float *colors);
 /*!
  * \ingroup	progressbars
  * \brief 	Adds a progressbar widget
@@ -895,7 +813,6 @@ int progressbar_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 
  * \sa progressbar_add_extended
  */
 int progressbar_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly);
-
 /*!
  * \ingroup	progressbars
  * \brief 	Draws a progressbar
@@ -907,7 +824,6 @@ int progressbar_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 l
  * \callgraph
  */
 int progressbar_draw(widget_list *W);
-
 /*!
  * \ingroup	progressbars
  * \brief 	Gets the progress from a progressbar
@@ -921,7 +837,6 @@ int progressbar_draw(widget_list *W);
  * \sa widget_find
  */
 float progressbar_get_progress(int window_id, Uint32 widget_id);
-
 /*!
  * \ingroup	progressbars
  * \brief 	Sets the current progress in the progressbar
@@ -936,11 +851,7 @@ float progressbar_get_progress(int window_id, Uint32 widget_id);
  * \sa widget_find
  */
 int progressbar_set_progress(int window_id, Uint32 widget_id, float progress);
-
-
-
 // Vertical Scrollbar
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Creates an extended vertical scrollbar widget
@@ -966,8 +877,7 @@ int progressbar_set_progress(int window_id, Uint32 widget_id, float progress);
  *
  * \sa vscrollbar_add
  */
-int vscrollbar_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int pos, int pos_inc, int bar_len);
-
+int vscrollbar_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int pos, int pos_inc, int bar_len);
 /*!
  * \ingroup	scrollbars
  * \brief 	Creates a vertical scrollbar
@@ -985,7 +895,6 @@ int vscrollbar_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 
  * \sa vscrollbar_add_extended
  */
 int vscrollbar_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly);
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Draws a vertical scrollbar
@@ -997,7 +906,6 @@ int vscrollbar_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx
  * \callgraph
  */
 int vscrollbar_draw(widget_list *W);
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Sets the position of the vertical scrollbar
@@ -1012,7 +920,6 @@ int vscrollbar_draw(widget_list *W);
  * \sa widget_find
  */
 int vscrollbar_set_pos_inc(int window_id, Uint32 widget_id, int pos_inc);
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Sets the position of the vertical scrollbar
@@ -1027,7 +934,6 @@ int vscrollbar_set_pos_inc(int window_id, Uint32 widget_id, int pos_inc);
  * \sa widget_find
  */
 int vscrollbar_set_pos(int window_id, Uint32 widget_id, int pos);
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Scrolls the scrollbar up
@@ -1041,7 +947,6 @@ int vscrollbar_set_pos(int window_id, Uint32 widget_id, int pos);
  * \sa widget_find
  */
 int vscrollbar_scroll_up(int window_id, Uint32 widget_id);
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Scrolls the scrollbar down
@@ -1055,7 +960,6 @@ int vscrollbar_scroll_up(int window_id, Uint32 widget_id);
  * \sa widget_find
  */
 int vscrollbar_scroll_down(int window_id, Uint32 widget_id);
-
 /*!
  * \ingroup	scrollbars
  * \brief 	Sets the logical length of vertical scrollbar
@@ -1069,8 +973,7 @@ int vscrollbar_scroll_down(int window_id, Uint32 widget_id);
  *
  * \sa widget_find
  */
-int vscrollbar_set_bar_len (int window_id, Uint32 widget_id, int bar_len);
-
+int vscrollbar_set_bar_len(int window_id, Uint32 widget_id, int bar_len);
 /*!
  * \ingroup	scrollbars
  * \brief 	Sets the position of the vertical scrollbar
@@ -1084,10 +987,7 @@ int vscrollbar_set_bar_len (int window_id, Uint32 widget_id, int bar_len);
  * \sa widget_find
  */
 int vscrollbar_get_pos(int window_id, Uint32 widget_id);
-
-
 // Tabbed window
-
 /*!
  * \ingroup	tabs
  * \brief 	Returns the number of the currently selected tab
@@ -1100,8 +1000,7 @@ int vscrollbar_get_pos(int window_id, Uint32 widget_id);
  *
  * \sa widget_find
  */
-int tab_collection_get_tab (int window_id, Uint32 widget_id);
-
+int tab_collection_get_tab(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	tabs
  * \brief 	Returns the window ID of the currently selected tab
@@ -1112,8 +1011,7 @@ int tab_collection_get_tab (int window_id, Uint32 widget_id);
  * \param   	widget_id The unique widget ID of the tab collection
  * \retval int  	Returns the tab's window ID number on succes, -1 on failure
  */
-int tab_collection_get_tab_id (int window_id, Uint32 widget_id);
-
+int tab_collection_get_tab_id(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	tabs
  * \brief 	Returns the position of a tab in the collection from its window ID
@@ -1125,8 +1023,7 @@ int tab_collection_get_tab_id (int window_id, Uint32 widget_id);
  * \param   	tab_id The tab's window ID
  * \retval int  	Returns the tab's number on succes, -1 on failure
  */
-int tab_collection_get_tab_nr (int window_id, Uint32 col_id, int tab_id);
-
+int tab_collection_get_tab_nr(int window_id, Uint32 col_id, int tab_id);
 /*!
  * \ingroup	tabs
  * \brief 	Returns the number of tabs in this collection
@@ -1137,8 +1034,7 @@ int tab_collection_get_tab_nr (int window_id, Uint32 col_id, int tab_id);
  * \param   	widget_id The unique widget ID of the tab collection
  * \retval int  	Returns the number of tabs, or -1 on failure
  */
-int tab_collection_get_nr_tabs (int window_id, Uint32 widget_id);
-
+int tab_collection_get_nr_tabs(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	tabs
  * \brief 	Sets the label color for a tab
@@ -1153,8 +1049,7 @@ int tab_collection_get_nr_tabs (int window_id, Uint32 widget_id);
  * \param	b the blue component of the color
  * \retval int  	Returns the tab's window ID number on succes, -1 on failure
  */
-int tab_set_label_color_by_id (int window_id, Uint32 col_id, int tab_id, float r, float g, float b);
-
+int tab_set_label_color_by_id(int window_id, Uint32 col_id, int tab_id, float r, float g, float b);
 /*!
  * \ingroup	tabs
  * \brief 	Selects a tab in the tab collection
@@ -1167,8 +1062,7 @@ int tab_set_label_color_by_id (int window_id, Uint32 col_id, int tab_id, float r
  * \retval int  	Returns the tab number on succes, -1 on failure (if the tab number was greater than or equal to the number of tabs in the collection)
  * \callgraph
  */
-int tab_collection_select_tab (int window_id, Uint32 widget_id, int tab);
-
+int tab_collection_select_tab(int window_id, Uint32 widget_id, int tab);
 /*!
  * \ingroup	tabs
  * \brief 	Closes a tab in the tab collection
@@ -1181,8 +1075,7 @@ int tab_collection_select_tab (int window_id, Uint32 widget_id, int tab);
  * \retval int  	Returns the tab number on succes, -1 on failure (if the tab number was greater than or equal to the number of tabs in the collection)
  * \callgraph
  */
-int tab_collection_close_tab (int window_id, Uint32 widget_id, int tab);
-
+int tab_collection_close_tab(int window_id, Uint32 widget_id, int tab);
 /*!
  * \ingroup	tabs
  * \brief 	Creates a tabbed window collection
@@ -1201,9 +1094,7 @@ int tab_collection_close_tab (int window_id, Uint32 widget_id, int tab);
  *
  * \sa tab_collection_add_extended
  */
-int tab_collection_add (int window_id, int (*OnInit)(), Uint16 x,
-Uint16 y, Uint16 lx, Uint16 ly, Uint16 tag_height);
-
+int tab_collection_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint16 tag_height);
 /*!
  * \ingroup	tabs
  * \brief 	Creates an extended tabbed window collection
@@ -1229,10 +1120,8 @@ Uint16 y, Uint16 lx, Uint16 ly, Uint16 tag_height);
  *
  * \sa tab_collection_add
  */
-int tab_collection_add_extended (int window_id, Uint32 wid, int
-(*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags,
-float size, float r, float g, float b, int max_tabs, Uint16 tag_height);
-
+int tab_collection_add_extended(int window_id, Uint32 wid, int
+				(*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, int max_tabs, Uint16 tag_height);
 /*!
  * \ingroup	tabs
  * \brief 	Draws a tabbed window collection
@@ -1243,8 +1132,7 @@ float size, float r, float g, float b, int max_tabs, Uint16 tag_height);
  * \retval int  	Returns 1 on success, 0 on error
  * \callgraph
  */
-int tab_collection_draw (widget_list *W);
-
+int tab_collection_draw(widget_list *W);
 /*!
  * \ingroup	tabs
  * \brief 	The callback for resizing the tabbed window collection widget
@@ -1257,8 +1145,7 @@ int tab_collection_draw (widget_list *W);
  * \retval int  	Returns 1 on success, 0 on failure
  * \callgraph
  */
-int tab_collection_resize (widget_list *W, Uint32 w, Uint32 h);
-
+int tab_collection_resize(widget_list *W, Uint32 w, Uint32 h);
 /*!
  * \ingroup	tabs
  * \brief 	Creates a new tabbed window
@@ -1274,8 +1161,7 @@ int tab_collection_resize (widget_list *W, Uint32 w, Uint32 h);
  * \retval int  	Returns 1 if a new tab is selected, 0 otherwise
  * \callgraph
  */
-int tab_add (int window_id, Uint32 col_id, const char *label, Uint16 tag_width, int closable, Uint32 flags);
-
+int tab_add(int window_id, Uint32 col_id, const char *label, Uint16 tag_width, int closable, Uint32 flags);
 /*!
  * \ingroup	textfields
  * \brief 	Creates a text field
@@ -1296,8 +1182,7 @@ int tab_add (int window_id, Uint32 col_id, const char *label, Uint16 tag_width, 
  *
  * \sa text_field_add_extended
  */
-int text_field_add (int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, text_message *buf, int buf_size, int x_space, int y_space);
-
+int text_field_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, text_message *buf, int buf_size, int x_space, int y_space);
 /*!
  * \ingroup	textfields
  * \brief 	Creates an extended text field
@@ -1325,8 +1210,7 @@ int text_field_add (int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 l
  *
  * \sa text_field_add
  */
-int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, int font, float r, float g, float b, text_message *buf, int buf_size, Uint8 chan_filt, int x_space, int y_space);
-
+int text_field_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, int font, float r, float g, float b, text_message *buf, int buf_size, Uint8 chan_filt, int x_space, int y_space);
 /*!
  * \ingroup	textfields
  * \brief 	Draws a text field
@@ -1337,8 +1221,7 @@ int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 
  * \retval int  	Returns 1 on success, 0 on error
  * \callgraph
  */
-int text_field_draw (widget_list *w);
-
+int text_field_draw(widget_list *w);
 /*!
  * \ingroup	textfields
  * \brief 	Sets the offset in the text buffer
@@ -1352,8 +1235,7 @@ int text_field_draw (widget_list *w);
  * \retval int  	Returns 1 on success, 0 on error
  * \callgraph
  */
-int text_field_set_buf_pos (int window_id, Uint32 widget_id, int msg, int offset);
-
+int text_field_set_buf_pos(int window_id, Uint32 widget_id, int msg, int offset);
 /*!
  * \ingroup	textfields
  * \brief       Clear an editable text field
@@ -1366,8 +1248,7 @@ int text_field_set_buf_pos (int window_id, Uint32 widget_id, int msg, int offset
  * \retval int  	Returns 1 on success, 0 on error
  * \callgraph
  */
-int text_field_clear (int window_id, Uint32 widget_id);
-
+int text_field_clear(int window_id, Uint32 widget_id);
 /*!
  * \ingroup	textfields
  * \brief 	Sets the text color
@@ -1382,8 +1263,7 @@ int text_field_clear (int window_id, Uint32 widget_id);
  * \retval int  	Returns 1 on success, 0 on error
  * \callgraph
  */
-int text_field_set_text_color (int window_id, Uint32 widget_id, float r, float g, float b);
-
+int text_field_set_text_color(int window_id, Uint32 widget_id, float r, float g, float b);
 /*!
  * \ingroup	widgets
  * \brief	Is called on keypress in the given widget
@@ -1397,28 +1277,23 @@ int text_field_set_text_color (int window_id, Uint32 widget_id, float r, float g
  * \param	unikey the unicode representation of the key pressed
  * retval	1 if the event is handled 0 otherwise
  */
-int text_field_keypress (widget_list *w, int mx, int my, Uint32 key, Uint32 unikey);
-
+int text_field_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unikey);
 /*!
  * \brief set cursor_line according to cursor position in current message.
  *
  * \param[in] tf text_field where we set cursor_line.
  */
-void text_field_find_cursor_line(text_field* tf);
-
-
+void text_field_find_cursor_line(text_field *tf);
 //FIXME: Write documentation for these...
 #define P_NORMAL    0
 #define P_TEXT      1
 #define P_NONE      2
-
-int pword_keypress (widget_list *w, int mx, int my, Uint32 key, Uint32 unikey);
-unsigned char * pword_field_get(widget_list *w);
-int pword_field_add (int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint8 status, unsigned char *buffer, int buffer_size);
-int pword_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint8 status, float size, float r, float g, float b, unsigned char *buffer, int buffer_size);
+int pword_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unikey);
+unsigned char *pword_field_get(widget_list *w);
+int pword_field_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint8 status, unsigned char *buffer, int buffer_size);
+int pword_field_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint8 status, float size, float r, float g, float b, unsigned char *buffer, int buffer_size);
 int pword_field_click(widget_list *w, int mx, int my, Uint32 flags);
 void pword_set_status(widget_list *w, Uint8 status);
-
 int multiselect_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, int width);
 int multiselect_add_extended(int window_id, Uint32 widget_id, int (*OnInit)(), Uint16 x, Uint16 y, int width, Uint16 max_height, float size, float r, float g, float b, float hr, float hg, float hb, int max_buttons);
 int multiselect_button_add(int window_id, Uint32 multiselect_id, Uint16 x, Uint16 y, const char *text, const char selected);
@@ -1426,13 +1301,10 @@ int multiselect_button_add_extended(int window_id, Uint32 multiselect_id, Uint16
 int multiselect_get_selected(int window_id, Uint32 widget_id);
 int multiselect_set_selected(int window_id, Uint32 widget_id, int button_id);
 int multiselect_get_height(int window_id, Uint32 widget_id);
-
 #define SPIN_FLOAT 0
 #define SPIN_INT 1
-
 int spinbutton_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint8 data_type, void *data, float min, float max, float interval);
 int spinbutton_add_extended(int window_id, Uint32 widget_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint8 data_type, void *data, float min, float max, float interval, float size, float r, float g, float b);
-
 /*!
  * \ingroup	widgets
  * \brief 	Handles a mouseover event
@@ -1444,8 +1316,7 @@ int spinbutton_add_extended(int window_id, Uint32 widget_id, int (*OnInit)(), Ui
  * \param   	my the mouse y position relative to the widgets origin
  * \retval 	1 if the event is handled, 0 otherwise
  */
-int widget_handle_mouseover (widget_list *widget, int mx, int my);
-
+int widget_handle_mouseover(widget_list *widget, int mx, int my);
 /*!
  * \ingroup	widgets
  * \brief 	Handles a mouse click event
@@ -1458,8 +1329,7 @@ int widget_handle_mouseover (widget_list *widget, int mx, int my);
  * \param	flags flags specifying the mouse button and modifier state
  * \retval 	1 if the event is handled, 0 otherwise
  */
-int widget_handle_click (widget_list *widget, int mx, int my, Uint32 flags);
-
+int widget_handle_click(widget_list *widget, int mx, int my, Uint32 flags);
 /*!
  * \ingroup	widgets
  * \brief 	Handles a mouse drag event
@@ -1474,8 +1344,7 @@ int widget_handle_click (widget_list *widget, int mx, int my, Uint32 flags);
  * \param   	dy the change in mouse position in the y direction
  * \retval 	1 if the event is handled, 0 otherwise
  */
-int widget_handle_drag (widget_list *widget, int mx, int my, Uint32 flags, int dx, int dy);
-
+int widget_handle_drag(widget_list *widget, int mx, int my, Uint32 flags, int dx, int dy);
 /*!
  * \ingroup	widgets
  * \brief 	Handles a keypess event
@@ -1489,10 +1358,8 @@ int widget_handle_drag (widget_list *widget, int mx, int my, Uint32 flags, int d
  * \param	unikey the unicode representation of the key pressed
  * \retval 	1 if the event is handled, 0 otherwise
  */
-int widget_handle_keypress (widget_list *widget, int mx, int my, Uint32 key, Uint32 unikey);
-
+int widget_handle_keypress(widget_list *widget, int mx, int my, Uint32 key, Uint32 unikey);
 // XML Windows
-
 /*!
  * \ingroup 	xml_windows
  * \brief 	Adds a window from an xml-file.
@@ -1504,7 +1371,6 @@ int widget_handle_keypress (widget_list *widget, int mx, int my, Uint32 key, Uin
  * \callgraph
  */
 int AddXMLWindow(char *fn);
-
 /*!
  * \brief checks if message fits the filter.
  *
@@ -1513,10 +1379,8 @@ int AddXMLWindow(char *fn);
  *
  * \return 1 if message doesnt fit filter (should be skipped), 0 otherwise.
  */
-int skip_message (const text_message *msg, Uint8 filter);
-
+int skip_message(const text_message *msg, Uint8 filter);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

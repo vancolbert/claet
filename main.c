@@ -3,20 +3,17 @@
 #include <string.h>
 #include <math.h>
 #include "platform.h"
-
-#ifdef	__GNUC__
+#ifdef  __GNUC__
  #include <unistd.h>
 #ifdef  WINDOWS
  #include   <process.h>
 #endif
 #endif
-
 #ifdef WINDOWS
  #include <windows.h>
  #undef WRITE_XML
- char   *win_command_line;
+char *win_command_line;
 #endif //WINDOWS
-
 #include "2d_objects.h"
 #include "3d_objects.h"
 #include "actor_scripts.h"
@@ -66,29 +63,22 @@
 #include "weather.h"
 #include "fsaa/fsaa.h"
 #include "font.h"
-
-Uint32 cur_time=0, last_time=0;//for FPS
-
-char nom_version[]=NOM_VERSION;
-char version_string[]=VER_STRING;
-int	client_version_major=VER_MAJOR;
-int client_version_minor=VER_MINOR;
-int client_version_release=VER_RELEASE;
-int	client_version_patch=VER_BUILD;
-int version_first_digit=50;	//protocol/game version sent to server
-int version_second_digit=75;	//45
+Uint32 cur_time = 0, last_time = 0;//for FPS
+char nom_version[] = NOM_VERSION;
+char version_string[] = VER_STRING;
+int client_version_major = VER_MAJOR;
+int client_version_minor = VER_MINOR;
+int client_version_release = VER_RELEASE;
+int client_version_patch = VER_BUILD;
+int version_first_digit = 50;     //protocol/game version sent to server
+int version_second_digit = 75;    //45
 // peut-on afficher l'Al Manakh?
-int show_am=0;
-
-
+int show_am = 0;
 int gargc;
-char **  gargv;
+char **gargv;
 /**********************************************************************/
-
-void cleanup_mem(void)
-{
+void cleanup_mem(void) {
 	int i;
-
 	destroy_url_list();
 	history_destroy();
 	command_cleanup();
@@ -113,137 +103,110 @@ void cleanup_mem(void)
 	cache_delete(cache_system);
 	cache_system = NULL;
 	/* map location information */
-	for (i = 0; continent_maps[i].name; i++)
-	{
-	    free(continent_maps[i].name);
+	for (i = 0; continent_maps[i].name; i++) {
+		free(continent_maps[i].name);
 	}
-	free (continent_maps);
-
+	free(continent_maps);
 	destroy_hash_table(server_marks);
-
-	for (i = 0; i < video_modes_count; i++)
-	{
-		if (video_modes[i].name)
+	for (i = 0; i < video_modes_count; i++) {
+		if (video_modes[i].name) {
 			free(video_modes[i].name);
+		}
 	}
 	free_shaders();
 }
-
 /* temp code to allow my_timer to dynamically adjust partical update rate */
 volatile int in_main_event_loop = 0;
-
-int start_rendering()
-{
+int start_rendering() {
 	static int done = 0;
-	static void * network_thread_data[2] = { NULL, NULL };
+	static void *network_thread_data[2] = {NULL, NULL};
 	static Uint32 last_frame_and_command_update = 0;
-
 	SDL_Thread *network_thread;
 	queue_t *message_queue;
-
 #ifndef WINDOWS
-	SDL_EventState(SDL_SYSWMEVENT,SDL_ENABLE);
+	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
 #endif
 	queue_initialise(&message_queue);
 	network_thread_data[0] = message_queue;
 	network_thread_data[1] = &done;
 	network_thread = SDL_CreateThread(get_message_from_server, network_thread_data);
-
 	/* Loop until done. */
-	while( !done )
-		{
-			SDL_Event event;
-
-			// handle SDL events
-			in_main_event_loop = 1;
-			while( SDL_PollEvent( &event ) )
-				{
-					done = HandleEvent(&event);
-				}
-			in_main_event_loop = 0;
-
-			//advance the clock
-			cur_time = SDL_GetTicks();
-
-			// update the approximate distance moved
-			update_session_distance();
-
-			//check for network data
-			if(!queue_isempty(message_queue)) {
-				message_t *message;
-
-				while((message = queue_pop(message_queue)) != NULL)
-				{
-					process_message_from_server(message->data, message->length);
-					free(message->data);
-					free(message);
-				}
-			}
-			my_tcp_flush(my_socket);    // make sure the tcp output buffer is set
-
-			if (have_a_map && cur_time > last_frame_and_command_update + 60) {
-				LOCK_ACTORS_LISTS();
-				next_command();
-				UNLOCK_ACTORS_LISTS();
-				move_to_next_frame();
-				last_frame_and_command_update = cur_time;
-			}
-
-			while (cur_time > next_second_time && real_game_second < 59)
-			{
-				real_game_second += 1;
-				new_second();
-				next_second_time += 1000;
-			}
-
-			weather_sound_control();
-
-			if(!limit_fps || (cur_time-last_time && 1000/(cur_time-last_time) <= limit_fps))
-			{
-				weather_update();
-
-                animate_actors();
-				//draw everything
-				draw_scene();
-				last_time=cur_time;
-			}
-			else {
-				SDL_Delay(1);//give up timeslice for anyone else
-			}
-
-
-			//cache handling
-			if(cache_system)cache_system_maint();
-			//see if we need to exit
-			if(exit_now) {
-				done = 1;
-				break;
+	while ( !done ) {
+		SDL_Event event;
+		// handle SDL events
+		in_main_event_loop = 1;
+		while ( SDL_PollEvent(&event)) {
+			done = HandleEvent(&event);
+		}
+		in_main_event_loop = 0;
+		//advance the clock
+		cur_time = SDL_GetTicks();
+		// update the approximate distance moved
+		update_session_distance();
+		//check for network data
+		if (!queue_isempty(message_queue)) {
+			message_t *message;
+			while ((message = queue_pop(message_queue)) != NULL) {
+				process_message_from_server(message->data, message->length);
+				free(message->data);
+				free(message);
 			}
 		}
-	if(!done) {
+		my_tcp_flush(my_socket);            // make sure the tcp output buffer is set
+		if (have_a_map && cur_time > last_frame_and_command_update + 60) {
+			LOCK_ACTORS_LISTS();
+			next_command();
+			UNLOCK_ACTORS_LISTS();
+			move_to_next_frame();
+			last_frame_and_command_update = cur_time;
+		}
+		while (cur_time > next_second_time && real_game_second < 59) {
+			real_game_second += 1;
+			new_second();
+			next_second_time += 1000;
+		}
+		weather_sound_control();
+		if (!limit_fps || (cur_time - last_time && 1000 / (cur_time - last_time) <= limit_fps)) {
+			weather_update();
+			animate_actors();
+			//draw everything
+			draw_scene();
+			last_time = cur_time;
+		} else {
+			SDL_Delay(1);        //give up timeslice for anyone else
+		}
+		//cache handling
+		if (cache_system) {
+			cache_system_maint();
+		}
+		//see if we need to exit
+		if (exit_now) {
+			done = 1;
+			break;
+		}
+	}
+	if (!done) {
 		done = 1;
 	}
 	LOG_INFO("Client closed");
-	SDL_WaitThread(network_thread,&done);
+	SDL_WaitThread(network_thread, &done);
 	queue_destroy(message_queue);
-	if(pm_log.ppl)free_pm_log();
-
+	if (pm_log.ppl) {
+		free_pm_log();
+	}
 	//save all local data
 	save_local_data(NULL, 0);
-
-
-	destroy_sound();		// Cleans up physical elements of the sound system and the streams thread
-	clear_sound_data();		// Cleans up the config data
+	destroy_sound();                // Cleans up physical elements of the sound system and the streams thread
+	clear_sound_data();             // Cleans up the config data
 	ec_destroy_all_effects();
-	if (have_a_map)
-	{
+	if (have_a_map) {
 		destroy_map();
 		free_buffers();
 	}
 	unload_questlog();
 	save_item_lists();
 	free_actor_defs();
-    libere_memoire_livres();
+	libere_memoire_livres();
 	free_vars();
 	cleanup_rules();
 	save_exploration_map();
@@ -253,7 +216,7 @@ int start_rendering()
 	destroy_all_root_windows();
 	SDL_RemoveTimer(draw_scene_timer);
 	SDL_RemoveTimer(misc_timer);
-	end_particles ();
+	end_particles();
 	free_bbox_tree(main_bbox_tree);
 	main_bbox_tree = NULL;
 	free_astro_buffer();
@@ -263,263 +226,216 @@ int start_rendering()
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 	SDL_QuitSubSystem(SDL_INIT_TIMER);
 /*#ifdef WINDOWS
-	// attempt to restart if requested
-	if(restart_required > 0){
-		LOG_INFO("Restarting %s", win_command_line);
-		SDL_CreateThread(system, win_command_line);
-	}
-#endif  //WINDOWS
-*/
+        // attempt to restart if requested
+        if(restart_required > 0){
+                LOG_INFO("Restarting %s", win_command_line);
+                SDL_CreateThread(system, win_command_line);
+        }
+ #endif  //WINDOWS
+ */
 	final_sound_exit();
 	clear_zip_archives();
 	clean_update();
-
 	cleanup_tcp();
-
-	if (use_frame_buffer) free_reflection_framebuffer();
-
+	if (use_frame_buffer) {
+		free_reflection_framebuffer();
+	}
 	cursors_cleanup();
-
 	printf("doing SDL_Quit\n");
 	fflush(stderr);
-	SDL_Quit( );
+	SDL_Quit();
 	printf("done SDL_Quit\n");
 	fflush(stderr);
 	cleanup_mem();
 	xmlCleanupParser();
 	FreeXML();
-
 	exit_logging();
-
-	return(0);
+	return 0;
 }
-
-void	read_command_line()
-{
-	int i=1;
-	if(gargc<2)return;
-	for(;i<gargc;i++)
-		{
-			if(gargv[i][0]=='-')
-				{
-					if(gargv[i][1]=='-')check_var(gargv[i]+2,COMMAND_LINE_LONG_VAR);
-					else
-						{
-							char str[200];
-							if(strchr(gargv[i], '=') != NULL) {	//eg -u=name
-								safe_snprintf(str,sizeof(str),"%s",gargv[i]);
-							} else if(i>=gargc-1 || gargv[i+1][0] == '-') {	//eg -uname
-								safe_snprintf(str,sizeof(str),"%s",gargv[i]);
-							} else {	//eg -u name
-								safe_snprintf(str,sizeof(str),"%s %s",gargv[i],gargv[i+1]);
-							}
-							check_var(str+1,COMMAND_LINE_SHORT_VAR);
-						}
+void    read_command_line() {
+	int i = 1;
+	if (gargc < 2) {
+		return;
+	}
+	for (; i < gargc; i++) {
+		if (gargv[i][0] == '-') {
+			if (gargv[i][1] == '-') {
+				check_var(gargv[i] + 2, COMMAND_LINE_LONG_VAR);
+			} else {
+				char str[200];
+				if (strchr(gargv[i], '=') != NULL) {                            //eg -u=name
+					safe_snprintf(str, sizeof(str), "%s", gargv[i]);
+				} else if (i >= gargc - 1 || gargv[i + 1][0] == '-') {                  //eg -uname
+					safe_snprintf(str, sizeof(str), "%s", gargv[i]);
+				} else {                                //eg -u name
+					safe_snprintf(str, sizeof(str), "%s %s", gargv[i], gargv[i + 1]);
 				}
+				check_var(str + 1, COMMAND_LINE_SHORT_VAR);
+			}
 		}
+	}
 }
-
 /* We need an additional function as the command line should be read after the config, but this
  * variable is needed to load the correct config.
  */
-char * check_server_id_on_command_line()
-{
-	if (gargc < 2)
+char *check_server_id_on_command_line() {
+	if (gargc < 2) {
 		return "";
-
+	}
 	// FIXME!! This should parse for -options rather than blindly returning the last option!
-
 	return gargv[gargc - 1];
 }
-
-void check_log_level_on_command_line()
-{
+void check_log_level_on_command_line() {
 	Uint32 i;
-
-	for (i = 1; i < gargc; i++)
-	{
-		if (strncmp(gargv[i], "--log_level=", 12) == 0)
-		{
-			if (strcmp(gargv[i], "--log_level=error") == 0)
-			{
+	for (i = 1; i < gargc; i++) {
+		if (strncmp(gargv[i], "--log_level=", 12) == 0) {
+			if (strcmp(gargv[i], "--log_level=error") == 0) {
 				set_log_level(llt_error);
 				continue;
 			}
-			if (strcmp(gargv[i], "--log_level=warning") == 0)
-			{
+			if (strcmp(gargv[i], "--log_level=warning") == 0) {
 				set_log_level(llt_warning);
 				continue;
 			}
-			if (strcmp(gargv[i], "--log_level=info") == 0)
-			{
+			if (strcmp(gargv[i], "--log_level=info") == 0) {
 				set_log_level(llt_info);
 				continue;
 			}
-			if (strcmp(gargv[i], "--log_level=debug") == 0)
-			{
+			if (strcmp(gargv[i], "--log_level=debug") == 0) {
 				set_log_level(llt_debug);
 				continue;
 			}
-			if (strcmp(gargv[i], "--log_level=debug_verbose") == 0)
-			{
+			if (strcmp(gargv[i], "--log_level=debug_verbose") == 0) {
 				set_log_level(llt_debug_verbose);
 				continue;
 			}
 			continue;
 		}
-		if (strncmp(gargv[i], "-ll=", 4) == 0)
-		{
-			if (strcmp(gargv[i], "-ll=e") == 0)
-			{
+		if (strncmp(gargv[i], "-ll=", 4) == 0) {
+			if (strcmp(gargv[i], "-ll=e") == 0) {
 				set_log_level(llt_error);
 				continue;
 			}
-			if (strcmp(gargv[i], "-ll=w") == 0)
-			{
+			if (strcmp(gargv[i], "-ll=w") == 0) {
 				set_log_level(llt_warning);
 				continue;
 			}
-			if (strcmp(gargv[i], "-ll=i") == 0)
-			{
+			if (strcmp(gargv[i], "-ll=i") == 0) {
 				set_log_level(llt_info);
 				continue;
 			}
-			if (strcmp(gargv[i], "-ll=d") == 0)
-			{
+			if (strcmp(gargv[i], "-ll=d") == 0) {
 				set_log_level(llt_debug);
 				continue;
 			}
-			if (strcmp(gargv[i], "-ll=dv") == 0)
-			{
+			if (strcmp(gargv[i], "-ll=dv") == 0) {
 				set_log_level(llt_debug_verbose);
 				continue;
 			}
 			continue;
 		}
-		if (strcmp(gargv[i], "--debug") == 0)
-		{
+		if (strcmp(gargv[i], "--debug") == 0) {
 			set_log_level(llt_debug_verbose);
 			continue;
 		}
 	}
 }
-
 #ifdef WINDOWS
 int Main(int argc, char **argv)
 #else
 int main(int argc, char **argv)
 #endif
 {
-	gargc=argc;
-	gargv=argv;
-
+	gargc = argc;
+	gargv = argv;
 	// do basic initialization
 	init_logging("log");
-
 	check_log_level_on_command_line();
 	create_tcp_out_mutex();
 	init_translatables();
 	init_fsaa_modes();
 	init_vars();
-
 	ENTER_DEBUG_MARK("init stuff");
-
 	init_stuff();
-
 	LEAVE_DEBUG_MARK("init stuff");
-
 	start_rendering();
-
 #ifndef WINDOWS
 	// attempt to restart if requested
-	if(restart_required > 0){
+	if (restart_required > 0) {
 		LOG_INFO("Restarting %s\n", *argv);
 		execv(*argv, argv);
 	}
 #endif  //WINDOWS
-
 	return 0;
 }
-
-
 #ifdef WINDOWS
 // splits a char* into a char ** based on the delimiters
-static int makeargv(char *s, char *delimiters, char ***argvp)
-{
+static int makeargv(char *s, char *delimiters, char ***argvp) {
 	int i, numtokens;
 	char *snew, *t;
-
-	if ((s == NULL) || (delimiters == NULL) || (argvp == NULL))
+	if ((s == NULL) || (delimiters == NULL) || (argvp == NULL)) {
 		return -1;
-
+	}
 	*argvp = NULL;
 	snew = s + strspn(s, delimiters);
-	if ((t = malloc(strlen(snew) + 1)) == NULL)
+	if ((t = malloc(strlen(snew) + 1)) == NULL) {
 		return -1;
-	strcpy(t, snew);	// It's fine that this isn't strncpy, since t is sizeof(snew) + 1.
-
+	}
+	strcpy(t, snew);        // It's fine that this isn't strncpy, since t is sizeof(snew) + 1.
 	numtokens = 0;
-	if (strtok(t, delimiters) != NULL)
-		for (numtokens = 1; strtok(NULL, delimiters) != NULL; numtokens++);
-
-	if ((*argvp = malloc((numtokens + 1)*sizeof(char *))) == NULL){
+	if (strtok(t, delimiters) != NULL) {
+		for (numtokens = 1; strtok(NULL, delimiters) != NULL; numtokens++) {}
+	}
+	if ((*argvp = malloc((numtokens + 1) * sizeof(char *))) == NULL) {
 		free(t);
 		return -1;
 	}
-	if (numtokens == 0)
+	if (numtokens == 0) {
 		free(t);
-	else{
+	} else {
 		strcpy(t, snew);
 		**argvp = strtok(t, delimiters);
-		for (i = 1; i < numtokens; i++)
+		for (i = 1; i < numtokens; i++) {
 			*((*argvp) + i) = strtok(NULL, delimiters);
+		}
 	}
 	*((*argvp) + numtokens) = NULL;
 	return numtokens;
 }
 //frees the char** created by makeargv
-static void freemakeargv(char **argv)
-{
-	if (argv == NULL)
+static void freemakeargv(char **argv) {
+	if (argv == NULL) {
 		return;
-	if (*argv != NULL)
+	}
+	if (*argv != NULL) {
 		free(*argv);
+	}
 	free(argv);
 }
-
-int APIENTRY WinMain (HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow)
-{
-	char **argv= NULL;
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {
+	char **argv = NULL;
 	int argc;
-
 	win_command_line = GetCommandLine();
 	argc = makeargv(win_command_line, " \t\n", &argv);
-
-	Main(argc, (char **) argv);
+	Main(argc, (char **)argv);
 	freemakeargv(argv);
-
 	// attempt to restart if requested
-	if(restart_required > 0){
+	if (restart_required > 0) {
 		STARTUPINFO si;
 		PROCESS_INFORMATION pi;
-
 		LOG_INFO("Restarting %s", win_command_line);
-		ZeroMemory( &si, sizeof(si) );
+		ZeroMemory(&si, sizeof(si));
 		si.cb = sizeof(si);
-		ZeroMemory( &pi, sizeof(pi) );
-
-		CreateProcess(NULL, win_command_line,
-			NULL,			// Process handle not inheritable.
-			NULL,			// Thread handle not inheritable.
-			FALSE,			// Set handle inheritance to FALSE.
-			DETACHED_PROCESS,	// Keep this separate
-			NULL,			// Use parent's environment block.
-			NULL,			// Use parent's starting directory.
-			&si,			// Pointer to STARTUPINFO structure.
-			&pi);          // Pointer to PROCESS_INFORMATION structure
+		ZeroMemory(&pi, sizeof(pi));
+		CreateProcess(NULL, win_command_line, NULL,                   // Process handle not inheritable.
+			      NULL,             // Thread handle not inheritable.
+			      FALSE,            // Set handle inheritance to FALSE.
+			      DETACHED_PROCESS, // Keep this separate
+			      NULL,             // Use parent's environment block.
+			      NULL,             // Use parent's starting directory.
+			      &si,              // Pointer to STARTUPINFO structure.
+			      &pi);    // Pointer to PROCESS_INFORMATION structure
 	}
-
 	return 0;
 }
-
 #endif

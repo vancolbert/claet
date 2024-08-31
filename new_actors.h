@@ -5,15 +5,11 @@
  */
 #ifndef __NEW_ACTORS_H__
 #define __NEW_ACTORS_H__
-
 #include "actors.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern float sitting; /*!< used to compute several actor related z values */
-
 /*!
  * \ingroup display_actors
  * \brief   Draws the given enhanced actor
@@ -24,8 +20,7 @@ extern float sitting; /*!< used to compute several actor related z values */
  *
  * \callgraph
  */
-void draw_enhanced_actor(actor * actor_id, int banner);
-
+void draw_enhanced_actor(actor *actor_id, int banner);
 /*!
  * \ingroup display_actors
  * \brief   Unwears the given item \a which_part from the actor \a actor_id.
@@ -41,8 +36,7 @@ void draw_enhanced_actor(actor * actor_id, int banner);
  *
  * \sa actor_wear_item
  */
-void unwear_item_from_actor(int actor_id,Uint8 which_part);
-
+void unwear_item_from_actor(int actor_id, Uint8 which_part);
 /*!
  * \ingroup display_actors
  * \brief   The item given by \a which_id will be worn by the actor \a actor_id at the specified part \a which_part.
@@ -59,8 +53,7 @@ void unwear_item_from_actor(int actor_id,Uint8 which_part);
  *
  * \sa unwear_item_from_actor
  */
-void actor_wear_item(int actor_id,Uint8 which_part, Uint8 which_id);
-
+void actor_wear_item(int actor_id, Uint8 which_part, Uint8 which_id);
 /*!
  * \ingroup network_actors
  * \brief   Enregistre le titre du personnage.
@@ -72,8 +65,7 @@ void actor_wear_item(int actor_id,Uint8 which_part, Uint8 which_id);
  *
  * \callgraph
  */
-void ajout_titre (const char *donnees, int longueur);
-
+void ajout_titre(const char *donnees, int longueur);
 /*!
  * \ingroup network_actors
  * \brief   Adds a new server character. The actor data is in \a in_data.
@@ -85,8 +77,7 @@ void ajout_titre (const char *donnees, int longueur);
  *
  * \callgraph
  */
-void add_enhanced_actor_from_server (const char * in_data, int len);
-
+void add_enhanced_actor_from_server(const char *in_data, int len);
 /*!
  * \ingroup other
  * \brief   Gets called by \ref init_stuff to create the glow color table used by the glow effects.
@@ -96,7 +87,6 @@ void add_enhanced_actor_from_server (const char * in_data, int len);
  * \sa init_stuff
  */
 void build_glow_color_table();
-
 /*!
  * \ingroup	display_actors
  * \brief	Adds an actor with the given types of skin, head, hair, eyes and clothes.
@@ -118,11 +108,8 @@ void build_glow_color_table();
  * \sa		client_serv.h
  * \callgraph
  */
-actor * add_actor_interface(float x, float y, float z_rot, float scale, int actor_type, short skin, short hair,
-							short shirt, short pants, short boots, short head);
-
+actor *add_actor_interface(float x, float y, float z_rot, float scale, int actor_type, short skin, short hair, short shirt, short pants, short boots, short head);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

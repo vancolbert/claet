@@ -5,23 +5,16 @@
  */
 #ifndef __BOOKS_H__
 #define __BOOKS_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*! The book window*/
 extern int book_win;
-
 /*! The paper window*/
 extern int paper_win;
-
-
 extern float book_zoom; /*!< zoom factor for book text */
 extern int book_reload;
-
 extern int livre_ouvert; //Le numéro du livre actuellement ouvert
-
 /*!
  * \ingroup	network_books
  * \brief	Opens a local book.
@@ -33,8 +26,7 @@ extern int livre_ouvert; //Le numéro du livre actuellement ouvert
  *
  * \callgraph
  */
-void read_local_book (const char * data, int len);
-
+void read_local_book(const char *data, int len);
 /*!
  * \ingroup livre
  * \brief   Initialise les livres locaux non gérés par le serveur
@@ -44,7 +36,6 @@ void read_local_book (const char * data, int len);
  * \callgraph
  */
 void init_livres();
-
 /*!
  * \ingroup	books_window
  * \brief	Frees the memory allocated for books
@@ -52,7 +43,6 @@ void init_livres();
  * 		Frees the memory allocated for books
  */
 void free_books();
-
 /*!
  * \ingroup	livre
  * \brief	Permet de savoir si le livre est local ou vient du serveur
@@ -64,8 +54,7 @@ void free_books();
  *
  * \callgraph
  */
-void lire_livre_reseau (const char * donnees, int longueur_donnees);
-
+void lire_livre_reseau(const char *donnees, int longueur_donnees);
 /*!
  * \ingroup	livre
  * \brief	Ouvre le livre désigné
@@ -77,7 +66,6 @@ void lire_livre_reseau (const char * donnees, int longueur_donnees);
  * \callgraph
  */
 void ouvre_livre(int num_livre);
-
 /*!
  * \ingroup	livre
  * \brief	Ferme le livre désigné
@@ -89,13 +77,9 @@ void ouvre_livre(int num_livre);
  * \callgraph
  */
 int ferme_livre(int num_livre);
-
-void change_page (int num_livre, int nb_pages, int positif);
-
-int affiche_image(char* texte);
-
+void change_page(int num_livre, int nb_pages, int positif);
+int affiche_image(char *texte);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

@@ -5,16 +5,12 @@
  */
 #ifndef __OBJ_3D_H__
 #define __OBJ_3D_H__
-
 #include "e3d_object.h"
 #include "e3d.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern int use_3d_alpha_blend;	// do 3d models use alpha blending?
-
+extern int use_3d_alpha_blend;  // do 3d models use alpha blending?
 /*!
  * \ingroup	display_3d
  * \brief	Optimized display or a selected 3d object list
@@ -22,7 +18,6 @@ extern int use_3d_alpha_blend;	// do 3d models use alpha blending?
  * \return	nothing.
  */
 void draw_3d_objects(unsigned int object_type);
-
 /*!
  * \ingroup	load_3d
  * \brief	Adds a 3d object with a specific ID to the map
@@ -45,8 +40,7 @@ void draw_3d_objects(unsigned int object_type);
  * \retval int	Returns -1 on error or the position in the objects_list on succes.
  * \callgraph
  */
-int add_e3d_at_id (int id, const char *file_name, float x_pos, float y_pos, float z_pos, float x_rot, float y_rot, float z_rot, char self_lit, char blended, float r, float g, float b, unsigned int dynamic);
-
+int add_e3d_at_id(int id, const char *file_name, float x_pos, float y_pos, float z_pos, float x_rot, float y_rot, float z_rot, char self_lit, char blended, float r, float g, float b, unsigned int dynamic);
 /*!
  * \ingroup	load_3d
  * \brief	Adds a 3d object to the map.
@@ -71,8 +65,7 @@ int add_e3d_at_id (int id, const char *file_name, float x_pos, float y_pos, floa
  *
  * \callgraph
  */
-int add_e3d (const char * file_name, float x_pos, float y_pos, float z_pos, float x_rot, float y_rot, float z_rot, char self_lit, char blended, float r, float g, float b, unsigned int dynamic);
-
+int add_e3d(const char *file_name, float x_pos, float y_pos, float z_pos, float x_rot, float y_rot, float z_rot, char self_lit, char blended, float r, float g, float b, unsigned int dynamic);
 /*!
  * \ingroup	display_3d
  * \brief	Displays the 3d objects within the range
@@ -84,7 +77,6 @@ int add_e3d (const char * file_name, float x_pos, float y_pos, float z_pos, floa
 void display_objects(void);
 void display_ground_objects(void);
 void display_alpha_objects(void);
-
 /*!
  * \ingroup	display_3d
  * \brief	Displays the blended 3d objects within range
@@ -94,7 +86,6 @@ void display_alpha_objects(void);
  * \callgraph
  */
 void display_blended_objects(void);
-
 /*!
  * \ingroup	display_3d
  * \brief	Clears the clouds cache
@@ -105,7 +96,6 @@ void display_blended_objects(void);
  * \callgraph
  */
 void clear_clouds_cache(void);
-
 /*!
  * \ingroup	display_3d
  * \brief	Destroys the 3d object at position i in the objects list
@@ -117,7 +107,6 @@ void clear_clouds_cache(void);
  * \callgraph
  */
 void destroy_3d_object(int i);
-
 /*!
  * \ingroup	display_3d
  * \brief	Destroys all 3d objects currently in use
@@ -125,9 +114,7 @@ void destroy_3d_object(int i);
  *		Destroys all 3d objects in the objects list, freeing the associated memory and clearing the list.
  */
 void destroy_all_3d_objects(void);
-
 void destroy_e3d(e3d_object *e3d_id);
-
 /*!
  * \ingroup	load_3d
  * \brief	Show or hide one or more 3D map objects
@@ -140,8 +127,7 @@ void destroy_e3d(e3d_object *e3d_id);
  * \param	len the length in bytes of the array
  * \callgraph
  */
-void set_3d_object (Uint8 display, const void *ptr, int len);
-
+void set_3d_object(Uint8 display, const void *ptr, int len);
 /*!
  * \ingroup	load_3d
  * \brief	Set the state for one or more 3D map objects
@@ -154,8 +140,7 @@ void set_3d_object (Uint8 display, const void *ptr, int len);
  * \param	len the length in bytes of the array
  * \callgraph
  */
-void state_3d_object (Uint8 state, const void *ptr, int len);
-
+void state_3d_object(Uint8 state, const void *ptr, int len);
 /*!
  * \ingroup	load_3d
  * \brief	Clears the placeholders
@@ -164,7 +149,6 @@ void state_3d_object (Uint8 state, const void *ptr, int len);
  *
  */
 void clear_objects_list_placeholders(void);
-
 /*!
  * \ingroup	load_3d
  * \brief	Increments the number of placeholders
@@ -173,7 +157,6 @@ void clear_objects_list_placeholders(void);
  *
  */
 void inc_objects_list_placeholders(void);
-
 /*!
  * \ingroup	load_3d
  * \brief	Searches for a 3d object at a location
@@ -188,8 +171,7 @@ void inc_objects_list_placeholders(void);
  *
  * \callgraph
  */
-char * get_3dobject_at_location(float x_pos, float y_pos);
-
+char *get_3dobject_at_location(float x_pos, float y_pos);
 /*!
  * \ingroup	display_3d
  * \brief	Draw a specific 3d object
@@ -204,9 +186,7 @@ char * get_3dobject_at_location(float x_pos, float y_pos);
  *
  * \callgraph
  */
-void draw_3d_object_detail(object3d * object_id, Uint32 material_index, Uint32 use_lightning,
-	Uint32 use_textures, Uint32 use_extra_textures);
-
+void draw_3d_object_detail(object3d *object_id, Uint32 material_index, Uint32 use_lightning, Uint32 use_textures, Uint32 use_extra_textures);
 /*!
  * \ingroup	display_3d
  * \brief	Disables the buffer arrays.
@@ -216,9 +196,7 @@ void draw_3d_object_detail(object3d * object_id, Uint32 material_index, Uint32 u
  * \callgraph
  */
 void disable_buffer_arrays(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

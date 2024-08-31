@@ -5,52 +5,41 @@
  */
 #ifndef __KNOWLEDGE_H__
 #define __KNOWLEDGE_H__
-
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define KNOWLEDGE_LIST_SIZE 1024 /*!< maximum size of the \ref knowledge_list */
 #define KNOWLEDGE_NAME_SIZE 80 /*!< maximum size (including termination) of each \ref knowledge_list name string */
-
 /*!
  * knowledge structure
  */
-typedef struct
-{
+typedef struct {
 	Uint8 present; /*!< flag, indicating whether this knowledge is present in the knowledge window. */
 	Uint8 mouse_over; /*!< flag, indicating whether the mouse is over an entry in the knowledge window */
 	char name[KNOWLEDGE_NAME_SIZE]; /*!< name of the knowledge */
 	Uint8 has_book; /*!< flag, indicating whether the knowledge item has an assosiated book */
 	Uint8 is_stored; /*!< flag, indicating whether the knowledge item can be stored */
-    Uint8 affiche; /*!< flag indiquant si la connaissance doit etre affiche ou non */
-    Uint8 type;
-    Uint16 id;
-    Uint8 click;
-}knowledge;
-
-typedef struct
-{
-	char * nom;
+	Uint8 affiche; /*!< flag indiquant si la connaissance doit etre affiche ou non */
+	Uint8 type;
+	Uint16 id;
+	Uint8 click;
+} knowledge;
+typedef struct {
+	char *nom;
 	int numero;
 } translation_categ;
-
 /*!
  * \name windows handlers
  */
 /*! @{ */
 extern int knowledge_win; /*!< knowledge window handler */
 /*! @} */
-
 extern int knowledge_menu_x;
 extern int knowledge_menu_y;
-
 extern knowledge knowledge_list[KNOWLEDGE_LIST_SIZE]; /*!< global array of knowledgeable items */
 extern char knowledge_string[400];
-extern int	knowledge_count;
-
+extern int knowledge_count;
 /*!
  * \ingroup knowledge_window
  * \brief   Initialise la liste des categories
@@ -61,7 +50,6 @@ extern int	knowledge_count;
  * \callgraph
  */
 void init_categories();
-
 /*!
  * \ingroup knowledge_window
  * \brief   Displays the knowledge window
@@ -71,10 +59,8 @@ void init_categories();
  * \callgraph
  */
 void display_knowledge();
-
 //int knowledge_mouse_over();
 //int check_knowledge_interface();
-
 /*!
  * \ingroup knowledge_window
  * \brief   Gets the known knowledges from the \a list and stores the state in \ref knowledge_list.
@@ -85,8 +71,7 @@ void display_knowledge();
  * \param list  a list of knowledges that are already known by the player.
  *
  */
-void get_knowledge_list (Uint16 size, const char *list);
-
+void get_knowledge_list(Uint16 size, const char *list);
 /*!
  * \ingroup knowledge_window
  * \brief   Marks the entry in \ref knowledge_list at the given index \a idx as present.
@@ -99,7 +84,6 @@ void get_knowledge_list (Uint16 size, const char *list);
  * \bug Possible bug, because this function doesn't do any sanity checks on the parameter \a idx.
  */
 void get_new_knowledge(Uint16 idx);
-
 /*!
  * \ingroup knowledge_window
  * \brief Sets the window handler functions for the knowledge window
@@ -108,8 +92,7 @@ void get_new_knowledge(Uint16 idx);
  *
  * \callgraph
  */
-void fill_knowledge_win ();
-
+void fill_knowledge_win();
 /*!
  * \ingroup knowledge_window
  * \brief Checks any current reading book is known by the cleint and gives warning message if not.
@@ -117,7 +100,6 @@ void fill_knowledge_win ();
  * \callgraph
  */
 void check_book_known();
-
 /*!
  * \ingroup knowledge_window
  * \brief Returns the eta string for current research.
@@ -128,7 +110,6 @@ void check_book_known();
  * \callgraph
  */
 char *get_research_eta_str(char *str, size_t size);
-
 /*!
  * \ingroup knowledge_window
  * \brief Returns the progress on the current book in the range 0 to 1.
@@ -136,7 +117,6 @@ char *get_research_eta_str(char *str, size_t size);
  * \callgraph
  */
 float get_research_fraction(void);
-
 /*!
  * \ingroup knowledge_window
  * \brief Returns 1 if currently reading, otherwise 0.
@@ -144,7 +124,6 @@ float get_research_fraction(void);
  * \callgraph
  */
 int is_researching(void);
-
 /*!
  * \ingroup knowledge_window
  * \brief recalculate rate of research.
@@ -152,9 +131,7 @@ int is_researching(void);
  * \callgraph
  */
 void update_research_rate(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

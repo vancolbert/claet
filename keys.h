@@ -5,13 +5,10 @@
  */
 #ifndef __KEYS_H__
 #define __KEYS_H__
-
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \name Key Modifiers
  */
@@ -20,7 +17,6 @@ extern "C" {
 #define CTRL (1 << 30)    /*!< Ctrl modifier is pressed */
 #define ALT (1 << 29)     /*!< Alt modifier is pressed */
 /*! @} */
-
 /*!
  * \name Predefined keys
  */
@@ -51,7 +47,7 @@ extern Uint32 K_SIGILS;         /*!< key used to toggle display of \ref spells_w
 extern Uint32 K_MANUFACTURE;    /*!< key used to toggle display of \ref manufacture_window */
 extern Uint32 K_ITEMS;          /*!< key used to toggle display of \ref items_window */
 extern Uint32 K_MAP;            /*!< key used to go into \ref interface_map mode */
-extern Uint32 K_MINIMAP;		/*!< key used to open minimap window */
+extern Uint32 K_MINIMAP;                /*!< key used to open minimap window */
 extern Uint32 K_ROTATELEFT;     /*!< key used to rotate left (counter clockwise) */
 extern Uint32 K_ROTATERIGHT;    /*!< key used to rotate right (clockwise) */
 extern Uint32 K_FROTATELEFT;    /*!< key used to fine rotate left (counter clockwise) */
@@ -67,7 +63,7 @@ extern Uint32 K_HELP;           /*!< key used to toggle display of \ref help_win
 extern Uint32 K_RULES;          /*!< key used to toggle display of \ref rules_window */
 extern Uint32 K_NOTEPAD;        /*!< key used to toggle display of \ref notepad_window */
 extern Uint32 K_HIDEWINS;       /*!< key used to hide all open windows */
-extern Uint32 K_SCREENSHOT;		/*!< key used to make a screenshot */
+extern Uint32 K_SCREENSHOT;             /*!< key used to make a screenshot */
 extern Uint32 K_VIEWTEXTASOVERTEXT; /*!< key used to toggle display of text bubbles (overtext) */
 extern Uint32 K_AFK;                /*!< key used to display AFK messages */
 extern Uint32 K_SIT;                /*!< key used to toggle sitting status, i.e. sit down/stand up */
@@ -80,7 +76,7 @@ extern Uint32 K_MARKFILTER;         /*!< key used to toggle the TAB map mark fil
 extern Uint32 K_OPAQUEWIN;          /*!< key used to toggle window opacity */
 extern Uint32 K_GRAB_MOUSE;         /*!< key used to toggle whether mouse is in HUD or camera control mode */
 extern Uint32 K_FIRST_PERSON;       /*!< key used to toggle first person/third person view mode*/
-extern Uint32 K_EXTEND_CAM;			/*!< key used to toggle extended camera mode*/
+extern Uint32 K_EXTEND_CAM;                     /*!< key used to toggle extended camera mode*/
 extern Uint32 K_CUT;                /*!< key used to cut text and copy it into a clipboard */
 extern Uint32 K_COPY;               /*!< key used to copy text into a clipboard */
 extern Uint32 K_PASTE;              /*!< key used to copy text from a clipboard into EL */
@@ -91,7 +87,6 @@ extern Uint32 K_OBTENIR;            /*!< ouvrir et ramasser le sac à ses pieds *
 extern Uint32 K_VOIR_MUSIQUE_CARTE; /*!< voir les zones des musiques sur les cartes */
 extern Uint32 K_FENETRE_MUSIQUE;    /*!< affiche une fenetre avec les musiques disponibles */
 /*! @} */
-
 /*! \name Quickbar access keys */
 /*! @{ */
 extern Uint32 K_ITEM1;
@@ -106,9 +101,7 @@ extern Uint32 K_ITEM9;
 extern Uint32 K_ITEM10;
 extern Uint32 K_ITEM11;
 extern Uint32 K_ITEM12;
-
 /*! @} */
-
 /*! \name Magic quickbar access keys */
 /*! @{ */
 extern Uint32 K_SPELL1;
@@ -127,7 +120,6 @@ extern Uint32 K_PREVQUICKSPELLBAR;
 extern Uint32 K_NEXTQUICKSPELLBAR;
 extern Uint32 K_SPELLTARGET;
 /*! @} */
-
 /*!
  * \ingroup loadsave
  * \brief   Reads the key configuration from the default key.ini file.
@@ -137,8 +129,6 @@ extern Uint32 K_SPELLTARGET;
  * \callgraph
  */
 void read_key_config();
-
-
 /*!
  * \brief   Returns a string describing the specified keydef.
  *
@@ -147,7 +137,6 @@ void read_key_config();
  * \callgraph
  */
 const char *get_key_string(Uint32 keydef, char *buf, size_t buflen);
-
 /*!
  * \brief   Returns the value of the specified keydef.
  *
@@ -155,10 +144,8 @@ const char *get_key_string(Uint32 keydef, char *buf, size_t buflen);
  *
  * \callgraph
  */
-Uint32 get_key_value(const char* name);
-
+Uint32 get_key_value(const char *name);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif	//__KEYS_H__
+#endif  //__KEYS_H__

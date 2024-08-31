@@ -3,9 +3,7 @@
        Non-NIB-Code & other changes: Max Horn <max@quendi.de>
 
     Feel free to customize this file to suit your needs
-*/
-
+ */
 #import <Cocoa/Cocoa.h>
-
-@interface SDLMain : NSObject
+@interface SDLMain: NSObject
 @end

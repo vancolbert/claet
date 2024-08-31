@@ -1,21 +1,16 @@
 #ifndef __ASTROLOGY_H__
 #define __ASTROLOGY_H__
-
 #include "items.h"
 #include "elwindows.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int astrology_win_x;
 extern int astrology_win_y;
 extern int astrology_win_x_len;
 extern int astrology_win_y_len;
-
 extern int astrology_win;
 extern int always_show_astro_details;
-
 /*!
  * \ingroup astrology_window
  * \brief   Displays the astrology window.
@@ -24,8 +19,7 @@ extern int always_show_astro_details;
  *
  * \callgraph
  */
-void display_astrology_window(const char * raw_text);
-
+void display_astrology_window(const char *raw_text);
 /*!
  * \brief Check for astrology messages
  *
@@ -35,16 +29,13 @@ void display_astrology_window(const char * raw_text);
  * \param RawText The text to check.
  * \return 1 if the message is an astrology message, 0 otherwise.
  */
-int is_astrology_message (const char* RawText);
-
+int is_astrology_message(const char *RawText);
 /*!
  * \brief Free astro window memeory
  *
  */
 void free_astro_buffer();
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif //__ASTROLOGY_H__

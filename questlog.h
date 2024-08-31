@@ -5,42 +5,34 @@
  */
 #ifndef __QUESTLOG_H__
 #define __QUESTLOG_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * the _logdata structure is a linked list with a string as its data.
  */
-typedef struct ld
-{
+typedef struct ld {
 	char *msg; /*!< the message to log */
 	struct ld *Next; /*!< link to the element in the list. */
-}_logdata;
-
-typedef struct lq
-{
-	char      *Title;
-	_logdata  *Data;
-	_logdata  *Last;
-	int       Count;
-	int       Finish;
+} _logdata;
+typedef struct lq {
+	char *Title;
+	_logdata *Data;
+	_logdata *Last;
+	int Count;
+	int Finish;
 	struct lq *Next;
-}_logquest;
-
+} _logquest;
 /*!
  * \name windows handlers
  */
 /*! @{ */
 extern int questlog_win; /*!< handle for the questlog window */
 /*! @} */
-
 extern int questlog_menu_x;
 extern int questlog_menu_y;
 extern int questlog_menu_x_len;
 extern int questlog_menu_y_len;
-
 /*!
  * \ingroup quest_window
  * \brief Displays the questlog window
@@ -50,7 +42,6 @@ extern int questlog_menu_y_len;
  * \callgraph
  */
 void display_questlog();
-
 /*!
  * \ingroup quest_window
  * \brief Loads the questlog from the users filesystem.
@@ -60,7 +51,6 @@ void display_questlog();
  * \callgraph
  */
 void load_questlog();
-
 /*!
  * \ingroup quest_window
  * \brief Unloads the questlog and frees up the memory used.
@@ -69,7 +59,6 @@ void load_questlog();
  *
  */
 void unload_questlog();
-
 /*!
  * \ingroup quest_window
  * \brief Adds the log specified in t up to the specified length to the users questlog.
@@ -82,8 +71,6 @@ void unload_questlog();
  * \callgraph
  */
 void add_questlog(char *t, int len);
-
-
 /*!
  * \ingroup quest_win
  * \brief adds the string t up to the given length as a new line to the questlog.
@@ -97,7 +84,6 @@ void add_questlog(char *t, int len);
  */
 int add_questlog_line(char *t, int len);
 int add_questlog_line2(char *q, char *t, int len, int finish);
-
 /*!
  * \ingroup misc_utils
  * \brief string_fix
@@ -108,7 +94,6 @@ int add_questlog_line2(char *q, char *t, int len, int finish);
  * \param len
  */
 void string_fix(char *t, int len);
-
 /*!
  * \ingroup quest_window
  * \brief Goes to the entry in the questlog with the specified index.
@@ -118,8 +103,6 @@ void string_fix(char *t, int len);
  * \param ln    the index for the entry to search for.
  */
 void goto_questlog_entry(int ln);
-
-
 /*!
  * \ingroup quest_window
  * \brief Sets the window handler functions for the quest log window
@@ -128,9 +111,7 @@ void goto_questlog_entry(int ln);
  *
  * \callgraph
  */
-void fill_questlog_win ();
-
-
+void fill_questlog_win();
 /*!
  * \ingroup quest_window
  * \brief  Draw a context menu like highlight.
@@ -140,10 +121,7 @@ void fill_questlog_win ();
  * \callgraph
  */
 void draw_highlight(int topleftx, int toplefty, int widthx, int widthy, size_t col);
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif	//__QUESTLOG_H__
+#endif  //__QUESTLOG_H__

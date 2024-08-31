@@ -3,15 +3,12 @@
  * @ingroup 	display_utils
  * @brief 	Framebuffer utils.
  */
-#ifndef	FRAMEBUFFER_H
-#define	FRAMEBUFFER_H
-
+#ifndef FRAMEBUFFER_H
+#define FRAMEBUFFER_H
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /**
  * @ingroup 	display_utils
  * @brief 	Free framebuffer.
@@ -24,9 +21,7 @@ extern "C" {
  *
  * @callgraph
  */
-void free_color_framebuffer(GLuint *fbo, GLuint *fbo_depth_buffer, GLuint * fbo_stencil_buffer,
-	GLuint *fbo_texture);
-
+void free_color_framebuffer(GLuint *fbo, GLuint *fbo_depth_buffer, GLuint *fbo_stencil_buffer, GLuint *fbo_texture);
 /**
  * @ingroup 	display_utils
  * @brief 	Creates a new frame buffer, attachs a new render depth and stencil buffer and a
@@ -43,9 +38,7 @@ void free_color_framebuffer(GLuint *fbo, GLuint *fbo_depth_buffer, GLuint * fbo_
  *
  * @callgraph
  */
-void make_color_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_depth_buffer,
-	GLuint * fbo_stencil_buffer, GLuint *fbo_texture);
-
+void make_color_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_depth_buffer, GLuint *fbo_stencil_buffer, GLuint *fbo_texture);
 /**
  * @ingroup 	display_utils
  * @brief 	Changes the size of the destinatoin texture of a given framebuffer.
@@ -60,9 +53,7 @@ void make_color_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_dept
  *
  * @callgraph
  */
-void change_color_framebuffer_size(int width, int height, GLuint *fbo, GLuint *fbo_depth_buffer,
-	GLuint * fbo_stencil_buffer, GLuint *fbo_texture);
-
+void change_color_framebuffer_size(int width, int height, GLuint *fbo, GLuint *fbo_depth_buffer, GLuint *fbo_stencil_buffer, GLuint *fbo_texture);
 /**
  * @ingroup 	display_utils
  * @brief 	Free framebuffer.
@@ -74,7 +65,6 @@ void change_color_framebuffer_size(int width, int height, GLuint *fbo, GLuint *f
  * @callgraph
  */
 void free_depth_framebuffer(GLuint *fbo, GLuint *fbo_texture);
-
 /**
  * @ingroup 	display_utils
  * @brief 	Creates a new frame buffer and attachs a new destination texture.
@@ -88,7 +78,6 @@ void free_depth_framebuffer(GLuint *fbo, GLuint *fbo_texture);
  * @callgraph
  */
 void make_depth_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_texture);
-
 /**
  * @ingroup 	display_utils
  * @brief 	Changes the size of the destinatoin texture of a given framebuffer.
@@ -102,7 +91,6 @@ void make_depth_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_text
  * @callgraph
  */
 void change_depth_framebuffer_size(int width, int height, GLuint *fbo, GLuint *fbo_texture);
-
 /**
  * @ingroup 	display_utils
  * @brief 	Check what formats are supported.
@@ -112,11 +100,8 @@ void change_depth_framebuffer_size(int width, int height, GLuint *fbo, GLuint *f
  * @callgraph
  */
 void check_fbo_formats();
-
-#define CHECK_FBO_ERRORS()	/**< NOP */
-
+#define CHECK_FBO_ERRORS()      /**< NOP */
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

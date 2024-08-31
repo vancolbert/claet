@@ -5,56 +5,45 @@
  */
 #ifndef __FILE_CACHE_H__
 #define __FILE_CACHE_H__
-
 #include <SDL_types.h>
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * a single item storable in the cache
  */
-typedef struct
-{
-	void	*cache_item;	/*!< pointer to the item we are caching */
-	Uint32	size;			/*!< size of item */
-	Uint32	access_time;	/*!< last time used */
-	Uint32	access_count;	/*!< number of usages since last checkpoint */
-	const char *name;	/*!< original source or name, NOTE: this is NOT free()'d and allows dups! */
+typedef struct {
+	void *cache_item;       /*!< pointer to the item we are caching */
+	Uint32 size;                    /*!< size of item */
+	Uint32 access_time;     /*!< last time used */
+	Uint32 access_count;    /*!< number of usages since last checkpoint */
+	const char *name;       /*!< original source or name, NOTE: this is NOT free()'d and allows dups! */
 } cache_item_struct;
-
 /*!
  * structure of the cache used
  */
-typedef struct
-{
-	cache_item_struct	**cached_items; /*!< list of cached items */
-	cache_item_struct	*recent_item; /*!< pointer to the last used item */
-	Sint32	num_items;		/*!< the number of active items in the list */
-	Sint32	num_allocated;	/*!< the allocated space for the list */
-	Uint32	LRU_time;		/*!< last time LRU processing done */
-	Uint32	total_size;		/*!< total size currently allocated */
-	Uint32	time_limit;		/*!< limit on LRU time before forcing a scan */
-	Uint32	size_limit;		/*!< limit on size before forcing a scan */
-	void	(*free_item)();	/*!< routine to call to free an item */
-	Uint32	(*compact_item)();	/*!< routine to call to reduce memory usage without freeing */
+typedef struct {
+	cache_item_struct **cached_items;       /*!< list of cached items */
+	cache_item_struct *recent_item;       /*!< pointer to the last used item */
+	Sint32 num_items;               /*!< the number of active items in the list */
+	Sint32 num_allocated;   /*!< the allocated space for the list */
+	Uint32 LRU_time;                /*!< last time LRU processing done */
+	Uint32 total_size;              /*!< total size currently allocated */
+	Uint32 time_limit;              /*!< limit on LRU time before forcing a scan */
+	Uint32 size_limit;              /*!< limit on size before forcing a scan */
+	void (*free_item)();    /*!< routine to call to free an item */
+	Uint32 (*compact_item)();       /*!< routine to call to reduce memory usage without freeing */
 } cache_struct;
-
-
 /*!
  * \name Cache constants
  */
 /*! @{ */
-#define	MAX_CACHE_SYSTEM	32 /*!< max. number of cached items in \see cache_system */
+#define MAX_CACHE_SYSTEM        32 /*!< max. number of cached items in \see cache_system */
 /*! @} */
-
-extern cache_struct	*cache_system; /*!< system cache */
-extern cache_struct	*cache_e3d; /*!< e3d cache */
-
+extern cache_struct *cache_system;     /*!< system cache */
+extern cache_struct *cache_e3d;     /*!< e3d cache */
 //proto
-
 /*!
  * \ingroup cache
  * \brief   initializes the cache system with the given number of items to max. use
@@ -66,7 +55,6 @@ extern cache_struct	*cache_e3d; /*!< e3d cache */
  * \callgraph
  */
 void cache_system_init(Uint32 max_items);
-
 /*!
  * \ingroup cache
  * \brief      runs a cache maintenance routine
@@ -76,7 +64,6 @@ void cache_system_init(Uint32 max_items);
  * \callgraph
  */
 void cache_system_maint(void);
-
 /*!
  * \ingroup cache
  * \brief dumps the sizes of the given \a cache.
@@ -88,7 +75,6 @@ void cache_system_maint(void);
  * \callgraph
  */
 void cache_dump_sizes(const cache_struct *cache);
-
 /*!
  * \ingroup cache
  * \brief   initializes a new cache system with \a max_items items and the given callback routine to free an item.
@@ -101,9 +87,7 @@ void cache_dump_sizes(const cache_struct *cache);
  * \retval cache_struct*    a pointer to a newly created cache.
  * \callgraph
  */
-cache_struct *cache_init(const char* name, Uint32 max_items,
-	void (*free_item)());
-
+cache_struct *cache_init(const char *name, Uint32 max_items, void (*free_item)());
 /*!
  * \ingroup cache
  * \brief   sets the compact handler for the given \see cache_struct \a cache.
@@ -114,7 +98,6 @@ cache_struct *cache_init(const char* name, Uint32 max_items,
  * \param compact_item  routine to use when items in \a cache get compacted.
  */
 void cache_set_compact(cache_struct *cache, Uint32 (*compact_item)());
-
 /*!
  * \ingroup cache
  * \brief   sets the \a time_limit for items in \a cache.
@@ -125,7 +108,6 @@ void cache_set_compact(cache_struct *cache, Uint32 (*compact_item)());
  * \param time_limit    the max. amount of time to live for items in \a cache.
  */
 void cache_set_time_limit(cache_struct *cache, Uint32 time_limit);
-
 /*!
  * \ingroup cache
  * \brief   sets a \a size_limit for items in \a cache.
@@ -136,7 +118,6 @@ void cache_set_time_limit(cache_struct *cache, Uint32 time_limit);
  * \param size_limit    the max. size for items in \a cache (in bytes).
  */
 void cache_set_size_limit(cache_struct *cache, Uint32 size_limit);
-
 /*!
  * \ingroup cache
  * \brief   sets the function to free items
@@ -147,7 +128,6 @@ void cache_set_size_limit(cache_struct *cache, Uint32 size_limit);
  * \param free_item     pointer to the free function
  */
 void cache_set_free(cache_struct *cache, void (*free_item)());
-
 /*!
  * \ingroup cache
  * \brief adds the given \a item to \a cache with the given \a name.
@@ -161,9 +141,7 @@ void cache_set_free(cache_struct *cache, void (*free_item)());
  * \retval cache_item_struct*   a pointer to a \see cache_item_struct of the given \a item.
  * \callgraph
  */
-cache_item_struct *cache_add_item(cache_struct *cache, const char* name,
-	void *item, Uint32 size);
-
+cache_item_struct *cache_add_item(cache_struct *cache, const char *name, void *item, Uint32 size);
 /*!
  * \ingroup cache
  * \brief   sets the \a name of the given \a item in \a cache.
@@ -176,8 +154,7 @@ cache_item_struct *cache_add_item(cache_struct *cache, const char* name,
  *
  * \callgraph
  */
-void cache_set_name(cache_struct *cache, const char* name, void *item);
-
+void cache_set_name(cache_struct *cache, const char *name, void *item);
 /*!
  * \ingroup cache
  * \brief       adjusts the \a size of the given \a item in \a cache.
@@ -191,7 +168,6 @@ void cache_set_name(cache_struct *cache, const char* name, void *item);
  * \callgraph
  */
 void cache_adj_size(cache_struct *cache, Uint32 size, void *item);
-
 /*!
  * \ingroup cache
  * \brief   update the last use time of a cache item
@@ -201,17 +177,12 @@ void cache_adj_size(cache_struct *cache, Uint32 size, void *item);
  * \param item      the item for which to set the access time
  */
 #include "global.h"
-
-static __inline__ void	cache_use(cache_item_struct *item_ptr)
-{
-	if (item_ptr)
-		{
+static __inline__ void  cache_use(cache_item_struct *item_ptr) {
+	if (item_ptr) {
 		item_ptr->access_time = cur_time;
-			item_ptr->access_count++;
-		}
+		item_ptr->access_count++;
+	}
 }
-
-
 /*!
  * \ingroup cache
  * \brief       looks up the item with the given \a name in \a cache.
@@ -223,12 +194,9 @@ static __inline__ void	cache_use(cache_item_struct *item_ptr)
  * \retval void*        a pointer to the cache item given by \a name
  * \callgraph
  */
-void *cache_find_item (cache_struct *cache, const char* name);
-
+void *cache_find_item(cache_struct *cache, const char *name);
 void cache_delete(cache_struct *cache);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

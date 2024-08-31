@@ -1,26 +1,21 @@
 #ifndef __CAL_H__
 #define __CAL_H__
-
 #include "actors.h"
 #include "cal3d_wrapper.h"
 #include "cal_types.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 enum CalBoolean CalMixer_ExecuteAction_Stop(struct CalMixer *self, int id, float delayIn, float delayOut);
-struct CalMesh *CalModel_GetAttachedMesh(struct CalModel *self,int i);
-void CalCoreSkeleton_Scale(struct CalCoreSkeleton *self,float factor);
-void CalMixer_RemoveAction(struct CalMixer *self,int id);
+struct CalMesh *CalModel_GetAttachedMesh(struct CalModel *self, int i);
+void CalCoreSkeleton_Scale(struct CalCoreSkeleton *self, float factor);
+void CalMixer_RemoveAction(struct CalMixer *self, int id);
 void CalCoreAnimation_Scale(struct CalCoreAnimation *self, float factor);
-void CalCoreMesh_Scale(struct CalCoreMesh *self,float factor);
+void CalCoreMesh_Scale(struct CalCoreMesh *self, float factor);
 void cal_set_anim_sound(struct cal_anim *my_cal_anim, const char *sound, const char *sound_scale);
- 
-
 /*!
  * \brief	Draw a specific actor
- * 
+ *
  * 		Draw a specific actor, with optinal enabled lightning and textures.
  *
  * \param	act The actor to draw
@@ -32,13 +27,10 @@ void cal_set_anim_sound(struct cal_anim *my_cal_anim, const char *sound, const c
  */
 void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uint32 use_glow);
 struct cal_anim cal_load_anim(actor_types *act, const char *str, const char *sound, const char *sound_scale, int duration);
-
-#define cal_cycle_blending_delay  0.1f	/*!< time in seconds for blending from cycle to action or cycle. */
-#define cal_action_blending_delay 0.6f	/*!< time in seconds for blending from action to action or cycle. */
-
+#define cal_cycle_blending_delay  0.1f  /*!< time in seconds for blending from cycle to action or cycle. */
+#define cal_action_blending_delay 0.6f  /*!< time in seconds for blending from action to action or cycle. */
 void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay);
 void cal_actor_set_anim(int id, struct cal_anim anim);
-
 /*!
  * \brief Gets the local position of char bone
  * \param in_act the actor
@@ -47,7 +39,6 @@ void cal_actor_set_anim(int id, struct cal_anim anim);
  * \param out_pos the resulting position
  */
 void cal_get_actor_bone_local_position(actor *in_act, int in_bone_id, float *in_shift, float *out_pos);
-
 /*!
  * \brief Gets the absolute position of char bone
  * \param in_act the actor
@@ -56,9 +47,7 @@ void cal_get_actor_bone_local_position(actor *in_act, int in_bone_id, float *in_
  * \param out_pos the resulting position
  */
 void cal_get_actor_bone_absolute_position(actor *in_act, int in_bone_id, float *in_shift, float *out_pos);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

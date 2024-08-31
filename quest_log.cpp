@@ -1,9 +1,8 @@
 /*
-	Rewrite of quest log with new context menu features.
+        Rewrite of quest log with new context menu features.
 
-	Author bluap/pjbroad Feb 2010
-*/
-
+        Author bluap/pjbroad Feb 2010
+ */
 #include <string>
 #include <vector>
 #include <map>
@@ -14,7 +13,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
 #include "asc.h"
 #include "context_menu.h"
 #include "dialogues.h"
@@ -34,4 +32,3 @@
 #include "questlog.h"
 #include "sound.h"
 #include "translate.h"
-

@@ -5,13 +5,10 @@
  */
 #ifndef __NEW_CHARACTER_H__
 #define __NEW_CHARACTER_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define RAND(min,max) (min + rand () % (max - min + 1))
-
+#define RAND(min, max) (min + rand() % (max - min + 1))
 /*!
  * \name Windows handlers
  */
@@ -21,7 +18,6 @@ extern int color_race_win;/*! The color and race window*/
 extern int newchar_advice_win;/*! The char creaion warning warning window*/
 extern int newchar_root_win; /*!< window handler for the character creation interface root window. */
 /*! @} */
-
 /*!
  * \name Books
  */
@@ -29,13 +25,12 @@ extern int newchar_root_win; /*!< window handler for the character creation inte
 extern int book_eldo;
 extern int book_haut_elfe;
 extern int book_dwarf;
-extern int book_orchan;;
+extern int book_orchan;
 extern int book_sinan;
 extern int book_elfe_noir;
 extern int book_gnome;
 extern int book_draegoni;
 /*! @} */
-
 /*!
  * \ingroup interface_newchar
  * \brief   Sets the error string for errors during character creation.
@@ -46,8 +41,7 @@ extern int book_draegoni;
  * \param len   the length of \a msg
  * \callgraph
  */
-void set_create_char_error (const char *msg, int len);
-
+void set_create_char_error(const char *msg, int len);
 /*!
  * \ingroup interface_newchar
  * \brief   Initializes the actor after changes
@@ -57,7 +51,6 @@ void set_create_char_error (const char *msg, int len);
  * \callgraph
  */
 void change_actor();
-
 /*!
  * \ingroup interface_newchar
  * \brief   Initializes and draws the New Character screen.
@@ -67,7 +60,6 @@ void change_actor();
  * \callgraph
  */
 void draw_new_char_screen();
-
 /*!
  * \ingroup interface_newchar
  * \brief   Adds the char \a ch to the selected input box in the character creation interface.
@@ -79,7 +71,6 @@ void draw_new_char_screen();
  * \callgraph
  */
 void add_char_to_new_character(unsigned char ch);
-
 /*!
  * \ingroup interface_newchar
  * \brief   Verifies the username and password from the character creation interface and calls \ref send_login_info.
@@ -89,7 +80,6 @@ void add_char_to_new_character(unsigned char ch);
  * \callgraph
  */
 void login_from_new_char();
-
 /*!
  * \ingroup interface_newchar
  * \brief   Creates the character creation interface screen.
@@ -100,13 +90,9 @@ void login_from_new_char();
  *
  * \pre If the character creation interface root window was created before (\ref newchar_root_win < 0), this function won't perform any actions.
  */
-void create_newchar_root_window (void);
-
-
+void create_newchar_root_window(void);
 void resize_newchar_hud_window(void);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

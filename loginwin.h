@@ -5,14 +5,11 @@
  */
 #ifndef __LOGINWIN_H__
 #define __LOGINWIN_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int login_root_win; /*!< ID for the login root window */
 extern int login_text; /*!< ID for the background texture */
-
 /*!
  * \ingroup interface_login
  * \brief   Loads the textures for the opening interface.
@@ -21,8 +18,7 @@ extern int login_text; /*!< ID for the background texture */
  *
  * \callgraph
  */
-void init_login_screen ();
-
+void init_login_screen();
 /*!
  * \ingroup interface_login
  * \brief   Sets the error string used when a login error occurs.
@@ -34,8 +30,7 @@ void init_login_screen ();
  * \param print_err if non-zero, prefix the message with an error string
  * \callgraph
  */
-void set_login_error (const char *msg, int len, int print_err);
-
+void set_login_error(const char *msg, int len, int print_err);
 /*!
  * \ingroup interface_login
  * \brief   Creates the root window for the login interface.
@@ -48,10 +43,8 @@ void set_login_error (const char *msg, int len, int print_err);
  *
  * \pre If \ref login_root_win >= 0, this function won't perform any action.
  */
-void create_login_root_window (int width, int height);
-
+void create_login_root_window(int width, int height);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif // def __LOGINWIN_H__

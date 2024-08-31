@@ -5,13 +5,10 @@
  */
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
-
 #include "bags.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
     #define STORAGE_ITEMS_SIZE 500
 /*! \name window handler
  * @{ */
@@ -19,7 +16,6 @@ extern int storage_win; /*!< window handler for the new storage window */
 /*! @} */
 extern int storage_item_dragged;
 extern ground_item storage_items[STORAGE_ITEMS_SIZE]; /*!< list of storage items. */
-
 extern int storage_win_x;
 extern int storage_win_y;
 extern int storage_win_x_len;
@@ -28,7 +24,6 @@ extern int view_only_storage;
 extern int sort_storage_categories;
 extern Uint32 drop_fail_time;
 extern int disable_storage_filter;
-
 /*!
  * \ingroup storage_window
  * \brief Gets the storage categories from the server data \a in_data.
@@ -40,8 +35,7 @@ extern int disable_storage_filter;
  *
  * \callgraph
  */
-void get_storage_categories (const char * in_data, int len);
-
+void get_storage_categories(const char *in_data, int len);
 /*!
  * \ingroup storage_window
  * \brief Gets or updates the storage items from the server data \a in_data
@@ -53,8 +47,7 @@ void get_storage_categories (const char * in_data, int len);
  *
  * \callgraph
  */
-void get_storage_items (const Uint8 * in_data, int len);
-
+void get_storage_items(const Uint8 *in_data, int len);
 /*!
  * \ingroup storage_window
  * \brief Gets the storage text form the server data \a in_data up to the length \a len.
@@ -66,8 +59,7 @@ void get_storage_items (const Uint8 * in_data, int len);
  *
  * \pre If \a len is >200 it will be adjusted to be equal to 200.
  */
-void get_storage_text (const Uint8 * in_data, int len);
-
+void get_storage_text(const Uint8 *in_data, int len);
 /*!
  * \ingroup storage_window
  * \brief Closes the storage window
@@ -75,7 +67,6 @@ void get_storage_text (const Uint8 * in_data, int len);
  * 	Closes the storage window.
  */
 void close_storagewin();
-
 /*!
  * \ingroup storage_window
  * \brief Displays the new storage window
@@ -85,7 +76,6 @@ void close_storagewin();
  * \callgraph
  */
 void display_storage_menu();
-
 /*!
  * \ingroup storage_window
  * \brief Pick-up the specified item.
@@ -99,7 +89,6 @@ void display_storage_menu();
  * \callgraph
  */
 void pickup_storage_item(int image_id, Uint16 item_id, int cat_id);
-
 /*!
  * \ingroup storage_window
  * \brief Withdraw the active storage item
@@ -111,9 +100,7 @@ void pickup_storage_item(int image_id, Uint16 item_id, int cat_id);
  * \callgraph
  */
 void withdraw_active_storage_item(int qte_item);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

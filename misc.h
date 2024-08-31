@@ -5,17 +5,13 @@
  */
 #ifndef __MISC_H__
 #define __MISC_H__
-
 #include <SDL_endian.h>
 #include "platform.h"
 #include <zlib.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define BUTTONRADIUS 15
-
 /*!
  * \ingroup misc
  * \brief   Computes the reverse orthographic projection.
@@ -29,8 +25,7 @@ extern "C" {
  * \param oy    reverse y coordinate of the projection
  * \param oz    reverse z coordinate of the projection
  */
-void unproject_ortho(GLfloat wx,GLfloat wy,GLfloat wz,GLfloat *ox,GLfloat *oy,GLfloat *oz);
-
+void unproject_ortho(GLfloat wx, GLfloat wy, GLfloat wz, GLfloat *ox, GLfloat *oy, GLfloat *oz);
 /*!
  * \ingroup misc
  * \brief   Resets the mouse values
@@ -40,7 +35,6 @@ void unproject_ortho(GLfloat wx,GLfloat wy,GLfloat wz,GLfloat *ox,GLfloat *oy,GL
  * \pre If \ref read_mouse_now is false, this function returns without performing any action.
  */
 void reset_under_the_mouse();
-
 /*!
  * \ingroup misc
  * \brief   Checks if there any objects at the mouse cursor position.
@@ -55,15 +49,12 @@ void reset_under_the_mouse();
  * \pre If \a object_type equals \ref UNDER_MOUSE_NO_CHANGE, this function will return 0, after storing the pixel values at the current mouse position.
  */
 int anything_under_the_mouse(int object_id, int object_type);
-
 //some prototypes, that won't fit somewhere else
-
 void calculate_reflection_frustum(float water_height);
 void calculate_shadow_frustum();
 void enable_reflection_clip_planes();
 void disable_reflection_clip_planes();
 void set_current_frustum(unsigned int intersect_type);
-
 #ifdef WINDOWS
 /*!
  * \ingroup misc
@@ -73,9 +64,8 @@ void set_current_frustum(unsigned int intersect_type);
  *
  * \retval FILE* Pointer to the file on success, NULL otherwise
  */
-FILE *my_tmpfile ();
+FILE *my_tmpfile();
 #endif
-
 /*!
  * \ingroup misc
  * \brief Opens a file and check the result
@@ -86,11 +76,10 @@ FILE *my_tmpfile ();
  * \param mode  The mode in which the file is to be opened
  * \retval FILE* Pointer to the file on success, NULL otherwise
  */
-FILE *my_fopen (const char *fname, const char *mode);
+FILE *my_fopen(const char *fname, const char *mode);
 off_t get_file_size(const char *fname);
 int file_exists(const char *fname);
 int gzfile_exists(const char *fname);
-
 /*!
  * \ingroup misc
  * \brief Takes a screenshot
@@ -98,8 +87,7 @@ int gzfile_exists(const char *fname);
  *      Takes a screenshot
  *
  */
-void makeScreenShot ();
-
+void makeScreenShot();
 /*!
  * \ingroup misc_utils
  * \brief Draws a circle from angle_from to angle_to
@@ -114,7 +102,6 @@ void makeScreenShot ();
  * \param angle_to The end angle
  */
 void draw_circle_ext(int x, int y, int radius, int interval, int angle_from, int angle_to);
-
 /*!
  * \ingroup misc_utils
  * \brief Draws a circle from angle_from to angle_to
@@ -128,7 +115,6 @@ void draw_circle_ext(int x, int y, int radius, int interval, int angle_from, int
  * \callgraph
  */
 void draw_circle(int x, int y, int radius, int interval);
-
 /*!
  * \ingroup misc_utils
  * \brief Draws a box, that potentially uses rounded corners
@@ -159,8 +145,7 @@ void draw_circle(int x, int y, int radius, int interval);
  * \param h The height
  * \param rad The radius in the rounded corners - note that they are optional
  */
-void draw_box(char * name, int x, int y, int w, int h, int rad);
-
+void draw_box(char *name, int x, int y, int w, int h, int rad);
 /*!
  * \ingroup misc_utils
  * \brief Draws a button with round corners.
@@ -182,8 +167,7 @@ void draw_box(char * name, int x, int y, int w, int h, int rad);
  * \param hb The blue color for highlighted buttons
  * \param ha The alpha color for highlighted buttons
  */
-void draw_smooth_button(char * str, float size, int x, int y, int w, int lines, float r, float g, float b, int highlight, float hr, float hg, float hb, float ha);
-
+void draw_smooth_button(char *str, float size, int x, int y, int w, int lines, float r, float g, float b, int highlight, float hr, float hg, float hb, float ha);
 /*!
  * \ingroup misc
  * \brief Append '.gz' to a filename and try to open it using gzopen
@@ -195,8 +179,7 @@ void draw_smooth_button(char * str, float size, int x, int y, int w, int lines, 
  * \param mode The i/o mode (see open())
  * \return a zlib file handle
  */
-gzFile my_gzopen(const char * filename, const char * mode);
-
+gzFile my_gzopen(const char *filename, const char *mode);
 /*!
  * \ingroup misc
  * \brief Test whether a string contains another string at a certain position
@@ -210,8 +193,7 @@ gzFile my_gzopen(const char * filename, const char * mode);
  * \param nlen the length of \p needle
  * \return Zero if needle was found, nonzero otherwise (sic!).
  */
-int substrtest(const char * haystack, int hlen, int pos, const char * needle, int nlen);
-
+int substrtest(const char *haystack, int hlen, int pos, const char *needle, int nlen);
 /*!
  * \ingroup misc
  * \brief tests whether a string ends on \p suffix
@@ -224,11 +206,9 @@ int substrtest(const char * haystack, int hlen, int pos, const char * needle, in
  * \param slen the length of \p suffix
  * \return nonzero if \p str ends on \p suffix, zero otherwise.
  */
-static __inline__ int has_suffix(const char * str, int len, const char * suffix, int slen)
-{
+static __inline__ int has_suffix(const char *str, int len, const char *suffix, int slen) {
 	return !substrtest(str, len, -slen, suffix, slen);
 }
-
 /*!
  * \name min_max
  * \brief min/max computation (please read docs)
@@ -253,65 +233,40 @@ static __inline__ int has_suffix(const char * str, int len, const char * suffix,
  *  -Lachesis
  * @{
  */
-
-static __inline__ int min2i (int x, int y)
-{
+static __inline__ int min2i(int x, int y) {
 	return (x <= y)? x : y;
 }
-
-static __inline__ int max2i (int x, int y)
-{
+static __inline__ int max2i(int x, int y) {
 	return (x >= y)? x : y;
 }
-
-static __inline__ unsigned min2u (unsigned x, unsigned y)
-{
+static __inline__ unsigned min2u(unsigned x, unsigned y) {
 	return (x <= y)? x : y;
 }
-
-static __inline__ unsigned max2u (unsigned x, unsigned y)
-{
+static __inline__ unsigned max2u(unsigned x, unsigned y) {
 	return (x >= y)? x : y;
 }
-
-static __inline__ float min2f (float x, float y)
-{
+static __inline__ float min2f(float x, float y) {
 	return (x <= y)? x : y;
 }
-
-static __inline__ float max2f (float x, float y)
-{
+static __inline__ float max2f(float x, float y) {
 	return (x >= y)? x : y;
 }
-
-static __inline float max3f (float x, float y, float z)
-{
+static __inline float max3f(float x, float y, float z) {
 	return max2f(x, max2f(y, z));
 }
-
-static __inline__ unsigned clampu(unsigned x, unsigned l, unsigned u)
-{
-	return min2u(max2u(x,l),u);
+static __inline__ unsigned clampu(unsigned x, unsigned l, unsigned u) {
+	return min2u(max2u(x, l), u);
 }
-
-static __inline__ int clampi(int x, int l, int u)
-{
-	return min2i(max2i(x,l),u);
+static __inline__ int clampi(int x, int l, int u) {
+	return min2i(max2i(x, l), u);
 }
-
-static __inline__ float clampf(float x, float l, float u)
-{
-	return min2f(max2f(x,l),u);
+static __inline__ float clampf(float x, float l, float u) {
+	return min2f(max2f(x, l), u);
 }
-
 /*! @} */
-
 void init_reflection_portals(int size);
-
 extern Uint32 use_new_selection;
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

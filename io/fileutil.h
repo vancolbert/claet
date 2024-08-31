@@ -5,21 +5,17 @@
  */
 #ifndef UUID_962d4106_e9b5_41a2_876f_caa6888adf30
 #define UUID_962d4106_e9b5_41a2_876f_caa6888adf30
-
 #include "../platform.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 /**
  * Initialize the crc tables.
  */
 void init_crc_tables();
-
 /**
  * @brief Reads a file to memory.
  *
@@ -33,9 +29,7 @@ void init_crc_tables();
  * should be placed.
  * @return Zero if no error, else one.
  */
-Uint32 file_read(FILE* file, const Uint64 file_size, void** buffer,
-	Uint64* size);
-
+Uint32 file_read(FILE *file, const Uint64 file_size, void **buffer, Uint64 *size);
 /**
  * @brief Reads and uncompress a xz file to memory.
  *
@@ -47,11 +41,8 @@ Uint32 file_read(FILE* file, const Uint64 file_size, void** buffer,
  * should be placed.
  * @return Zero if no error, else one.
  */
-Uint32 xz_file_read(FILE* file, void** buffer, Uint64* size);
-
+Uint32 xz_file_read(FILE *file, void **buffer, Uint64 *size);
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* UUID_962d4106_e9b5_41a2_876f_caa6888adf30 */
-
+#endif  /* UUID_962d4106_e9b5_41a2_876f_caa6888adf30 */

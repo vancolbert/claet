@@ -5,14 +5,11 @@
  */
 #ifndef UUID_3d88ab37_44ba_4e1a_9b92_8caaedef1ca0
 #define UUID_3d88ab37_44ba_4e1a_9b92_8caaedef1ca0
-
 #include <SDL.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 /*!
  * \ingroup	update
  * \brief	Starts the custom update
@@ -20,7 +17,6 @@ extern "C"
  * 		The function starts the custom updates in a background thread.
  */
 void start_custom_update();
-
 /*!
  * \ingroup	update
  * \brief	Stopps the custom update
@@ -29,7 +25,6 @@ void start_custom_update();
  *		till now.
  */
 void stopp_custom_update();
-
 /*!
  * \ingroup	update
  * \brief	Starts the update.
@@ -37,7 +32,6 @@ void stopp_custom_update();
  * 		Starts the update.
  */
 int command_update(char *text, int len);
-
 /*!
  * \ingroup	update
  * \brief	Prints to console the update state.
@@ -45,10 +39,7 @@ int command_update(char *text, int len);
  * 		Prints to the el console the current update status.
  */
 int command_update_status(char *text, int len);
-
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* UUID_3d88ab37_44ba_4e1a_9b92_8caaedef1ca0 */
-
+#endif  /* UUID_3d88ab37_44ba_4e1a_9b92_8caaedef1ca0 */

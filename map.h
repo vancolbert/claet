@@ -3,38 +3,28 @@
  * @ingroup maps
  * @brief loading, saving and handling of maps
  */
-#ifndef	_MAP_H_
-#define	_MAP_H_
-
+#ifndef _MAP_H_
+#define _MAP_H_
 #include <SDL_types.h>
 #include "io/map_io.h"
-
 #include "hash.h"
 #include "mapwin.h"
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern Uint32 map_flags;/**< The map flags - basically this will be obsolete with the next map format, but untill then it's good to have*/
-
 extern char dungeon; /**< inidicates whether we are in a dungeon (no sun) or not */
-
 /** @name ambient color values
  * @{ */
 extern float ambient_r;
 extern float ambient_g;
 extern float ambient_b;
 /** @} */
-
 extern int map_type; /**< id of the type of map we are currently using */
-
-extern GLfloat* water_tile_buffer;
-extern GLfloat* terrain_tile_buffer;
-
+extern GLfloat *water_tile_buffer;
+extern GLfloat *terrain_tile_buffer;
 extern Uint8 carte_modif;
-
 /**
  * @ingroup maps
  * @brief Loads an empty map
@@ -45,7 +35,6 @@ extern Uint8 carte_modif;
  * @retval int  0 if nomap.elm failed to load, otherwise 1 is returned.
  */
 int load_empty_map(void);
-
 /**
  * @ingroup maps
  * @brief Changes the current map
@@ -54,8 +43,7 @@ int load_empty_map(void);
  *
  * @param mapname The name of the map
  */
-void change_map (const char * mapname);
-
+void change_map(const char *mapname);
 /**
  * @ingroup maps
  * @brief Loads the map marks for the given mapname into the given buffer
@@ -66,8 +54,7 @@ void change_map (const char * mapname);
  * @param buffer buffer for the map marks
  * @param max maximum number of map marks in \a buffer
  */
-void load_marks_to_buffer(char* mapname, marking* buffer, int* max);
-
+void load_marks_to_buffer(char *mapname, marking *buffer, int *max);
 /**
  * @ingroup maps
  * @brief Loads the map marks for the current map
@@ -76,7 +63,6 @@ void load_marks_to_buffer(char* mapname, marking* buffer, int* max);
  *
  */
 void load_map_marks(void);
-
 /**
  * @ingroup maps
  * @brief Adds a number of 3d objects to the map
@@ -89,8 +75,7 @@ void load_map_marks(void);
  * @retval int  0 on error, 1 on success
  * @callgraph
  */
-int get_3d_objects_from_server (int nr_objs, const Uint8 *data, int len);
-
+int get_3d_objects_from_server(int nr_objs, const Uint8 *data, int len);
 /**
  * @ingroup maps
  * @brief Removes an object from the current map
@@ -100,8 +85,7 @@ int get_3d_objects_from_server (int nr_objs, const Uint8 *data, int len);
  * @param id The ID of the object to be removed
  * @callgraph
  */
-void remove_3d_object_from_server (int id);
-
+void remove_3d_object_from_server(int id);
 /**
  * @ingroup maps
  * @brief Inits the buffer used for terrain.
@@ -113,7 +97,6 @@ void remove_3d_object_from_server (int id);
  * @callgraph
  */
 void init_terrain_buffers(int terrain_buffer_size);
-
 /**
  * @ingroup maps
  * @brief Inits the buffer and the portals.
@@ -124,7 +107,6 @@ void init_terrain_buffers(int terrain_buffer_size);
  * @callgraph
  */
 void init_buffers(void);
-
 /**
  * @ingroup maps
  * @brief Frees the buffer and the portals.
@@ -135,19 +117,13 @@ void init_buffers(void);
  * @callgraph
  */
 void free_buffers(void);
-
 void destroy_map();
-
-typedef struct _s_mark{
-
+typedef struct _s_mark {
 	int id;
-	int x,y;
+	int x, y;
 	char map_name[50];
 	char text[100];
-
 } server_mark;
-
-
 void init_server_markers(void);
 void load_server_markings(void);
 void save_server_markings(void);
@@ -161,12 +137,7 @@ extern float mark_z_rot;
 extern int marks_3d;
 #define MARK_CLIP_POS 20
 #define MARK_DIST 20
-
-
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif	// _MAP_H_
+#endif  // _MAP_H_

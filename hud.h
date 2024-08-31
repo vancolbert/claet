@@ -3,15 +3,12 @@
  * \ingroup windows
  * \brief handling and displaying the HUD
  */
-#ifndef	__HUD_H
-#define	__HUD_H
-
+#ifndef __HUD_H
+#define __HUD_H
 #include <SDL_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \name orientation constants
  */
@@ -19,63 +16,48 @@ extern "C" {
 #define HORIZONTAL 2
 #define VERTICAL 1
 /*! @} */
-
 void reload_icon_pos();
 void confirmation_quitter();
-
 extern int show_coord;
 extern int show_coord_2;
 extern int rot_boussole; //Type de rotation de la boussole
 extern Uint32 exp_lev[200];
-
-typedef enum
-{
+typedef enum {
 	HUD_INTERFACE_NEW_CHAR, /*!< the interface for the character creation screen */
 	HUD_INTERFACE_GAME,     /*!< the interface for the game */
-	HUD_INTERFACE_LAST      /*!< the last interface used */
+	HUD_INTERFACE_LAST,     /*!< the last interface used */
 } hud_interface;
-
 extern int qb_action_mode; /*!< flag indicating whether we are in quickbar action mode or not */
-
 extern int show_stats_in_hud;
 extern int show_statbars_in_hud;
 extern int show_action_bar; /*!< saved in the el.ini file, the action points stats bar is display when true */
 extern int stats_bar_win; /*!< the window id for the stats bar of the bottom HUD */
 extern int watch_this_stats[]; /*!< used for displaying more than 1 stat in the hud */
 extern int max_food_level; /*!< normally 45 but can be set from options for people with diffent values (big belly) */
-
 extern int show_attr_boosted; /*!< show the attributes boosted in the hud */
 /*!
  * \name windows handlers
  */
 /*! @{ */
-extern int	quickbar_win; /*!< quickbar windows handler */
+extern int quickbar_win;      /*!< quickbar windows handler */
 /*! @} */
-
-
 /*!
  * \ingroup display_2d
  * \brief Initializes the quickbar
  *
  *      Initializes the quickbar, it's event handlers and shows it. If the quickbar has been moved by the player it will be drawn in its new position.
  */
-void switch_action_mode(int * mode, int id);
-
+void switch_action_mode(int *mode, int id);
 extern int hud_x;
 extern int hud_y;
-
 extern int view_analog_clock;
 extern int view_digital_clock;
 extern int view_knowledge_bar;
 extern int view_hud_timer;
-
 extern int copy_next_LOCATE_ME;
-
 extern int show_help_text;
 extern int always_enlarge_text;
-
 // the main hud handling
-
 /*!
  * \ingroup other
  * \brief Checks if the keypress is an item use
@@ -83,7 +65,6 @@ extern int always_enlarge_text;
  *	returns 1 if the key is a item keypress, otherwise 0.
  */
 int action_item_keys(Uint32 key);
-
 /*!
  * \ingroup other
  * \brief Initializes anything hud related
@@ -93,8 +74,7 @@ int action_item_keys(Uint32 key);
  * \param	type Whether it's for the game window or the new character window
  * \callgraph
  */
-void init_hud_interface (hud_interface type);
-
+void init_hud_interface(hud_interface type);
 /*!
  * \ingroup other
  * \brief Called on client exit - free memory and generally clean up
@@ -102,7 +82,6 @@ void init_hud_interface (hud_interface type);
  * \callgraph
  */
 void cleanup_hud(void);
-
 /*!
  * \ingroup other
  * \brief Shows the different hud related windows if they have already been created.
@@ -113,8 +92,7 @@ void cleanup_hud(void);
  *
  * \callgraph
  */
-void show_hud_windows ();
-
+void show_hud_windows();
 /*!
  * \ingroup other
  * \brief Hides the different hud related windows, if they are visible.
@@ -124,8 +102,7 @@ void show_hud_windows ();
  * \pre If none of \ref icons_win, \ref stats_bar_win, \ref misc_win and \ref quickbar_win is >= 0 (i.e. created before and visible) no action will be performed.
  * \callgraph
  */
-void hide_hud_windows ();
-
+void hide_hud_windows();
 /*!
  * \ingroup display_2d
  * \brief Draws the hud interface related items.
@@ -135,7 +112,6 @@ void hide_hud_windows ();
  * \callgraph
  */
 void draw_hud_interface();
-
 /*!
  * \ingroup windows
  * \brief Checks whether a mouse click occurred in the hud.
@@ -146,7 +122,6 @@ void draw_hud_interface();
  * \callgraph
  */
 int check_hud_interface();
-
 /*!
  * \ingroup display_2d
  * \brief Draws the hud frame.
@@ -156,7 +131,6 @@ int check_hud_interface();
  * \callgraph
  */
 void draw_hud_frame();
-
 /*!
  * \ingroup windows
  * \brief Get the window ID pointer using the name string
@@ -167,11 +141,8 @@ void draw_hud_frame();
  *
  * \callgraph
  */
- int* get_winid(const char *name);
-
-
+int *get_winid(const char *name);
 //Functions for the function pointers
-
 /*!
  * \ingroup windows
  * \brief Shows the window pointed to by \a win
@@ -184,8 +155,7 @@ void draw_hud_frame();
  * \pre If \a win is either of \ref items_win, \ref sigil_win or \ref manufacture_win and the \ref trade_win is currently active, and error message will get logged to the console and the functions returns.
  * \callgraph
  */
-void view_window(int * win, int id);
-
+void view_window(int *win, int id);
 /*!
  * \ingroup windows
  * \brief Shows the selected \a tab of the given \a window.
@@ -200,8 +170,7 @@ void view_window(int * win, int id);
  * \pre If \a window is already visisble but \a tab is currently not selected, then \a tab will be selected.
  * \callgraph
  */
-void view_tab (int *window, int *col_id, int tab);
-
+void view_tab(int *window, int *col_id, int tab);
 /*!
  * \ingroup windows
  * \brief   Views the console window (i.e. switch to console mode)
@@ -213,8 +182,7 @@ void view_tab (int *window, int *col_id, int tab);
  *
  * \callgraph
  */
-void view_console_win(int * win, int id);
-
+void view_console_win(int *win, int id);
 /*!
  * \ingroup windows
  * \brief Views the map window (i.e. switch to map mode)
@@ -227,7 +195,6 @@ void view_console_win(int * win, int id);
  * \callgraph
  */
 void view_map_win(int *win, int id);
-
 /*!
  * \ingroup windows
  * \brief Shows the \a message at the given position (\a x, \a y).
@@ -241,8 +208,6 @@ void view_map_win(int *win, int id);
  * \callgraph
  */
 void show_help(const char *message, int x, int y);
-
-
 /*!
  * \ingroup windows
  * \brief Shows the \a message at the given position and colour (\a x, \a y).
@@ -259,8 +224,6 @@ void show_help(const char *message, int x, int y);
  * \callgraph
  */
 void show_help_coloured(const char *help_message, int x, int y, float r, float g, float b);
-
-
 /*!
  * \ingroup windows
  * \brief Shows the \a message at the given position and colour (\a x, \a y).
@@ -278,7 +241,6 @@ void show_help_coloured(const char *help_message, int x, int y, float r, float g
  * \callgraph
  */
 void show_sized_help_coloured(const char *help_message, int x, int y, float r, float g, float b, int big);
-
 /*!
  * \ingroup windows
  * \brief Check if we need to enlarge text.
@@ -292,16 +254,12 @@ void show_sized_help_coloured(const char *help_message, int x, int y, float r, f
  * \callgraph
  */
 int enlarge_text(void);
-
-
 //stats/health section
-
 /*!
  * \ingroup other
  * \brief   	Initialise the stat bars, (size, position and number), for in the bottom HUB.
  */
 void init_stats_display(void);
-
 /*!
  * \ingroup other
  * \brief Update displayed damage value.
@@ -311,8 +269,6 @@ void init_stats_display(void);
  * \callgraph
  */
 void set_last_damage(int quantity);
-
-
 /*!
  * \ingroup other
  * \brief Update displayed heal value.
@@ -322,7 +278,6 @@ void set_last_damage(int quantity);
  * \callgraph
  */
 void set_last_heal(int quantity);
-
 /*!
  * \ingroup other
  * \brief   Initializes the levels table.
@@ -332,7 +287,6 @@ void set_last_heal(int quantity);
  * \sa init_stuff
  */
 void build_levels_table();
-
 /*!
  * \ingroup windows
  * \brief	Sets the flag of the given window
@@ -342,7 +296,6 @@ void build_levels_table();
  * \sa get_flags
  */
 void change_flags(int win_id, Uint32 flags);
-
 /*!
  * \ingroup windows
  * \brief Gets the flags of the given window
@@ -352,20 +305,15 @@ void change_flags(int win_id, Uint32 flags);
  * \sa change_flags
  */
 Uint32 get_flags(int win_id);
-
 /*!
  * \ingroup other
  * \brief   	The #exp command, show current exp levels in console.
  * \retval	1, so command not passed to server
  */
 int show_exp(char *text, int len);
-
 void change_max_nutri(int max);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 extern Uint32 exp_lev[200];
-
-#endif	//__HUD_H
+#endif  //__HUD_H

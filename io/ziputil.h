@@ -5,17 +5,14 @@
  */
 #ifndef UUID_f4a0d8d6_2b52_4b9a_ab7d_7eba5a3ae015
 #define UUID_f4a0d8d6_2b52_4b9a_ab7d_7eba5a3ae015
-
 #include <SDL.h>
 #include "../md5.h"
 #include "zip.h"
 #include "unzip.h"
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
 /*!
  * \ingroup 	misc
  * \brief 	Copy the current file to zip.
@@ -28,7 +25,6 @@ extern "C"
  * \callgraph
  */
 Uint32 copy_from_zip(unzFile source, zipFile dest);
-
 /*!
  * \ingroup 	misc
  * \brief 	Copy the current file to zip.
@@ -40,9 +36,7 @@ Uint32 copy_from_zip(unzFile source, zipFile dest);
  * \retval Uint32	Returns zero if everything is ok, else one.
  * \callgraph
  */
-Uint32 add_to_zip(const char* file_name, const Uint32 size,
-	const Uint8* data, zipFile dest, const char* comment);
-
+Uint32 add_to_zip(const char *file_name, const Uint32 size, const Uint8 *data, zipFile dest, const char *comment);
 /*!
  * \ingroup 	misc
  * \brief 	Converts the string to a md5 digest.
@@ -53,8 +47,7 @@ Uint32 add_to_zip(const char* file_name, const Uint32 size,
  * \retval Uint32	Returns zero if everything is ok, else one.
  * \callgraph
  */
-Uint32 convert_string_to_md5_digest(const char* str, MD5_DIGEST digest);
-
+Uint32 convert_string_to_md5_digest(const char *str, MD5_DIGEST digest);
 /*!
  * \ingroup 	misc
  * \brief 	Converts the comment string to a md5 digest.
@@ -65,8 +58,7 @@ Uint32 convert_string_to_md5_digest(const char* str, MD5_DIGEST digest);
  * \retval Uint32	Returns zero if everything is ok, else one.
  * \callgraph
  */
-Uint32 convert_comment_string_to_md5_digest(const char* str, MD5_DIGEST digest);
-
+Uint32 convert_comment_string_to_md5_digest(const char *str, MD5_DIGEST digest);
 /*!
  * \ingroup 	misc
  * \brief 	Converts the md5 digest to a comment string.
@@ -78,15 +70,9 @@ Uint32 convert_comment_string_to_md5_digest(const char* str, MD5_DIGEST digest);
  * \retval Uint32	Returns zero if everything is ok, else one.
  * \callgraph
  */
-Uint32 convert_md5_digest_to_comment_string(const MD5_DIGEST digest,
-	const Uint32 size, char* str);
-
-Uint32 check_md5_from_zip(unzFile source, const char* file_name,
-	const MD5_DIGEST digest);
-
+Uint32 convert_md5_digest_to_comment_string(const MD5_DIGEST digest, const Uint32 size, char *str);
+Uint32 check_md5_from_zip(unzFile source, const char *file_name, const MD5_DIGEST digest);
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* UUID_f4a0d8d6_2b52_4b9a_ab7d_7eba5a3ae015 */
-
+#endif  /* UUID_f4a0d8d6_2b52_4b9a_ab7d_7eba5a3ae015 */

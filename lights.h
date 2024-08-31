@@ -7,65 +7,53 @@
  */
 #ifndef __LIGHTS_H__
 #define __LIGHTS_H__
-
 #include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
 /*!
  * A light structure stores the position and color of a light
  */
-typedef struct
-{
-    /*!
-     * \name Light position
-     */
-    /*! @{ */
-  	float pos_x;
+typedef struct {
+	/*!
+	 * \name Light position
+	 */
+	/*! @{ */
+	float pos_x;
 	float pos_y;
 	float pos_z;
-    /*! @} */
-
-    /*!
-     * \name Light color
-     */
-    /*! @{ */
+	/*! @} */
+	/*!
+	 * \name Light color
+	 */
+	/*! @{ */
 	float r;
 	float g;
 	float b;
-    /*! @} */
+	/*! @} */
 	short cluster;
-}light;
-
+} light;
 /*! \name Lights limits */
 /*! @{ */
 #define GLOBAL_LIGHTS_NO 60 /*!< The maximum number of global lights to use */
 #define MAX_LIGHTS 1000     /*!< The maximum amount of lights (global and local) */
 /*! @} */
-
 /*! \name Sky lights arrays */
 /*! @{ */
-extern GLfloat sky_lights_c1[GLOBAL_LIGHTS_NO*2][4];
-extern GLfloat sky_lights_c2[GLOBAL_LIGHTS_NO*2][4];
-extern GLfloat sky_lights_c3[GLOBAL_LIGHTS_NO*2][4];
-extern GLfloat sky_lights_c4[GLOBAL_LIGHTS_NO*2][4];
+extern GLfloat sky_lights_c1[GLOBAL_LIGHTS_NO * 2][4];
+extern GLfloat sky_lights_c2[GLOBAL_LIGHTS_NO * 2][4];
+extern GLfloat sky_lights_c3[GLOBAL_LIGHTS_NO * 2][4];
+extern GLfloat sky_lights_c4[GLOBAL_LIGHTS_NO * 2][4];
 /*! @} */
-
 extern GLfloat ambient_light[]; /*!< An array for the ambient lights radiating from the sun */
 extern GLfloat diffuse_light[]; /*!< An array for the diffuse light portion */
-
-extern int	show_lights;	/*! the highest numbered light in the current GL display (0-6) */
-extern int	num_lights; /*! the number of lights currently loaded */
+extern int show_lights;         /*! the highest numbered light in the current GL display (0-6) */
+extern int num_lights;      /*! the number of lights currently loaded */
 extern light *lights_list[MAX_LIGHTS]; /*!< global lights list */
-
 extern unsigned char light_level; /*!< the light level */
 extern short game_minute; /*!< the current game minute */
 extern short game_second; /*!< the current game second */
 extern unsigned char freeze_time; /*!< when this value is equal to 1, the game minute is freezed */
-
 /*!
  * \ingroup lights
  * \brief   Disables all local lightning.
@@ -74,7 +62,6 @@ extern unsigned char freeze_time; /*!< when this value is equal to 1, the game m
  *
  */
 void disable_local_lights();
-
 /*!
  * \ingroup lights
  * \brief   Draws the default local lights.
@@ -85,7 +72,6 @@ void disable_local_lights();
  * \sa enable_local_lights
  */
 void draw_lights();
-
 /*
  * \ingroup	lights
  * \brief	Destroys the light at position i in the lights_list
@@ -97,7 +83,6 @@ void draw_lights();
  * \callgraph
  */
 void destroy_light(int i);
-
 /*!
  * \ingroup lights
  * \brief   Adds a new light using the given position and color.
@@ -114,7 +99,6 @@ void destroy_light(int i);
  * \retval int          the index into the \ref lights_list array, where the light was added.
  */
 int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, GLfloat intensity, unsigned int dynamic);
-
 /*!
  * \ingroup lights
  * \brief   Gets the lights visible in the scene.
@@ -124,7 +108,6 @@ int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, 
  * \sa draw_scene
  */
 void update_scene_lights();
-
 /*!
  * \ingroup other
  * \brief   Initializes the default lights and enables lighting.
@@ -135,7 +118,6 @@ void update_scene_lights();
  * \sa set_new_video_mode
  */
 void init_lights();
-
 /*!
  * \ingroup lights
  * \brief   Resets the material attributes to its default values.
@@ -144,7 +126,6 @@ void init_lights();
  *
  */
 void reset_material();
-
 /*!
  * \ingroup lights
  * \brief   Sets the material attributes to the given color.
@@ -156,7 +137,6 @@ void reset_material();
  * \param b     blue component of the material color
  */
 void set_material(float r, float g, float b);
-
 /*!
  * \ingroup lights
  * \brief   Draws the global light.
@@ -166,7 +146,6 @@ void set_material(float r, float g, float b);
  * \sa draw_scene
  */
 void draw_global_light();
-
 /*!
  * \ingroup lights
  * \brief   Draws the ambient light of dungeons.
@@ -176,7 +155,6 @@ void draw_global_light();
  * \sa draw_scene
  */
 void draw_dungeon_light();
-
 /*!
  * \ingroup other
  * \brief   Initializies the global lights for the sun and lakes.
@@ -185,7 +163,6 @@ void draw_dungeon_light();
  *
  */
 void build_global_light_table();
-
 /*!
  * \ingroup other
  * \brief   Computes the table for the sun positions.
@@ -195,7 +172,6 @@ void build_global_light_table();
  * \sa init_stuff
  */
 void build_sun_pos_table();
-
 /*!
  * \ingroup event_handle
  * \brief   Sets the \ref light_level depending on the current \ref game_minute
@@ -205,14 +181,9 @@ void build_sun_pos_table();
  * \callgraph
  */
 void new_minute();
-
 void new_second();
-
 void cleanup_lights(void);
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

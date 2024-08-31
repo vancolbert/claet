@@ -5,30 +5,23 @@
  */
 #ifndef __MANUFACTURE_H__
 #define __MANUFACTURE_H__
-
 #include "items.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern item manufacture_list[ITEM_WEAR_START+6]; /*!< taille exacte de la liste des ingrédients dispo + recette */
-
+extern item manufacture_list[ITEM_WEAR_START + 6]; /*!< taille exacte de la liste des ingrédients dispo + recette */
 extern int cm_listrecipe_enabled;
 extern int cm_manurecipe_invertwheel;
 extern int cm_manurecipe_addnolimit;
 extern int cm_manurecipe_wheelaffect;
-
 extern int manufacture_menu_x;
 extern int manufacture_menu_y;
-
 /*!
  * \name windows handlers
  */
 /*! @{ */
 extern int manufacture_win; /*!< manufacture windows handler */
 /*! @} */
-
 /*!
  * \ingroup manufacture_window
  * \brief Sets up the \ref manufacture_list.
@@ -37,7 +30,6 @@ extern int manufacture_win; /*!< manufacture windows handler */
  *
  */
 void build_manufacture_list();
-
 /*!
  * \ingroup manufacture_window
  * \brief Displays the manufacture window.
@@ -47,7 +39,6 @@ void build_manufacture_list();
  * \callgraph
  */
 void display_manufacture_menu();
-
 /*!
  * \ingroup manufacture_window
  * \brief Manufacture items.
@@ -57,8 +48,7 @@ void display_manufacture_menu();
  * \param quantity	the number of items to manufacture, max 255
  * \param mixbut_empty_str message for user if no items to mix
  */
-int mix_handler(Uint8 quantity, const char* mixbut_empty_str);
-
+int mix_handler(Uint8 quantity, const char *mixbut_empty_str);
 /*!
  * \ingroup manufacture_window
  * \brief Load manufacture recipes.
@@ -66,7 +56,6 @@ int mix_handler(Uint8 quantity, const char* mixbut_empty_str);
  * \callgraph
  */
 void load_recipes();
-
 /*!
  * \ingroup manufacture_window
  * \brief Load manufacture recipes.
@@ -74,7 +63,6 @@ void load_recipes();
  * \callgraph
  */
 void save_recipes();
-
 /*!
  * \ingroup manufacture_window
  * \brief Assign name to unnamed recipe matching the last mixed ingredients.
@@ -83,8 +71,6 @@ void save_recipes();
  * \callgraph
  */
 void check_for_recipe_name(const char *name);
-
-
 /*!
  * \ingroup manufacture_window
  * \brief Called on exit - free memory and clean up.
@@ -92,10 +78,7 @@ void check_for_recipe_name(const char *name);
  * \callgraph
  */
 void cleanup_manufacture(void);
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

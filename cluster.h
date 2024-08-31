@@ -1,7 +1,6 @@
 
 #ifndef CLUSTER_H
 #define CLUSTER_H
-
 #include "tiles.h"
 #include "bbox_tree.h"
 #include "e3d.h"
@@ -9,11 +8,9 @@
 #include "particles.h"
 #include "2d_objects.h"
 #include "3d_objects.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with the height map
@@ -23,14 +20,14 @@ extern "C" {
  * \param occupied   The occupation array
  * \param height_map The height map
  */
-static __inline__ void update_occupied_with_height_map (char* occupied, const unsigned char* height_map)
-{
+static __inline__ void update_occupied_with_height_map(char *occupied, const unsigned char *height_map) {
 	int i;
-
-	for (i = 0; i < tile_map_size_x*tile_map_size_y*6*6; i++)
-		if (height_map[i]) occupied[i] = 1;
+	for (i = 0; i < tile_map_size_x * tile_map_size_y * 6 * 6; i++) {
+		if (height_map[i]) {
+			occupied[i] = 1;
+		}
+	}
 }
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with the tile map
@@ -41,30 +38,25 @@ static __inline__ void update_occupied_with_height_map (char* occupied, const un
  * \param occupied The occupation array
  * \param tile_map The tile map
  */
-static __inline__ void update_occupied_with_tile_map (char* occupied, const unsigned char* tile_map)
-{
+static __inline__ void update_occupied_with_tile_map(char *occupied, const unsigned char *tile_map) {
 	int nx = tile_map_size_x * 6;
 	int ny = tile_map_size_y * 6;
 	int x, y, idx;
-
 	idx = 0;
-	for (y = 0; y < ny; y += 6)
-	{
-		for (x = 0; x < nx; x += 6, idx++)
-		{
-			if (tile_map[idx] != 255)
-			{
-				int offset = y*nx + x;
+	for (y = 0; y < ny; y += 6) {
+		for (x = 0; x < nx; x += 6, idx++) {
+			if (tile_map[idx] != 255) {
+				int offset = y * nx + x;
 				int i, j;
-
-				for (j = 0; j < 6; j++)
-					for (i = 0; i < 6; i++)
-						occupied[offset+j*nx+i] = 1;
+				for (j = 0; j < 6; j++) {
+					for (i = 0; i < 6; i++) {
+						occupied[offset + j * nx + i] = 1;
+					}
+				}
 			}
 		}
 	}
 }
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with a bounding box
@@ -75,26 +67,30 @@ static __inline__ void update_occupied_with_tile_map (char* occupied, const unsi
  * \param occupied The occupation array
  * \param box      The axis aligned bounding box
  */
-static __inline__ void update_occupied_with_bbox (char* occupied, const AABBOX* box)
-{
-	int xs = (int) (box->bbmin[X] / 0.5f);
-	int ys = (int) (box->bbmin[Y] / 0.5f);
-	int xe = (int) (box->bbmax[X] / 0.5f) + 1;
-	int ye = (int) (box->bbmax[Y] / 0.5f) + 1;
+static __inline__ void update_occupied_with_bbox(char *occupied, const AABBOX *box) {
+	int xs = (int)(box->bbmin[X] / 0.5f);
+	int ys = (int)(box->bbmin[Y] / 0.5f);
+	int xe = (int)(box->bbmax[X] / 0.5f) + 1;
+	int ye = (int)(box->bbmax[Y] / 0.5f) + 1;
 	int x, y;
-
-	if (xs < 0) xs = 0;
-	if (ys < 0) ys = 0;
-	if (xe > tile_map_size_x*6) xe = tile_map_size_x*6;
-	if (ye > tile_map_size_y*6) ye = tile_map_size_y*6;
-
-	for (y = ys; y < ye; y++)
-	{
-		for (x = xs; x < xe; x++)
-			occupied[y*tile_map_size_x*6+x] = 1;
+	if (xs < 0) {
+		xs = 0;
+	}
+	if (ys < 0) {
+		ys = 0;
+	}
+	if (xe > tile_map_size_x * 6) {
+		xe = tile_map_size_x * 6;
+	}
+	if (ye > tile_map_size_y * 6) {
+		ye = tile_map_size_y * 6;
+	}
+	for (y = ys; y < ye; y++) {
+		for (x = xs; x < xe; x++) {
+			occupied[y * tile_map_size_x * 6 + x] = 1;
+		}
 	}
 }
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with a 3D objec t
@@ -105,34 +101,28 @@ static __inline__ void update_occupied_with_bbox (char* occupied, const AABBOX* 
  * \param occupied The occupation array
  * \param id       The position in objects_list of the 3D object
  */
-
-static __inline__ void update_occupied_with_3d (char* occupied, int id)
-{
-	const e3d_object* obj;
+static __inline__ void update_occupied_with_3d(char *occupied, int id) {
+	const e3d_object *obj;
 	int i;
 	AABBOX box;
-
-	if (id < 0 || id >= MAX_OBJ_3D || !objects_list[id])
+	if (id < 0 || id >= MAX_OBJ_3D || !objects_list[id]) {
 		return;
-
+	}
 	obj = objects_list[id]->e3d_data;
-	if (!obj)
+	if (!obj) {
 		return;
-
-	for (i = 0; i < obj->material_no; i++)
-	{
+	}
+	for (i = 0; i < obj->material_no; i++) {
 		box.bbmin[X] = obj->materials[i].min_x;
 		box.bbmin[Y] = obj->materials[i].min_y;
 		box.bbmin[Z] = obj->materials[i].min_z;
 		box.bbmax[X] = obj->materials[i].max_x;
 		box.bbmax[Y] = obj->materials[i].max_y;
 		box.bbmax[Z] = obj->materials[i].max_z;
-		matrix_mul_aabb (&box, objects_list[id]->matrix);
-
-		update_occupied_with_bbox (occupied, &box);
+		matrix_mul_aabb(&box, objects_list[id]->matrix);
+		update_occupied_with_bbox(occupied, &box);
 	}
 }
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with a 2D object
@@ -143,14 +133,12 @@ static __inline__ void update_occupied_with_3d (char* occupied, int id)
  * \param occupied The occupation array
  * \param id       The index in obj_2d_list of the 2D object
  */
-static __inline__ void update_occupied_with_2d (char* occupied, int id)
-{
+static __inline__ void update_occupied_with_2d(char *occupied, int id) {
 	AABBOX box;
-
-	if (get_2d_bbox (id, &box))
-		update_occupied_with_bbox (occupied, &box);
+	if (get_2d_bbox(id, &box)) {
+		update_occupied_with_bbox(occupied, &box);
+	}
 }
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with a light
@@ -160,20 +148,17 @@ static __inline__ void update_occupied_with_2d (char* occupied, int id)
  * \param occupied The occupation array
  * \param id       The index in lights_list of the light
  */
-static __inline__  void update_occupied_with_light (char* occupied, int id)
-{
+static __inline__ void update_occupied_with_light(char *occupied, int id) {
 	int x, y;
-
-	if (id < 0 || id >= MAX_LIGHTS)
+	if (id < 0 || id >= MAX_LIGHTS) {
 		return;
-
-	x = (int) (lights_list[id]->pos_x / 0.5f);
-	y = (int) (lights_list[id]->pos_y / 0.5f);
-
-	if (x >= 0 && x < tile_map_size_x*6 && y >= 0 && y < tile_map_size_y*6)
-		occupied[y*tile_map_size_x*6+x] = 1;
+	}
+	x = (int)(lights_list[id]->pos_x / 0.5f);
+	y = (int)(lights_list[id]->pos_y / 0.5f);
+	if (x >= 0 && x < tile_map_size_x * 6 && y >= 0 && y < tile_map_size_y * 6) {
+		occupied[y * tile_map_size_x * 6 + x] = 1;
+	}
 }
-
 /*!
  * \ingroup maps
  * \brief Update the occupation array with a particle system
@@ -184,17 +169,14 @@ static __inline__  void update_occupied_with_light (char* occupied, int id)
  * \param occupied The occupation array
  * \param id       The index in particles_list of the particle system
  */
-static __inline__ void update_occupied_with_particle_system (char* occupied, int id)
-{
+static __inline__ void update_occupied_with_particle_system(char *occupied, int id) {
 	AABBOX box;
-
-	if (id < 0 || id >= MAX_PARTICLE_SYSTEMS || !particles_list[id])
+	if (id < 0 || id >= MAX_PARTICLE_SYSTEMS || !particles_list[id]) {
 		return;
-
-	calc_bounding_box_for_particle_sys (&box, particles_list[id]);
-	update_occupied_with_bbox (occupied, &box);
+	}
+	calc_bounding_box_for_particle_sys(&box, particles_list[id]);
+	update_occupied_with_bbox(occupied, &box);
 }
-
 /*!
  * \ingroup maps
  * \brief Set the cluster map from file data
@@ -206,9 +188,7 @@ static __inline__ void update_occupied_with_particle_system (char* occupied, int
  *       present in the file, compute_clusters() should be used. Doing
  *       both will lead to memory leaks and unnecesary CPU usage.
  */
-void set_clusters (const char* data);
-
-
+void set_clusters(const char *data);
 /*!
  * \ingroup maps
  * \brief Group occupied areas into clusters
@@ -221,8 +201,7 @@ void set_clusters (const char* data);
  *       set_clusters() should be used. Doing both will lead to memory
  *       leaks and unnecesary CPU usage.
  */
-void compute_clusters (const char* occupied);
-
+void compute_clusters(const char *occupied);
 /*!
  * \ingroup maps
  * \brief Get the cluster number of a position
@@ -235,8 +214,7 @@ void compute_clusters (const char* occupied);
  * \retval short The number of the visibility cluster, or 0 if the point
  *               is not inside any cluster.
  */
-short get_cluster (int x, int y);
-
+short get_cluster(int x, int y);
 /*!
  * \ingroup maps
  * \brief Destroy the clusters array
@@ -244,8 +222,7 @@ short get_cluster (int x, int y);
  *	Free the memory associated with the clusters array, and clear
  *	the pointer associated with it.
  */
-void destroy_clusters_array ();
-
+void destroy_clusters_array();
 /*!
  * \ingroup maps
  * \brief Get the cluster where the actor is currently on
@@ -255,13 +232,9 @@ void destroy_clusters_array ();
  *
  * \retval short The number of the actor's current visibility cluster
  */
-short get_actor_cluster ();
-
+short get_actor_cluster();
 extern short current_cluster;
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif // CLUSTER_H
-

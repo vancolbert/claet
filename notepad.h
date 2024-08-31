@@ -5,23 +5,18 @@
  */
 #ifndef __NOTEPAD_H__
 #define __NOTEPAD_H__
-
 #include "widgets.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int notepad_win;    /*!< ID of the notepad window */
 extern int popup_win;      /*!< ID of the popup window */
 extern int notepad_loaded; /*!< boolean flag, indicating whether the notepad was loaded before. */
 extern int notepad_win_x;  /*!< x-coordinate of the notepad position */
 extern int notepad_win_y;  /*!< y-coordinate of the notepad position */
 extern float note_zoom;    /*!< Size of the text in the note pad */
-
 /* state structure for an input popup window */
-typedef struct
-{
+typedef struct {
 	int popup_win, popup_field, popup_label, popup_ok, popup_no;
 	int popup_x_len, popup_y_len, parent, x, y;
 	int maxlen, rows, accept_do_not_close, allow_nonprint_chars;
@@ -31,7 +26,6 @@ typedef struct
 	text_message popup_text;
 	void *data;
 } INPUT_POPUP;
-
 /*!
  * \ingroup notepad_window
  * \brief   Initialise an input popup state structure
@@ -48,8 +42,7 @@ typedef struct
  * \param input		callback function to pass entered text (or (unusefully) NULL)
  * \callgraph
  */
-void init_ipu (INPUT_POPUP *ipu, int parent, int x_len, int y_len, int maxlen, int rows, void cancel(void *), void input(const char *, void *));
-
+void init_ipu(INPUT_POPUP * ipu, int parent, int x_len, int y_len, int maxlen, int rows, void cancel(void *), void input(const char *, void *));
 /*!
  * \ingroup notepad_window
  * \brief   Hides and clears an open pop up window.
@@ -59,8 +52,7 @@ void init_ipu (INPUT_POPUP *ipu, int parent, int x_len, int y_len, int maxlen, i
  * \param ipu    	pointer to the input popup window state structure
  * \callgraph
  */
-void clear_popup_window (INPUT_POPUP *ipu);
-
+void clear_popup_window(INPUT_POPUP *ipu);
 /*!
  * \ingroup notepad_window
  * \brief   Closes any open window.
@@ -70,8 +62,7 @@ void clear_popup_window (INPUT_POPUP *ipu);
  * \param ipu    	pointer to the input popup window state structure
  * \callgraph
  */
-void close_ipu (INPUT_POPUP *ipu);
-
+void close_ipu(INPUT_POPUP *ipu);
 /*!
  * \ingroup notepad_window
  * \brief   Displays a popup window
@@ -82,8 +73,7 @@ void close_ipu (INPUT_POPUP *ipu);
  * \param label     the label of the popup window
  * \callgraph
  */
-void display_popup_win (INPUT_POPUP *ipu, const char* label);
-
+void display_popup_win(INPUT_POPUP *ipu, const char *label);
 /*!
  * \ingroup notepad_window
  * \brief   Displays the in-game notepad.
@@ -93,7 +83,6 @@ void display_popup_win (INPUT_POPUP *ipu, const char* label);
  * \callgraph
  */
 void fill_notepad_window(void);
-
 /*!
  * \ingroup notepad_window
  * \brief   Saves the current content of the notepad window into a default file.
@@ -103,17 +92,14 @@ void fill_notepad_window(void);
  * \retval int  always 1
  */
 int notepad_save_file(void);
-
 /*!
  * \ingroup notepad_window
  * \brief   Update the size of the text in the notepad text fields
  *
  * Update the size of the text in the notepad text fields
  */
-void notepad_win_update_zoom ();
-
+void notepad_win_update_zoom();
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif

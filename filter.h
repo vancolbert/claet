@@ -5,21 +5,16 @@
  */
 #ifndef __FILTER_H__
 #define __FILTER_H__
-
-#include	"ignore.h"	/* just in case it hasn't been included */
-
+#include        "ignore.h"      /* just in case it hasn't been included */
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 extern int have_storage_list; /*!< Flag indicating if we can use a cached responce to #storage */
 extern int use_global_filters; /*!< global flag, indicating whether global filtering is used or not */
 extern char text_filter_replace[]; /*!< string, that contains the word to replace each entry in \see filter_list with */
 extern int caps_filter; /*!< global flag, indicating whether filter of caps is enabled or not */
 extern char storage_filter[128]; /*!< string to use as filter when using the #storage \<name\> command */
-
 extern unsigned char cached_storage_list[8192]; /*!< Copy of the result of #storage when last sent to server */
-
 /*!
  * \ingroup actors_utils
  * \brief   adds the given \a name to the list of filtered words.
@@ -31,8 +26,7 @@ extern unsigned char cached_storage_list[8192]; /*!< Copy of the result of #stor
  * \param save_name     inidicator whether to save this name in the configuration files.
  * \retval int
  */
-int add_to_filter_list (const char *name, char local, char save_name);
-
+int add_to_filter_list(const char *name, char local, char save_name);
 /*!
  * \ingroup actors_utils
  * \brief       removes the \a name from the current list of filters.
@@ -42,8 +36,7 @@ int add_to_filter_list (const char *name, char local, char save_name);
  * \param name      the name to remove from the list.
  * \retval int
  */
-int remove_from_filter_list (const char *name);
-
+int remove_from_filter_list(const char *name);
 /*!
  * \ingroup actors_utils
  * \brief   Filters the \a input_text by the current storage_filter
@@ -55,8 +48,7 @@ int remove_from_filter_list (const char *name);
  * \retval int
  * \callgraph
  */
-int filter_storage_text (char * input_text, int len, int size);
-
+int filter_storage_text(char *input_text, int len, int size);
 /*!
  * \ingroup actors_utils
  * \brief   filters the \a input_text of occurrences of words in filter_list and replaces them with the string currently stored in text_filter_replace.
@@ -68,8 +60,7 @@ int filter_storage_text (char * input_text, int len, int size);
  * \retval int
  * \callgraph
  */
-int filter_text (char *input_text, int len, int size);
-
+int filter_text(char *input_text, int len, int size);
 /*!
  * \ingroup loadsave
  * \brief Load a filter list from file
@@ -80,8 +71,7 @@ int filter_text (char *input_text, int len, int size);
  * \param local		Whether to process the filters as global or local
  * \callgraph
  */
-void load_filters_list (const char *file_name, char local);
-
+void load_filters_list(const char *file_name, char local);
 /*!
  * \ingroup loadsave
  * \brief       loads the global and local filters from their corresponding files.
@@ -91,7 +81,6 @@ void load_filters_list (const char *file_name, char local);
  * \callgraph
  */
 void load_filters();
-
 /*!
  * \ingroup actors_utils
  * \brief   list all currently defined filters on the console.
@@ -100,10 +89,7 @@ void load_filters();
  *
  */
 int list_filters();
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 #endif
