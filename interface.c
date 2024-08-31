@@ -10,7 +10,7 @@
 #include "consolewin.h"
 #include "cursors.h"
 #include "elwindows.h"
-#include "elmemory.h"
+
 #include "gamewin.h"
 #include "gl_init.h"
 #include "hud.h"

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
-#include "elmemory.h"
+
 #include "list.h"
 
 /* Doubly linked list implementation */

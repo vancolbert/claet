@@ -82,7 +82,7 @@ COBJS=2d_objects.o 3d_objects.o \
 	skeletons.o skills.o serverpopup.o servers.o session.o shadows.o sound.o	\
 	spells.o stats.o storage.o special_effects.o	\
 	tabs.o text.o textures.o tile_map.o timers.o translate.o trade.o	\
-	update.o url.o weather.o widgets.o makeargv.o popup.o hash.o emotes.o \
+	update.o url.o weather.o widgets.o makeargv.o popup.o hash.o \
 	xz/7zCrc.o xz/7zCrcOpt.o xz/Alloc.o xz/Bra86.o xz/Bra.o xz/BraIA64.o	\
 	xz/CpuArch.o xz/Delta.o xz/LzFind.o xz/Lzma2Dec.o xz/Lzma2Enc.o	\
 	xz/LzmaDec.o xz/LzmaEnc.o xz/Sha256.o xz/Xz.o xz/XzCrc64.o xz/XzDec.o	\
