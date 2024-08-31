@@ -754,11 +754,7 @@ int root_key_to_input_field(Uint32 key, Uint32 unikey) {
 		// set invalid width to force rewrap
 		msg->wrap_width = 0;
 		tf->nr_lines = rewrap_message(msg, input_widget->size, tf->font_num, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-	} else if (ch == SDLK_BACKSPACE || ch == SDLK_DELETE
-#ifdef OSX
-		   || ch == 127
-#endif
-		   || (!alt_on && !ctrl_on && is_printable(ch) && ch != '`')) {
+	} else if (ch == SDLK_BACKSPACE || ch == SDLK_DELETE || is_osx_del(ch) || (!alt_on && !ctrl_on && is_printable(ch) && ch != '`')) {
 		if (is_printable(ch) && !get_show_window(map_root_win)) {
 			//Make sure the widget is visible.
 			widget_unset_flags(input_widget->window_id, input_widget->id, WIDGET_DISABLED);

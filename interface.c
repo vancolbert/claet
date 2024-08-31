@@ -299,6 +299,10 @@ const int video_modes_count = sizeof(video_modes) / sizeof(*video_modes);
 void build_video_mode_array() {
 	int i;
 	int flags;
+	int windows_full_screen = 0;
+#ifdef WINDOWS
+	windows_full_screen = full_screen;
+#endif
 	if (full_screen) {
 		flags = SDL_OPENGL | SDL_FULLSCREEN;
 	} else {
@@ -307,11 +311,7 @@ void build_video_mode_array() {
 	for (i = 0; i < video_modes_count; i++) {
 		video_modes[i].flags.selected = 0;
 		video_modes[i].flags.supported = 0;
-		if (bpp == video_modes[i].bpp
-#ifdef WINDOWS
-		    || full_screen
-#endif
-		    ) {
+		if (bpp == video_modes[i].bpp || windows_full_screen) {
 			if (SDL_VideoModeOK(video_modes[i].width, video_modes[i].height, video_modes[i].bpp, flags)) {
 				video_modes[i].flags.supported = 1;
 			}

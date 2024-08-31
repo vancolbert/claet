@@ -2062,11 +2062,7 @@ int text_field_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unike
 		return 0;
 	}
 	msg = &(tf->buffer[tf->msg]);
-	if (is_printable(ch) || keysym == SDLK_UP || keysym == SDLK_DOWN || keysym == SDLK_LEFT || keysym == SDLK_RIGHT || keysym == SDLK_HOME || keysym == SDLK_END || ch == SDLK_BACKSPACE || ch == SDLK_DELETE
-#ifdef OSX
-	    || keysym == 127
-#endif
-	    ) {
+	if (is_printable(ch) || keysym == SDLK_UP || keysym == SDLK_DOWN || keysym == SDLK_LEFT || keysym == SDLK_RIGHT || keysym == SDLK_HOME || keysym == SDLK_END || ch == SDLK_BACKSPACE || ch == SDLK_DELETE || is_osx_del(keysym)) {
 		/* Stop blinking on input */
 		tf->next_blink = cur_time + TF_BLINK_DELAY;
 	}
@@ -2143,21 +2139,11 @@ int text_field_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unike
 			update_cursor_selection(w, 1);
 		}
 		return 1;
-	} else if ((ch == SDLK_BACKSPACE || ch == SDLK_DELETE
-#ifdef OSX
-		    || ch == 127
-#endif
-		    ) && !TEXT_FIELD_SELECTION_EMPTY(&tf->select)) {
+	} else if ((ch == SDLK_BACKSPACE || ch == SDLK_DELETE || is_osx_del(ch)) && !TEXT_FIELD_SELECTION_EMPTY(&tf->select)) {
 		text_field_remove_selection(tf);
 		TEXT_FIELD_CLEAR_SELECTION(&tf->select);
 		return 1;
-	}
-#ifdef OSX
-	else if (ch == SDLK_BACKSPACE || ch == 127)
-#else
-	else if (ch == SDLK_BACKSPACE)
-#endif
-	{
+	} else if (ch == SDLK_BACKSPACE || is_osx_del(ch)) {
 		if (tf->cursor > 0) {
 			_text_field_delete_backward(w);
 		}

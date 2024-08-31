@@ -1171,11 +1171,7 @@ local int unz64local_CheckCurrentFileCoherencyHeader(unz64_s *s, uInt *piSizeVar
 	} else if ((err == UNZ_OK) && (uData != s->cur_file_info.compression_method)) {
 		err = UNZ_BADZIPFILE;
 	}
-	if ((err == UNZ_OK) && (s->cur_file_info.compression_method != 0) &&
-/* #ifdef HAVE_BZIP2 */
-	    (s->cur_file_info.compression_method != Z_BZIP2ED) &&
-/* #endif */
-	    (s->cur_file_info.compression_method != Z_DEFLATED)) {
+	if ((err == UNZ_OK) && (s->cur_file_info.compression_method != 0) && (s->cur_file_info.compression_method != Z_BZIP2ED) && (s->cur_file_info.compression_method != Z_DEFLATED)) {
 		err = UNZ_BADZIPFILE;
 	}
 	if (unz64local_getLong(&s->z_filefunc, s->filestream, &uData) != UNZ_OK) { /* date/time */
@@ -1272,11 +1268,7 @@ extern int ZEXPORT unzOpenCurrentFile3(unzFile file, int *method, int *level, in
 			break;
 		}
 	}
-	if ((s->cur_file_info.compression_method != 0) &&
-/* #ifdef HAVE_BZIP2 */
-	    (s->cur_file_info.compression_method != Z_BZIP2ED) &&
-/* #endif */
-	    (s->cur_file_info.compression_method != Z_DEFLATED)) {
+	if ((s->cur_file_info.compression_method != 0) && (s->cur_file_info.compression_method != Z_BZIP2ED) && (s->cur_file_info.compression_method != Z_DEFLATED)) {
 		err = UNZ_BADZIPFILE;
 	}
 	pfile_in_zip_read_info->crc32_wait = s->cur_file_info.crc;

@@ -372,6 +372,11 @@ char *substitute_char_with_string(const char *str, char **out_str, char to_sub, 
  * \return a pointer to the destination string
  */
 char *truncated_string(char *dest, const char *source, size_t dest_max_len, const char *append_str, float max_len_x, float font_ratio);
+#ifdef OSX
+#define is_osx_del(ch) ((ch) == 127)
+#else
+#define is_osx_del(ch) 0
+#endif
 #ifdef __cplusplus
 } // extern "C"
 #endif
