@@ -155,7 +155,7 @@ void stop_sound(unsigned long int cookie);
  * \ingroup sound_effects
  * \brief Deletes a source at the given location
  *
- *      Searches for a source_data object with the location ( \a x \a y ) and deletes it.
+ *      Searches for a source_data object with the location (\a x \a y) and deletes it.
  *
  * \param x			The x coordinate of the location
  * \param y			The y coordinate of the location
@@ -291,8 +291,7 @@ static __inline__ void do_connect_sound() {
 static __inline__ void do_afk_sound() {
 	add_sound_object(get_index_for_sound_type_name("AFK Message"), 0, 0, 1);
 }
-/////// MUSIC FUNCTIONALITY ///////////
-///////////////////////////////////////
+/////// MUSIC FUNCTIONALITY
 /*!
  * \ingroup music
  * \brief Affiche les zones de musiques des cartes
@@ -325,7 +324,7 @@ void modif_playlist(int num);
  *
  */
 void raz_playlist();
-#define MAX_NOMBRE_MUSIQUE  50     /* Nombre de musique maximum */
+#define MAX_NOMBRE_MUSIQUE  50 /* Nombre de musique maximum */
 typedef struct {
 	char nom[50];
 	char nom_fichier[80];

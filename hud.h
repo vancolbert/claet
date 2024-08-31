@@ -20,12 +20,12 @@ void reload_icon_pos();
 void confirmation_quitter();
 extern int show_coord;
 extern int show_coord_2;
-extern int rot_boussole; //Type de rotation de la boussole
+extern int rot_boussole; // Type de rotation de la boussole
 extern Uint32 exp_lev[200];
 typedef enum {
 	HUD_INTERFACE_NEW_CHAR, /*!< the interface for the character creation screen */
-	HUD_INTERFACE_GAME,     /*!< the interface for the game */
-	HUD_INTERFACE_LAST,     /*!< the last interface used */
+	HUD_INTERFACE_GAME, /*!< the interface for the game */
+	HUD_INTERFACE_LAST, /*!< the last interface used */
 } hud_interface;
 extern int qb_action_mode; /*!< flag indicating whether we are in quickbar action mode or not */
 extern int show_stats_in_hud;
@@ -39,7 +39,7 @@ extern int show_attr_boosted; /*!< show the attributes boosted in the hud */
  * \name windows handlers
  */
 /*! @{ */
-extern int quickbar_win;      /*!< quickbar windows handler */
+extern int quickbar_win; /*!< quickbar windows handler */
 /*! @} */
 /*!
  * \ingroup display_2d
@@ -142,7 +142,7 @@ void draw_hud_frame();
  * \callgraph
  */
 int *get_winid(const char *name);
-//Functions for the function pointers
+// Functions for the function pointers
 /*!
  * \ingroup windows
  * \brief Shows the window pointed to by \a win
@@ -254,7 +254,7 @@ void show_sized_help_coloured(const char *help_message, int x, int y, float r, f
  * \callgraph
  */
 int enlarge_text(void);
-//stats/health section
+// stats/health section
 /*!
  * \ingroup other
  * \brief   	Initialise the stat bars, (size, position and number), for in the bottom HUB.
@@ -316,4 +316,4 @@ void change_max_nutri(int max);
 } // extern "C"
 #endif
 extern Uint32 exp_lev[200];
-#endif  //__HUD_H
+#endif // __HUD_H

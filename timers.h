@@ -9,9 +9,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int my_timer_adjust;                  /*!< my_timer_adjust */
-extern SDL_TimerID draw_scene_timer;     /*!< draw_scene_timer */
-extern SDL_TimerID misc_timer;           /*!< misc_timer */
+extern int my_timer_adjust; /*!< my_timer_adjust */
+extern SDL_TimerID draw_scene_timer; /*!< draw_scene_timer */
+extern SDL_TimerID misc_timer; /*!< misc_timer */
 /*!
  * \ingroup 	thread
  * \brief 	The main timer - handles animations and such.

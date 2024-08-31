@@ -26,15 +26,15 @@
 #include "hud.h"
 #define OGG_BUFFER_SIZE (1048576)
 #define STREAM_BUFFER_SIZE (4096 * 16)
-#define SLEEP_TIME 300          // Time to give CPU to other processes between loops of update_streams()
+#define SLEEP_TIME 300 // Time to give CPU to other processes between loops of update_streams()
 #define LOCK_SOUND_LIST() CHECK_AND_LOCK_MUTEX(sound_list_mutex);
 #define UNLOCK_SOUND_LIST() CHECK_AND_UNLOCK_MUTEX(sound_list_mutex);
 #define MAX_FILENAME_LENGTH 80
 #define MAX_BUFFERS 64
 #define MAX_SOURCES 16
-#define ABS_MAX_SOURCES 64                              // Define an absolute maximum for the sources (the size of the array)
+#define ABS_MAX_SOURCES 64 // Define an absolute maximum for the sources (the size of the array)
 #define MAX_SOUNDS 200
-#define MAX_STREAMS 7                                   // 1 music stream and up to 3 each for bg and crowds
+#define MAX_STREAMS 7 // 1 music stream and up to 3 each for bg and crowds
 #define STREAM_TYPE_NONE -1
 #define STREAM_TYPE_SOUNDS 0
 #define STREAM_TYPE_MUSIC 1
@@ -42,125 +42,125 @@
 #define NUM_STREAM_BUFFERS 4
 #define MAX_PLAYLIST_ENTRIES 50
 #define MAX_PLAYLIST_FILENAME 64
-#define MAX_SOUND_FILES (MAX_SOUNDS * MAX_SOUND_VARIANTS * num_STAGES)  // The total number of files if every part of every
+#define MAX_SOUND_FILES (MAX_SOUNDS * MAX_SOUND_VARIANTS * num_STAGES) // The total number of files if every part of every
 // variant of every sound had a different file
-#define MAX_BACKGROUND_DEFAULTS 8                       // Maximum number of global default backgrounds
-#define MAX_MAP_BACKGROUND_DEFAULTS 4           // Maximum number of default backgrounds per map
-#define MAX_SOUND_MAP_NAME_LENGTH 60            // Maximum length of the name of the map
-#define MAX_SOUND_VARIANTS 10                           // Maximum number of different sounds allowed for the one sound type
-#define MAX_SOUND_MAP_BOUNDARIES 20                     // Maximum number of boundary sets per map
-#define MAX_SOUND_WALK_BOUNDARIES 40            // Maximum number of walk boundary sets per map
-#define MAX_ITEM_SOUND_IMAGE_IDS 30                     // Maximum number of image id's linked to an item sound def
-#define MAX_SOUND_TILE_TYPES 20                         // Maximum number of different tile types
-#define MAX_SOUND_TILES 30                                      // Maximum number of different tiles for a tile type
-#define MAX_SOUND_TILES_SOUNDS 5                        // Maximum number of different sound types for a tile type
-#define MAX_SERVER_SOUNDS 10                            // Maximum number of server sounds - keep up to date with the snd_xxx #defs client_serv.h
-#define MAX_SOUND_MAPS 150                      // This value is the maximum number of maps sounds can be defined for
+#define MAX_BACKGROUND_DEFAULTS 8 // Maximum number of global default backgrounds
+#define MAX_MAP_BACKGROUND_DEFAULTS 4 // Maximum number of default backgrounds per map
+#define MAX_SOUND_MAP_NAME_LENGTH 60 // Maximum length of the name of the map
+#define MAX_SOUND_VARIANTS 10 // Maximum number of different sounds allowed for the one sound type
+#define MAX_SOUND_MAP_BOUNDARIES 20 // Maximum number of boundary sets per map
+#define MAX_SOUND_WALK_BOUNDARIES 40 // Maximum number of walk boundary sets per map
+#define MAX_ITEM_SOUND_IMAGE_IDS 30 // Maximum number of image id's linked to an item sound def
+#define MAX_SOUND_TILE_TYPES 20 // Maximum number of different tile types
+#define MAX_SOUND_TILES 30 // Maximum number of different tiles for a tile type
+#define MAX_SOUND_TILES_SOUNDS 5 // Maximum number of different sound types for a tile type
+#define MAX_SERVER_SOUNDS 10 // Maximum number of server sounds - keep up to date with the snd_xxx #defs client_serv.h
+#define MAX_SOUND_MAPS 150 // This value is the maximum number of maps sounds can be defined for
 // (Roja has suggested 150 is safe for now)
-#define MAX_SOUND_EFFECTS 60            // This value should equal the max special_effect_enum
-#define MAX_SOUND_PARTICLES 20          // This value should equal the number of particle effects
-#define MAX_SOUND_ITEMS 5                       // This is the number of sounds defined for "Use item" sfx
-#define MAX_SOUND_WARNINGS 50           // The number of user defined sound warnings
-#define MAX_SND_WARNING_STRING 256      // Max size of warning string
+#define MAX_SOUND_EFFECTS 60 // This value should equal the max special_effect_enum
+#define MAX_SOUND_PARTICLES 20 // This value should equal the number of particle effects
+#define MAX_SOUND_ITEMS 5 // This is the number of sounds defined for "Use item" sfx
+#define MAX_SOUND_WARNINGS 50 // The number of user defined sound warnings
+#define MAX_SND_WARNING_STRING 256 // Max size of warning string
 typedef enum {
 	STAGE_UNUSED = -1, STAGE_INTRO, STAGE_MAIN, STAGE_OUTRO, num_STAGES, STAGE_STREAM,
 } SOUND_STAGE;
 typedef struct _source_list {
-	ALuint source;                                  // The physical address of this source (not the array id of source_data as that changes)
+	ALuint source; // The physical address of this source (not the array id of source_data as that changes)
 	struct _source_list *next;
 	struct _source_list *last;
 } source_list;
 typedef struct {
-	char file_path[MAX_FILENAME_LENGTH];    // Where to load the file from
-	int sample_num;                                                 // Sample array ID (if loaded)
+	char file_path[MAX_FILENAME_LENGTH]; // Where to load the file from
+	int sample_num; // Sample array ID (if loaded)
 } sound_file;
 typedef struct {
-	sound_file *part[num_STAGES];   // Pointers to the files used for each stage
-	float gain;                                             // The gain of this sound (default 1.0)
+	sound_file *part[num_STAGES]; // Pointers to the files used for each stage
+	float gain; // The gain of this sound (default 1.0)
 	// The same sample may be defined under 2 sound names, with different gains.
 } sound_variants;
 typedef struct {
 	char name[MAX_SOUND_NAME_LENGTH];
 	sound_variants variant[MAX_SOUND_VARIANTS];
 	int num_variants;
-	int stereo;                                             // 1 is stereo, 0 is mono (default mono)
-	float distance;                                 // Distance it can be heard, in meters
-	int positional;                                 // 1=positional, 0=omni (default positional)
-	int loops;                                              // 0=infinite, otherwise the number of loops (default 1)
-	int fadeout_time;                               // In milliseconds, only for omni sounds that loop. (default 0) -- NOT USED
-	int echo_delay;                                 // The value is the echo in MS. If 0, no echo (default 0) -- NOT USED
-	int echo_volume;                                // In percent, 0 means no sound, 100 means as loud as the original sound (default 50) -- NOT USED
-	int time_of_the_day_flags;              // Bits 0-11 set each 1/2 hour of the 6-hour day (default 0xffff)
-	unsigned int priority;                  // If there are too many sounds to be played, highest value priority get culled (default 5)
-	int type;                                               // The type of sound - environmental, actor, walking etc. (default Enviro)
+	int stereo; // 1 is stereo, 0 is mono (default mono)
+	float distance; // Distance it can be heard, in meters
+	int positional; // 1=positional, 0=omni (default positional)
+	int loops; // 0=infinite, otherwise the number of loops (default 1)
+	int fadeout_time; // In milliseconds, only for omni sounds that loop. (default 0) -- NOT USED
+	int echo_delay; // The value is the echo in MS. If 0, no echo (default 0) -- NOT USED
+	int echo_volume; // In percent, 0 means no sound, 100 means as loud as the original sound (default 50) -- NOT USED
+	int time_of_the_day_flags; // Bits 0-11 set each 1/2 hour of the 6-hour day (default 0xffff)
+	unsigned int priority; // If there are too many sounds to be played, highest value priority get culled (default 5)
+	int type; // The type of sound - environmental, actor, walking etc. (default Enviro)
 } sound_type;
 typedef struct {
-	ALuint buffer;                                                  // If the sample is loaded, a buffer ID to play it.
+	ALuint buffer; // If the sample is loaded, a buffer ID to play it.
 	ALenum format;
-	ALsizei size;                                                   // Size of the sound data in bytes
-	ALfloat freq;                                                   // Frequency
-	ALint channels;                                                 // Number of sound channels
-	ALint bits;                                                             // Bits per channel per sample
-	int length;                                                             // Duration in milliseconds
-	source_list *sources;                                   // List of sources using this sample
+	ALsizei size; // Size of the sound data in bytes
+	ALfloat freq; // Frequency
+	ALint channels; // Number of sound channels
+	ALint bits; // Bits per channel per sample
+	int length; // Duration in milliseconds
+	source_list *sources; // List of sources using this sample
 } sound_sample;
 typedef struct {
-	int sound;                                                      // The ID of the sound type
-	int variant;                                            // The variant of the sound type being played
+	int sound; // The ID of the sound type
+	int variant; // The variant of the sound type being played
 	int x;
 	int y;
-	int loaded;                                                     // Has this sound been loaded into a buffer
-	int playing;                                            // Is this sound loaded into a source and currently playing
-	float base_gain;                                        // The initial gain (before adjustments for weather and sound type volume etc)
-	float cur_gain;                                         // The last actual gain. If the calculated new gain is different then do an alSourcef command
+	int loaded; // Has this sound been loaded into a buffer
+	int playing; // Is this sound loaded into a source and currently playing
+	float base_gain; // The initial gain (before adjustments for weather and sound type volume etc)
+	float cur_gain; // The last actual gain. If the calculated new gain is different then do an alSourcef command
 	unsigned int cookie;
-	int lifetime;                                           // The length of time in ms the sound has existed
+	int lifetime; // The length of time in ms the sound has existed
 } sound_loaded;
 typedef struct {
-	ALuint source;                                          // A handle for the source
-	int priority;                                           // Include this here for streams and to force a priority if needed
+	ALuint source; // A handle for the source
+	int priority; // Include this here for streams and to force a priority if needed
 	int play_duration;
-	int loaded_sound;                                       // Sound ID loaded into this source (Not used for streams)
-	SOUND_STAGE current_stage;                      // Set as STAGE_STREAMS for streams
+	int loaded_sound; // Sound ID loaded into this source (Not used for streams)
+	SOUND_STAGE current_stage; // Set as STAGE_STREAMS for streams
 	unsigned int cookie;
-	int sample[num_STAGES];                         // The samples currently in use by this source
+	int sample[num_STAGES]; // The samples currently in use by this source
 } source_data;
 typedef struct {
 	int sound;
-	int time_of_day_flags;          // As for sound time_of_day_flags
-	int map_type;                           // At the moment, only 0 (outside) and 1 (dungeon). Checked against the dungeon flag.
+	int time_of_day_flags; // As for sound time_of_day_flags
+	int map_type; // At the moment, only 0 (outside) and 1 (dungeon). Checked against the dungeon flag.
 } background_default;
 typedef struct {
 	int x;
 	int y;
-	double a;                                       // Angle of the line between this point and the next (not used for outer bounding rect)
+	double a; // Angle of the line between this point and the next (not used for outer bounding rect)
 } bound_point;
 typedef struct {
 	int bg_sound;
 	int crowd_sound;
-	int time_of_day_flags;          // As for sound time_of_day_flags
-	int is_default;                         // There can be up to 4 defaults for any one map, with unique times of day
+	int time_of_day_flags; // As for sound time_of_day_flags
+	int is_default; // There can be up to 4 defaults for any one map, with unique times of day
 	// Coords are ignored if is_default set.
-	bound_point p[4];                       // Details of this point and its corresponding angle
-	int int_point;                          // Index of the internal point or -1 for no internal point
-	bound_point o[2];                       // Outer bounding rectangle (0 = lower left, 1 = upper right)
+	bound_point p[4]; // Details of this point and its corresponding angle
+	int int_point; // Index of the internal point or -1 for no internal point
+	bound_point o[2]; // Outer bounding rectangle (0 = lower left, 1 = upper right)
 } map_sound_boundary_def;
 typedef struct {
 	int id;
-	char name[MAX_SOUND_MAP_NAME_LENGTH];           // This isn't used, it is simply helpful when editing the config
-	map_sound_boundary_def boundaries[MAX_SOUND_MAP_BOUNDARIES];            // This is the boundaries for backgound and crowd sounds
-	map_sound_boundary_def walk_boundaries[MAX_SOUND_WALK_BOUNDARIES];      // This is the boundaries for walking sounds (to fake 3d objects)
+	char name[MAX_SOUND_MAP_NAME_LENGTH]; // This isn't used, it is simply helpful when editing the config
+	map_sound_boundary_def boundaries[MAX_SOUND_MAP_BOUNDARIES]; // This is the boundaries for backgound and crowd sounds
+	map_sound_boundary_def walk_boundaries[MAX_SOUND_WALK_BOUNDARIES]; // This is the boundaries for walking sounds (to fake 3d objects)
 	int num_boundaries;
 	int num_walk_boundaries;
-	int defaults[MAX_MAP_BACKGROUND_DEFAULTS];      // ID of the default boundaries
+	int defaults[MAX_MAP_BACKGROUND_DEFAULTS]; // ID of the default boundaries
 	int num_defaults;
 } map_sound_data;
 typedef struct {
-	int id;                                 // ID's in the config should match those of special_effect_enum
+	int id; // ID's in the config should match those of special_effect_enum
 	int sound;
 } effect_sound_data;
 typedef struct {
-	char file[30];                  // This is the filename (without extension) for a particle
+	char file[30]; // This is the filename (without extension) for a particle
 	int sound;
 } particle_sound_data;
 typedef struct {
@@ -184,21 +184,21 @@ typedef struct {
 	char string[MAX_SND_WARNING_STRING];
 } sound_warnings;
 typedef struct {
-	int type;                                                               // The type of this stream
-	ALuint source;                                                  // The source for this stream
-	unsigned int cookie;                                    // A cookie for the source
-	ALuint buffers[NUM_STREAM_BUFFERS];             // The stream buffers
-	OggVorbis_File stream;                                  // The Ogg file handle for this stream
-	int stream_opened;                                              // If try, its OK to call ov_clear()
-	vorbis_info *info;                                              // The Ogg info for this file handle
-	int fade;                                                               // The current fade value for this stream
-	int fade_length;                                                // The length of the fade in or out (number of update_stream loops)
-	int processed;                                                  // Processed value (temporary storage)
-	int playing;                                                    // Is this stream currently playing
-	int sound;                                                              // The sound this stream is playing				(not used for music)
-	int variant;                                                    // The variant of the sound playing				(not used for music)
-	int is_default;                                                 // Is this sound a default sound for this type	(not used for music)
-	map_sound_boundary_def *boundary;               // This is a pointer to the boundary in use
+	int type; // The type of this stream
+	ALuint source; // The source for this stream
+	unsigned int cookie; // A cookie for the source
+	ALuint buffers[NUM_STREAM_BUFFERS]; // The stream buffers
+	OggVorbis_File stream; // The Ogg file handle for this stream
+	int stream_opened; // If try, its OK to call ov_clear()
+	vorbis_info *info; // The Ogg info for this file handle
+	int fade; // The current fade value for this stream
+	int fade_length; // The length of the fade in or out (number of update_stream loops)
+	int processed; // Processed value (temporary storage)
+	int playing; // Is this stream currently playing
+	int sound; // The sound this stream is playing				(not used for music)
+	int variant; // The variant of the sound playing				(not used for music)
+	int is_default; // Is this sound a default sound for this type	(not used for music)
+	map_sound_boundary_def *boundary; // This is a pointer to the boundary in use
 } stream_data;
 typedef struct {
 	char file_name[MAX_PLAYLIST_FILENAME];
@@ -227,72 +227,72 @@ ALfloat walking_gain = 1.0f;
 ALfloat gamewin_gain = 1.0f;
 ALfloat client_gain = 1.0f;
 ALfloat warnings_gain = 1.0f;
-int used_sources = 0;                                           // the number of sources currently playing
-char sound_device[30] = "";                                     // Set up a string to store the names of the selected sound device
-char sound_devices[1000] = "";                          // Set up a string to store the names of the available sound devices
-int max_sources = MAX_SOURCES;                          // Initialise our local maximum number of sources to the default
-int max_streams = MAX_STREAMS;                          // Initialise our local maximum number of streams to the default
-int num_types = 0;                                                      // Number of distinct sound types
-int num_samples = 0;                                            // Number of actual sound files - a sound type can have > 1 sample
-int num_sound_files = 0;                                        // Number of individual sound files
-int num_sounds = 0;                                                     // Number of sounds in the sounds_list
-int sound_num_background_defaults = 0;          // Number of default background sounds
-int sound_num_maps = 0;                                         // Number of maps we have sounds for
-int sound_num_effects = 0;                                      // Number of effects we have sounds for
-int sound_num_particles = 0;                            // Number of particles we have sounds for
-int sound_num_items = 0;                                        // Number of "Use item" actions we have sounds for
-int sound_num_tile_types = 0;                           // Number of tile type groups we have sounds for
-int num_sound_warnings = 0;                                     // Number of string warnings
-int have_sound_config = 0;                                      // true if the sound config file was found
-static int must_restart_spell_sounds = 0;       // true if sounds have been stopped, triggeres an attempt to restart
+int used_sources = 0; // the number of sources currently playing
+char sound_device[30] = ""; // Set up a string to store the names of the selected sound device
+char sound_devices[1000] = ""; // Set up a string to store the names of the available sound devices
+int max_sources = MAX_SOURCES; // Initialise our local maximum number of sources to the default
+int max_streams = MAX_STREAMS; // Initialise our local maximum number of streams to the default
+int num_types = 0; // Number of distinct sound types
+int num_samples = 0; // Number of actual sound files - a sound type can have > 1 sample
+int num_sound_files = 0; // Number of individual sound files
+int num_sounds = 0; // Number of sounds in the sounds_list
+int sound_num_background_defaults = 0; // Number of default background sounds
+int sound_num_maps = 0; // Number of maps we have sounds for
+int sound_num_effects = 0; // Number of effects we have sounds for
+int sound_num_particles = 0; // Number of particles we have sounds for
+int sound_num_items = 0; // Number of "Use item" actions we have sounds for
+int sound_num_tile_types = 0; // Number of tile type groups we have sounds for
+int num_sound_warnings = 0; // Number of string warnings
+int have_sound_config = 0; // true if the sound config file was found
+static int must_restart_spell_sounds = 0; // true if sounds have been stopped, triggeres an attempt to restart
 int snd_cur_map = -1;
 int cur_boundary = 0;
-unsigned int next_cookie = 1;                                                                   // Each playing source is identified by a unique cookie.
-sound_loaded *sounds_list = NULL;                                               // The loaded sounds
-source_data *sound_source_data = NULL;                          // The active (playing) sources
-sound_type *sound_type_data = NULL;                                     // Configuration of the sound types
-sound_sample *sound_sample_data = NULL;                         // Buffer data for each sample
-sound_file *sound_files = NULL;                                         // File names for each individual sound file
-background_default *sound_background_defaults = NULL;// Default background sounds
+unsigned int next_cookie = 1; // Each playing source is identified by a unique cookie.
+sound_loaded *sounds_list = NULL; // The loaded sounds
+source_data *sound_source_data = NULL; // The active (playing) sources
+sound_type *sound_type_data = NULL; // Configuration of the sound types
+sound_sample *sound_sample_data = NULL; // Buffer data for each sample
+sound_file *sound_files = NULL; // File names for each individual sound file
+background_default *sound_background_defaults = NULL; // Default background sounds
 // (must have non-overlapping time of day flags)
-int crowd_default = -1;                                                                 // Default sound for crowd effects
-int walking_default = -1;                                                               // Default sound for walking
-map_sound_data *sound_map_data = NULL;                          // Data for map sfx
-effect_sound_data *sound_effect_data = NULL;                    // Data for effect sfx
-particle_sound_data *sound_particle_data = NULL;                // Data for particle sfx
-item_sound_data *sound_item_data = NULL;                                // Data for item sfx
-tile_sound_data *sound_tile_data = NULL;                                // Data for tile (walking) sfx
-int *server_sound = NULL;                                                               // Map of server sounds to sound def ids
-int *sound_spell_data = NULL;                                                   // Map of id's for spells-that-affect-you to sounds
-sound_warnings *warnings_list = NULL;                                   // List of strings to monitor for warning sounds
-int afk_snd_warning = 0;                                                                // Whether to play a sound on receiving a message while AFK
+int crowd_default = -1; // Default sound for crowd effects
+int walking_default = -1; // Default sound for walking
+map_sound_data *sound_map_data = NULL; // Data for map sfx
+effect_sound_data *sound_effect_data = NULL; // Data for effect sfx
+particle_sound_data *sound_particle_data = NULL; // Data for particle sfx
+item_sound_data *sound_item_data = NULL; // Data for item sfx
+tile_sound_data *sound_tile_data = NULL; // Data for tile (walking) sfx
+int *server_sound = NULL; // Map of server sounds to sound def ids
+int *sound_spell_data = NULL; // Map of id's for spells-that-affect-you to sounds
+sound_warnings *warnings_list = NULL; // List of strings to monitor for warning sounds
+int afk_snd_warning = 0; // Whether to play a sound on receiving a message while AFK
 playlist_entry *playlist = NULL;
 int loop_list = 1;
 int list_pos = -1;
 /* Liste des musiques */
-int max_musique = 0;               /* Nombre de musique trouvé */
-int musique_selectionne = -1;      /* Numéro de la musique actuellement sélectionnée */
+int max_musique = 0; /* Nombre de musique trouvé */
+int musique_selectionne = -1; /* Numéro de la musique actuellement sélectionnée */
 /* Partie de la liste dans la fenêtre de la musique */
-int hauteur_liste_musique = 300;  /* Hauteur de la partie de la liste de musiques */
+int hauteur_liste_musique = 300; /* Hauteur de la partie de la liste de musiques */
 /* Partie des options dans la fenêtre de la musique */
-int hauteur_options_musique = 95;  /* Hauteur de la partie des options de musique */
-int position_widget = 180;         /* Position des widgets */
+int hauteur_options_musique = 95; /* Hauteur de la partie des options de musique */
+int position_widget = 180; /* Position des widgets */
 /* Fenêtre de musique général */
-int fenetre_musique = -1;          /* Identification de la fenêtre de musique */
-int fenetre_musique_x = 200;       /* Position horizontale initiale de la fenêtre */
-int fenetre_musique_y = 100;       /* Position verticale initiale de la fenêtre */
-int hauteur_ligne_musique = 15;    /* Hauteur d'une ligne de texte */
+int fenetre_musique = -1; /* Identification de la fenêtre de musique */
+int fenetre_musique_x = 200; /* Position horizontale initiale de la fenêtre */
+int fenetre_musique_y = 100; /* Position verticale initiale de la fenêtre */
+int hauteur_ligne_musique = 15; /* Hauteur d'une ligne de texte */
 int fenetre_musique_largeur = 300; /* Largeur de la fenêtre de musique */
 /* Barre de défilement de la fenêtre de musique */
 int musique_barre_defilement = -1; /* Identification de la barre de défilement de la musique */
-int position_barre_musique = 0;    /* Position de la barre de défilement de la musique */
+int position_barre_musique = 0; /* Position de la barre de défilement de la musique */
 /* Volume de la musique */
-int volume_musique = -1;           /* Identification du bouton du volume*/
-int musique_carte = 1;             /* Pour savoir si on joue les musiques de carte ou non */
-int bouton_musique_carte = -1;     /* Bouton pour jouer les musiques de la carte */
-int auto_serveur_musique = 1;      /* Permet au serveur de changer la musique */
-int bouton_serveur_musique = -1;   /* Bouton pour autoriser le serveur à changer la musique */
-int aleatoire_musique = 1;         /* Permet de lire de manière aléatoire la liste */
+int volume_musique = -1; /* Identification du bouton du volume*/
+int musique_carte = 1; /* Pour savoir si on joue les musiques de carte ou non */
+int bouton_musique_carte = -1; /* Bouton pour jouer les musiques de la carte */
+int auto_serveur_musique = 1; /* Permet au serveur de changer la musique */
+int bouton_serveur_musique = -1; /* Bouton pour autoriser le serveur à changer la musique */
+int aleatoire_musique = 1; /* Permet de lire de manière aléatoire la liste */
 int bouton_aleatoire_musique = -1; /* Bouton pour activer la lecture aléatoire de la la musique */
 liste_musique liste_musiques[MAX_NOMBRE_MUSIQUE];
 /*    *** Declare some local functions ****
@@ -358,7 +358,7 @@ void turn_sound_on() {
 	int i, state = 0;
 	ALuint source, error;
 	if (!video_mode_set) {
-		return;                 // Don't load the config until we have video (so we don't load before the loading screen)
+		return; // Don't load the config until we have video (so we don't load before the loading screen)
 	}
 	if (!inited) {
 		init_sound();
@@ -393,10 +393,10 @@ void turn_sound_off() {
 	sound_on = 0;
 	while (i < used_sources) {
 		if (sound_source_data[i].current_stage == STAGE_STREAM) {
-			i++;                    // This source is being used by a stream and handled lower down so ignore
+			i++; // This source is being used by a stream and handled lower down so ignore
 			continue;
 		}
-		//@tosh : correction d'un bug dans l'option "désactiver les sons" (ça coupait la musique)
+		// @tosh : correction d'un bug dans l'option "désactiver les sons" (ça coupait la musique)
 		stop_sound_source_at_index(i);
 	}
 	for (i = 0; i < max_streams; i++) {
@@ -409,9 +409,9 @@ void turn_sound_off() {
 }
 void turn_music_on() {
 	if (!video_mode_set) {
-		return;                 // Don't load the config until we have video (so we don't load before the loading screen)
+		return; // Don't load the config until we have video (so we don't load before the loading screen)
 	}
-	music_on = 1;           // Set this here so if ness we will init the sound
+	music_on = 1; // Set this here so if ness we will init the sound
 	if (!inited) {
 		init_sound();
 	}
@@ -520,7 +520,7 @@ int load_ogg_file(char *file_name, OggVorbis_File *oggFile) {
 	if (file == NULL) {
 		return 0;
 	}
-#ifndef _MSC_VER                // MS's compiler breaks things with files opened from different DLL's
+#ifndef _MSC_VER // MS's compiler breaks things with files opened from different DLL's
 	result = ov_open(file, oggFile, NULL, 0);
 #else // !_MSC_VER
 	result = ov_open_callbacks(file, oggFile, NULL, 0, OV_CALLBACKS_DEFAULT);
@@ -554,7 +554,7 @@ int stream_ogg_file(char *in_filename, stream_data *stream, int numBuffers) {
 		more_stream = stream_ogg(stream->buffers[i], &stream->stream, stream->info);
 		if (!more_stream) {
 			LOG_ERROR("Error playing ogg file: %s\n", filename);
-			return more_stream;             // There was an error, probably too little data to fill the buffers
+			return more_stream; // There was an error, probably too little data to fill the buffers
 		}
 	}
 	alSourceQueueBuffers(stream->source, numBuffers, stream->buffers);
@@ -574,7 +574,7 @@ int stream_ogg(ALuint buffer, OggVorbis_File *inStream, vorbis_info *info) {
 	size = 0;
 	while (size < STREAM_BUFFER_SIZE) {
 		result = ov_read(inStream, data + size, STREAM_BUFFER_SIZE - size, 0, 2, 1, &section);
-		safe_snprintf(str, sizeof(str), "%d", result); //prevents optimization errors under Windows, but how/why?
+		safe_snprintf(str, sizeof(str), "%d", result); // prevents optimization errors under Windows, but how/why?
 		if (result > 0) {
 			size += result;
 		} else if (result == OV_HOLE) {
@@ -587,7 +587,7 @@ int stream_ogg(ALuint buffer, OggVorbis_File *inStream, vorbis_info *info) {
 		}
 	}
 	if (!size) {
-		return 0;       // The file is finished, quit trying to play
+		return 0; // The file is finished, quit trying to play
 	}
 	// Check the number of channels... always use 16-bit samples
 	if (info->channels == 1) {
@@ -633,7 +633,7 @@ ALvoid *load_ogg_into_memory(char *szPath, ALenum *inFormat, ALsizei *inSize, AL
 	// Hope OGG_BUFFER_SIZE is large enough for this sample - 1MB should be! Anything more should be streamed.
 	while (size < OGG_BUFFER_SIZE) {
 		result = ov_read(&oggFile, data + size, OGG_BUFFER_SIZE - size, 0, 2, 1, &bitStream);
-		if ((result > 0) || (result == OV_HOLE)) {       // OV_HOLE is informational
+		if ((result > 0) || (result == OV_HOLE)) { // OV_HOLE is informational
 			if (result != OV_HOLE) {
 				size += result;
 			}
@@ -760,19 +760,19 @@ int init_sound_stream(stream_data *stream, int type, int priority) {
 	alSourcef(stream->source, AL_GAIN, 0.0);
 	alSourcei(stream->source, AL_LOOPING, AL_FALSE);
 	alSourceStop(stream->source);
-	alSourcei(stream->source, AL_BUFFER, 0);                        // Make sure there are no buffers attached
+	alSourcei(stream->source, AL_BUFFER, 0); // Make sure there are no buffers attached
 	// Reset the error buffer
 	if ((error = alGetError()) != AL_NO_ERROR) {}
 	return 1;
 }
 void destroy_stream(stream_data *stream) {
 	int error, i;
-	//@tosh : le son n'est pas initialise
+	// @tosh : le son n'est pas initialise
 	if (stream->sound == -1) {
 		return;
 	}
 	if (stream->type == STREAM_TYPE_NONE) {
-		return;                 // In theory this stream isn't initialised
+		return; // In theory this stream isn't initialised
 	}
 	if (stream->playing) {
 		stop_stream(stream);
@@ -851,10 +851,10 @@ int add_stream(int sound, int type, int boundary) {
 	}
 	// Init the stream
 	if (!init_sound_stream(stream, type, priority)) {
-		return 0;                       // We couldn't get a source. Sad but you get that.
+		return 0; // We couldn't get a source. Sad but you get that.
 	}
 	// Play the stream
-	play_stream(sound, stream, 0.0f);               // Fade the stream up
+	play_stream(sound, stream, 0.0f); // Fade the stream up
 	if (!stream->playing) {
 		// There was an error so remove the stream and bail
 		LOCK_SOUND_LIST();
@@ -882,7 +882,7 @@ int add_stream(int sound, int type, int boundary) {
 	if (default_found > -1) {
 		streams[default_found].fade = -1;
 	}
-	return 1;               // Return success
+	return 1; // Return success
 }
 int check_for_valid_stream_sound(int tx, int ty, int type) {
 	int i, j, snd = -1, playing, found = 0;
@@ -922,13 +922,13 @@ void check_for_new_streams(int tx, int ty) {
 		// Check if we need a default background or default crowd sound (no other bg/crowd sounds, or they are fading out)
 		for (i = 0; i < max_streams; i++) {
 			if (no_near_enhanced_actors < 5 || (streams[i].type == STREAM_TYPE_CROWD && streams[i].fade >= 0)) {
-				found_crowd = 1;                // We have a crowd sound already (or don't need one) so we don't need a default one
+				found_crowd = 1; // We have a crowd sound already (or don't need one) so we don't need a default one
 			}
 			if (streams[i].type == STREAM_TYPE_SOUNDS && streams[i].fade >= 0) {
-				found_bg = 1;           // We have a bg sound already so we don't need a default one
+				found_bg = 1; // We have a bg sound already so we don't need a default one
 			}
 			if (found_bg && found_crowd) {
-				return;         // We have both so we don't need to continue
+				return; // We have both so we don't need to continue
 			}
 		}
 		// We still aren't playing a sound for one type, so check for a map based sound
@@ -964,7 +964,7 @@ void check_for_new_streams(int tx, int ty) {
 	}
 }
 int process_stream(stream_data *stream, ALfloat gain, int *sleep) {
-	int error, state = AL_STOPPED;  // , state2;
+	int error, state = AL_STOPPED; // , state2;
 	ALfloat new_gain = gain;
 	ALuint buffer;
 	// Check if we are starting/stopping this stream and continue the fade
@@ -1031,7 +1031,7 @@ int process_stream(stream_data *stream, ALfloat gain, int *sleep) {
 		// Clear any remaining buffers, just in case
 		alSourceStop(stream->source);
 		alSourcei(stream->source, AL_BUFFER, 0);
-		if ((error = alGetError()) != AL_NO_ERROR) { }    // Clear any errors before trying to replay the stream
+		if ((error = alGetError()) != AL_NO_ERROR) { } // Clear any errors before trying to replay the stream
 		play_stream(stream->sound, stream, gain);
 	}
 	// Clear any OpenAL errors
@@ -1048,7 +1048,7 @@ int check_stream(stream_data *stream, int day_time, int tx, int ty) {
 			destroy_stream(stream);
 			UNLOCK_SOUND_LIST();
 		}
-		return 0;               // Stream is not continuing
+		return 0; // Stream is not continuing
 	}
 	// Check if we have finished fading this stream up and can stop the fade
 	else if (stream->fade > stream->fade_length) {
@@ -1080,7 +1080,7 @@ int check_stream(stream_data *stream, int day_time, int tx, int ty) {
 			break;
 		}
 	}
-	return 1;               // Stream is continuing (but may be fading down)
+	return 1; // Stream is continuing (but may be fading down)
 }
 int update_streams(void *dummy) {
 	int sleep, day_time, i, tx, ty;
@@ -1114,25 +1114,24 @@ int update_streams(void *dummy) {
 					switch (streams[i].type) {
 					case STREAM_TYPE_MUSIC:
 						if (!have_music || !music_on) {
-							continue;                               // We aren't playing music so skip this stream
+							continue; // We aren't playing music so skip this stream
 						}
 						gain = music_gain;
 						break;
 					case STREAM_TYPE_SOUNDS:
 						if (!have_sound || !sound_on) {
-							continue;                               // We aren't playing sounds so skip this stream
+							continue; // We aren't playing sounds so skip this stream
 						}
 						gain = sound_gain * enviro_gain * sound_type_data[streams[i].sound].variant[streams[i].variant].gain;
 						break;
 					case STREAM_TYPE_CROWD:
 						if (!have_sound || !sound_on) {
-							continue;                               // We aren't playing sounds so skip this stream
+							continue; // We aren't playing sounds so skip this stream
 						}
 						if (distanceSq_to_near_enhanced_actors == 0) {
-							distanceSq_to_near_enhanced_actors = 100.0f;            // Due to no actors when calc'ing
+							distanceSq_to_near_enhanced_actors = 100.0f; // Due to no actors when calc'ing
 						}
 // SSE optimized sqrt		gain = sound_gain * crowd_gain * sound_type_data[streams[i].sound].variant[streams[i].variant].gain
-// 									* fastsqrt(fastsqrt(no_near_enhanced_actors)) * invsqrt(distanceSq_to_near_enhanced_actors) * 2;
 						gain = sound_gain * crowd_gain * sound_type_data[streams[i].sound].variant[streams[i].variant].gain * sqrt(sqrt(no_near_enhanced_actors)) / sqrt(distanceSq_to_near_enhanced_actors) * 2;
 						break;
 					}
@@ -1219,16 +1218,16 @@ void modif_playlist(int num) {
 		return;
 	}
 	safe_snprintf(str, sizeof(str), "music/%s", liste_musiques[num].nom_fichier);
-	fp = open_file_data(str, "r");              // On teste la présence du fichier demandé
+	fp = open_file_data(str, "r"); // On teste la présence du fichier demandé
 	if (fp == NULL) {
 		safe_snprintf(str, sizeof(str), "Le fichier music/%s n'existe pas", liste_musiques[num].nom_fichier);
 		LOG_TO_CONSOLE(c_red2, str);
 		return;
 	}
 	fclose(fp);
-	//@tosh : initialisation de la playlist
+	// @tosh : initialisation de la playlist
 	clear_playlist();
-	safe_snprintf(file, sizeof(file), liste_musiques[num].nom_fichier);    // On force le nom du fichier dans toute la carte, a toute heure
+	safe_snprintf(file, sizeof(file), liste_musiques[num].nom_fichier); // On force le nom du fichier dans toute la carte, a toute heure
 	playlist[0].min_x = 0;
 	playlist[0].min_y = 0;
 	playlist[0].max_x = 900;
@@ -1236,7 +1235,7 @@ void modif_playlist(int num) {
 	playlist[0].time = 2;
 	safe_strncpy(playlist[0].file_name, file, sizeof(playlist[0].file_name));
 	playlist[0].file_name[63] = '\0';
-	list_pos = -1;      // On réinitalise la position de la lecture
+	list_pos = -1; // On réinitalise la position de la lecture
 	loop_list = 0;
 	liste_musiques[num].selection = 1;
 	musique_selectionne = num;
@@ -1245,7 +1244,6 @@ void modif_playlist(int num) {
 }
 void raz_playlist() {
 	get_map_playlist(); // On récupère la playlist du fichier pll
-	// play_song(0) ;          // On force la musique
 	LOG_TO_CONSOLE(c_green2, "Remise à zéro de la playlist effectuée.");
 }
 int redimensionnement_fenetre_musique(window_info *win) {
@@ -1607,9 +1605,9 @@ void find_next_song(int tx, int ty, int day_time) {
 						if (aleatoire_musique == 1) {
 #ifdef WINDOWS
 							modif_playlist(rand() % (max_musique + 1));
-#else //WINDOWS
+#else // WINDOWS
 							modif_playlist(random() % (max_musique + 1));
-#endif //WINDOWS
+#endif // WINDOWS
 						} else {
 							modif_playlist(musique_selectionne + 1);
 						}
@@ -1726,7 +1724,6 @@ source_data *get_available_source(int priority) {
 	return NULL;
 }
 // This takes a copy the first unused source object (or last one in the list if all used),
-// moves all objects after #index along one place, and inserts the copied object at #index;
 // It is ensured the source at #index is stopped with no buffers queued
 source_data *insert_sound_source_at_index(unsigned int index) {
 	int i;
@@ -1754,9 +1751,9 @@ void release_source(source_data *pSource, int index) {
 	clear_source(pSource);
 	// We can't lose a source handle - copy this...
 	sourceTemp = *pSource;
-	//...shift all the next sources up a place, overwriting the stopped source...
+	// ...shift all the next sources up a place, overwriting the stopped source...
 	memmove(pSource, pSource + 1, sizeof(source_data) * (used_sources - (index + 1)));
-	//...and put the saved object back in after them
+	// ...and put the saved object back in after them
 	sound_source_data[used_sources - 1] = sourceTemp;
 	// Note that one less source is playing!
 	--used_sources;
@@ -1786,7 +1783,6 @@ int stop_sound_source_at_index(int index) {
 	return 1;
 }
 // Find the index of the source associated with this cookie.
-// Note that this result must not be stored, but used immediately;
 int find_sound_source_from_cookie(unsigned int cookie) {
 	int n;
 	source_data *pSource = sound_source_data;
@@ -1883,7 +1879,7 @@ int ensure_sample_loaded(char *in_filename) {
 	ALsizei datasize;
 	ALuint *pBuffer;
 	sound_sample *pSample;
-	char filename[200];                             // This is for the full path to the file
+	char filename[200]; // This is for the full path to the file
 	// Check if this sample is already loaded and if so, return the sample ID
 	for (i = 0; i < MAX_SOUND_FILES; i++) {
 		if (!strcasecmp(sound_files[i].file_path, in_filename) && sound_files[i].sample_num > -1) {
@@ -1915,11 +1911,11 @@ int ensure_sample_loaded(char *in_filename) {
 						}
 					}
 					if (found) {
-						break;  // No need to keep looking
+						break; // No need to keep looking
 					}
 				}
 				if (found) {
-					break;  // No need to keep looking
+					break; // No need to keep looking
 				}
 			}
 			if (!found) {
@@ -1989,7 +1985,7 @@ int load_samples(sound_type *pType) {
 			}
 		}
 	}
-	return j;               // Return the variant we chose
+	return j; // Return the variant we chose
 }
 void release_sample(int sample_num) {
 	sound_sample *pSample;
@@ -2102,7 +2098,7 @@ unsigned int add_death_sound(actor *act) {
 }
 unsigned int add_battlecry_sound(actor *act) {
 	// Maybe play a battlecry sound
-	if (act && rand() % 3 == 2) {                   // 1 chance in 3 to play
+	if (act && rand() % 3 == 2) { // 1 chance in 3 to play
 		return add_sound_object_gain(actors_defs[act->actor_type].battlecry.sound, act->x_pos * 2, act->x_pos * 2, act == your_actor ? 1 : 0, actors_defs[act->actor_type].battlecry.scale);
 	}
 	return 0;
@@ -2130,7 +2126,7 @@ unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial
 		tx = 0;
 		ty = 0;
 	}
-	if (type == -1) {               // Invalid sound, ignore
+	if (type == -1) { // Invalid sound, ignore
 		return 0;
 	}
 	if (me) {
@@ -2152,7 +2148,7 @@ unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial
 /*	for (i = 0; i < MAX_BUFFERS * 2; i++)
         {
                 if (sounds_list[i].sound == type && sounds_list[i].x == x && sounds_list[i].y == y && sounds_list)
-                        return 0;		// This sound already exists so let update_sound handle it
+                        return 0; // This sound already exists so let update_sound handle it
         }
  */
 	// Find a spot in the sounds list for this sound
@@ -2167,13 +2163,13 @@ unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial
 	// We got this far so add this sound to the list and assign it a cookie
 	LOCK_SOUND_LIST();
 	sounds_list[sound_num].sound = type;
-	sounds_list[sound_num].variant = -1;            // Haven't chosen a variant yet - that's done by load_samples()
+	sounds_list[sound_num].variant = -1; // Haven't chosen a variant yet - that's done by load_samples()
 	sounds_list[sound_num].x = x;
 	sounds_list[sound_num].y = y;
 	sounds_list[sound_num].loaded = 0;
 	sounds_list[sound_num].playing = 0;
 	sounds_list[sound_num].base_gain = initial_gain;
-	sounds_list[sound_num].cur_gain = -1.0f;                // Make sure we set the gain when we first play the sound
+	sounds_list[sound_num].cur_gain = -1.0f; // Make sure we set the gain when we first play the sound
 	cookie = get_next_cookie();
 	sounds_list[sound_num].cookie = cookie;
 	num_sounds++;
@@ -2285,7 +2281,7 @@ int play_sound(int sound_num, int x, int y, float initial_gain) {
 	pSource->cookie = sounds_list[sound_num].cookie;
 	// Check and clear any AL error
 	if ((error = alGetError()) != AL_NO_ERROR) {}
-	return 1;       // Return success
+	return 1; // Return success
 }
 unsigned int get_next_cookie() {
 	unsigned int cookie = next_cookie;
@@ -2452,7 +2448,7 @@ void update_sound(int ms) {
 				maxDistSq = pSoundType->distance * pSoundType->distance;
 				if (sound_on && (distanceSq < maxDistSq)) {
 					// This sound is back in range so load it into a source and play it
-					sounds_list[i].cur_gain = -1.0f;        // Make sure we recalculate this sound's volume
+					sounds_list[i].cur_gain = -1.0f; // Make sure we recalculate this sound's volume
 					if (!play_sound(i, x, y, sounds_list[i].base_gain)) {}
 				}
 			}
@@ -2633,10 +2629,8 @@ void handle_walking_sound(actor *pActor, int def_snd) {
                 They need help to be accurate, possibly from the under_mouse or get_intersect type code.
                 Alternatively a check for objects around the actor and then checking the size and rotation
                 of each object to determine if the actor is standing on it might work.
-
                 // Check for a 3d object we have a sound for
                 snd = get_3d_obj_walk_sound(get_3dobject_at_location(x, y));
-
                 // Check if we need to look for a 2d obj, and look if necessary
                 if (snd == -1)
                         snd = get_2d_obj_walk_sound(get_2dobject_at_location(x, y));
@@ -2805,7 +2799,7 @@ void check_sound_alerts(const Uint8 *text, size_t len, Uint8 channel) {
 	for (i = 0; i < num_sound_warnings; i++) {
 		if (safe_strcasestr((char *)text, len, warnings_list[i].string, strlen(warnings_list[i].string))) {
 			add_sound_object_gain(warnings_list[i].sound, 0, 0, 1, 1.0f);
-			return;         // Only play one sound
+			return; // Only play one sound
 		}
 	}
 	return;
@@ -2830,7 +2824,7 @@ int sound_bounds_check(int x, int y, map_sound_boundary_def *bounds) {
 	int i, j, result;
 	// Initially check if we are on or inside the outermost box
 	if (x < bounds->o[0].x || y < bounds->o[0].y || x > bounds->o[1].x || y > bounds->o[1].y) {
-		return 0;       // We are outside the outer rectangle so can't be inside the polygon
+		return 0; // We are outside the outer rectangle so can't be inside the polygon
 	}
 	// Check if we have only 2 points (rectangle) and are therefore don't need to do anything more
 	if (bounds->p[2].x == -1 || bounds->p[2].y == -1 || bounds->p[3].x == -1 || bounds->p[3].y == -1) {
@@ -2840,29 +2834,22 @@ int sound_bounds_check(int x, int y, map_sound_boundary_def *bounds) {
 	for (i = 0; i < 4; i++) {
 		j = i + 1;
 		if (j == 4) {
-			j = 0;          // Wrap the next point var around to 0
+			j = 0; // Wrap the next point var around to 0
 		}
 		pX = bounds->p[i].x;
 		pY = bounds->p[i].y;
 		npX = bounds->p[j].x;
 		npY = bounds->p[j].y;
 		/* Psuedo-code to explain this block of nastiness
-
 		   If (this is not an internal point, OR
 		        (if the x coord of our test point is within the x bounds of the line with p <= np AND
 		                ((the y coord is within the line with p <= np AND the point is within the y bounds of the line (bottom left quadrant)) OR
-		                 (the y coord is within the line with p > np AND the point is within the y bounds of the line (top left quadrant))
-		        ) OR
+		                 (the y coord is within the line with p > np AND the point is within the y bounds of the line (top left quadrant))) OR
 		        (if the x coord is within the x bounds of the line with p > np AND
 		                ((the y coord is within the line with p <= np AND the point is within the y bounds of the line (bottom right quadrant)) OR
-		                 (the y coord is within the line with p > np AND the the point is within the y bounds of the line (top right quadrant))
-		        )
-		   ) ...then we need to test the angle otherwise we can ignore this point
+		                 (the y coord is within the line with p > np AND the the point is within the y bounds of the line (top right quadrant)))) ...then we need to test the angle otherwise we can ignore this point
 		 */
-		if (bounds->int_point != i || (pX <= npX && x >= pX && x <= pX && ((pY <= npY && y >= pY && y <= pY) || (pY > npY && y <= pY && y >= pY))
-					       ) || (pX > npX && x <= pX && x >= pX && ((pY <= npY && y >= pY && y <= pY) || (pY > npY && y <= pY && y >= pY))
-						     )
-		    ) {
+		if (bounds->int_point != i || (pX <= npX && x >= pX && x <= pX && ((pY <= npY && y >= pY && y <= pY) || (pY > npY && y <= pY && y >= pY))) || (pX > npX && x <= pX && x >= pX && ((pY <= npY && y >= pY && y <= pY) || (pY > npY && y <= pY && y >= pY)))) {
 			result = test_bounds_angles(x, y, i, bounds);
 			if (result == 0) {
 				return 0;
@@ -2908,9 +2895,9 @@ double calculate_bounds_angle(int x, int y, int point, map_sound_boundary_def *b
 	    C = 0,
 	    D = 0;
 	double pi = 3.1415;
-	double ra = pi / 2;             // ra = Right angle... meh
+	double ra = pi / 2; // ra = Right angle... meh
 	double a;
-	//  Set up the subsitutions for the actual equation. (This is such a waste of space. Grrr)
+	// Set up the subsitutions for the actual equation. (This is such a waste of space. Grrr)
 	switch (point) {
 	case 0:
 		// Check the angle of the line from the bottom left corner to our test point (point0 -> pointT)
@@ -2944,14 +2931,14 @@ double calculate_bounds_angle(int x, int y, int point, map_sound_boundary_def *b
 	// If the line aligns to an axis, arctan has no value, so we need to check for this and use 90 degrees (pi / 2)
 	// Otherwise calculate the angle and adjust the negative
 	if (A == B && C < D) {
-		a = ra;                                 // If axis 1 is aligned and the coord on axis 2 of the first point is less
+		a = ra; // If axis 1 is aligned and the coord on axis 2 of the first point is less
 	} else if (A == B && C > D) {
-		a = -ra;                                // If axis 1 is aligned and the coord on axis 2 of the first point is greater
+		a = -ra; // If axis 1 is aligned and the coord on axis 2 of the first point is greater
 	} else {
-		a = atan2((D - C), (A - B));            // If we aren't on the axis, find the angle
+		a = atan2((D - C), (A - B)); // If we aren't on the axis, find the angle
 	}
 	if (D < C) {
-		a += pi * 2;                                    // If the second point is below the axis (-pi) then boost the angle to the positive (2pi)
+		a += pi * 2; // If the second point is below the axis (-pi) then boost the angle to the positive (2pi)
 	}
 	// This gives us a proper range from 0 to 2pi counter clockwise around the polygon
 	return a;
@@ -3375,7 +3362,7 @@ void init_sound() {
 			max_sources = i;
 			// Limit the available streams based on the number of sources (a stream takes twice the resources)
 			if (max_sources <= 16) {
-				max_streams = 4;                // This only allows a music stream, a crowd stream and 2 backgrounds...
+				max_streams = 4; // This only allows a music stream, a crowd stream and 2 backgrounds...
 			}
 			// but it takes effectively 8 sources of <= 16
 			if (max_sources == 0) {
@@ -3491,7 +3478,7 @@ int add_to_sound_warnings_list(const char *text) {
 	char right[256];
 	int t, tp;
 	if (text[0] == '\0' || text[0] == '#') {
-		return 1;               // Nothing to do so return success
+		return 1; // Nothing to do so return success
 	}
 	// Extract the sound name (left) and string (right) from the input text
 	safe_strncpy(left, text, sizeof(left));
@@ -3531,10 +3518,10 @@ int add_to_sound_warnings_list(const char *text) {
 			}
 		}
 		LOG_ERROR("Sound warning list is full. %d warnings loaded.", num_sound_warnings);
-		return -2;              // If we are here, it means the warnings list is full
+		return -2; // If we are here, it means the warnings list is full
 	}
 	LOG_ERROR("Sound not found for sound warning: %s", text);
-	return 0;               // The sound wasn't found
+	return 0; // The sound wasn't found
 }
 // Blatently stolen from the text filter code (filter.c)
 void load_sound_warnings_list(const char *filename) {
@@ -3574,7 +3561,7 @@ void load_sound_warnings_list(const char *filename) {
 		// Copy the line and process it
 		if (iend > istart) {
 			safe_strncpy2(string, sound_warnings_list_mem + istart, sizeof(string), iend - istart);
-			if (add_to_sound_warnings_list(string) == -2) {         // -1 == already exists, -2 == list full
+			if (add_to_sound_warnings_list(string) == -2) { // -1 == already exists, -2 == list full
 				free(sound_warnings_list_mem);
 				return; // Sound warnings list full
 			}
@@ -3587,7 +3574,6 @@ void load_sound_warnings_list(const char *filename) {
 void parse_server_sounds() {
 	int i;
 	// Parse the list of sounds according to client_serv.h and map them to our sound defs
-	//
 	// NOTE: This must be kept up-to-date with client_serv.h for it to be any use!!
 	for (i = 0; i < MAX_SERVER_SOUNDS; i++) {
 		switch (i) {
@@ -3876,7 +3862,7 @@ int validate_boundary(map_sound_boundary_def *bounds, char *map_name) {
 		if (bounds->p[0].x != -1 || bounds->p[0].y != -1 || bounds->p[1].x != -1 || bounds->p[1].y != -1 || bounds->p[2].x != -1 || bounds->p[2].y != -1 || bounds->p[3].x != -1 || bounds->p[3].y != -1) {
 			LOG_ERROR("Warning: Points defined for default boundary. Points will be ignored.\n");
 		}
-		return 1;               // Points are ignored for defaults
+		return 1; // Points are ignored for defaults
 	}
 	// Check we have details for at least 2 points
 	if (bounds->p[0].x == -1 || bounds->p[0].y == -1 || bounds->p[1].x == -1 || bounds->p[1].y == -1) {
@@ -4251,7 +4237,7 @@ void parse_item_image_ids(char *content, item_sound_data *pItem) {
 				j = -1;
 			} else {
 				LOG_ERROR("%s: Too many image ids defined for item sound: %s", snd_config_error, content);
-				return;         // Avoid any more errors
+				return; // Avoid any more errors
 			}
 		} else {
 			j++;
@@ -4309,7 +4295,7 @@ void parse_tile_types(char *content, tile_sound_data *pTileType) {
 				j = -1;
 			} else {
 				LOG_ERROR("%s: Too many tile types defined for tile type sound: %s, max: %d", snd_config_error, content, MAX_SOUND_TILES);
-				return;         // Avoid any more errors
+				return; // Avoid any more errors
 			}
 		} else {
 			j++;
@@ -4439,7 +4425,7 @@ void load_sound_config_data(const char *file) {
 		LOG_ERROR("%s: No XML root element found in '%s'", snd_config_error, file);
 	}
 	// Is the root the right type?
-	else if ( xmlStrcmp(root->name, (xmlChar *)"sound_config")) {
+	else if (xmlStrcmp(root->name, (xmlChar *)"sound_config")) {
 		LOG_ERROR("%s: Invalid root element '%s' in '%s'", snd_config_error, root->name, file);
 	}
 	// We've found our expected root, now parse the children

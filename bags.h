@@ -15,7 +15,7 @@ typedef struct {
 	int pos;
 	int image_id;
 	int quantity;
-	Uint16 id; //server id
+	Uint16 id; // server id
 } ground_item;
 extern int view_ground_items; /*!< flag that indicates whether we should display ground items or not */
 extern int ground_items_menu_x;

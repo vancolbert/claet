@@ -6,12 +6,12 @@
 #include <limits.h>
 #include <float.h>
 #include <errno.h>
-//For stat() etc.. below
+// For stat() etc.. below
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifndef _MSC_VER
 	#include <unistd.h>
-#endif //_MSC_VER
+#endif // _MSC_VER
 #include "user_menus.h"
  #include "alphamap.h"
  #include "bags.h"
@@ -93,9 +93,9 @@ typedef int (*int_min_max_func)();
 #define TROUBLESHOOT    9
 #define MAX_TABS 10
 #define CHECKBOX_SIZE           15
-#define SPACING                         5       //Space between widgets and labels and lines
-#define LONG_DESC_SPACE         50      //Space to give to the long descriptions
-#define MAX_LONG_DESC_LINES     3       //How many lines of text we can fit in LONG_DESC_SPACE
+#define SPACING                         5 // Space between widgets and labels and lines
+#define LONG_DESC_SPACE         50 // Space to give to the long descriptions
+#define MAX_LONG_DESC_LINES     3 // How many lines of text we can fit in LONG_DESC_SPACE
 typedef char input_line[256];
 struct variables our_vars = {0, {NULL}};
 int write_ini_on_exit = 1;
@@ -136,7 +136,7 @@ float water_tiles_extension = 200.0;
 int show_game_seconds = 0;
 int skybox_update_delay = 10;
 int skybox_local_weather = 0;
-#ifdef OSX      // for probelem with rounded buttons on Intel graphics
+#ifdef OSX // for probelem with rounded buttons on Intel graphics
 int square_buttons = 0;
 #endif
 int small_actor_texture_cache = 0;
@@ -268,11 +268,10 @@ void change_float(float *var, float *value) {
 	}
 	/* Commented by Schmurk: if we can define bounds for parameters, why testing
 	 * if the value is over 0 here? */
-	//if(*value >= 0) {
+	// if(*value >= 0) {
 	*var = *value;
-	//} else {
-	// *var= 0;
-	//}
+	// } else {
+	// }
 }
 void change_string(char *var, char *str, int len) {
 	while (*str && len--) {
@@ -294,7 +293,7 @@ void change_password(char *passwd) {
 		*str++ = *passwd++;
 	}
 	*str = 0;
-	if (password_str[0]) {   //We have a password
+	if (password_str[0]) { // We have a password
 		for (; i < str - password_str; i++) {
 			display_password_str[i] = '*';
 		}
@@ -356,7 +355,6 @@ void change_vertex_buffers(int *value) {
 		// extensions are not initialized yet.
 		*value = 1;
 	}
-//	else LOG_TO_CONSOLE(c_green2,disabled_vertex_buffers);
 }
 void change_clouds_shadows(int *value) {
 	if (*value) {
@@ -366,7 +364,6 @@ void change_clouds_shadows(int *value) {
 		// extensions are not initialized yet.
 		*value = 1;
 	}
-//	else LOG_TO_CONSOLE(c_green2,disabled_clouds_shadows);
 }
 void change_small_actor_texture_cache(int *value) {
 	if (*value) {
@@ -431,7 +428,7 @@ int switch_video(int mode, int full_screen) {
 		win_height = video_user_height;
 		win_bpp = bpp;
 	} else if (index < 0 || index >= video_modes_count) {
-		//warn about this error
+		// warn about this error
 		LOG_TO_CONSOLE(c_red2, invalid_video_mode);
 		return 0;
 	} else {
@@ -457,7 +454,7 @@ int switch_video(int mode, int full_screen) {
 		}
 	}
 	build_fbos();
-	resize_newchar_hud_window(); //This window needs resizing
+	resize_newchar_hud_window(); // This window needs resizing
 	return 1;
 }
 void switch_vidmode(int *pointer, int mode) {
@@ -724,7 +721,6 @@ void change_chat_font(int *var, int value) {
 	if (console_root_win >= 0) {
 		((text_field *)((widget_find(console_root_win, console_out_id))->widget_info))->font_num = value;
 	}
-//	change_chat_zoom(&chat_zoom, &chat_zoom);
 }
 void change_book_zoom(float *dest, float *value) {
 	// valeur minimale pour avoir une hauteur de ligne > 0 (évite des divisions par 0)
@@ -760,7 +756,7 @@ void change_projection_float_init(float *var, float *value) {
 void change_projection_bool_init(int *pointer) {
 	change_var(pointer);
 }
-#endif //OSX
+#endif // OSX
 void change_projection_float(float *var, float *value) {
 	change_float(var, value);
 	if (video_mode_set) {
@@ -778,7 +774,7 @@ void change_projection_bool(int *pointer) {
 		set_all_intersect_update_needed(main_bbox_tree);
 	}
 }
-//@tosh : callback associé à l'option Ajustement gamma
+// @tosh : callback associé à l'option Ajustement gamma
 void adjust_gamma(int *value) {
 	*value = !(*value);
 	if (!video_mode_set) {
@@ -1052,13 +1048,13 @@ int check_var(char *str, var_name_type type) {
 	}
 	ptr += (type != COMMAND_LINE_SHORT_VAR) ? our_vars.var[i]->nlen : our_vars.var[i]->snlen;
 	while (*ptr && (*ptr == ' ' || *ptr == '=')) {
-		ptr++;  // go to the string occurence
+		ptr++; // go to the string occurence
 	}
 	if (!*ptr || *ptr == 0x0d || *ptr == 0x0a) {
-		return -1;      // hmm, why would you do such a stupid thing?
+		return -1; // hmm, why would you do such a stupid thing?
 	}
 	if (*ptr == '"') {
-		//Accurate quoting
+		// Accurate quoting
 		char *tptr = ++ptr;
 		while (*tptr && *tptr != '"') {
 			if (*tptr == 0x0a || *tptr == 0x0d) {
@@ -1075,7 +1071,7 @@ int check_var(char *str, var_name_type type) {
 		tptr = our_string;
 		while (*ptr && *ptr != 0x0a && *ptr != 0x0d) {
 			if (*ptr != ' ') {
-				*tptr++ = *ptr++; //Strip all spaces
+				*tptr++ = *ptr++; // Strip all spaces
 			} else {
 				ptr++;
 			}
@@ -1111,7 +1107,7 @@ int check_var(char *str, var_name_type type) {
 			new_val = atoi(ptr);
 		}
 		if ((new_val > 0) != *p) {
-			our_vars.var[i]->func(our_vars.var[i]->var);          //only call if value has changed
+			our_vars.var[i]->func(our_vars.var[i]->var); // only call if value has changed
 		}
 		return 1;
 	}
@@ -1147,7 +1143,7 @@ void free_vars() {
 		case OPT_MULTI_H:
 			if (our_vars.var[i]->queue != NULL) {
 				while (!queue_isempty(our_vars.var[i]->queue)) {
-					//We don't free() because it's not allocated.
+					// We don't free() because it's not allocated.
 					queue_pop(our_vars.var[i]->queue);
 				}
 				queue_destroy(our_vars.var[i]->queue);
@@ -1186,11 +1182,11 @@ void add_var(option_type type, char *name, char *shortname, void *var, void *fun
 	case OPT_INT_INI:
 		queue_initialise(&our_vars.var[no]->queue);
 		va_start(ap, tab_id);
-		//Min
+		// Min
 		tmp_i = calloc(1, sizeof(*tmp_i));
 		*tmp_i = va_arg(ap, point);
 		queue_push(our_vars.var[no]->queue, tmp_i);
-		//Max
+		// Max
 		tmp_i = calloc(1, sizeof(*tmp_i));
 		*tmp_i = va_arg(ap, point);
 		queue_push(our_vars.var[no]->queue, tmp_i);
@@ -1210,15 +1206,15 @@ void add_var(option_type type, char *name, char *shortname, void *var, void *fun
 	case OPT_FLOAT:
 		queue_initialise(&our_vars.var[no]->queue);
 		va_start(ap, tab_id);
-		//Min
+		// Min
 		tmp_f = calloc(1, sizeof(*tmp_f));
 		*tmp_f = va_arg(ap, double);
 		queue_push(our_vars.var[no]->queue, (void *)tmp_f);
-		//Max
+		// Max
 		tmp_f = calloc(1, sizeof(*tmp_f));
 		*tmp_f = va_arg(ap, double);
 		queue_push(our_vars.var[no]->queue, (void *)tmp_f);
-		//Interval
+		// Interval
 		tmp_f = calloc(1, sizeof(*tmp_f));
 		*tmp_f = va_arg(ap, double);
 		queue_push(our_vars.var[no]->queue, (void *)tmp_f);
@@ -1228,15 +1224,15 @@ void add_var(option_type type, char *name, char *shortname, void *var, void *fun
 	case OPT_FLOAT_F:
 		queue_initialise(&our_vars.var[no]->queue);
 		va_start(ap, tab_id);
-		//Min
+		// Min
 		f_func = calloc(1, sizeof(*f_func));
 		*f_func = va_arg(ap, float_min_max_func);
 		queue_push(our_vars.var[no]->queue, f_func);
-		//Max
+		// Max
 		f_func = calloc(1, sizeof(*f_func));
 		*f_func = va_arg(ap, float_min_max_func);
 		queue_push(our_vars.var[no]->queue, f_func);
-		//Interval
+		// Interval
 		tmp_f = calloc(1, sizeof(*tmp_f));
 		*tmp_f = va_arg(ap, double);
 		queue_push(our_vars.var[no]->queue, (void *)tmp_f);
@@ -1246,11 +1242,11 @@ void add_var(option_type type, char *name, char *shortname, void *var, void *fun
 	case OPT_INT_F:
 		queue_initialise(&our_vars.var[no]->queue);
 		va_start(ap, tab_id);
-		//Min
+		// Min
 		i_func = calloc(1, sizeof(*i_func));
 		*i_func = va_arg(ap, int_min_max_func);
 		queue_push(our_vars.var[no]->queue, i_func);
-		//Max
+		// Max
 		i_func = calloc(1, sizeof(*i_func));
 		*i_func = va_arg(ap, int_min_max_func);
 		queue_push(our_vars.var[no]->queue, i_func);
@@ -1277,7 +1273,7 @@ void add_multi_option(char *name, char *str) {
 		queue_push(our_vars.var[var_index]->queue, str);
 	}
 }
-//ELC specific variables
+// ELC specific variables
 static void init_ELC_vars(void) {
 	int i;
 	// CONTROLS TAB
@@ -1313,7 +1309,7 @@ static void init_ELC_vars(void) {
 	add_var(OPT_BOOL, "show_help_text", "shelp", &show_help_text, change_var, 1, "Help Text", "Enable tooltips.", HUD);
 	add_var(OPT_BOOL, "always_enlarge_text", "aetext", &always_enlarge_text, change_var, 1, "Always Enlarge Text", "Some text can be enlarged by pressing ALT or CTRL, often only while the mouse is over it.  Setting this option effectively locks the ALT/CTRL state to on.", HUD);
 	add_var(OPT_BOOL, "show_item_desc_text", "showitemdesctext", &show_item_desc_text, change_var, 1, "Item Description Text", "Enable item description tooltips. Needs item_info.txt file.", HUD);
-	add_var(OPT_BOOL, "use_alpha_border", "aborder", &use_alpha_border, change_var, 1, "Alpha Border", "Toggle the use of alpha borders", HUD); //ADVVID);
+	add_var(OPT_BOOL, "use_alpha_border", "aborder", &use_alpha_border, change_var, 1, "Alpha Border", "Toggle the use of alpha borders", HUD); // ADVVID);
 	add_var(OPT_STRING_INI, "titre_theme", "theme", titre_theme, change_string, 20, "Thème", "Sélection du thème de l'interface (relancer le client pour appliquer)", HUD);
 	add_var(OPT_FLOAT, "chat_alpha_background", "calpha", &chat_alpha_background, change_float, 0.5, "Fond transparent des messages", "Sélection du niveau de transparence du fond derrière les messages en vue 3D", HUD, 0.0, 1.0, 0.01);
 	add_var(OPT_BOOL, "use_alpha_banner", "abanner", &use_alpha_banner, change_var, 0, "Alpha Behind Name/Health Text", "Toggle the use of an alpha background to name/health banners", HUD);
@@ -1346,7 +1342,6 @@ static void init_ELC_vars(void) {
 	add_var(OPT_MULTI, "windowed_chat", "winchat", &use_windowed_chat, change_windowed_chat, 1, "Gestion des messages", "Sélection du mode d'affichage des messages.", CHAT, "Ancien comportement", "Onglets", "Fenêtre", NULL);
 	add_var(OPT_BOOL, "local_chat_separate", "locsep", &local_chat_separate, change_separate_flag, 0, "Separate Local Chat", "Should local chat be separate?", CHAT);
 	// The forces that be want PMs always global, so that they're less likely to be ignored
-	//add_var (OPT_BOOL, "personal_chat_separate", "pmsep", &personal_chat_separate, change_separate_flag, 0, "Separate Personal Chat", "Should personal chat be separate?", CHAT);
 	add_var(OPT_BOOL, "guild_chat_separate", "gmsep", &guild_chat_separate, change_separate_flag, 1, "Separate Guild Chat", "Should guild chat be separate?", CHAT);
 	add_var(OPT_BOOL, "server_chat_separate", "scsep", &server_chat_separate, change_separate_flag, 0, "Separate Server Messages", "Should the messages from the server be separate?", CHAT);
 	add_var(OPT_BOOL, "mod_chat_separate", "modsep", &mod_chat_separate, change_separate_flag, 0, "Separate Moderator Chat", "Should moderator chat be separated from the rest?", CHAT);
@@ -1496,7 +1491,6 @@ static void init_ELC_vars(void) {
 	add_var(OPT_FLOAT, "quad_speed", "f_quad", &fol_quad, change_float, 1, "Quadratic Decel.", "A hit of speed that drops off faster as it nears the set point.", CAMERA, 0.0, 10.00, 1.0);
 	// CAMERA TAB
 	// TROUBLESHOOT TAB
-	//add_var(OPT_BOOL,"shadows_on","shad",&shadows_on,change_shadows,0,"Shadow Bug","Some video cards have trouble with the shadows. Uncheck this if everything you see is white.", TROUBLESHOOT);
 	// Grum: attempt to work around bug in Ati linux drivers.
 	add_var(OPT_BOOL, "ati_click_workaround", "atibug", &ati_click_workaround, change_var, 0, "ATI Bug", "If you are using an ATI graphics card and don't move when you click, try this option to work around a bug in their drivers.", TROUBLESHOOT);
 	add_var(OPT_BOOL, "use_old_clicker", "oldmclick", &use_old_clicker, change_var, 0, "Mouse Bug", "Unrelated to ATI graphics cards, if clicking to walk doesn't move you, try toggling this option.", TROUBLESHOOT);
@@ -1556,7 +1550,7 @@ void write_var(FILE *fout, int ivar) {
 		break;
 	}
 	}
-	our_vars.var[ivar]->saved = 1;   // keep only one copy of this setting
+	our_vars.var[ivar]->saved = 1; // keep only one copy of this setting
 }
 int read_el_ini() {
 	input_line line;
@@ -1565,9 +1559,9 @@ int read_el_ini() {
 		LOG_ERROR("%s: %s \"le.ini\": %s\n", reg_error_str, cant_open_file, strerror(errno));
 		return 0;
 	}
-	while ( fgets(line, sizeof(input_line), fin)) {
+	while (fgets(line, sizeof(input_line), fin)) {
 		if (line[0] == '#') {
-			check_var(&(line[1]), INI_FILE_VAR);    //check only for the long strings
+			check_var(&(line[1]), INI_FILE_VAR); // check only for the long strings
 		}
 	}
 	fclose(fin);
@@ -1586,7 +1580,6 @@ int write_el_ini() {
 	// Prevent duplicate entries by remembering which we have written
 	written = calloc(our_vars.no, sizeof(short));
 	// first check if we need to change anything
-	//
 	// The advantage of skipping this check is that a new el.ini would be
 	// created in the users $HOME/.elc for Unix users, even if nothing
 	// changed. However, most of the time it's pointless to update an
@@ -1757,14 +1750,14 @@ int multiselect_click_handler(widget_list *widget, int mx, int my, Uint32 flags)
 }
 int mouseover_option_handler(widget_list *widget, int mx, int my) {
 	int i;
-	//Find the label in our_vars
+	// Find the label in our_vars
 	for (i = 0; i < our_vars.no; i++) {
 		if (our_vars.var[i]->widgets.label_id == widget->id || widget->id == our_vars.var[i]->widgets.widget_id) {
 			break;
 		}
 	}
 	if (i == our_vars.no) {
-		//We didn't find anything, abort
+		// We didn't find anything, abort
 		return 0;
 	}
 	put_small_text_in_box(our_vars.var[i]->display.desc, strlen((char *)our_vars.var[i]->display.desc), elconfig_menu_x_len - TAB_MARGIN * 2, (char *)elconf_description_buffer);
@@ -1825,20 +1818,20 @@ int string_onkey_handler(widget_list *widget) {
 }
 void elconfig_populate_tabs(void) {
 	int i;
-	int tab_id; //temporary storage for the tab id
-	int label_id = -1; //temporary storage for the label id
-	int widget_id = -1; //temporary storage for the widget id
-	int widget_height, label_height; //Used to calculate the y pos of the next option
-	int y; //Used for the position of multiselect buttons
-	int x; //Used for the position of multiselect buttons
-	void *min, *max; //For the spinbuttons
+	int tab_id; // temporary storage for the tab id
+	int label_id = -1; // temporary storage for the label id
+	int widget_id = -1; // temporary storage for the widget id
+	int widget_height, label_height; // Used to calculate the y pos of the next option
+	int y; // Used for the position of multiselect buttons
+	int x; // Used for the position of multiselect buttons
+	void *min, *max; // For the spinbuttons
 	float *interval;
 	int_min_max_func *i_min_func;
 	int_min_max_func *i_max_func;
 	float_min_max_func *f_min_func;
 	float_min_max_func *f_max_func;
 	for (i = 0; i < MAX_TABS; i++) {
-		//Set default values
+		// Set default values
 		elconfig_tabs[i].x = TAB_MARGIN;
 		elconfig_tabs[i].y = TAB_MARGIN;
 	}
@@ -1855,11 +1848,11 @@ void elconfig_populate_tabs(void) {
 			// its height
 			continue;
 		case OPT_BOOL:
-			//Add checkbox
+			// Add checkbox
 			widget_id = checkbox_add_extended(elconfig_tabs[tab_id].tab, elconfig_free_widget_id++, NULL, elconfig_tabs[tab_id].x, elconfig_tabs[tab_id].y, CHECKBOX_SIZE, CHECKBOX_SIZE, 0, 1.0, 0.77f, 0.59f, 0.39f, our_vars.var[i]->var);
-			//Add label for the checkbox
+			// Add label for the checkbox
 			label_id = label_add(elconfig_tabs[tab_id].tab, NULL, (char *)our_vars.var[i]->display.str, elconfig_tabs[tab_id].x + CHECKBOX_SIZE + SPACING, elconfig_tabs[tab_id].y);
-			//Set handlers
+			// Set handlers
 			widget_set_OnClick(elconfig_tabs[tab_id].tab, label_id, onclick_label_handler);
 			widget_set_OnClick(elconfig_tabs[tab_id].tab, widget_id, onclick_checkbox_handler);
 			break;
@@ -1897,9 +1890,6 @@ void elconfig_populate_tabs(void) {
 			break;
 		case OPT_PASSWORD:
 			// Grum: the client shouldn't store the password, so let's not add it to the configuration window
-			//label_id= label_add_extended(elconfig_tabs[tab_id].tab, elconfig_free_widget_id++, NULL, elconfig_tabs[tab_id].x, elconfig_tabs[tab_id].y, 0, 0, 0, 1.0, 0.77f, 0.59f, 0.39f, our_vars.var[i]->display.str);
-			//widget_id= pword_field_add_extended(elconfig_tabs[tab_id].tab, elconfig_free_widget_id++, NULL, elconfig_menu_x_len/2, elconfig_tabs[tab_id].y, 200, 20, P_NORMAL, 1.0f, 0.77f, 0.59f, 0.39f, our_vars.var[i]->var, our_vars.var[i]->len);
-			//widget_set_OnKey (elconfig_tabs[tab_id].tab, widget_id, string_onkey_handler);
 			continue;
 		case OPT_MULTI:
 			label_id = label_add_extended(elconfig_tabs[tab_id].tab, elconfig_free_widget_id++, NULL, elconfig_tabs[tab_id].x, elconfig_tabs[tab_id].y, 0, 1.0, 0.77f, 0.59f, 0.39f, (char *)our_vars.var[i]->display.str);
@@ -1965,7 +1955,7 @@ void elconfig_populate_tabs(void) {
 			our_vars.var[i]->queue = NULL;
 			break;
 		}
-		//Calculate y position of the next option.
+		// Calculate y position of the next option.
 		label_height = widget_find(elconfig_tabs[tab_id].tab, label_id)->len_y;
 		widget_height = widget_find(elconfig_tabs[tab_id].tab, widget_id)->len_y;
 		elconfig_tabs[tab_id].y += (widget_height > label_height ? widget_height : label_height) + SPACING;
@@ -1974,10 +1964,10 @@ void elconfig_populate_tabs(void) {
 			set_window_scroll_len(elconfig_tabs[tab_id].tab, elconfig_tabs[tab_id].y);
 			set_window_scroll_inc(elconfig_tabs[tab_id].tab, widget_height + SPACING);
 		}
-		//Set IDs
+		// Set IDs
 		our_vars.var[i]->widgets.label_id = label_id;
 		our_vars.var[i]->widgets.widget_id = widget_id;
-		//Make the description print when the mouse is over a widget
+		// Make the description print when the mouse is over a widget
 		widget_set_OnMouseover(elconfig_tabs[tab_id].tab, label_id, mouseover_option_handler);
 		widget_set_OnMouseover(elconfig_tabs[tab_id].tab, widget_id, mouseover_option_handler);
 	}
@@ -2013,7 +2003,7 @@ void display_elconfig_win(void) {
 			our_root_win = game_root_win;
 		}
 		/* Set up the window */
-		//@tosh : j'enlève pour l'instant le flag ELW_RESIZEABLE, qui est à l'origine de quelques bugs.
+		// @tosh : j'enlève pour l'instant le flag ELW_RESIZEABLE, qui est à l'origine de quelques bugs.
 		elconfig_win = create_window(win_configuration, our_root_win, 0, elconfig_menu_x, elconfig_menu_y, elconfig_menu_x_len, elconfig_menu_y_len, ELW_WIN_DEFAULT);
 		set_window_color(elconfig_win, ELW_COLOR_BORDER, 0.77f, 0.59f, 0.39f, 0.0f);
 		set_window_handler(elconfig_win, ELW_HANDLER_DISPLAY, &display_elconfig_handler);

@@ -181,7 +181,7 @@ struct compl_str tab_complete(const text_message *input, unsigned int cursor_pos
 	static int last_str_count = -1;
 	static enum compl_type last_type = NAME;
 	struct compl_str return_value = {NULL, 0};
-	if (input != NULL && input->len > 0 ) {
+	if (input != NULL && input->len > 0) {
 		const char *input_string = (char *)input->data;
 		int count;
 		short retries;
@@ -337,23 +337,23 @@ int test_for_console_command(char *text, int length) {
 		text++;
 		length--;
 	}
-	//Skip leading spaces
+	// Skip leading spaces
 	for (; isspace(*text); text++, length--) {}
-	//Check if there's anything left of the command
+	// Check if there's anything left of the command
 	if (length <= 0 || (*text == '@' && length <= 1)) {
 		return 0;
 	} else {
 		int cmd_len;
 		/* Handle numeric shortcuts */
-		if ( isdigit(text[0])) {
-			if ( process_text_alias(text, length) >= 0 ) {
+		if (isdigit(text[0])) {
+			if (process_text_alias(text, length) >= 0) {
 				return 1;
 			}
 		}
 		/* Look for a matching command */
 		for (i = 0; i < command_count; i++) {
 			cmd_len = strlen(commands[i].command);
-			//@tosh : permet de différencier une commande d'un alias (exemple : &alias 1 salut)
+			// @tosh : permet de différencier une commande d'un alias (exemple : &alias 1 salut)
 			if (strlen(text) >= cmd_len && my_strncompare(&text_ptr[1], commands[i].command, cmd_len) && (isspace(text[cmd_len]) || text[cmd_len] == '\0')) {
 				/* Command matched */
 				if (commands[i].callback && commands[i].callback(text + cmd_len, length - cmd_len)) {
@@ -374,7 +374,7 @@ int test_for_console_command(char *text, int length) {
 	*text = char_cmd_str[0];
 	return 0;
 }
-// -------- COMMAND CALLBACKS -------- //
+// -------- COMMAND CALLBACKS --------
 // Return 0 if you want the string to be sent to the server.
 // the first argument passed is the input string without the command itself
 // if ie. '#filter foo' is passed to test_for_console_command(), only ' foo' is passed to the callback.
@@ -467,7 +467,7 @@ int command_markpos(char *text, int len) {
 	return 1;
 }
 int command_mark(char *text, int len) {
-	if (strlen(text) > 1) { //check for empty marks
+	if (strlen(text) > 1) { // check for empty marks
 		char str[512];
 		for (; isspace(*text); text++) {}
 		if (strlen(text) > 0) {
@@ -513,7 +513,7 @@ int command_mark_color(char *text, int len) {
 		int r = -1, g, b;
 		if (sscanf(text, "%d %d %d", &r, &g, &b) == 3) {
 			if (!(r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255)) {
-				r = -1;                                       //don't set color
+				r = -1; // don't set color
 			}
 		} else {
 			if (strcasecmp(text, "red") == 0) {
@@ -547,7 +547,7 @@ int command_mark_color(char *text, int len) {
 			}
 		}
 		if (r > -1) {
-			//set color
+			// set color
 			curmark_r = r;
 			curmark_g = g;
 			curmark_b = b;
@@ -607,7 +607,7 @@ int command_ignore(char *text, int len) {
 	int result;
 	char ignore_type = IGN_ALL;
 	char *arg;
-	//on extrait les éventuels arguments
+	// on extrait les éventuels arguments
 	while (isspace(*text)) {
 		text++;
 	}
@@ -905,7 +905,7 @@ int command_log_conn_data(char *text, int len) {
 }
 // TODO: make this automatic or a better command, m is too short
 int command_msg(char *text, int len) {
-	int no;//, m=-1;
+	int no; // , m=-1;
 	// find first space, then skip any spaces
 	text = getparams(text);
 	if (my_strncompare(text, "tout", 4)) {
@@ -976,7 +976,7 @@ int command_storage(char *text, int len) {
 			return 0;
 		}
 		if (storage_filter[0] != '\0') {
-			size = filter_storage_text((char *)endl + 1, size, size);  //Note: filter from the first newline, which is where the item list starts
+			size = filter_storage_text((char *)endl + 1, size, size); // Note: filter from the first newline, which is where the item list starts
 			size += (endl - cached_storage_copy + 1);
 		}
 		put_text_in_buffer(CHAT_SERVER, cached_storage_copy, size);
@@ -1120,7 +1120,7 @@ int command_ckdata(char *text, int len) {
 		}
 	}
 	/* if no parameters default to current map elm file */
-	//@tosh : On vérifie la valeur de cur_map pour éviter le plantage.
+	// @tosh : On vérifie la valeur de cur_map pour éviter le plantage.
 	else if (cur_map == -1) {
 		LOG_TO_CONSOLE(c_red1, "Carte inconnue.");
 		return 1;
@@ -1142,8 +1142,8 @@ int command_ckdata(char *text, int len) {
 	/* show help if something fails */
 	else {
 		LOG_TO_CONSOLE(c_red2, "md5sum : fichier invalide ou erreur de syntaxe.");
-		LOG_TO_CONSOLE(c_red1, "Voir la somme md5 pour la carte actuelle :     &md5sum");
-		LOG_TO_CONSOLE(c_red1, "Voir la somme pour un fichier spécifique :     &md5sum nom_fichier");
+		LOG_TO_CONSOLE(c_red1, "Voir la somme md5 pour la carte actuelle : &md5sum");
+		LOG_TO_CONSOLE(c_red1, "Voir la somme pour un fichier spécifique : &md5sum nom_fichier");
 		LOG_TO_CONSOLE(c_red1, "Vérifier la somme pour un fichier spécifique : &md5sum somme_md5 nom_fichier");
 		return 1;
 	}
@@ -1170,11 +1170,11 @@ int command_keypress(char *text, int len) {
 }
 int save_local_data(char *text, int len) {
 	save_bin_cfg();
-	//Save the quickbar items
+	// Save the quickbar items
 	save_fr_quickitems();
-	//Save the quickbar spells
+	// Save the quickbar spells
 	save_quickspells();
-	//Save recipes
+	// Save recipes
 	save_recipes();
 	// save el.ini if asked
 	if (write_ini_on_exit) {
@@ -1309,7 +1309,7 @@ int command_raz_playlist(char *text) {
 	raz_playlist();
 	return 1;
 }
-//@tosh : commande permettant de lister les musiques contenues dans ./music/
+// @tosh : commande permettant de lister les musiques contenues dans ./music/
 int command_list_music(char *text) {
 	DIR *music_dir = NULL;
 	struct dirent *music_file = NULL;
@@ -1387,9 +1387,9 @@ void init_commands(const char *filename) {
 	add_command(cmd_knowledge, &knowledge_command);
 	add_command(cmd_msg, &command_msg);
 	add_command(cmd_afk, &command_afk);
-	add_command("jc", &command_jlc);//since we only mess with the part after the
+	add_command("jc", &command_jlc); // since we only mess with the part after the
 	add_command("couleurs_canaux", &command_channel_colors);
-	add_command("qc", &command_jlc);//command, one function can do both
+	add_command("qc", &command_jlc); // command, one function can do both
 	add_command(help_cmd_str, &command_help);
 	add_command("accept_buddy", &command_accept_buddy);
 	add_command("affiche_playlist", &command_affiche_playlist);

@@ -27,8 +27,8 @@
 #include "themes.h"
 #include "highlight.h"
 #define SIGILS_NO 64
-#define NUM_SIGILS_LINE 12      // how many sigils per line displayed
-#define NUM_SIGILS_ROW  3       // how many rows of sigils are there?
+#define NUM_SIGILS_LINE 12 // how many sigils per line displayed
+#define NUM_SIGILS_ROW  3 // how many rows of sigils are there?
 #define MAX_DATA_FILE_SIZE 1850 // QUICKSPELLS_MAXSIZE * 92 + 1 ? (default 560)
 #define QUICKSPELLS_MAXSIZE 20
 #define SIGILS_NO 64
@@ -49,7 +49,7 @@
 #define NECRO_ALIGN_X 1
 #define NECRO_SPACE_X 10 // espace entre bord gauche de la fenêtre et la grille de nécro
 #define NECRO_SPACE_Y 10 // espace entre bord haut de la fenêtre et la grille de nécro
-#define NECRO_SPACE_Y_BETWEEN 2 //espace vertical entre les différentes icones de nécro
+#define NECRO_SPACE_Y_BETWEEN 2 // espace vertical entre les différentes icones de nécro
 #define SET_COLOR(x) glColor4f((float)colors_list[x].r1 / 255.0f, (float)colors_list[x].g1 / 255.0f, (float)colors_list[x].b1 / 255.0f, 1.0f)
 typedef struct {
 	int sigil_img;
@@ -66,29 +66,28 @@ sigil_def sigils_list[SIGILS_NO];
 int sigils_text;
 int sigils_we_have;
 typedef struct {
-	int necro_img; //image de l'icone : position dans gamebuttons.dds cf liste de #define dans hud.c
-	char name[60]; //contient la commande sous forme #commande
-	char description[120]; //description de la commande - contient le texte à afficher
+	int necro_img; // image de l'icone : position dans gamebuttons.dds cf liste de #define dans hud.c
+	char name[60]; // contient la commande sous forme #commande
+	char description[120]; // description de la commande - contient le texte à afficher
 } necro_def;
-//necro_list se voit assigner des valeurs par la fonction de parsage du fichier spells.xml cf init_spells();
-necro_def necro_list[NECRO_NO + 1]; //+1 pour le sort de soin des invoqués
-int mouseover_necro = -1; //permet d'afficher dans display_necro_handler() le nom de la commande lorsque la souris passe sur l'icone. valeur par défaut : -1 (souris ailleurs), sinon : entier >= 0
-//pour le sort de soin des invoqués : positions x et y
+necro_def necro_list[NECRO_NO + 1]; // +1 pour le sort de soin des invoqués
+int mouseover_necro = -1; // permet d'afficher dans display_necro_handler() le nom de la commande lorsque la souris passe sur l'icone. valeur par défaut : -1 (souris ailleurs), sinon : entier >= 0
+// pour le sort de soin des invoqués : positions x et y
 int pos_x_sdi;
 int pos_y_sdi;
 typedef struct {
-	int id;//The spell server id
-	char name[60];//The spell name
-	char desc[120];//The spell description
-	int image;//image_id
-	int sigils[6];//index of required sigils in sigils_list
-	int mana;//required mana
-	attrib_16 *lvls[NUM_WATCH_STAT];//pointers to your_info lvls
-	int lvls_req[NUM_WATCH_STAT];//minimum lvls requirement
-	int reagents_id[4]; //reagents needed
-	Uint16 reagents_uid[4]; //reagents needed, unique item id
-	int reagents_qt[4]; //their quantities
-	int uncastable; //0 if castable, otherwise if something missing
+	int id; // The spell server id
+	char name[60]; // The spell name
+	char desc[120]; // The spell description
+	int image; // image_id
+	int sigils[6]; // index of required sigils in sigils_list
+	int mana; // required mana
+	attrib_16 *lvls[NUM_WATCH_STAT]; // pointers to your_info lvls
+	int lvls_req[NUM_WATCH_STAT]; // minimum lvls requirement
+	int reagents_id[4]; // reagents needed
+	Uint16 reagents_uid[4]; // reagents needed, unique item id
+	int reagents_qt[4]; // their quantities
+	int uncastable; // 0 if castable, otherwise if something missing
 } spell_info;
 spell_info spells_list[SPELLS_NO];
 int num_spells = 0;
@@ -99,8 +98,8 @@ Uint8 last_spell_str[20];
 int last_spell_len = 0;
 int spell_result = 0;
 int have_error_message = 0;
-int we_have_spell = -1; //selected spell
-int on_spell = -1;//mouse over this spell
+int we_have_spell = -1; // selected spell
+int on_spell = -1; // mouse over this spell
 typedef struct {
 	unsigned char desc[120];
 	int spells;
@@ -116,8 +115,8 @@ typedef struct {
 	unsigned int sound;
 } spell_def;
 spell_def active_spells[NUM_ACTIVE_SPELLS];
-//windows related
-int sigil_win = -1; //this is referred externally so we will change it when we switch windows
+// windows related
+int sigil_win = -1; // this is referred externally so we will change it when we switch windows
 int sigils_win = -1;
 int spell_win = -1;
 int spell_mini_win = -1;
@@ -126,45 +125,45 @@ int necro_win = -1;
 int creature_en_cours = 0;
 int double_invoc = 0;
 int securite_invoc = 1;
-int nb_recettes_necro = -1;//Nombre recettes de nécro		45
-char **nom_bestiole;    //Tableau des noms des invocation	char nom_bestiole[45][30]
-int **liste_items_necro;//Tableau des recettes			int liste_items_necro[45][20]    (mars 2020)
+int nb_recettes_necro = -1; // Nombre recettes de nécro		45
+char **nom_bestiole; // Tableau des noms des invocation	char nom_bestiole[45][30]
+int **liste_items_necro; // Tableau des recettes			int liste_items_necro[45][20]    (mars 2020)
 static char items_string[350] = {0};
 static size_t last_items_string_id = 0;
-int start_mini_spells = 0; //do we start minimized?
+int start_mini_spells = 0; // do we start minimized?
 int init_ok = 0;
 int sigil_menu_x = 10;
 int sigil_menu_y = 20;
-//big window
+// big window
 int spell_x_len = 0;
 int spell_y_len = 0;
 int spell_y_len_ext = 0;
-//sigil window
+// sigil window
 int sigil_x_len = NUM_SIGILS_LINE * 33 + 20;
 int sigil_y_len = (3 + NUM_SIGILS_ROW) * 33;
-//mini window
+// mini window
 int spell_mini_x_len = 0;
 int spell_mini_y_len = 0;
 int spell_mini_rows = 0;
-//necro window
+// necro window
 int necro_x_len = (NECRO_NO + 1) * 33 + NECRO_SPACE_Y + 40 + NECRO_SPACE_Y_BETWEEN * 8;
 int necro_y_len = NECRO_ALIGN_X * 33 + NECRO_SPACE_X + 55 + 190 - 15;
-//QUICKSPELLS
+// QUICKSPELLS
 int clear_mouseover = 0;
 int cast_mouseover = 0;
-mqbdata *mqb_data[QUICKSPELLS_MAXSIZE + 1] = {NULL};//mqb_data will hold the magic quickbar name, image, pos.
+mqbdata *mqb_data[QUICKSPELLS_MAXSIZE + 1] = {NULL}; // mqb_data will hold the magic quickbar name, image, pos.
 int quickspell_mqb_selected = 0;
-mqbdata *mqb_data2[QUICKSPELLS_MAXSIZE + 1] = {NULL};//mqb_data will hold the magic quickbar name, image, pos.
-mqbdata *mqb_data3[QUICKSPELLS_MAXSIZE + 1] = {NULL};//mqb_data will hold the magic quickbar name, image, pos.
-mqbdata *mqb_data4[QUICKSPELLS_MAXSIZE + 1] = {NULL};//mqb_data will hold the magic quickbar name, image, pos.
-mqbdata *mqb_data5[QUICKSPELLS_MAXSIZE + 1] = {NULL};//mqb_data will hold the magic quickbar name, image, pos.
-int quickspells_nb = 0;             // nombre de raccourcis existants
-int quickspells_size = 6;           // nombre de raccourcis    (cf ini)
-int quickspells_dir = VERTICAL;     // orientation par défaut  (cf cfg)
-int quickspells_on_top = 1;         // toujours au dessus ?    (cf cfg)
-int quickspells_draggable = 0;      // fenêtre déplaçable ?    (cf cfg)
-int quickspell_x = HUD_MARGIN_X;    // position x par défaut   (cf cfg)
-int quickspell_y = HUD_MARGIN_X;    // position y par défaut   (cf cfg)
+mqbdata *mqb_data2[QUICKSPELLS_MAXSIZE + 1] = {NULL}; // mqb_data will hold the magic quickbar name, image, pos.
+mqbdata *mqb_data3[QUICKSPELLS_MAXSIZE + 1] = {NULL}; // mqb_data will hold the magic quickbar name, image, pos.
+mqbdata *mqb_data4[QUICKSPELLS_MAXSIZE + 1] = {NULL}; // mqb_data will hold the magic quickbar name, image, pos.
+mqbdata *mqb_data5[QUICKSPELLS_MAXSIZE + 1] = {NULL}; // mqb_data will hold the magic quickbar name, image, pos.
+int quickspells_nb = 0; // nombre de raccourcis existants
+int quickspells_size = 6; // nombre de raccourcis    (cf ini)
+int quickspells_dir = VERTICAL; // orientation par défaut  (cf cfg)
+int quickspells_on_top = 1; // toujours au dessus ?    (cf cfg)
+int quickspells_draggable = 0; // fenêtre déplaçable ?    (cf cfg)
+int quickspell_x = HUD_MARGIN_X; // position x par défaut   (cf cfg)
+int quickspell_y = HUD_MARGIN_X; // position y par défaut   (cf cfg)
 int quickspell_x_len = (1 + 30) * 1 + 1; // largeur par défaut
 int quickspell_y_len = (1 + 30) * 1 + 1; // longueur par défaut
 int quickspells_loaded = 0;
@@ -181,7 +180,7 @@ void repeat_spell() {
 		my_tcp_send(my_socket, last_spell_str, last_spell_len);
 	}
 }
-//returns a node with tagname, starts searching from the_node
+// returns a node with tagname, starts searching from the_node
 xmlNode *get_XML_node(xmlNode *the_node, char *tagname) {
 	xmlNode *node = the_node;
 	while (node) {
@@ -241,7 +240,7 @@ int put_on_cast() {
 		for (i = 0; i < 6; i++) {
 			if (spells_list[we_have_spell].sigils[i] >= 0) {
 				if (!sigils_list[spells_list[we_have_spell].sigils[i]].have_sigil) {
-					//we miss at least a sigil, clear on_cast
+					// we miss at least a sigil, clear on_cast
 					int j;
 					for (j = 0; j < 6; j++) {
 						on_cast[j] = -1;
@@ -263,7 +262,7 @@ int init_spells() {
 	xmlDoc *doc;
 	int ok = 1;
 	char *fname = "./spells.xml";
-	//init textures and structs
+	// init textures and structs
 	sigils_text = load_texture_cached("textures/sigils.dds", tt_gui);
 	for (i = 0; i < SIGILS_NO; i++) {
 		sigils_list[i].have_sigil = 0;
@@ -290,7 +289,7 @@ int init_spells() {
 	}
 	spell_text[0] = spell_help[0] = 0;
 	i = 0;
-	//parse xml
+	// parse xml
 	doc = xmlReadFile(fname, NULL, 0);
 	if (doc == 0) {
 		LOG_ERROR("Unable to read spells definition file %s: %s", fname, strerror(errno));
@@ -308,7 +307,7 @@ int init_spells() {
 		xmlNode *data;
 		char name[200];
 		i = 0;
-		//parse spells
+		// parse spells
 		node = get_XML_node(root->children, "Spell_list");
 		node = get_XML_node(node->children, "spell");
 		while (node) {
@@ -402,7 +401,7 @@ int init_spells() {
 			i++;
 		}
 		num_spells = i;
-		//parse sigils
+		// parse sigils
 		node = get_XML_node(root->children, "Sigil_list");
 		node = get_XML_node(node->children, "sigil");
 		while (node) {
@@ -419,20 +418,20 @@ int init_spells() {
 			sigils_list[k].have_sigil = 1;
 			node = get_XML_node(node->next, "sigil");
 		}
-		//parse necro
+		// parse necro
 		node = get_XML_node(root->children, "Necro_list");
 		node = get_XML_node(node->children, "necro");
 		while (node) {
-			int k = get_int_property(node, "id"); //id de la commande
-			int img = get_int_property(node, "img"); //n° de l'image pour le fichier texture gamebuttons
+			int k = get_int_property(node, "id"); // id de la commande
+			int img = get_int_property(node, "img"); // n° de l'image pour le fichier texture gamebuttons
 			necro_list[k].necro_img = img;
-			get_string_value(necro_list[k].description, sizeof(necro_list[k].description), node); //description du sort
-			safe_strncpy((char *)necro_list[k].name, get_string_property(node, "name"), sizeof(necro_list[k].name)); //#commande
+			get_string_value(necro_list[k].description, sizeof(necro_list[k].description), node); // description du sort
+			safe_strncpy((char *)necro_list[k].name, get_string_property(node, "name"), sizeof(necro_list[k].name)); // #commande
 			node = get_XML_node(node->next, "necro");
 		}
-		//Soin des invoqués :
+		// Soin des invoqués :
 		safe_strncpy((char *)necro_list[5].description, "Soigner", sizeof(necro_list[5].description));
-		//parse groups
+		// parse groups
 		num_groups = 0;
 		node = get_XML_node(root->children, "Groups");
 		node = get_XML_node(node->children, "group");
@@ -450,7 +449,7 @@ int init_spells() {
 		}
 	}
 	xmlFreeDoc(doc);
-	//init arrays
+	// init arrays
 	for (i = 0; i < 6; i++) {
 		on_cast[i] = -1;
 	}
@@ -462,7 +461,7 @@ int init_spells() {
 			stop_sound(active_spells[i].sound);
 		}
 	}
-	if (!ok) { //xml failed, init sigils manually
+	if (!ok) { // xml failed, init sigils manually
 		init_sigils();
 	}
 	init_ok = ok;
@@ -472,18 +471,18 @@ void check_castability() {
 	int i, j, k, l;
 	for (i = 0; i < num_spells; i++) {
 		spells_list[i].uncastable = 0;
-		//Check Mana
+		// Check Mana
 		if (have_stats && your_info.ethereal_points.cur < spells_list[i].mana) {
 			spells_list[i].uncastable |= UNCASTABLE_MANA;
 		}
-		//Check Sigils
+		// Check Sigils
 		for (j = 0; j < 6; j++) {
 			k = spells_list[i].sigils[j];
 			if (k >= 0 && !sigils_list[k].have_sigil) {
 				spells_list[i].uncastable |= UNCASTABLE_SIGILS;
 			}
 		}
-		//Check Reagents
+		// Check Reagents
 		for (j = 0; j < 4 && spells_list[i].reagents_id[j] >= 0; j++) {
 			l = 0;
 			for (k = 0; k < ITEM_WEAR_START; k++) {
@@ -496,11 +495,11 @@ void check_castability() {
 				}
 			}
 			if (!l) {
-				//no reagent j found
+				// no reagent j found
 				spells_list[i].uncastable |= UNCASTABLE_REAGENTS;
 			}
 		}
-		//Check Levels
+		// Check Levels
 		for (j = 0; j < NUM_WATCH_STAT && spells_list[i].lvls[j]; j++) {
 			if (spells_list[i].lvls[j]) {
 				if (spells_list[i].lvls[j]->cur < spells_list[i].lvls_req[j]) {
@@ -509,10 +508,10 @@ void check_castability() {
 			}
 		}
 	}
-	//when castabilitychanges, update spell_help
+	// when castabilitychanges, update spell_help
 	set_spell_help_text(we_have_spell);
 }
-//ACTIVE SPELLS
+// ACTIVE SPELLS
 // durée restante obtenue du serveur (l'US utilise le fichier XML)
 void get_active_spell(int pos, int spell, int timer) {
 	active_spells[pos].spell = spell;
@@ -617,15 +616,15 @@ void display_spells_we_have() {
 	int cur_pos = 0;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	cur_time = SDL_GetTicks();
-	//ok, now let's draw the objects...
+	// ok, now let's draw the objects...
 	for (i = 0; i < NUM_ACTIVE_SPELLS; i++) {
 		if (active_spells[i].spell != -1) {
 			int cur_spell;
 			char string[10];
 			int x_start, y_start;
-			//get the UV coordinates.
-			cur_spell = active_spells[i].spell + 32;        //the first 32 icons are the sigils
-			//get the x and y
+			// get the UV coordinates.
+			cur_spell = active_spells[i].spell + 32; // the first 32 icons are the sigils
+			// get the x and y
 			cur_pos++;
 			x_start = 8; // la jauge prend place de 0 à 5
 			y_start = window_height - 120 - 36 * (cur_pos); // ne pas tenir compte du hud_y
@@ -655,7 +654,7 @@ void display_spells_we_have() {
 	}
 }
 int show_last_spell_help = 0;
-//DISPLAY HANDLERS
+// DISPLAY HANDLERS
 int draw_switcher(window_info *win) {
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_POINT_SMOOTH);
@@ -722,11 +721,11 @@ void draw_current_spell(int x, int y, int sigils_too) {
 	if (we_have_spell >= 0) {
 		int i, j;
 		unsigned char str[4];
-		//we have a current spell (cliked or casted) !!mqb_data[0] can still be null!!
+		// we have a current spell (cliked or casted) !!mqb_data[0] can still be null!!
 		j = we_have_spell;
 		draw_spell_icon(spells_list[j].image, x, y, 32, 1, 0);
 		if (sigils_too) {
-			//draw sigils
+			// draw sigils
 			x += 33 * 2;
 			for (i = 0; i < 6; i++) {
 				if (spells_list[j].sigils[i] < 0) {
@@ -738,7 +737,7 @@ void draw_current_spell(int x, int y, int sigils_too) {
 				}
 			}
 		}
-		//draw reagents
+		// draw reagents
 		x += (sigils_too) ? (33 * 6 + 33):(33 + 16);
 		// Modification car sur les sorts avec 4 essences différentes
 		// l'affichage pose soucis
@@ -750,7 +749,7 @@ void draw_current_spell(int x, int y, int sigils_too) {
 				gray_out(x + 33 * i, y + 1, 32);
 			}
 		}
-		//draw mana
+		// draw mana
 		x += (sigils_too) ? (33 * 5):(33 * 4 + 17);
 		safe_snprintf((char *)str, sizeof(str), "%i", spells_list[j].mana);
 		if (spells_list[j].uncastable & UNCASTABLE_MANA) {
@@ -762,7 +761,7 @@ void draw_current_spell(int x, int y, int sigils_too) {
 		j = (33 - get_char_width(str[0])) / 2;
 		draw_string(x + i, y + j, str, 1);
 	}
-	//draw strings
+	// draw strings
 	x = 20;
 	glColor3f(0.77f, 0.57f, 0.39f);
 	if (sigils_too) {
@@ -775,7 +774,7 @@ void draw_current_spell(int x, int y, int sigils_too) {
 	draw_string_small(x, y - 15, (unsigned char *)"Essences", 1);
 	x += 33 * 4 + ((sigils_too) ? (33):(17));
 	draw_string_small(x, y - 15, (unsigned char *)"Mana", 1);
-	//draw grids
+	// draw grids
 	glDisable(GL_TEXTURE_2D);
 	x = 20;
 	if (sigils_too) {
@@ -797,31 +796,31 @@ int display_sigils_handler(window_info *win) {
 	}
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//let's add the new spell icon if we have one
+	// let's add the new spell icon if we have one
 	x_start = 350;
 	y_start = 112;
 	if (mqb_data[0] && mqb_data[0]->spell_id != -1) {
 		draw_spell_icon(mqb_data[0]->spell_image, x_start, y_start, 32, 1, 0);
 	}
-	//ok, now let's draw the objects...
+	// ok, now let's draw the objects...
 	for (i = 0; i < SIGILS_NO; i++) {
 		if (sigils_list[i].have_sigil) {
-			//get the x and y
+			// get the x and y
 			x_start = 33 * (i % NUM_SIGILS_LINE) + 1;
 			y_start = 33 * (i / NUM_SIGILS_LINE);
 			draw_spell_icon(sigils_list[i].sigil_img, x_start, y_start, 32, 0, 0);
 		}
 	}
-	//ok, now let's draw the sigils on the list
+	// ok, now let's draw the sigils on the list
 	for (i = 0; i < 6; i++) {
 		if (on_cast[i] != -1) {
-			//get the x and y
+			// get the x and y
 			x_start = 33 * (i % 6) + 5;
 			y_start = sigil_y_len - 37;
 			draw_spell_icon(on_cast[i], x_start, y_start, 32, 0, 0);
 		}
 	}
-	//now, draw the inventory text, if any.
+	// now, draw the inventory text, if any.
 	draw_string_small(4, sigil_y_len - 90, spell_text, 4);
 	// Render the grid *after* the images. It seems impossible to code
 	// it such that images are rendered exactly within the boxes on all
@@ -840,7 +839,7 @@ int display_sigils_handler(window_info *win) {
 int display_spells_handler(window_info *win) {
 	int i, j, k, x, y;
 	draw_switcher(win);
-	//Draw spell groups
+	// Draw spell groups
 	for (i = 0; i < num_groups; i++) {
 		x = groups_list[i].x;
 		y = groups_list[i].y;
@@ -856,14 +855,14 @@ int display_spells_handler(window_info *win) {
 		rendergrid(SPELLS_ALIGN_X, groups_list[i].spells / (SPELLS_ALIGN_X + 1) + 1, x, y, 33, 33);
 	}
 	glEnable(GL_TEXTURE_2D);
-	//draw spell text & help
+	// draw spell text & help
 	glColor3f(1.0f, 1.0f, 1.0f);
 	draw_string_small(20, spell_y_len - 100, spell_text, 4);
 	draw_string_small(20, spell_y_len + 5, spell_help, 3);
-	//draw the bottom bar
+	// draw the bottom bar
 	draw_current_spell(20, spell_y_len - 37, 1);
 	if (we_have_spell >= 0 && spells_list[we_have_spell].uncastable) {
-		//not castable
+		// not castable
 		glColor3f(1.0f, 0.0f, 0.0f);
 		rendergrid(1, 1, 20, spell_y_len - 37, 33, 33);
 	}
@@ -885,16 +884,16 @@ int display_spells_mini_handler(window_info *win) {
 			}
 			draw_spell_icon(spells_list[groups_list[cg].spells_id[cs]].image, x + j * 33, y + 33 * i, 32, 0, spells_list[groups_list[i].spells_id[j]].uncastable);
 			cs++;
-			//@tosh : correction d'un bug qui survient si la ligne est remplie de runes.
+			// @tosh : correction d'un bug qui survient si la ligne est remplie de runes.
 			if (j == SPELLS_ALIGN_X - 1) {
 				cg++;
 				cs = 0;
 			}
 		}
 	}
-	//draw spell help
+	// draw spell help
 	if (on_spell == -2) {
-		//mouse over the bottom-left selected spell icon, show uncastability
+		// mouse over the bottom-left selected spell icon, show uncastability
 		int l = (int)(get_string_width((unsigned char *)GET_UNCASTABLE_STR(spells_list[we_have_spell].uncastable)) * (float)DEFAULT_SMALL_RATIO);
 		SET_COLOR(c_red2);
 		draw_string_small(20 + (33 * SPELLS_ALIGN_X - l) / 2, spell_mini_y_len - 37 - 35, (unsigned char *)GET_UNCASTABLE_STR(spells_list[we_have_spell].uncastable), 1);
@@ -910,13 +909,13 @@ int display_spells_mini_handler(window_info *win) {
 			draw_string_small(20 + (33 * SPELLS_ALIGN_X - l) / 2, spell_mini_y_len - 37 - 35, (unsigned char *)spells_list[i].name, 1);
 		}
 	}
-	//draw the current spell
+	// draw the current spell
 	draw_current_spell(x, spell_mini_y_len - 37, 0);
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f, 0.57f, 0.39f);
 	rendergrid(SPELLS_ALIGN_X, spell_mini_rows, x, y, 33, 33);
 	if (we_have_spell >= 0 && spells_list[we_have_spell].uncastable) {
-		//not castable, red grid
+		// not castable, red grid
 		glColor3f(1.0f, 0.0f, 0.0f);
 		rendergrid(1, 1, 20, spell_mini_y_len - 37, 33, 33);
 	}
@@ -994,19 +993,19 @@ int display_necro_handler(window_info *win) {
 		}
 		draw_2d_thing(u_start, v_start, u_end, v_end, NECRO_SPACE_Y + i * (33 + NECRO_SPACE_Y_BETWEEN) + NECRO_SPACE_Y_BETWEEN * j, NECRO_SPACE_X, NECRO_SPACE_Y + i * (33 + NECRO_SPACE_Y_BETWEEN) + NECRO_SPACE_Y_BETWEEN * j + 33, NECRO_SPACE_X + 33);
 	}
-	//ajout du sort de soin des invoqués :
+	// ajout du sort de soin des invoqués :
 	glEnd();
 	glDisable(GL_ALPHA_TEST);
-	bind_texture_id(sigils_text); //icones de sorts
+	bind_texture_id(sigils_text); // icones de sorts
 	pos_y_sdi = NECRO_SPACE_X;
 	pos_x_sdi = NECRO_SPACE_Y + 5 * (33 + NECRO_SPACE_Y_BETWEEN) + NECRO_SPACE_Y_BETWEEN * 5;
 	draw_spell_icon(spells_list[groups_list[1].spells_id[4]].image, pos_x_sdi, pos_y_sdi, 32, 0, spells_list[groups_list[1].spells_id[4]].uncastable);
-	//on affiche le cadre :
+	// on affiche le cadre :
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f, 0.57f, 0.39f);
 	rendergrid(1, 1, pos_x_sdi, pos_y_sdi, 34, 34);
 	glEnable(GL_TEXTURE_2D);
-	//on écrit la légende de l'action sélectionnée
+	// on écrit la légende de l'action sélectionnée
 	glColor3f(1.0f, 1.0f, 1.0f);
 	if (mouseover_necro != -1) {
 		draw_string_small(NECRO_SPACE_X, NECRO_SPACE_Y * 2 + 33 + 10, (unsigned char *)necro_list[mouseover_necro].description, 1);
@@ -1022,16 +1021,16 @@ int display_necro_handler(window_info *win) {
 		rendergrid(6, 1, grille_x, grille_y, 32, 32);
 		glColor3f(0.77f, 0.57f, 0.39f);
 		glBegin(GL_QUADS);
-		glVertex3i(place_fleches_x + 4, place_fleches_y, 0); //top
-		glVertex3i(place_fleches_x, place_fleches_y + 10, 0); //left
-		glVertex3i(place_fleches_x + 8, place_fleches_y + 10, 0); //right
-		glVertex3i(place_fleches_x + 4, place_fleches_y, 0); //top
+		glVertex3i(place_fleches_x + 4, place_fleches_y, 0); // top
+		glVertex3i(place_fleches_x, place_fleches_y + 10, 0); // left
+		glVertex3i(place_fleches_x + 8, place_fleches_y + 10, 0); // right
+		glVertex3i(place_fleches_x + 4, place_fleches_y, 0); // top
 		glEnd();
 		glBegin(GL_QUADS);
-		glVertex3i(place_fleches_x + 4, place_fleches_y + 21 + 10, 0); //top
-		glVertex3i(place_fleches_x, place_fleches_y + 21, 0); //left
-		glVertex3i(place_fleches_x + 8, place_fleches_y + 21, 0); //right
-		glVertex3i(place_fleches_x + 4, place_fleches_y + 21 + 10, 0); //top
+		glVertex3i(place_fleches_x + 4, place_fleches_y + 21 + 10, 0); // top
+		glVertex3i(place_fleches_x, place_fleches_y + 21, 0); // left
+		glVertex3i(place_fleches_x + 8, place_fleches_y + 21, 0); // right
+		glVertex3i(place_fleches_x + 4, place_fleches_y + 21 + 10, 0); // top
 		glEnd();
 		glEnable(GL_POINT_SMOOTH);
 		glPointSize(12);
@@ -1082,13 +1081,11 @@ int display_necro_handler(window_info *win) {
 				draw_string_small_shadowed(grille_x + (liste_items_necro[creature_en_cours][0]) * 32, grille_y + 1, nombre, 1, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 			}
 		}
-		//glColor3f (1.0f, 1.0f, 1.0f);
 		glColor3f(0.77f, 0.57f, 0.39f);
 		draw_string_small(texte_options_x, texte_options_y - 26, (unsigned char *)("Bloquer tuer invocations"), 1);
 		draw_string_small(texte_options_x - 10, texte_options_y + 60 - 15, (unsigned char *)("Invocation:"), 1);
 		glColor3f(0.2f, 1.0f, 0.2f);
 		draw_string_small(texte_options_x - 10, texte_options_y + 75 - 15, (unsigned char *)(nom_bestiole[creature_en_cours]), 1);
-		//glColor3f (1.0f, 1.0f, 1.0f);
 		glColor3f(0.77f, 0.57f, 0.39f);
 		draw_string_small(texte_options_x, texte_options_y + 95 - 15, (unsigned char *)("Double Invocation"), 1);
 	}
@@ -1123,7 +1120,7 @@ int chargement_necro_recettes(int choix) {
 						nb_item_bestiole_en_cours = atoi(prov);
 						prochain_monstre = monstre + (nb_item_bestiole_en_cours * 3) + 2;
 						if (choix) {
-							liste_items_necro[bestiole_en_cours][0] = nb_item_bestiole_en_cours; //total objets différents
+							liste_items_necro[bestiole_en_cours][0] = nb_item_bestiole_en_cours; // total objets différents
 						}
 						encours = monstre + 1;
 					} else {
@@ -1135,12 +1132,12 @@ int chargement_necro_recettes(int choix) {
 			}
 			k++;
 		}
-		return bestiole_en_cours + 1; //fichier ok
+		return bestiole_en_cours + 1; // fichier ok
 	} else {
-		return -1; //Pas de fichier
+		return -1; // Pas de fichier
 	}
 }
-//CLICK HANDLERS
+// CLICK HANDLERS
 int switch_handler(int new_win) {
 	window_info *win;
 	int this_win;
@@ -1182,13 +1179,10 @@ int mouseover_switcher_handler(window_info *win, int mx, int my) {
 int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags) {
 	int pos = 0;
 	if (win->window_id == necro_win) {
-		//grille_x = 12;
-		//grille_y = 94 - 12;
-		//rendergrid(6, 1, grille_x, grille_y, 32, 32);
 		pos = get_mouse_pos_in_grid(mx, my, 1, 1, 12, 82, 181, 33);
 		if (pos == 0) {
 			if (flags & ELW_WHEEL_UP) {
-				//haut
+				// haut
 				if (nb_recettes_necro != -1) {
 					if (creature_en_cours == nb_recettes_necro - 1) {
 						creature_en_cours = -1;
@@ -1197,7 +1191,7 @@ int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags) {
 				}
 				return 0;
 			} else if (flags & ELW_WHEEL_DOWN) {
-				//bas
+				// bas
 				if (nb_recettes_necro != -1) {
 					if (creature_en_cours == 0) {
 						creature_en_cours = nb_recettes_necro;
@@ -1235,7 +1229,7 @@ int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags) {
 }
 int click_sigils_handler(window_info *win, int mx, int my, Uint32 flags) {
 	// only handle real clicks, not scroll wheel moves
-	if ((flags & ELW_MOUSE_BUTTON) == 0 ) {
+	if ((flags & ELW_MOUSE_BUTTON) == 0) {
 		return 0;
 	} else if (mx >= 350 && mx <= 381 && my >= 112 && my <= 143 && mqb_data[0] && mqb_data[0]->spell_id != -1) {
 		add_spell_to_quickbar();
@@ -1245,7 +1239,7 @@ int click_sigils_handler(window_info *win, int mx, int my, Uint32 flags) {
 		if (pos >= 0 && sigils_list[pos].have_sigil) {
 			int j;
 			int image_id = sigils_list[pos].sigil_img;
-			//see if it is already on the list
+			// see if it is already on the list
 			for (j = 0; j < 6; j++) {
 				if (on_cast[j] == image_id) {
 					return 1;
@@ -1286,28 +1280,28 @@ int click_spells_handler(window_info *win, int mx, int my, Uint32 flags) {
 		}
 	}
 	if (the_spell != -1) {
-		//a spell has been clicked
+		// a spell has been clicked
 		int code_pos = (the_group * 256 + the_spell);
 		we_have_spell = groups_list[the_group].spells_id[the_spell];
 		put_on_cast();
-		//handle double click && cast spell
+		// handle double click && cast spell
 		if (((SDL_GetTicks() - last_clicked) < 400) && last_pos == code_pos) {
 			cast_handler();
 		} else {
-			have_error_message = 0; //if not double click, clear server msg
+			have_error_message = 0; // if not double click, clear server msg
 		}
 		last_pos = code_pos;
 	} else {
 		last_pos = -1;
-		//check spell icon
+		// check spell icon
 		if (we_have_spell >= 0 && mx > 20 && mx < 53 && my > spell_y_len - 37 && my < spell_y_len - 4) {
 			if (flags & ELW_LEFT_MOUSE) {
-				//cast spell
+				// cast spell
 				if (put_on_cast()) {
 					cast_handler();
 				}
 			} else if (flags & ELW_RIGHT_MOUSE) {
-				//add to quickbar
+				// add to quickbar
 				if (put_on_cast()) {
 					prepare_for_cast();
 					add_spell_to_quickbar();
@@ -1330,7 +1324,7 @@ int click_spells_mini_handler(window_info *win, int mx, int my, Uint32 flags) {
 	pos = get_mouse_pos_in_grid(mx, my, SPELLS_ALIGN_X, spell_mini_rows, 20, 10, 33, 33);
 	if (pos >= 0) {
 		int i, j, cs, cg, the_spell = -1, the_group = -1, the_pos = pos;
-		//find the spell clicked
+		// find the spell clicked
 		for (i = 0, cs = 0, cg = 0; i < spell_mini_rows && the_pos >= 0; i++) {
 			for (j = 0; j < SPELLS_ALIGN_X; j++) {
 				the_pos--;
@@ -1350,24 +1344,24 @@ int click_spells_mini_handler(window_info *win, int mx, int my, Uint32 flags) {
 				}
 			}
 		}
-		//put it on the cast bar
+		// put it on the cast bar
 		if (the_spell != -1) {
 			we_have_spell = groups_list[the_group].spells_id[the_spell];
 			put_on_cast();
-			//handle double click
+			// handle double click
 			if (((SDL_GetTicks() - last_clicked) < 400) && last_pos == pos) {
 				cast_handler();
 			}
 		}
 	} else {
-		//check if clicked on the spell icon
+		// check if clicked on the spell icon
 		if (we_have_spell >= 0 && mx >= 20 && mx <= 53 && my >= spell_mini_y_len - 37 && my <= spell_mini_y_len - 4) {
 			if (flags & ELW_LEFT_MOUSE) {
 				if (put_on_cast()) {
 					cast_handler();
 				}
 			} else if (flags & ELW_RIGHT_MOUSE) {
-				//add to quickbar
+				// add to quickbar
 				if (put_on_cast()) {
 					prepare_for_cast();
 					add_spell_to_quickbar();
@@ -1410,7 +1404,7 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags) {
 			}
 		}
 	}
-	//sort de soin des invoqués
+	// sort de soin des invoqués
 	pos = get_mouse_pos_in_grid(mx, my, 1, 1, pos_x_sdi, pos_y_sdi, 33, 33);
 	if (pos == 0) {
 		we_have_spell = groups_list[1].spells_id[4];
@@ -1418,7 +1412,6 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags) {
 		cast_handler();
 	}
 	if (nb_recettes_necro > 0) {
-		//pos = get_mouse_pos_in_grid(mx, my, 1, 1, double_invoc_x - 5, double_invoc_y - 5, 10, 10);
 		pos = get_mouse_pos_in_grid(mx, my, 1, 1, 8, 155, 10, 10);
 		if (pos == 0) {
 			if (double_invoc == 1) {
@@ -1427,7 +1420,6 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags) {
 				double_invoc++;
 			}
 		}
-		//pos = get_mouse_pos_in_grid(mx, my, 1, 1, blocage_invoc_x - 5, blocage_invoc_y - 5, 10, 10);
 		pos = get_mouse_pos_in_grid(mx, my, 1, 1, 8, 49, 10, 10);
 		if (pos == 0) {
 			if (securite_invoc == 1) {
@@ -1436,10 +1428,9 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags) {
 				securite_invoc++;
 			}
 		}
-		//pos = get_mouse_pos_in_grid(mx, my, 1, 1, place_fleches_x - 1, place_fleches_y, 10, 10);
 		pos = get_mouse_pos_in_grid(mx, my, 1, 1, 209, 83, 10, 10);
 		if (pos == 0) {
-			//haut
+			// haut
 			if (nb_recettes_necro != -1) {
 				if (creature_en_cours == nb_recettes_necro - 1) {
 					creature_en_cours = -1;
@@ -1447,10 +1438,9 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags) {
 				creature_en_cours++;
 			}
 		}
-		//pos = get_mouse_pos_in_grid(mx, my, 1, 1, place_fleches_x - 1, place_fleches_y + 21, 10, 10);
 		pos = get_mouse_pos_in_grid(mx, my, 1, 1, 209, 104, 10, 10);
 		if (pos == 0) {
-			//bas
+			// bas
 			if (nb_recettes_necro != -1) {
 				if (creature_en_cours == 0) {
 					creature_en_cours = nb_recettes_necro;
@@ -1464,7 +1454,7 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags) {
 	}
 	return 0;
 }
-//MOUSEOVER HANDLERS
+// MOUSEOVER HANDLERS
 int mouseover_sigils_handler(window_info *win, int mx, int my) {
 	if (!have_error_message) {
 		spell_text[0] = 0;
@@ -1472,7 +1462,7 @@ int mouseover_sigils_handler(window_info *win, int mx, int my) {
 	if (mx >= 350 && mx <= 381 && my >= 112 && my <= 143 && mqb_data[0] && mqb_data[0]->spell_name[0]) {
 		show_last_spell_help = 1;
 	}
-	//see if we clicked on any sigil in the main category
+	// see if we clicked on any sigil in the main category
 	if (mx > 0 && mx < NUM_SIGILS_LINE * 33 && my > 0 && my < NUM_SIGILS_ROW * 33) {
 		int pos = get_mouse_pos_in_grid(mx, my, NUM_SIGILS_LINE, NUM_SIGILS_ROW, 0, 0, 33, 33);
 		if (pos >= 0 && sigils_list[pos].have_sigil) {
@@ -1481,7 +1471,7 @@ int mouseover_sigils_handler(window_info *win, int mx, int my) {
 		}
 		return 0;
 	}
-	//see if we clicked on any sigil from "on cast"
+	// see if we clicked on any sigil from "on cast"
 	if (mx > 5 && mx < 6 * 33 + 5 && my > sigil_y_len - 37 && my < sigil_y_len - 5) {
 		int pos = get_mouse_pos_in_grid(mx, my, 6, 1, 5, sigil_y_len - 37, 33, 33);
 		if (pos >= 0 && on_cast[pos] != -1) {
@@ -1503,16 +1493,16 @@ void set_spell_help_text(int spell) {
 		spell_help[0] = 0;
 		return;
 	}
-	//Set spell name color
+	// Set spell name color
 	if (spell == we_have_spell) {
 		spell_help[0] = 127 + c_green3;
 	} else {
 		spell_help[0] = 127 + c_orange2;
 	}
 	spell_help[1] = 0;
-	//Set spell name
+	// Set spell name
 	safe_strcat((char *)spell_help, spells_list[spell].name, sizeof(spell_help));
-	//Set uncastable message
+	// Set uncastable message
 	if (spells_list[spell].uncastable) {
 		clr[0] = 127 + c_red2;
 		clr[1] = clr[2] = ' ';
@@ -1541,7 +1531,7 @@ int mouseover_spells_handler(window_info *win, int mx, int my) {
 		}
 	}
 	set_spell_help_text(we_have_spell);
-	//check spell icon
+	// check spell icon
 	if (mx > 20 && mx < 53 && my > spell_y_len - 37 && my < spell_y_len - 4 && we_have_spell >= 0) {
 		safe_snprintf((char *)spell_text, sizeof(spell_text), "Clique gauche pour lancer le sort\nClique droit pour ajouter le sort dans la barre rapide");
 		have_error_message = 0;
@@ -1554,7 +1544,7 @@ int mouseover_spells_mini_handler(window_info *win, int mx, int my) {
 	on_spell = -1;
 	if (pos >= 0) {
 		int i, j, cs, cg, the_spell = -1, the_group = -1, the_pos = pos;
-		//find the spell clicked
+		// find the spell clicked
 		for (i = 0, cs = 0, cg = 0; i < spell_mini_rows && the_pos >= 0; i++) {
 			for (j = 0; j < SPELLS_ALIGN_X; j++) {
 				the_pos--;
@@ -1578,8 +1568,8 @@ int mouseover_spells_mini_handler(window_info *win, int mx, int my) {
 			on_spell = groups_list[the_group].spells_id[the_spell];
 		}
 	} else if (mx > 20 && mx < 53 && my > spell_mini_y_len - 37 && my < spell_mini_y_len - 4 && we_have_spell >= 0) {
-		//check spell icon
-		on_spell = -2; //draw uncastability reason
+		// check spell icon
+		on_spell = -2; // draw uncastability reason
 	}
 	mouseover_switcher_handler(win, mx, my);
 	return 0;
@@ -1603,7 +1593,7 @@ int mouseover_necro_handler(window_info *win, int mx, int my) {
 			mouseover_necro = -1;
 		}
 	}
-	//sort de soin des invoqués
+	// sort de soin des invoqués
 	pos = get_mouse_pos_in_grid(mx, my, 1, 1, pos_x_sdi, pos_y_sdi, 33, 33);
 	if (pos == 0) {
 		mouseover_necro = 5;
@@ -1611,7 +1601,7 @@ int mouseover_necro_handler(window_info *win, int mx, int my) {
 	mouseover_switcher_handler(win, mx, my);
 	return 0;
 }
-//MISC FUNCTIONS
+// MISC FUNCTIONS
 void get_sigils_we_have(Uint32 sigils_we_have, Uint32 sigils2) {
 	int i;
 	int po2 = 1;
@@ -1668,16 +1658,16 @@ void process_network_spell(const char *data, int len) {
 		LOG_TO_CONSOLE(c_red1, invalid_spell_str);
 		return;
 	case S_NAME:
-		set_spell_name(data[1], &data[2], len - 2);       //Will set the spell name of the given ID
+		set_spell_name(data[1], &data[2], len - 2); // Will set the spell name of the given ID
 		return;
-	case S_SELECT_TARGET:        //spell_result==3
+	case S_SELECT_TARGET: // spell_result==3
 		spell_result = 3;
 		if (selected_spell != -1 && selected_spell_sent) {
 			fast_spell_cast();
 		}
 		action_mode = ACTION_WAND;
 		break;
-	case S_SELECT_TELE_LOCATION:        //spell_result==2
+	case S_SELECT_TELE_LOCATION: // spell_result==2
 		// we're about to teleport, don't let the pathfinder
 		// interfere with our destination
 		if (pf_follow_path) {
@@ -1689,7 +1679,7 @@ void process_network_spell(const char *data, int len) {
 		spell_result = 2;
 		action_mode = ACTION_WAND;
 		break;
-	case S_SUCCES:        //spell_result==1
+	case S_SUCCES: // spell_result==1
 		spell_result = 1;
 		if (selected_spell_sent) {
 			action_mode = ACTION_ATTACK;
@@ -1751,12 +1741,10 @@ int get_quickspell_from_mouse(int mx, int my) {
 void toggle_quickspells_draggable() {
 	Uint32 flags = get_flags(quickspell_win);
 	if (!quickspells_draggable) {
-//		flags &= ~ELW_SHOW_LAST;
 		flags |= ELW_TITLE_BAR | ELW_DRAGGABLE | ELW_USE_BACKGROUND | ELW_SWITCHABLE_OPAQUE;
 		change_flags(quickspell_win, flags);
 		quickspells_draggable = 1;
 	} else {
-//		flags |= ELW_SHOW_LAST;
 		flags &= ~(ELW_TITLE_BAR | ELW_DRAGGABLE | ELW_USE_BACKGROUND | ELW_SWITCHABLE_OPAQUE);
 		change_flags(quickspell_win, flags);
 		quickspells_draggable = 0;
@@ -1776,7 +1764,7 @@ void flip_quickspells() {
 void reset_quickspells() {
 	quickspells_on_top = 1;
 	quickspells_draggable = 0;
-	change_flags(quickspell_win, ELW_TITLE_NONE | ELW_CLICK_TRANSPARENT); //|ELW_SHOW|ELW_SHOW_LAST
+	change_flags(quickspell_win, ELW_TITLE_NONE | ELW_CLICK_TRANSPARENT); // |ELW_SHOW|ELW_SHOW_LAST
 	quickspell_x = HUD_MARGIN_X;
 	quickspell_y = (hud_x) ? HUD_MARGIN_X : 0;
 	move_window(quickspell_win, -1, 0, window_width - quickspell_x, quickspell_y);
@@ -1795,7 +1783,7 @@ int resize_quickspells(int nb) {
 			nb++;
 		}
 		if (nb < 1) {
-			nb = 1;     // minimum 1 case, même sans icone
+			nb = 1; // minimum 1 case, même sans icone
 		}
 	}
 	if (nb != quickspells_nb) {
@@ -1813,7 +1801,7 @@ int resize_quickspells(int nb) {
 	}
 	return nb;
 }
-//Quickspell I/O start
+// Quickspell I/O start
 void add_spell_to_quickbar() {
 	int i;
 	if (!mqb_data[0]) {
@@ -2078,7 +2066,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			return;
 		}
 		switch (direction) {
-		case 0:          // up
+		case 0: // up
 			if (pos == 1) {
 				return;
 			}
@@ -2086,7 +2074,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data[i - 1] = mqb_data[i];
 			mqb_data[i] = mqb_temp;
 			break;
-		case 1:          // down
+		case 1: // down
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2094,7 +2082,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data[i + 1] = mqb_data[i];
 			mqb_data[i] = mqb_temp;
 			break;
-		case 2:          // first
+		case 2: // first
 			if (pos == 1) {
 				return;
 			}
@@ -2104,7 +2092,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			}
 			mqb_data[1] = mqb_temp;
 			break;
-		case 3:          // last
+		case 3: // last
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2121,7 +2109,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			return;
 		}
 		switch (direction) {
-		case 0:          // up
+		case 0: // up
 			if (pos == 1) {
 				return;
 			}
@@ -2129,7 +2117,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data2[i - 1] = mqb_data2[i];
 			mqb_data2[i] = mqb_temp;
 			break;
-		case 1:          // down
+		case 1: // down
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2137,7 +2125,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data2[i + 1] = mqb_data2[i];
 			mqb_data2[i] = mqb_temp;
 			break;
-		case 2:          // first
+		case 2: // first
 			if (pos == 1) {
 				return;
 			}
@@ -2147,7 +2135,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			}
 			mqb_data2[1] = mqb_temp;
 			break;
-		case 3:          // last
+		case 3: // last
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2164,7 +2152,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			return;
 		}
 		switch (direction) {
-		case 0:          // up
+		case 0: // up
 			if (pos == 1) {
 				return;
 			}
@@ -2172,7 +2160,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data3[i - 1] = mqb_data3[i];
 			mqb_data3[i] = mqb_temp;
 			break;
-		case 1:          // down
+		case 1: // down
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2180,7 +2168,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data3[i + 1] = mqb_data3[i];
 			mqb_data3[i] = mqb_temp;
 			break;
-		case 2:          // first
+		case 2: // first
 			if (pos == 1) {
 				return;
 			}
@@ -2190,7 +2178,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			}
 			mqb_data3[1] = mqb_temp;
 			break;
-		case 3:          // last
+		case 3: // last
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2207,7 +2195,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			return;
 		}
 		switch (direction) {
-		case 0:          // up
+		case 0: // up
 			if (pos == 1) {
 				return;
 			}
@@ -2215,7 +2203,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data4[i - 1] = mqb_data4[i];
 			mqb_data4[i] = mqb_temp;
 			break;
-		case 1:          // down
+		case 1: // down
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2223,7 +2211,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data4[i + 1] = mqb_data4[i];
 			mqb_data4[i] = mqb_temp;
 			break;
-		case 2:          // first
+		case 2: // first
 			if (pos == 1) {
 				return;
 			}
@@ -2233,7 +2221,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			}
 			mqb_data4[1] = mqb_temp;
 			break;
-		case 3:          // last
+		case 3: // last
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2250,7 +2238,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			return;
 		}
 		switch (direction) {
-		case 0:          // up
+		case 0: // up
 			if (pos == 1) {
 				return;
 			}
@@ -2258,7 +2246,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data5[i - 1] = mqb_data5[i];
 			mqb_data5[i] = mqb_temp;
 			break;
-		case 1:          // down
+		case 1: // down
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2266,7 +2254,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			mqb_data5[i + 1] = mqb_data5[i];
 			mqb_data5[i] = mqb_temp;
 			break;
-		case 2:          // first
+		case 2: // first
 			if (pos == 1) {
 				return;
 			}
@@ -2276,7 +2264,7 @@ void move_spell_on_quickbar(int pos, int direction) {
 			}
 			mqb_data5[1] = mqb_temp;
 			break;
-		case 3:          // last
+		case 3: // last
 			if (pos == quickspells_nb) {
 				return;
 			}
@@ -2356,7 +2344,7 @@ void load_quickspells() {
 	// (We're only interested in if this function is called, not if it
 	// succeeds)
 	quickspells_loaded = 1;
-	//open the data file
+	// open the data file
 	safe_snprintf(fname, sizeof(fname), "spells_%s.dat", username_str);
 	my_tolower(fname);
 	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat", username_str, 2);
@@ -2614,7 +2602,7 @@ void save_quickspells() {
 	if (!quickspells_loaded) {
 		return;
 	}
-	//write to the data file, to ensure data integrity, we will write all the information
+	// write to the data file, to ensure data integrity, we will write all the information
 	safe_snprintf(fname, sizeof(fname), "spells_%s.dat", username_str);
 	my_tolower(fname);
 	fp = open_file_config(fname, "wb");
@@ -2770,35 +2758,35 @@ int display_quickspell_handler(window_info *win) {
 	glColor3f(0.77f, 0.57f, 0.39f);
 	if (quickspells_dir != VERTICAL) {
 		glBegin(GL_QUADS);
-		glVertex3i(4, 0, 0); //top
-		glVertex3i(0, 10, 0); //left
-		glVertex3i(8, 10, 0); //right
-		glVertex3i(4, 0, 0); //top
+		glVertex3i(4, 0, 0); // top
+		glVertex3i(0, 10, 0); // left
+		glVertex3i(8, 10, 0); // right
+		glVertex3i(4, 0, 0); // top
 		glEnd();
 		glBegin(GL_QUADS);
-		glVertex3i(4, 22 + 10, 0); //top
-		glVertex3i(0, 22, 0); //left
-		glVertex3i(8, 22, 0); //right
-		glVertex3i(4, 22 + 10, 0); //top
+		glVertex3i(4, 22 + 10, 0); // top
+		glVertex3i(0, 22, 0); // left
+		glVertex3i(8, 22, 0); // right
+		glVertex3i(4, 22 + 10, 0); // top
 		glEnd();
 	} else {
 		glBegin(GL_QUADS);
-		glVertex3i(0, 4, 0); //top
-		glVertex3i(10, 8, 0); //left
-		glVertex3i(10, 0, 0); //right
-		glVertex3i(0, 4, 0); //top
+		glVertex3i(0, 4, 0); // top
+		glVertex3i(10, 8, 0); // left
+		glVertex3i(10, 0, 0); // right
+		glVertex3i(0, 4, 0); // top
 		glEnd();
 		glBegin(GL_QUADS);
-		glVertex3i(10 + 22, 4, 0); //top
-		glVertex3i(22, 8, 0); //left
-		glVertex3i(22, 0, 0); //right
-		glVertex3i(10 + 22, 4, 0); //top
+		glVertex3i(10 + 22, 4, 0); // top
+		glVertex3i(22, 8, 0); // left
+		glVertex3i(22, 0, 0); // right
+		glVertex3i(10 + 22, 4, 0); // top
 		glEnd();
 	}
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.20f);
-	glEnable(GL_BLEND);     // Turn Blending On
+	glEnable(GL_BLEND); // Turn Blending On
 	glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 	switch (quickspell_mqb_selected) {
 	case 0:
@@ -2910,7 +2898,7 @@ int display_quickspell_handler(window_info *win) {
 		break;
 	}
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glDisable(GL_BLEND);    // Turn Blending Off
+	glDisable(GL_BLEND); // Turn Blending Off
 	glDisable(GL_ALPHA_TEST);
 	if (selected_spell != -1) {
 		int loc = (1 + quickspells_dim) * (selected_spell - 1) + (int)(selected_spell / quickspells_div) * quickspells_sep;
@@ -3200,7 +3188,7 @@ void init_quickspell() {
 	}
 }
 // Quickspells end
-//CAST FUNCTIONS
+// CAST FUNCTIONS
 int spell_clear_handler() {
 	int i;
 	for (i = 0; i < 6; i++) {
@@ -3311,22 +3299,22 @@ int prepare_for_cast() {
 		mqb_data[0]->spell_image = spells_list[we_have_spell].image;
 		memcpy(mqb_data[0]->spell_name, spells_list[we_have_spell].name, 60);
 	}
-	memcpy(mqb_data[0]->spell_str, str, sigils_no + 2);//Copy the last spell send to the server
+	memcpy(mqb_data[0]->spell_str, str, sigils_no + 2); // Copy the last spell send to the server
 	return sigils_no;
 }
 int cast_handler() {
-	//Cast?
+	// Cast?
 	int sigils_no = prepare_for_cast();
-	//ok, send it to the server...
+	// ok, send it to the server...
 	if (sigils_no) {
 		send_spell(mqb_data[0]->spell_str, sigils_no + 2);
 	}
 	return 1;
 }
-//Calc windows size based on xml data
+// Calc windows size based on xml data
 void calc_spell_windows() {
 	int i, gy = 0, y;
-	//calc spell_win
+	// calc spell_win
 	for (i = 0; i < num_groups; i += 2) {
 		gy += MAX(33 * (groups_list[i].spells / (SPELLS_ALIGN_X + 1) + 1) + 20, 33 * (groups_list[i + 1].spells / (SPELLS_ALIGN_X + 1) + 1) + 20);
 	}
@@ -3338,7 +3326,7 @@ void calc_spell_windows() {
 		groups_list[i].x = 20;
 		groups_list[i].y = y + 15;
 		if (i == num_groups - 1) {
-			groups_list[i].x += ((2 * 33 * SPELLS_ALIGN_X + 33) - (33 * SPELLS_ALIGN_X)) / 2; //if groups are odd, last one is drawn in the middle
+			groups_list[i].x += ((2 * 33 * SPELLS_ALIGN_X + 33) - (33 * SPELLS_ALIGN_X)) / 2; // if groups are odd, last one is drawn in the middle
 		}
 		i++;
 		if (i >= num_groups) {
@@ -3348,7 +3336,7 @@ void calc_spell_windows() {
 		groups_list[i].y = y + 15;
 		y += 20 + 33 * MAX(groups_list[i - 1].spells / (SPELLS_ALIGN_X + 1) + 1, groups_list[i].spells / (SPELLS_ALIGN_X + 1) + 1);
 	}
-	//calc spell_mini_win
+	// calc spell_mini_win
 	spell_mini_rows = 0;
 	for (i = 0; i < num_groups; i++) {
 		spell_mini_rows += groups_list[i].spells / (SPELLS_ALIGN_X + 1) + 1;
@@ -3387,7 +3375,6 @@ int invocation_depuis_sorts(Uint8 quantity) {
 		}
 		k = 0;
 		for (i = 0; i < liste_items_necro[creature_en_cours][0]; i++) {
-			//printf("Item %i, id: %i, nombre demandé: %i, nombre dans l' inventaire: %i\n", i+1, liste_items_necro[creature_en_cours][i+1], liste_items_necro[creature_en_cours][i + 1 + liste_items_necro[creature_en_cours][0]*2], objet_recette[i][1]);
 			if (objet_recette[i][1] >= (liste_items_necro[creature_en_cours][i + 1 + liste_items_necro[creature_en_cours][0] * 2])) {
 				k++;
 			}
@@ -3437,7 +3424,7 @@ int plusieurs_bebetes() {
 		return 1;
 	}
 }
-//Create and show/hide our windows
+// Create and show/hide our windows
 void display_sigils_menu() {
 	static int checked_reagents = 0;
 	if (!checked_reagents) {
@@ -3458,7 +3445,7 @@ void display_sigils_menu() {
 	}
 	calc_spell_windows();
 	if (sigils_win < 0) {
-		//create sigil win
+		// create sigil win
 		static int cast_button_id = 100;
 		static int clear_button_id = 101;
 		widget_list *w_cast = NULL;
@@ -3484,14 +3471,14 @@ void display_sigils_menu() {
 		hide_window(sigils_win);
 	}
 	if (spell_win < 0) {
-		//create spell win
+		// create spell win
 		static int cast2_button_id = 102;
 		widget_list *w_cast = NULL;
 		int our_root_win = -1;
 		if (!windows_on_top) {
 			our_root_win = game_root_win;
 		}
-		//@tosh : traduction de la fenêtre de sorts
+		// @tosh : traduction de la fenêtre de sorts
 		spell_win = create_window("Grimoire - Recettes", our_root_win, 0, sigil_menu_x, sigil_menu_y, spell_x_len, spell_y_len_ext, ELW_WIN_DEFAULT);
 		set_window_handler(spell_win, ELW_HANDLER_DISPLAY, &display_spells_handler);
 		set_window_handler(spell_win, ELW_HANDLER_CLICK, &click_spells_handler);
@@ -3503,12 +3490,12 @@ void display_sigils_menu() {
 		hide_window(spell_win);
 	}
 	if (spell_mini_win < 0) {
-		//create mini spell win
+		// create mini spell win
 		int our_root_win = -1;
 		if (!windows_on_top) {
 			our_root_win = game_root_win;
 		}
-		//@tosh : Traduction du titre de la fenêtre
+		// @tosh : Traduction du titre de la fenêtre
 		spell_mini_win = create_window("Grimoire - Sorts", our_root_win, 0, sigil_menu_x, sigil_menu_y, spell_mini_x_len, spell_mini_y_len, ELW_WIN_DEFAULT);
 		set_window_handler(spell_mini_win, ELW_HANDLER_DISPLAY, &display_spells_mini_handler);
 		set_window_handler(spell_mini_win, ELW_HANDLER_CLICK, &click_spells_mini_handler);

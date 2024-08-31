@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_candle.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 CandleParticle::CandleParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const float _scale, const Uint16 _LOD) :
 	Particle(_effect, _mover, _pos, _velocity) {
 	color_t hue, saturation, value;
@@ -93,5 +93,4 @@ bool CandleEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

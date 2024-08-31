@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_cloud.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 CloudParticle::CloudParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _min_height, const coord_t _max_height, const coord_t _size, const alpha_t _alpha) :
 	Particle(_effect, _mover, _pos, _velocity, _size) {
 	color_t hue, saturation, value;
@@ -30,7 +30,7 @@ bool CloudParticle::idle(const Uint64 delta_t) {
 	}
 	if (base->particles.size() > 1) {
 		if ((pos - base->center).magnitude_squared() > MAX_DRAW_DISTANCE_SQUARED) {
-			//Find everything that sees this as a neighbor and delete the references to this.
+			// Find everything that sees this as a neighbor and delete the references to this.
 			for (std::vector<CloudParticle *>::iterator iter = incoming_neighbors.begin(); iter != incoming_neighbors.end(); iter++) {
 				(*iter)->remove_neighbor(this);
 			}
@@ -132,7 +132,7 @@ bool CloudParticle::idle(const Uint64 delta_t) {
 	neighbors.clear();
 	for (std::map<coord_t, CloudParticle *>::iterator iter = neighbors_map.begin(); iter != neighbors_map.end(); iter++) {
 		distsquaredsum += iter->first;
-		centerpoint += iter->second->pos;         //Should really be (pos - iter->second->pos); will correct this below for speed.
+		centerpoint += iter->second->pos; // Should really be (pos - iter->second->pos); will correct this below for speed.
 		neighbors.push_back(iter->second);
 		iter->second->add_incoming_neighbor(this);
 	}
@@ -140,20 +140,10 @@ bool CloudParticle::idle(const Uint64 delta_t) {
 	Vec3 new_normal = centerpoint;
 	const coord_t magnitude_squared = centerpoint.magnitude_squared();
 	const coord_t scale = std::sqrt(magnitude_squared);
-	new_normal /= scale;         // Normalize
-	//  light_t new_brightness = 1.0 - (25.0 / (scale + 50.0));
-	//  new_normal.x = (new_normal.x < 0 ? -1 : 1) * math_cache.powf_0_1_rough_close(fabs(new_normal.x), new_brightness * 2.0 - 1.0);
-	//  new_normal.y = (new_normal.y < 0 ? -1 : 1) * math_cache.powf_0_1_rough_close(fabs(new_normal.y), new_brightness * 2.0 - 1.0);
-	//  new_normal.z = (new_normal.z < 0 ? -1 : 1) * math_cache.powf_0_1_rough_close(fabs(new_normal.z), new_brightness * 2.0 - 1.0);
+	new_normal /= scale; // Normalize
 	const percent_t change_rate = std::pow(0.5f, delta_t / 2000000.0f);
 	normal = normal * change_rate + new_normal * (1.0 - change_rate);
 	normal.normalize();
-	//  color[0] = color[0] * change_rate + new_brightness * (1.0 - change_rate);
-	//  color[1] = color[0];
-	//  color[2] = color[0];
-	//  std::cout << "  " << centerpoint << std::endl;
-	//  std::cout << "  " << normal << std::endl;
-	//  std::cout << "  " << brightness << std::endl;
 	return true;
 }
 Uint32 CloudParticle::get_texture() {
@@ -221,7 +211,6 @@ CloudEffect::CloudEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const color_t
 	bounds = bounding_range;
 	mover = new BoundingMover(this, center, bounding_range, 1.0);
 	spawner = new NoncheckingFilledBoundingSpawner(bounding_range);
-	//  count = (int)(spawner->get_area() * 0.03 * (LOD  + 1));
 	count = (int)(MAX_DRAW_DISTANCE_SQUARED * PI * 0.03 * (LOD + 1));
 	if (count < 21) {
 		count = 21;
@@ -331,5 +320,4 @@ bool CloudEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

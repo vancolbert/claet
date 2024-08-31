@@ -4,10 +4,10 @@
  */
 #ifndef EFFECT_ONGOING_H
 #define EFFECT_ONGOING_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class OngoingEffect : public Effect {
 public:
 enum OngoingType {
@@ -45,6 +45,5 @@ OngoingEffect::OngoingType type;
 angle_t angle;
 Vec3 center;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_ONGOING_H
+#endif // defined EFFECT_ONGOING_H

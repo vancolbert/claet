@@ -179,24 +179,24 @@ static Uint32 load_image_SDL(el_file_ptr file, image_t *image) {
 			} else {
 				memcpy(&pixel, &((Uint8 *)image_surface->pixels)[idx], bpp);
 				/* Get Red component */
-				temp = pixel & image_surface->format->Rmask;  /* Isolate red component */
+				temp = pixel & image_surface->format->Rmask; /* Isolate red component */
 				temp = temp >> image_surface->format->Rshift; /* Shift it down to 8-bit */
-				temp = temp << image_surface->format->Rloss;  /* Expand to a full 8-bit number */
+				temp = temp << image_surface->format->Rloss; /* Expand to a full 8-bit number */
 				r = (Uint8)temp;
 				/* Get Green component */
-				temp = pixel & image_surface->format->Gmask;  /* Isolate green component */
+				temp = pixel & image_surface->format->Gmask; /* Isolate green component */
 				temp = temp >> image_surface->format->Gshift; /* Shift it down to 8-bit */
-				temp = temp << image_surface->format->Gloss;  /* Expand to a full 8-bit number */
+				temp = temp << image_surface->format->Gloss; /* Expand to a full 8-bit number */
 				g = (Uint8)temp;
 				/* Get Blue component */
-				temp = pixel & image_surface->format->Bmask;  /* Isolate blue component */
+				temp = pixel & image_surface->format->Bmask; /* Isolate blue component */
 				temp = temp >> image_surface->format->Bshift; /* Shift it down to 8-bit */
-				temp = temp << image_surface->format->Bloss;  /* Expand to a full 8-bit number */
+				temp = temp << image_surface->format->Bloss; /* Expand to a full 8-bit number */
 				b = (Uint8)temp;
 				/* Get Alpha component */
-				temp = pixel & image_surface->format->Amask;  /* Isolate alpha component */
+				temp = pixel & image_surface->format->Amask; /* Isolate alpha component */
 				temp = temp >> image_surface->format->Ashift; /* Shift it down to 8-bit */
-				temp = temp << image_surface->format->Aloss;  /* Expand to a full 8-bit number */
+				temp = temp << image_surface->format->Aloss; /* Expand to a full 8-bit number */
 				a = (Uint8)temp;
 				if (image_surface->format->Amask == 0) {
 					a = 255;
@@ -277,9 +277,9 @@ static Uint32 load_image_SDL_alpha(el_file_ptr file, image_t *image) {
 			} else {
 				memcpy(&pixel, &((Uint8 *)image_surface->pixels)[idx], bpp);
 				/* Get Alpha component */
-				temp = pixel & image_surface->format->Amask;  /* Isolate alpha component */
+				temp = pixel & image_surface->format->Amask; /* Isolate alpha component */
 				temp = temp >> image_surface->format->Ashift; /* Shift it down to 8-bit */
-				temp = temp << image_surface->format->Aloss;  /* Expand to a full 8-bit number */
+				temp = temp << image_surface->format->Aloss; /* Expand to a full 8-bit number */
 				a = (Uint8)temp;
 			}
 			idx += bpp;

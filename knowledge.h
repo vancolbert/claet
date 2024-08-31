@@ -59,8 +59,6 @@ void init_categories();
  * \callgraph
  */
 void display_knowledge();
-//int knowledge_mouse_over();
-//int check_knowledge_interface();
 /*!
  * \ingroup knowledge_window
  * \brief   Gets the known knowledges from the \a list and stores the state in \ref knowledge_list.

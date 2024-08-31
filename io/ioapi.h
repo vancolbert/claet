@@ -1,21 +1,15 @@
 /* ioapi.h -- IO base function header for compress/uncompress .zip
-   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-
+   part of the MiniZip project - (http://www.winimage.com/zLibDll/minizip.html)
+         Copyright (C) 1998-2010 Gilles Vollant (minizip) (http://www.winimage.com/zLibDll/minizip.html)
          Modifications for Zip64 support
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
-
+         Copyright (C) 2009-2010 Mathias Svensson (http://result42.com)
          For more info read MiniZip_info.txt
-
          Changes
-
     Oct-2009 - Defined ZPOS64_T to fpos_t on windows and u_int64_t on linux. (might need to find a better why for this)
     Oct-2009 - Change to fseeko64, ftello64 and fopen64 so large files would work on linux.
                More if/def section may be needed to support other platforms
     Oct-2009 - Defined fxxxx64 calls to normal fopen/ftell/fseek so they would compile on windows.
                           (but you should use iowin32.c for windows instead)
-
  */
 #ifndef _ZLIBIOAPI64_H
 #define _ZLIBIOAPI64_H
@@ -147,8 +141,8 @@ typedef struct zlib_filefunc64_32_def_s {
 } zlib_filefunc64_32_def;
 #define ZREAD64(filefunc, filestream, buf, size)     ((*((filefunc).zfile_func64.zread_file))((filefunc).zfile_func64.opaque, filestream, buf, size))
 #define ZWRITE64(filefunc, filestream, buf, size)    ((*((filefunc).zfile_func64.zwrite_file))((filefunc).zfile_func64.opaque, filestream, buf, size))
-//#define ZTELL64(filefunc,filestream)            ((*((filefunc).ztell64_file)) ((filefunc).opaque,filestream))
-//#define ZSEEK64(filefunc,filestream,pos,mode)   ((*((filefunc).zseek64_file)) ((filefunc).opaque,filestream,pos,mode))
+// #define ZTELL64(filefunc,filestream)            ((*((filefunc).ztell64_file)) ((filefunc).opaque,filestream))
+// #define ZSEEK64(filefunc,filestream,pos,mode)   ((*((filefunc).zseek64_file)) ((filefunc).opaque,filestream,pos,mode))
 #define ZCLOSE64(filefunc, filestream)             ((*((filefunc).zfile_func64.zclose_file))((filefunc).zfile_func64.opaque, filestream))
 #define ZERROR64(filefunc, filestream)             ((*((filefunc).zfile_func64.zerror_file))((filefunc).zfile_func64.opaque, filestream))
 voidpf call_zopen64 OF((const zlib_filefunc64_32_def *pfilefunc, const void *filename, int mode));

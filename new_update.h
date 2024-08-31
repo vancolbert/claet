@@ -40,4 +40,4 @@ Uint32 update(const char *server, const char *file, const char *dir, const char 
 #ifdef __cplusplus
 }
 #endif
-#endif  /* UUID_092c4555_9096_481e_a41e_17900dc0341e */
+#endif /* UUID_092c4555_9096_481e_a41e_17900dc0341e */

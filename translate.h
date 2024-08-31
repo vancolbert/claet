@@ -14,8 +14,8 @@ extern "C" {
  * This is used for setting a short name and description - used for i.e. options and sigils
  */
 typedef struct {
-	unsigned char str[51];     /*!< str */
-	unsigned char desc[251];   /*!< desc */
+	unsigned char str[51]; /*!< str */
+	unsigned char desc[251]; /*!< desc */
 } dichar;
 #include "stats.h"
 /*!
@@ -72,7 +72,7 @@ struct xml_struct {
 	xmlNode *root;
 };
 #ifndef DOXYGEN_SKIP_THIS
-//Options
+// Options
 extern char switch_video_mode[50];
 extern dichar opt_shadows,
 	      opt_clouds,
@@ -86,9 +86,9 @@ extern dichar opt_shadows,
 	      opt_exit,
 	      opt_full_screen,
 	      opt_strings;
-//Sigils
+// Sigils
 extern char sig_too_few_sigs[50];
-#endif //DOXYGEN_SKIP_THIS
+#endif // DOXYGEN_SKIP_THIS
 #ifndef DOXYGEN_SKIP_THIS
 extern dichar sig_change,
 	      sig_restore,
@@ -117,9 +117,9 @@ extern dichar sig_change,
 	      sig_life,
 	      sig_death,
 	      sig_chant;
-#endif  //DOXYGEN_SKIP_THIS
+#endif // DOXYGEN_SKIP_THIS
 #ifndef DOXYGEN_SKIP_THIS
-//Tooltips
+// Tooltips
 extern char tt_walk[30],
 	    tt_sit[30],
 	    tt_stand[30],
@@ -152,9 +152,9 @@ extern char tt_walk[30],
 	    tt_urlwin[30],
 	    tt_info[32],
 	    tt_minimap[30];
-#endif  //DOXYGEN_SKIP_THIS
+#endif // DOXYGEN_SKIP_THIS
 #ifndef DOXYGEN_SKIP_THIS
-//Help messages
+// Help messages
 extern char
 /*3d_objects.c*/
 	values_str[20],
@@ -450,9 +450,9 @@ extern char
 	item_list_find_help_str[40],
 /* new_character.c */
 	use_appropriate_name[500];
-#endif  //DOXYGEN_SKIP_THIS
+#endif // DOXYGEN_SKIP_THIS
 #ifndef DOXYGEN_SKIP_THIS
-//Errors
+// Errors
 extern char reg_error_str[15],
 	    file_write_error_str[20],
 /*3d_objects.c*/
@@ -682,9 +682,9 @@ extern char reg_error_str[15],
 	    snd_no_music[50],
 	    snd_media_music_stopped[50],
 	    snd_media_ogg_info_noartist[50],
-	    snd_media_ogg_info[50],     //sound.c
-	    stat_no_invalid[50],     //stats.c
-	    timer_lagging_behind[100],     //timers.c
+	    snd_media_ogg_info[50], // sound.c
+	    stat_no_invalid[50], // stats.c
+	    timer_lagging_behind[100], // timers.c
 /*spells.c*/
 	    cast_str[20],
 	    invalid_spell_str[30],
@@ -710,7 +710,7 @@ extern char reg_error_str[15],
 	    dc_note_remove[50],
 	    note_saved[50],
 	    note_save_failed[50];
-#endif  //DOXYGEN_SKIP_THIS
+#endif // DOXYGEN_SKIP_THIS
 #ifndef DOXYGEN_SKIP_THIS
 // window/widget titles
 extern char win_notepad[20],
@@ -767,7 +767,7 @@ extern char win_notepad[20],
 	    label_cursor_coords[17],
 	    label_mark_filter[15],
 	    button_send[10];
-#endif  // DOXYGEN_SKIP_THIS
+#endif // DOXYGEN_SKIP_THIS
 /*!
  * \ingroup	translation
  * \brief 	Initiates the translatable strings

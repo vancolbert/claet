@@ -15,4 +15,4 @@ int destroy_loading_win(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif //LOADING_WIN_H__
+#endif // LOADING_WIN_H__

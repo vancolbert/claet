@@ -38,4 +38,4 @@ void free_astro_buffer();
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif //__ASTROLOGY_H__
+#endif // __ASTROLOGY_H__

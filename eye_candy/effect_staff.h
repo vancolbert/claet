@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_STAFF_H
 #define EFFECT_STAFF_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class StaffParticle : public Particle {
 public:
 StaffParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD);
@@ -41,6 +41,5 @@ color_t color[3];
 TextureEnum texture;
 StaffType type;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_STAFF_H
+#endif // defined EFFECT_STAFF_H

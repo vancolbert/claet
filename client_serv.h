@@ -26,7 +26,7 @@ typedef enum actor_types_type {
 #define SKIN_NORMAL             1
 #define SKIN_PALE               2
 #define SKIN_TAN                3
-#define SKIN_DARK_BLUE  4       // for Elf
+#define SKIN_DARK_BLUE  4 // for Elf
 #define SKIN_EN_CLAIR    5
 #define SKIN_EN_FONCE    6
 #define SKIN_EN_GRIS     7
@@ -82,9 +82,9 @@ typedef enum actor_types_type {
 #define HAIR_GRAY       3
 #define HAIR_RED        4
 #define HAIR_WHITE      5
-#define HAIR_BLUE       6       // for Draegoni
-#define HAIR_GREEN      7       // for Draegoni
-#define HAIR_PURPLE 8   // for Draegoni
+#define HAIR_BLUE       6 // for Draegoni
+#define HAIR_GREEN      7 // for Draegoni
+#define HAIR_PURPLE 8 // for Draegoni
 /*!
  * \name Boots colors
  */
@@ -194,11 +194,11 @@ typedef enum actor_types_type {
  * \name Tailles des personnanges
  */
 /*! @{ */
-#define SCALE_1   0 //  95%
-#define SCALE_2   1 //  96%
-#define SCALE_3   2 //  97%
-#define SCALE_4   3 //  98%
-#define SCALE_5   4 //  99%
+#define SCALE_1   0 // 95%
+#define SCALE_2   1 // 96%
+#define SCALE_3   2 // 97%
+#define SCALE_4   3 // 98%
+#define SCALE_5   4 // 99%
 #define SCALE_6   5 // 100%
 #define SCALE_7   6 // 101%
 #define SCALE_8   7 // 102%
@@ -527,7 +527,7 @@ typedef enum actor_types_type {
 typedef enum actor_commands {
 	nothing = 0, kill_me = 1, die1 = 3, die2 = 4, pain1 = 5, pain2 = 17, pick = 6, drop = 7, idle = 8, harvest = 9, cast = 10, ranged = 11, meele = 12, sit_down = 13, stand_up = 14, turn_left = 15, turn_right = 16, enter_combat = 18, leave_combat = 19, move_n = 20, move_ne = 21, move_e = 22, move_se = 23, move_s = 24, move_sw = 25, move_w = 26, move_nw = 27, run_n = 30, run_ne = 31, run_e = 32, run_se = 33, run_s = 34, run_sw = 35, run_w = 36, run_nw = 37, turn_n = 38, turn_ne = 39, turn_e = 40, turn_se = 41, turn_s = 42, turn_sw = 43, turn_w = 44, turn_nw = 45, attack_up_1 = 46, attack_up_2 = 47, attack_up_3 = 48, attack_up_4 = 49, attack_down_1 = 50, attack_down_2 = 51, attack_down_3 = 60, attack_down_4 = 61, attack_down_5 = 62, attack_down_6 = 63, attack_down_7 = 64, attack_down_8 = 65, attack_down_9 = 66, attack_down_10 = 67, attack_up_5 = 68, attack_up_6 = 69, attack_up_7 = 70, attack_up_8 = 71, attack_up_9 = 72, attack_up_10 = 73, salut = 74, danse = 75, salto = 76,
 	roue = 77, emote_cmd = 100,
-	//from 100 to 255, commands are reserved for emotes
+	// from 100 to 255, commands are reserved for emotes
 } actor_commands;
 /*! @} */
 /*!
@@ -535,9 +535,9 @@ typedef enum actor_commands {
  */
 /*! @{ */
 typedef enum {
-	//precipitation types MUST come first, in the same order as in weather.c . same indexen.
+	// precipitation types MUST come first, in the same order as in weather.c . same indexen.
 	weather_effect_rain = 1, weather_effect_snow = 2, weather_effect_hail = 3, weather_effect_sand = 4, weather_effect_dust = 5, weather_effect_lava = 6,
-	//other effects can be put at the end
+	// other effects can be put at the end
 	weather_effect_wind = 20, weather_effect_leaves = 21,
 } weather_type;
 /*! @} */
@@ -630,8 +630,8 @@ typedef enum {
 #define TELEPORT_IN 12
 #define TELEPORT_OUT 13
 #define PLAY_SOUND 14
-#define START_RAIN 15   //delete later on
-#define STOP_RAIN 16    //delete later on
+#define START_RAIN 15 // delete later on
+#define STOP_RAIN 16 // delete later on
 #define THUNDER 17
 #define HERE_YOUR_STATS 18
 #define HERE_YOUR_INVENTORY 19
@@ -649,7 +649,7 @@ typedef enum {
 #define NPC_OPTIONS_LIST 31
 #define CLOSE_NPC_MENU 32
 #define SEND_NPC_INFO 33
-#define GET_TRADE_INFO 34//delete later on
+#define GET_TRADE_INFO 34 // delete later on
 #define GET_TRADE_OBJECT 35
 #define GET_TRADE_ACCEPT 36
 #define GET_TRADE_REJECT 37
@@ -731,7 +731,7 @@ typedef enum {
 #define GET_ROCHE_LIST 95
 #define DESTROY_ROCHE 96
 #define GET_ACTOR_TITRE 97
-#define MANU_ITEM_TEXT 20       // devrait devenir 127 à terme
+#define MANU_ITEM_TEXT 20 // devrait devenir 127 à terme
 #define DISPLAY_COORD 128
 // reserved for future expansion 220-229, not being used in the server yet
 #define MAP_SET_OBJECTS 220
@@ -750,7 +750,7 @@ typedef enum {
  */
 /*! @{ */
 #define RAW_TEXT 0
-#define PROXY 254       // reserved for advanced PROXY support
+#define PROXY 254 // reserved for advanced PROXY support
 #define BYE 255
 /*! @} */
 /*!
@@ -863,23 +863,23 @@ typedef enum {
 	#define ENGINEER_N_CUR 106
 	#define ENGINEER_N_BASE 107
 /// attribut secondaire
-    #define MIGHT_CUR 110           // Capacité
+    #define MIGHT_CUR 110 // Capacité
     #define MIGHT_BASE 111
-    #define MATTER_CUR 112          // Vitalité
+    #define MATTER_CUR 112 // Vitalité
     #define MATTER_BASE 113
-    #define TOUGHNESS_CUR 114       // Endurance
+    #define TOUGHNESS_CUR 114 // Endurance
     #define TOUGHNESS_BASE 115
-    #define CHARM_CUR 116           // Charme       NON UTILISE IN GAME
+    #define CHARM_CUR 116 // Charme       NON UTILISE IN GAME
     #define CHARM_BASE 117
-    #define REACTION_CUR 118        // réactivité
+    #define REACTION_CUR 118 // réactivité
     #define REACTION_BASE 119
-    #define PERCEPTION_CUR 120      // Perception   NON UTILISE IN GAME
+    #define PERCEPTION_CUR 120 // Perception   NON UTILISE IN GAME
     #define PERCEPTION_BASE 121
-    #define RATIONALITY_CUR 122     // Rationalité
+    #define RATIONALITY_CUR 122 // Rationalité
     #define RATIONALITY_BASE 123
-    #define DEXTIRITY_CUR 124       // Dexterité
+    #define DEXTIRITY_CUR 124 // Dexterité
     #define DEXTIRITY_BASE 125
-    #define ETHEREALITY_CUR 126     // Ether
+    #define ETHEREALITY_CUR 126 // Ether
     #define ETHEREALITY_BASE 127
 /*! @} */
 /*!
@@ -945,57 +945,57 @@ typedef enum {
  */
 /*! @{ */
 typedef enum {
-	//when one player uses the poison spell on another one. Player to Player
+	// when one player uses the poison spell on another one. Player to Player
 	SPECIAL_EFFECT_POISON = 0,
-	//when one player heals another. Player to Player
+	// when one player heals another. Player to Player
 	SPECIAL_EFFECT_REMOTE_HEAL = 1,
-	//when one player harms another. Player to Player
+	// when one player harms another. Player to Player
 	SPECIAL_EFFECT_HARM = 2,
-	//when one player casts shield on himself. Player
+	// when one player casts shield on himself. Player
 	SPECIAL_EFFECT_SHIELD = 3,
-	//when one player casts restoration. Player
+	// when one player casts restoration. Player
 	SPECIAL_EFFECT_RESTORATION = 4,
-	//when one player casts a smite summonings. Player
+	// when one player casts a smite summonings. Player
 	SPECIAL_EFFECT_SMITE_SUMMONINGS = 5,
-	//when a player goes invisible. Player
+	// when a player goes invisible. Player
 	SPECIAL_EFFECT_CLOAK = 6,
-	//when a player becomes visible. Player
+	// when a player becomes visible. Player
 	SPECIAL_EFFECT_DECLOAK = 7,
-	//when an invasion starts. Location
+	// when an invasion starts. Location
 	SPECIAL_EFFECT_INVASION_BEAMING = 8,
-	//when a player casts heal summoned. Player
+	// when a player casts heal summoned. Player
 	SPECIAL_EFFECT_HEAL_SUMMONED = 9,
-	//When a player casts mana drain. Player to Player.
+	// When a player casts mana drain. Player to Player.
 	SPECIAL_EFFECT_MANA_DRAIN = 10,
-	//when a player teleports to range. Player, Location
+	// when a player teleports to range. Player, Location
 	SPECIAL_EFFECT_TELEPORT_TO_RANGE = 11,
-	//when a player teleports to range. Player, Location
+	// when a player teleports to range. Player, Location
 	SPECIAL_EFFECT_HEAL = 12,
-	//when a player finds a rare stone
+	// when a player finds a rare stone
 	SPECIAL_EFFECT_HARVEST_RARE_STONE = 13,
-	//when a player is blessed by MN with exp
+	// when a player is blessed by MN with exp
 	SPECIAL_EFFECT_HARVEST_MN_EXP_BLESSING = 14,
-	//when a player is blessed by MN with money
+	// when a player is blessed by MN with money
 	SPECIAL_EFFECT_HARVEST_MN_MONEY_BLESSING = 15,
-	//when a wall colapses over a player
+	// when a wall colapses over a player
 	SPECIAL_EFFECT_HARVEST_WALL_COLLAPSE = 16,
-	//when a bees sting a player
+	// when a bees sting a player
 	SPECIAL_EFFECT_HARVEST_BEES = 17,
-	//when a radeon hits
+	// when a radeon hits
 	SPECIAL_EFFECT_HARVEST_RADON = 18,
-	//when a tool breaks
+	// when a tool breaks
 	SPECIAL_EFFECT_HARVEST_TOOL_BREAKS = 19,
-	//when teleport nexus actor_id,x1,y1,x2,y2
+	// when teleport nexus actor_id,x1,y1,x2,y2
 	SPECIAL_EFFECT_HARVEST_TELEPORT_NEXUS = 20,
-	//when MN takes your health
+	// when MN takes your health
 	SPECIAL_EFFECT_HARVEST_MOTHER_NATURE_PISSED = 21,
-	//when a manufacture tool breaks
+	// when a manufacture tool breaks
 	SPECIAL_EFFECT_MANUFACTURE_TOOL_BREAKS = 22,
-	//when a special item is created
+	// when a special item is created
 	SPECIAL_EFFECT_MANUFACTURE_RARE_ITEM = 23,
-	//when a "who doesn't see me" spell is cast
+	// when a "who doesn't see me" spell is cast
 	SPECIAL_EFFECT_MAKE_PLAYER_GLOW = 24,
-	//Summoning stuff
+	// Summoning stuff
 	SPECIAL_EFFECT_SUMMON_RABBIT = 25, SPECIAL_EFFECT_SUMMON_RAT = 26, SPECIAL_EFFECT_SUMMON_BEAVER = 27, SPECIAL_EFFECT_SUMMON_SKUNK = 28, SPECIAL_EFFECT_SUMMON_RACOON = 29, SPECIAL_EFFECT_SUMMON_DEER = 30, SPECIAL_EFFECT_SUMMON_GREEN_SNAKE = 31, SPECIAL_EFFECT_SUMMON_RED_SNAKE = 32, SPECIAL_EFFECT_SUMMON_BROWN_SNAKE = 33, SPECIAL_EFFECT_SUMMON_FOX = 34, SPECIAL_EFFECT_SUMMON_BOAR = 35, SPECIAL_EFFECT_SUMMON_WOLF = 36, SPECIAL_EFFECT_SUMMON_SKELETON = 37, SPECIAL_EFFECT_SUMMON_SMAL_GARG = 38, SPECIAL_EFFECT_SUMMON_MEDIUM_GARG = 39, SPECIAL_EFFECT_SUMMON_BIG_GARG = 40, SPECIAL_EFFECT_SUMMON_PUMA = 41, SPECIAL_EFFECT_SUMMON_FEM_GOBLIN = 42, SPECIAL_EFFECT_SUMMON_POLAR_BEAR = 43, SPECIAL_EFFECT_SUMMON_BEAR = 44, SPECIAL_EFFECT_SUMMON_ARMED_MALE_GOB = 45, SPECIAL_EFFECT_SUMMON_ARMED_SKELETON = 46, SPECIAL_EFFECT_SUMMON_FEMALE_ORC = 47, SPECIAL_EFFECT_SUMMON_MALE_ORC = 48, SPECIAL_EFFECT_SUMMON_ARMED_FEM_ORC = 49, SPECIAL_EFFECT_SUMMON_ARMED_MALE_ORC = 50,
 	SPECIAL_EFFECT_SUMMON_CYCLOP = 51, SPECIAL_EFFECT_SUMMON_FLUFFY_RABBIT = 52, SPECIAL_EFFECT_SUMMON_PHANTOM_WARRIOR = 53, SPECIAL_EFFECT_SUMMON_MOUNTAIN_CHIM = 54, SPECIAL_EFFECT_SUMMON_YETI = 55, SPECIAL_EFFECT_SUMMON_ARCTIC_CHIM = 56, SPECIAL_EFFECT_SUMMON_GIANT = 57, SPECIAL_EFFECT_SUMMON_GIANT_SNAKE = 58, SPECIAL_EFFECT_SUMMON_SPIDER = 59, SPECIAL_EFFECT_SUMMON_TIGER = 60,
 	// Mines stuff

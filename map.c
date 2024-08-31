@@ -44,7 +44,7 @@ void destroy_map() {
 	int i;
 	have_a_map = 0;
 	clear_bbox_tree(main_bbox_tree);
-	//kill the tile and height map
+	// kill the tile and height map
 	if (tile_map) {
 		free(tile_map);
 		tile_map = NULL;
@@ -55,7 +55,7 @@ void destroy_map() {
 		free(height_map);
 		height_map = NULL;
 	}
-	///kill the pathfinding tile map
+	/// kill the pathfinding tile map
 	if (pf_tile_map) {
 		free(pf_tile_map);
 		pf_tile_map = NULL;
@@ -63,15 +63,15 @@ void destroy_map() {
 			pf_destroy_path();
 		}
 	}
-	//kill the 3d objects links
+	// kill the 3d objects links
 	destroy_all_3d_objects();
-	//kill the 2d objects links
+	// kill the 2d objects links
 	destroy_all_2d_objects();
-	//kill the lights links
+	// kill the lights links
 	for (i = 0; i < MAX_LIGHTS; i++) {
 		if (lights_list[i]) {
 			free(lights_list[i]);
-			lights_list[i] = NULL;                  //kill any refference to it
+			lights_list[i] = NULL; // kill any refference to it
 		}
 	}
 	num_lights = 0;
@@ -115,7 +115,7 @@ static void init_map_loading(const char *file_name) {
 }
 static __inline__ void build_path_map() {
 	int i, x, y;
-	//create the tile map that will be used for pathfinding
+	// create the tile map that will be used for pathfinding
 	pf_tile_map = (PF_TILE *)calloc(tile_map_size_x * tile_map_size_y * 6 * 6, sizeof(PF_TILE));
 	i = 0;
 	for (y = 0; y < tile_map_size_y * 6; y++) {
@@ -162,9 +162,9 @@ void change_map(const char *mapname) {
 	safe_snprintf(nom_carte, sizeof(nom_carte), "%s.elm", mapname);
 	if (carte_modif == 0) {
 		safe_snprintf(nom_carte_modif, sizeof(nom_carte), "%s.elm", mapname);
-	} else if (carte_modif == 1) { //Neige
+	} else if (carte_modif == 1) { // Neige
 		safe_snprintf(nom_carte_modif, sizeof(nom_carte), "%s_neige.elm", mapname);
-	} else if (carte_modif == 2) { //Halloween
+	} else if (carte_modif == 2) { // Halloween
 		safe_snprintf(nom_carte_modif, sizeof(nom_carte), "%s_hallow.elm", mapname);
 	}
 	// on annule l'inspection de carte, retour sur la carte courante
@@ -172,9 +172,9 @@ void change_map(const char *mapname) {
 	remove_all_bags();
 	remove_all_roches();
 	set_all_intersect_update_needed(main_bbox_tree);
-	object_under_mouse = -1;//to prevent a nasty crash, while looking for bags, when we change the map
-	close_dialogue();       // close the dialogue window if open
-	close_storagewin(); //if storage is open, close it
+	object_under_mouse = -1; // to prevent a nasty crash, while looking for bags, when we change the map
+	close_dialogue(); // close the dialogue window if open
+	close_storagewin(); // if storage is open, close it
 	destroy_all_particles();
 	ec_delete_all_effects();
 	stop_all_sounds();
@@ -243,9 +243,9 @@ void change_map(const char *mapname) {
 		}
 	}
 	have_a_map = 1;
-	//also, stop the rain
+	// also, stop the rain
 	weather_clear();
-	if ( get_show_window(map_root_win)) {
+	if (get_show_window(map_root_win)) {
 		hide_window(map_root_win);
 		switch_from_game_map();
 		show_window(game_root_win);
@@ -265,7 +265,7 @@ int load_empty_map() {
 		disconnect_time = SDL_GetTicks();
 		SDLNet_Quit();
 		LOG_TO_CONSOLE(c_red3, disconnected_from_server);
-		//Fake a map to make sure we don't get any crashes.
+		// Fake a map to make sure we don't get any crashes.
 		safe_snprintf(map_file_name, sizeof(map_file_name), "./maps/0_vide.elm");
 		tile_map_size_y = 256;
 		tile_map_size_x = 256;
@@ -281,7 +281,7 @@ int load_empty_map() {
 	return 1;
 }
 void init_server_markers() {
-	//init hash table
+	// init hash table
 	destroy_hash_table(server_marks);
 	server_marks = create_hash_table(50, hash_fn_int, cmp_fn_int, free);
 }
@@ -290,7 +290,7 @@ void add_server_markers() {
 	server_mark *sm;
 	int i, l;
 	char *mapname = (inspect_map_text)?inspect_map_name:map_file_name;
-	//find the slot to add server marks
+	// find the slot to add server marks
 	for (i = 0; i < max_mark; i++) {
 		if (marks[i].server_side) {
 			break;
@@ -304,11 +304,11 @@ void add_server_markers() {
 		hash_start_iterator(server_marks);
 		while ((he = hash_get_next(server_marks))) {
 			sm = (server_mark *)he->item;
-			//is it in this map?
+			// is it in this map?
 			if (strcmp(mapname, sm->map_name)) {
 				continue;
 			}
-			//find the next slot. If not there, add 1
+			// find the next slot. If not there, add 1
 			for (i = l; i < MAX_MARKINGS; i++) {
 				if (marks[i].server_side || i >= max_mark) {
 					l = i;
@@ -318,14 +318,14 @@ void add_server_markers() {
 					break;
 				}
 			}
-			//add the marker
+			// add the marker
 			marks[l].x = sm->x;
 			marks[l].y = sm->y;
 			marks[l].server_side = 1;
 			safe_strncpy(marks[l].text, sm->text, sizeof(marks[l].text));
 			l++;
 		}
-		//remove server side markings if necessary
+		// remove server side markings if necessary
 		for (i = l + 1; i < max_mark; i++) {
 			if (marks[i].server_side) {
 				marks[i].server_side = 0;
@@ -338,7 +338,7 @@ void load_marks_to_buffer(char *mapname, marking *buffer, int *max) {
 	FILE *fp = NULL;
 	char marks_file[256] = {0}, text[600] = {0};
 	if (mapname == NULL) {
-		//Oops
+		// Oops
 		return;
 	}
 	safe_snprintf(marks_file, sizeof(marks_file), "%s.txt", mapname + 1);
@@ -347,17 +347,17 @@ void load_marks_to_buffer(char *mapname, marking *buffer, int *max) {
 	if (fp == NULL) {
 		return;
 	}
-	//load user markers
-	while ( fgets(text, 600, fp)) {
+	// load user markers
+	while (fgets(text, 600, fp)) {
 		if (strlen(text) > 1) {
 			int r, g, b;
 			sscanf(text, "%d %d", &buffer[*max].x, &buffer[*max].y);
-			//scanning mark color. It can be optional -> default=white
-			if (sscanf(text, "%*d %*d|%d,%d,%d|", &r, &g, &b) < 3) { //NO SPACES in RGB format string!
+			// scanning mark color. It can be optional -> default=white
+			if (sscanf(text, "%*d %*d|%d,%d,%d|", &r, &g, &b) < 3) { // NO SPACES in RGB format string!
 				r = g = b = 255;
 			}
 			buffer[*max].server_side = 0;
-			text[strlen(text) - 1] = '\0'; //remove the newline
+			text[strlen(text) - 1] = '\0'; // remove the newline
 			if ((strstr(text, " ") == NULL) || (strstr(strstr(text, " ") + 1, " ") == NULL)) {
 				LOG_ERROR("Bad map mark file=[%s] text=[%s]", marks_file, text);
 			} else {
@@ -366,7 +366,7 @@ void load_marks_to_buffer(char *mapname, marking *buffer, int *max) {
 				buffer[*max].g = g;
 				buffer[*max].b = b;
 				*max = *max + 1;
-				if ( *max >= MAX_USER_MARKS ) {
+				if (*max >= MAX_USER_MARKS) {
 					break;
 				}
 			}
@@ -376,10 +376,10 @@ void load_marks_to_buffer(char *mapname, marking *buffer, int *max) {
 	LOG_DEBUG("Read map markings from file '%s'", marks_file);
 }
 void load_map_marks() {
-	//load user markers
+	// load user markers
 	// charge les marques de la carte en cours d'inspection
 	load_marks_to_buffer((inspect_map_text)?inspect_map_name:map_file_name, marks, &max_mark);
-	//load server markers on this map
+	// load server markers on this map
 	add_server_markers();
 }
 void save_markings() {
@@ -389,11 +389,11 @@ void save_markings() {
 	// ne pas utiliser le nom de la carte courante si édition des marques d'une carte inspectée !
 	safe_snprintf(marks_file, sizeof(marks_file), "maps/%s.txt", strrchr((inspect_map_text)?inspect_map_name:map_file_name, '/') + 1);
 	fp = open_file_config(marks_file, "w");
-	if ( fp == NULL ) {
+	if (fp == NULL) {
 		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, marks_file, strerror(errno));
 	} else {
-		for ( i = 0 ; i < max_mark ; i++) {
-			if ( marks[i].x > 0 && !marks[i].server_side) {
+		for (i = 0 ; i < max_mark ; i++) {
+			if (marks[i].x > 0 && !marks[i].server_side) {
 				fprintf(fp, "%d %d|%d,%d,%d| %s\n", marks[i].x, marks[i].y, marks[i].r, marks[i].g, marks[i].b, marks[i].text);
 			}
 		}
@@ -407,7 +407,7 @@ void load_server_markings() {
 	server_mark sm;
 	int rf;
 	init_server_markers();
-	//open server markings file
+	// open server markings file
 	safe_snprintf(fname, sizeof(fname), "servermarks_%s.dat", username_str);
 	my_tolower(fname);
 	/* sliently ignore non existing file */
@@ -436,7 +436,7 @@ void save_server_markings() {
 	if (!server_marks) {
 		return;
 	}
-	//open server markings file
+	// open server markings file
 	safe_snprintf(fname, sizeof(fname), "servermarks_%s.dat", username_str);
 	my_tolower(fname);
 	fp = open_file_config(fname, "w");
@@ -452,7 +452,7 @@ void save_server_markings() {
 	fclose(fp);
 	LOG_DEBUG("Wrote server markings to file '%s'", fname);
 }
-//called in elconfig.c when turning markers on/off
+// called in elconfig.c when turning markers on/off
 void change_3d_marks(int *rel) {
 	*rel = !*rel;
 }
@@ -560,7 +560,7 @@ void remove_3d_object_from_server(int id) {
 	}
 	destroy_3d_object(id);
 }
-//3D MAP MARKERS
+// 3D MAP MARKERS
 #define MAX(a, b) (((a) > (b)) ? (a):(b))
 #define ABS(a) (((a) < 0)?(-(a)):(a))
 #define DST(xa, ya, xb, yb) (MAX(ABS(xa - xb), ABS(ya - yb)))
@@ -619,7 +619,6 @@ void display_map_marks() {
 		}
 	}
 	glDisable(GL_ALPHA_TEST);
-	//glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 }
@@ -668,13 +667,13 @@ void display_map_markers() {
 		}
 		z = get_tile_height(marks[i].x, marks[i].y) + 2.3;
 		gluProject(x, y, z, model, proj, view, &hx, &hy, &hz);
-		//shorten text
+		// shorten text
 		memcpy(tmpb, marks[i].text + MARK_CLIP_POS, 4);
 		marks[i].text[MARK_CLIP_POS] = marks[i].text[MARK_CLIP_POS + 1] = marks[i].text[MARK_CLIP_POS + 2] = '.';
 		marks[i].text[MARK_CLIP_POS + 3] = 0;
 		banner_width = ((float)get_string_width((unsigned char *)marks[i].text) * (font_size_x * name_zoom)) / 2.0;
 		draw_ortho_ingame_string(hx - banner_width, hy, hz, (unsigned char *)marks[i].text, 4, font_size_x, font_size_y);
-		//restore text
+		// restore text
 		memcpy(marks[i].text + MARK_CLIP_POS, tmpb, 4);
 	}
 	glDisable(GL_BLEND);
@@ -683,7 +682,6 @@ void display_map_markers() {
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-	//glEnable(GL_LIGHTING);
 	glDepthFunc(GL_LESS);
 	set_font(0); // to variable length
 }

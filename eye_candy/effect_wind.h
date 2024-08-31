@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_WIND_H
 #define EFFECT_WIND_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class WindEffect : public Effect {
 public:
 enum WindType {
@@ -19,8 +19,8 @@ struct WindNeighbor {
 };
 WindEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, std::vector<ec::Obstruction *> *_obstructions, const color_t _hue_adjust, const color_t _saturation_adjust, const coord_t _scalar, const float _density, BoundingRange *_bounding_range, const WindType _type, const Vec3 _prevailing_wind);
 ~WindEffect();
-void set_pass_off(std::vector<WindEffect *> pass_off_to);                        // Required!
-void set_pass_off(std::vector<Effect *> pass_off_to);                        // Required!
+void set_pass_off(std::vector<WindEffect *> pass_off_to); // Required!
+void set_pass_off(std::vector<Effect *> pass_off_to); // Required!
 EffectEnum get_type() {
 	return EC_WIND;
 }
@@ -50,7 +50,7 @@ Vec3 overall_wind_adjust;
 Vec3 overall_wind;
 int max_LOD1_count;
 int count;
-std::vector<WindNeighbor> neighbors;                         // Where to pass particles off to.
+std::vector<WindNeighbor> neighbors; // Where to pass particles off to.
 BoundingRange *bounding_range;
 };
 class WindParticle : public Particle {
@@ -76,6 +76,5 @@ Vec3 rotation_axes[3];
 percent_t axis_weights[3];
 Quaternion quaternion;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_WIND_H
+#endif // defined EFFECT_WIND_H

@@ -1,9 +1,7 @@
 /*
         Display icon window.
-
         Rewritten from the code previously contained in hud.c, primarily so
         the icons can be configured from an xml file at run-time.
-
         Author bluap/pjbroad December 2012 / January 2013
  */
 #include <iostream>
@@ -39,8 +37,7 @@
  * TODO		Give indication that command queue is busy?
  */
 namespace IconWindow {
-//	Common base class for all icon types.
-//
+// Common base class for all icon types.
 class Virtual_Icon {
 public:
 virtual const char *get_help_message(void) const = 0;
@@ -53,8 +50,7 @@ virtual void menu(void) = 0;
 virtual int cm_handler(size_t option) = 0;
 virtual ~Virtual_Icon(void) {}
 };
-//	Implements the basic icon function code
-//
+// Implements the basic icon function code
 class Basic_Icon : public Virtual_Icon {
 public:
 Basic_Icon(int icon_id, int coloured_icon_id, const char *help_str, const std::vector<CommandQueue::Line> *lines = 0);
@@ -70,17 +66,16 @@ virtual int cm_handler(size_t option) {if (!cm_valid(cm_menu_id) || (option >= m
 protected:
 CommandQueue::Queue *get_cq(void) {if (!cq) {cq = new CommandQueue::Queue();} return cq;}
 private:
-bool has_highlight;                                                     // true if the icon is highlighted
-float u[2], v[2];                                                       // icon image positions
-std::string help_message;                                       // icon help message
-Uint32 flashing;                                                        // if non-zero, the number times left to flash
-Uint32 last_flash_change;                                       // if flashing, the time the flashing state last changed
-std::vector<CommandQueue::Line> menu_lines;                             // context menu #command lines
-CommandQueue::Queue *cq;                                        // Command queue for commands
-size_t cm_menu_id;                                                      // if this icon has a context menu, this is the id, otherwise CM_INIT_VALUE
+bool has_highlight; // true if the icon is highlighted
+float u[2], v[2]; // icon image positions
+std::string help_message; // icon help message
+Uint32 flashing; // if non-zero, the number times left to flash
+Uint32 last_flash_change; // if flashing, the time the flashing state last changed
+std::vector<CommandQueue::Line> menu_lines; // context menu #command lines
+CommandQueue::Queue *cq; // Command queue for commands
+size_t cm_menu_id; // if this icon has a context menu, this is the id, otherwise CM_INIT_VALUE
 };
-//	Implements multi icon, icons using a specifed control state variable.
-//
+// Implements multi icon, icons using a specifed control state variable.
 class Multi_Icon : public Virtual_Icon {
 public:
 Multi_Icon(const char *control_name, std::vector<Virtual_Icon *> &the_icons)
@@ -124,8 +119,7 @@ static const multi_icon_var multi_icon_vars[];
 const Multi_Icon::multi_icon_var Multi_Icon::multi_icon_vars[] = {
 	{"you_sit", &you_sit},
 	{0, 0} /* needed as terminator */};
-//	Implements window open/close icons.
-//
+// Implements window open/close icons.
 class Window_Icon : public Basic_Icon {
 public:
 Window_Icon(int icon_id, int coloured_icon_id, const char *help_str, const char *window_name, const std::vector<CommandQueue::Line> *lines = 0)
@@ -133,7 +127,7 @@ Window_Icon(int icon_id, int coloured_icon_id, const char *help_str, const char 
 {window_id = get_winid(window_name);}
 void update_highlight(void) {
 	Basic_Icon::update_highlight();
-	if ( window_id && *window_id >= 0 && (windows_list.window[*window_id].displayed || windows_list.window[*window_id].reinstate)) {
+	if (window_id && *window_id >= 0 && (windows_list.window[*window_id].displayed || windows_list.window[*window_id].reinstate)) {
 		Basic_Icon::set_highlight(true);
 	}
 }
@@ -147,8 +141,7 @@ void action(void) {
 private:
 int *window_id;
 };
-//	Implements keypress icons.
-//
+// Implements keypress icons.
 class Keypress_Icon : public Basic_Icon {
 public:
 Keypress_Icon(int icon_id, int coloured_icon_id, const char *help_str, const char *the_key_name, const std::vector<CommandQueue::Line> *lines = 0)
@@ -176,8 +169,7 @@ Espace_Icon(int icon_id, int coloured_icon_id, const char *help_str, const char 
 	: Basic_Icon(icon_id, coloured_icon_id, help_str, lines) {}
 ~Espace_Icon(void) {}
 };
-//	Implements cursor action mode icons.
-//
+// Implements cursor action mode icons.
 class Actionmode_Icon : public Basic_Icon {
 public:
 Actionmode_Icon(int icon_id, int coloured_icon_id, const char *help_str, const char *action_name, const std::vector<CommandQueue::Line> *lines = 0)
@@ -215,8 +207,7 @@ const Actionmode_Icon::icon_action_mode Actionmode_Icon::icon_action_modes[] = {
 	{"trade", ACTION_TRADE},
 	{"attack", ACTION_ATTACK},
 	{0, 0} /* needed as terminator */};
-//	Implements #command icons.
-//
+// Implements #command icons.
 class Command_Icon : public Basic_Icon {
 public:
 Command_Icon(int icon_id, int coloured_icon_id, const char *help_str, const char *command, const std::vector<CommandQueue::Line> *lines = 0)
@@ -234,8 +225,7 @@ void action(void) {
 private:
 std::string command_text;
 };
-//	A generation and container class for the icons
-//
+// A generation and container class for the icons
 class Container {
 public:
 Container(void) : mouse_over_icon(-1), display_icon_size(32) {}
@@ -298,7 +288,6 @@ int display_icon_size;
 };
 bool Container::busy = false;
 // Constucture basic icon object
-//
 Basic_Icon::Basic_Icon(int icon_id, int coloured_icon_id, const char *help_str, const std::vector<CommandQueue::Line> *lines)
 	: help_message(help_str), cq(0), cm_menu_id(CM_INIT_VALUE) {
 	has_highlight = false;
@@ -319,9 +308,8 @@ Basic_Icon::Basic_Icon(int icon_id, int coloured_icon_id, const char *help_str, 
 		cm_set_data(cm_menu_id, dynamic_cast<void *>(this));
 	}
 }
-//	Return the uv values of the icon bitmap need for drawing
-//	Implements the plain/highlighted icon switch.
-//
+// Return the uv values of the icon bitmap need for drawing
+// Implements the plain/highlighted icon switch.
 std::pair<float, float> Basic_Icon::get_uv(void) {
 	size_t index = (has_highlight)? 1: 0;
 	if (flashing) {
@@ -333,8 +321,7 @@ std::pair<float, float> Basic_Icon::get_uv(void) {
 	}
 	return std::pair<float, float>(u[index], v[index]);
 }
-//	Draw the icons into the window
-//
+// Draw the icons into the window
 void Container::draw_icons(void) {
 	Busy dummy;
 	for (size_t i = 0; i < icon_list.size(); ++i) {
@@ -360,7 +347,6 @@ void Container::draw_icons(void) {
 	mouse_over_icon = -1;
 }
 // helper function for reading xml strings, perhaps make generally available?
-//
 bool get_xml_field_string(std::string &ret_string, const char *field_name, const xmlNodePtr cur) {
 	char *tmp = (char *)xmlGetProp(cur, (xmlChar *)field_name);
 	if (!tmp) {
@@ -377,7 +363,6 @@ bool get_xml_field_string(std::string &ret_string, const char *field_name, const
 	return true;
 }
 // helper function for reading xml ints, perhaps make generally available?
-//
 bool get_xml_field_int(int *ret_int, const char *field_name, const xmlNodePtr cur) {
 	std::string tmpstr;
 	int tmpint;
@@ -392,8 +377,7 @@ bool get_xml_field_int(int *ret_int, const char *field_name, const xmlNodePtr cu
 	*ret_int = tmpint;
 	return true;
 }
-//	Construct a new icon object from the xml information
-//
+// Construct a new icon object from the xml information
 Virtual_Icon *Container::icon_xml_factory(const xmlNodePtr cur) {
 	std::string the_type, help_name, help_text, param_name;
 	const char *help_str;
@@ -442,8 +426,7 @@ Virtual_Icon *Container::icon_xml_factory(const xmlNodePtr cur) {
 	}
 	return 0;
 }
-//	Read the icon xml file, constructing icon objects as we go.
-//
+// Read the icon xml file, constructing icon objects as we go.
 bool Container::read_xml(icon_window_mode icon_mode) {
 	char const *error_prefix = __PRETTY_FUNCTION__;
 	std::string file_name;
@@ -505,8 +488,7 @@ bool Container::read_xml(icon_window_mode icon_mode) {
 	xmlFreeDoc(doc);
 	return true;
 }
-//	If the xml file is missing or does not pass, fall back to default icons
-//
+// If the xml file is missing or does not pass, fall back to default icons
 void Container::default_icons(icon_window_mode icon_mode) {
 	if (icon_mode == NEW_CHARACTER_ICONS) {
 		icon_list.push_back(new Window_Icon(39, 38, get_named_string("tooltips", "help"), "help"));
@@ -541,17 +523,17 @@ void Container::default_icons(icon_window_mode icon_mode) {
 	}
 }
 }
-//	The icon container object, does nothing much when constructed, frees the icons when looses scope.
+// The icon container object, does nothing much when constructed, frees the icons when looses scope.
 static IconWindow::Container action_icons;
 int icons_win = -1;
 static int reload_flag = false;
 static icon_window_mode last_mode = (icon_window_mode)0;
-//	Window callback for mouse over
+// Window callback for mouse over
 static int      mouseover_icons_handler(window_info *win, int mx, int my) {
 	action_icons.mouse_over(mx / action_icons.get_icon_size());
 	return 0;
 }
-//	Window callback for display
+// Window callback for display
 static int      display_icons_handler(window_info *win) {
 	if (reload_flag) {
 		action_icons.free_icons();
@@ -561,7 +543,7 @@ static int      display_icons_handler(window_info *win) {
 	action_icons.draw_icons();
 	return 1;
 }
-//	Window callback mouse click
+// Window callback mouse click
 static int      click_icons_handler(window_info *win, int mx, int my, Uint32 flags) {
 	if ((flags & ELW_MOUSE_BUTTON) == 0) {
 		return 0; // only handle mouse button clicks, not scroll wheels moves;
@@ -573,20 +555,20 @@ static int      click_icons_handler(window_info *win, int mx, int my, Uint32 fla
 	}
 	return 1;
 }
-//	Reload the icons from file
+// Reload the icons from file
 extern "C" int reload_icon_window(char *text, int len) {
 	reload_flag = true;
 	return 1;
 }
-//	Used for hacking the hud stats bar displays, really just returns window width
+// Used for hacking the hud stats bar displays, really just returns window width
 extern "C" int get_icons_win_active_len(void) {
 	return action_icons.get_icon_size() * action_icons.get_num_icons();
 }
-//	Make the specified icon flash
+// Make the specified icon flash
 extern "C" void flash_icon(const char *name, Uint32 seconds) {
 	action_icons.flash(name, seconds);
 }
-//	Create/display the icon window and create the icons as needed
+// Create/display the icon window and create the icons as needed
 extern "C" void init_icon_window(icon_window_mode icon_mode) {
 	if (!action_icons.empty() && (last_mode != icon_mode)) {
 		action_icons.free_icons();

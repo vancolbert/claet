@@ -24,14 +24,14 @@
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
  #ifndef WINDOWS
   #define WINDOWS
- #endif  // !WINDOWS
-#endif  // _WIN32 || _WIN64
+ #endif // !WINDOWS
+#endif // _WIN32 || _WIN64
 #if defined(WINDOWS)
  #ifndef NOMINMAX
  #define NOMINMAX
  #endif
  #include <windows.h>
- #ifdef _MSC_VER        // now we do test for VC
+ #ifdef _MSC_VER // now we do test for VC
 // Lachesis: Make sure snprintf is declared before we #define it to be something else,
 // else we'll eventually break C++ headers that use it
   #include <stdio.h>
@@ -46,7 +46,7 @@
    #define ceilf ceil
    #define floorf floor
    #define fabsf fabs
-  #endif  // _MSC_VER < 1400
+  #endif // _MSC_VER < 1400
   #define rint(X) floor(X + 0.5f)
  #endif // _MSC_VER
  #ifdef __MINGW32__
@@ -57,16 +57,16 @@
  #endif // __MINGW32__
 #elif defined(OSX)
   #ifndef __MACOSX__
-   #define __MACOSX__  //necessary for Ogg on Macs
+   #define __MACOSX__ // necessary for Ogg on Macs
   #endif
  #ifdef __BIG_ENDIAN__
   #define EL_BIG_ENDIAN
  #endif
-#endif //WINDOWS
+#endif // WINDOWS
 #if defined(OSX)
  #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
-//#include <OpenGL/glext.h>
+// #include <OpenGL/glext.h>
  #include "elglext.h"
  #define APIENTRY
  #define APIENTRYP *
@@ -98,20 +98,20 @@
 			#include <al.h>
 			#include <alc.h>
 		#endif
-	#endif //WINDOWS
+	#endif // WINDOWS
 	#ifdef LINUX
 		#include <AL/al.h>
 		#include <AL/alc.h>
-	#endif //LINUX
+	#endif // LINUX
 	#ifdef BSD
 		#include <AL/al.h>
 		#include <AL/alc.h>
 	#endif
-#endif //lib location platform checking
+#endif // lib location platform checking
 #include <math.h>
 #ifndef M_PI
  #define M_PI 3.14159265358979323846
-#endif //M_PI
+#endif // M_PI
 #ifndef M_SQRT2
  #define M_SQRT2 1.41421356237309504880
 #endif

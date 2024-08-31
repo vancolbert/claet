@@ -23,7 +23,7 @@ int hash_add(hash_table *table, void *key, void *item);
 int hash_delete(hash_table *table, void *key);
 void hash_start_iterator(hash_table *table);
 hash_entry *hash_get_next(hash_table *table);
-//HASH & KEY_CMP
+// HASH & KEY_CMP
 unsigned long int hash_fn_int(void *key);
 int cmp_fn_int(void *key1, void *key2);
 unsigned long int hash_fn_str(void *key);

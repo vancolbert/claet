@@ -11,7 +11,7 @@ extern "C" {
 #endif
 // How long a username is allowed to be. This define allows for the trailing NULL
 #define MAX_USERNAME_LENGTH (15 + 1)
-extern int have_a_map;  /*!< flag indicating whether a map is available or not */
+extern int have_a_map; /*!< flag indicating whether a map is available or not */
 extern int auto_camera; /*!< if this is true, we are using the auto camera */
 /*! \name Action types */
 /*! @{ */
@@ -130,7 +130,6 @@ void get_world_x_y(short *scene_x, short *scene_y);
  * \pre If there is no active actor, this function returns immediately.
  */
 void get_old_world_x_y(short *scene_x, short *scene_y);
-//void check_menus_out_of_screen();
 /*!
  * \ingroup interfaces
  * \brief   Puts the client into 2D mode.

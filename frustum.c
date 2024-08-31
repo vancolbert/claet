@@ -1,16 +1,16 @@
-//***********************************************************************//
-//																		 //
-//		- "Talk to me like I'm a 3 year old!" Programming Lessons -		 //
-//                                                                       //
-//		$Author:		DigiBen		digiben@gametutorials.com			 //
-//																		 //
-//		$Program:		Frustum Culling									 //
-//																		 //
-//		$Description:	Demonstrates checking if shapes are in view		 //
-//																		 //
-//		$Date:			8/28/01											 //
-//																		 //
-//***********************************************************************//
+// ***********************************************************************
+// 
+//		- "Talk to me like I'm a 3 year old!" Programming Lessons -
+// 
+//		$Author: DigiBen		digiben@gametutorials.com
+// 
+//		$Program: Frustum Culling
+// 
+//		$Description: Demonstrates checking if shapes are in view
+// 
+//		$Date: 8/28/01
+// 
+//***********************************************************************
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -22,14 +22,14 @@
 // We create an enum of the sides so we don't have to call each side 0 or 1.
 // This way it makes it more understandable and readable when dealing with frustum sides.
 enum FrustumSide {
-	RIGHT   = 0,            // The RIGHT side of the frustum
-	LEFT    = 1,            // The LEFT	 side of the frustum
-	BOTTOM  = 2,            // The BOTTOM side of the frustum
-	TOP             = 3,            // The TOP side of the frustum
-	BACK    = 4,            // The BACK	side of the frustum
-	FRONT   = 5,                    // The FRONT side of the frustum
+	RIGHT   = 0, // The RIGHT side of the frustum
+	LEFT    = 1, // The LEFT	 side of the frustum
+	BOTTOM  = 2, // The BOTTOM side of the frustum
+	TOP             = 3, // The TOP side of the frustum
+	BACK    = 4, // The BACK	side of the frustum
+	FRONT   = 5, // The FRONT side of the frustum
 };
-float m_Frustum[8][4];  // only use 6, but mult by 8 is faster
+float m_Frustum[8][4]; // only use 6, but mult by 8 is faster
 FRUSTUM main_frustum;
 FRUSTUM reflection_frustum;
 FRUSTUM shadow_frustum;
@@ -38,9 +38,7 @@ unsigned int current_frustum_size;
 double reflection_clip_planes[5][4];
 PLANE *reflection_portals;
 ///////////////////////////////// NORMALIZE PLANE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
-/////
-/////	This normalizes a plane (A side) from a given frustum.
-/////
+///// This normalizes a plane (A side) from a given frustum.
 ///////////////////////////////// NORMALIZE PLANE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 /*
  * Normalizes a given Plane.
@@ -48,7 +46,7 @@ PLANE *reflection_portals;
 static __inline__ void normalize_plane(VECTOR4 plane) {
 	// Here we calculate the magnitude of the normal to the plane (point A B C)
 	// Remember that (A, B, C) is that same thing as the normal's (X, Y, Z).
-	// To calculate magnitude you use the equation:  magnitude = sqrt( x^2 + y^2 + z^2)
+	// To calculate magnitude you use the equation: magnitude = sqrt(x^2 + y^2 + z^2)
 	float magnitude;
 	magnitude = sqrt(plane[A] * plane[A] + plane[B] * plane[B] + plane[C] * plane[C]);
 	// Then we divide the plane's values by it's magnitude.
@@ -308,9 +306,9 @@ int aabb_in_frustum(const AABBOX bbox) {
 	unsigned int i;
 	float m, nx, ny, nz;
 	for (i = 0; i < current_frustum_size; i++) {
-		nx = !current_frustum[0][i].mask[0] ? bbox.bbmin[X] :  bbox.bbmax[X];
-		ny = !current_frustum[0][i].mask[1] ? bbox.bbmin[Y] :  bbox.bbmax[Y];
-		nz = !current_frustum[0][i].mask[2] ? bbox.bbmin[Z] :  bbox.bbmax[Z];
+		nx = !current_frustum[0][i].mask[0] ? bbox.bbmin[X] : bbox.bbmax[X];
+		ny = !current_frustum[0][i].mask[1] ? bbox.bbmin[Y] : bbox.bbmax[Y];
+		nz = !current_frustum[0][i].mask[2] ? bbox.bbmin[Z] : bbox.bbmax[Z];
 		m = (current_frustum[0][i].plane[A] * nx + current_frustum[0][i].plane[B] * ny + current_frustum[0][i].plane[C] * nz);
 		if (m < -current_frustum[0][i].plane[D]) {
 			return 0;
@@ -411,9 +409,9 @@ void calculate_reflection_frustum(float water_height) {
 	set_cur_intersect_type(main_bbox_tree, cur_intersect_type);
 }
 void calculate_shadow_frustum() {
-	MATRIX4x4 proj;                                                         // This will hold our projection matrix
-	MATRIX4x4 modl;                                                         // This will hold our modelview matrix
-	MATRIX4x4 clip;                                                         // This will hold the clipping planes
+	MATRIX4x4 proj; // This will hold our projection matrix
+	MATRIX4x4 modl; // This will hold our modelview matrix
+	MATRIX4x4 clip; // This will hold the clipping planes
 	VECTOR3 ld;
 	unsigned int cur_intersect_type;
 	if (main_bbox_tree->intersect[INTERSECTION_TYPE_SHADOW].intersect_update_needed == 0) {
@@ -475,14 +473,12 @@ void calculate_light_frustum(double *modl, double *proj) {
 	set_frustum(main_bbox_tree, frustum, 63);
 }
 ///////////////////////////////// CALCULATE FRUSTUM \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
-/////
-/////	This extracts our frustum from the projection and modelview matrix.
-/////
+///// This extracts our frustum from the projection and modelview matrix.
 ///////////////////////////////// CALCULATE FRUSTUM \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 void CalculateFrustum() {
-	MATRIX4x4 proj;                                                         // This will hold our projection matrix
-	MATRIX4x4 modl;                                                         // This will hold our modelview matrix
-	MATRIX4x4 clip;                                                         // This will hold the clipping planes
+	MATRIX4x4 proj; // This will hold our projection matrix
+	MATRIX4x4 modl; // This will hold our modelview matrix
+	MATRIX4x4 clip; // This will hold the clipping planes
 	unsigned int cur_intersect_type;
 	if (main_bbox_tree->intersect[INTERSECTION_TYPE_DEFAULT].intersect_update_needed == 0) {
 		return;

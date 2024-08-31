@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_TARGETMAGIC_H
 #define EFFECT_TARGETMAGIC_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class TargetMagicEffect : public Effect {
 public:
 enum TargetMagicType {
@@ -81,6 +81,5 @@ ParticleMover *mover2;
 Vec3 *target;
 Uint16 effect_id;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_TARGETMAGIC_H
+#endif // defined EFFECT_TARGETMAGIC_H

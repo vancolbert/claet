@@ -272,149 +272,149 @@ static Uint16 get_key_code(const char *key) {
 	} else {
 		Uint32 crc = CRC32(key, len);
 		switch (crc) {
-		case 0x414243d2:         //UP
+		case 0x414243d2: // UP
 			return 273;
-		case 0x8b9c5c32:         //F1
+		case 0x8b9c5c32: // F1
 			return 282;
-		case 0x86df7aeb:         //F2
+		case 0x86df7aeb: // F2
 			return 283;
-		case 0x821e675c:         //F3
+		case 0x821e675c: // F3
 			return 284;
-		case 0x9c593759:         //F4
+		case 0x9c593759: // F4
 			return 285;
-		case 0x98982aee:         //F5
+		case 0x98982aee: // F5
 			return 286;
-		case 0x95db0c37:         //F6
+		case 0x95db0c37: // F6
 			return 287;
-		case 0x911a1180:         //F7
+		case 0x911a1180: // F7
 			return 288;
-		case 0xa955ac3d:         //F8
+		case 0xa955ac3d: // F8
 			return 289;
-		case 0xad94b18a:         //F9
+		case 0xad94b18a: // F9
 			return 290;
-		case 0xbbde3454:         //F10
+		case 0xbbde3454: // F10
 			return 291;
-		case 0xbf1f29e3:         //F11
+		case 0xbf1f29e3: // F11
 			return 292;
-		case 0xb25c0f3a:         //F12
+		case 0xb25c0f3a: // F12
 			return 293;
-		case 0xb69d128d:         //F13
+		case 0xb69d128d: // F13
 			return 294;
-		case 0xa8da4288:         //F14
+		case 0xa8da4288: // F14
 			return 295;
-		case 0xac1b5f3f:         //F15
+		case 0xac1b5f3f: // F15
 			return 296;
-		case 0xe5b332af:         //BACKSPACE
+		case 0xe5b332af: // BACKSPACE
 			return 8;
-		case 0x3d6742da:         //TAB
+		case 0x3d6742da: // TAB
 			return 9;
-		case 0xe4f512ce:         //CLEAR
+		case 0xe4f512ce: // CLEAR
 			return 12;
-		case 0xe5c642f:         //RETURN
+		case 0xe5c642f: // RETURN
 			return 13;
-		case 0x1a3dbcf4:         //PAUSE
+		case 0x1a3dbcf4: // PAUSE
 			return 19;
-		case 0xb23e322f:         //ESCAPE
+		case 0xb23e322f: // ESCAPE
 			return 27;
-		case 0xe0ea4208:         //SPACE
+		case 0xe0ea4208: // SPACE
 			return 32;
-		case 0x3f048816:         //DELETE
+		case 0x3f048816: // DELETE
 			return 127;
-		case 0x5dd541:         //KP0
+		case 0x5dd541: // KP0
 			return 256;
-		case 0x49cc8f6:         //KP1
+		case 0x49cc8f6: // KP1
 			return 257;
-		case 0x9dfee2f:         //KP2
+		case 0x9dfee2f: // KP2
 			return 258;
-		case 0xd1ef398:         //KP3
+		case 0xd1ef398: // KP3
 			return 259;
-		case 0x1359a39d:         //KP4
+		case 0x1359a39d: // KP4
 			return 260;
-		case 0x1798be2a:         //KP5
+		case 0x1798be2a: // KP5
 			return 261;
-		case 0x1adb98f3:         //KP6
+		case 0x1adb98f3: // KP6
 			return 262;
-		case 0x1e1a8544:         //KP7
+		case 0x1e1a8544: // KP7
 			return 263;
-		case 0x265538f9:         //KP8
+		case 0x265538f9: // KP8
 			return 264;
-		case 0x2294254e:         //KP9
+		case 0x2294254e: // KP9
 			return 265;
-		case 0xc9681663:         //KP_PERIOD
+		case 0xc9681663: // KP_PERIOD
 			return 266;
-		case 0xf2032002:         //KP_DIVIDE
+		case 0xf2032002: // KP_DIVIDE
 			return 267;
-		case 0xc69c9177:         //KP_MULTIPLY
+		case 0xc69c9177: // KP_MULTIPLY
 			return 268;
-		case 0xe05a3b75:         //KP_MINUS
+		case 0xe05a3b75: // KP_MINUS
 			return 269;
-		case 0x7a14ede0:         //KP_PLUS
+		case 0x7a14ede0: // KP_PLUS
 			return 270;
-		case 0xb95fb1fa:         //KP_ENTER
+		case 0xb95fb1fa: // KP_ENTER
 			return 271;
-		case 0x997d27b6:         //KP_EQUALS
+		case 0x997d27b6: // KP_EQUALS
 			return 272;
-		case 0x412c789a:         //DOWN
+		case 0x412c789a: // DOWN
 			return 274;
-		case 0xcfd43bcf:         //RIGHT
+		case 0xcfd43bcf: // RIGHT
 			return 275;
-		case 0x14618acf:         //LEFT
+		case 0x14618acf: // LEFT
 			return 276;
-		case 0xb448467c:         //INSERT
+		case 0xb448467c: // INSERT
 			return 277;
-		case 0xd59321ba:         //HOME
+		case 0xd59321ba: // HOME
 			return 278;
-		case 0x863456b7:         //END
+		case 0x863456b7: // END
 			return 279;
-		case 0xd541afe1:         //PAGEUP
+		case 0xd541afe1: // PAGEUP
 			return 280;
-		case 0x77a53c61:         //PAGEDOWN
+		case 0x77a53c61: // PAGEDOWN
 			return 281;
-		case 0x8563dfd4:         //NUMLOCK
+		case 0x8563dfd4: // NUMLOCK
 			return 300;
-		case 0x4b601de5:         //CAPSLOCK
+		case 0x4b601de5: // CAPSLOCK
 			return 301;
-		case 0x7b642f:         //SCROLLOCK
+		case 0x7b642f: // SCROLLOCK
 			return 302;
-		case 0x6fa8765e:         //RSHIFT
+		case 0x6fa8765e: // RSHIFT
 			return 303;
-		case 0x5a59f8b9:         //LSHIFT
+		case 0x5a59f8b9: // LSHIFT
 			return 304;
-		case 0xc535c663:         //RCTRL
+		case 0xc535c663: // RCTRL
 			return 305;
-		case 0xb5e083f0:         //LCTRL
+		case 0xb5e083f0: // LCTRL
 			return 306;
-		case 0xf7a834fb:         //RALT
+		case 0xf7a834fb: // RALT
 			return 307;
-		case 0x39b9e58e:         //LALT
+		case 0x39b9e58e: // LALT
 			return 308;
-		case 0x34796737:         //RMETA
+		case 0x34796737: // RMETA
 			return 309;
-		case 0x44ac22a4:         //LMETA
+		case 0x44ac22a4: // LMETA
 			return 310;
-		case 0x8ec5890c:         //LSUPER
+		case 0x8ec5890c: // LSUPER
 			return 311;
-		case 0xbb3407eb:         //RSUPER
+		case 0xbb3407eb: // RSUPER
 			return 312;
-		case 0x2d5a7586:         //MODE
+		case 0x2d5a7586: // MODE
 			return 313;
-		case 0x87140862:         //COMPOSE
+		case 0x87140862: // COMPOSE
 			return 314;
-		case 0x512a6d4b:         //HELP
+		case 0x512a6d4b: // HELP
 			return 315;
-		case 0xdc87c39e:         //PRINT
+		case 0xdc87c39e: // PRINT
 			return 316;
-		case 0xbdf2d984:         //SYSREQ
+		case 0xbdf2d984: // SYSREQ
 			return 317;
-		case 0xd318f49:         //BREAK
+		case 0xd318f49: // BREAK
 			return 318;
-		case 0x46854e9d:         //MENU
+		case 0x46854e9d: // MENU
 			return 319;
-		case 0x8758b6ec:         //POWER
+		case 0x8758b6ec: // POWER
 			return 320;
-		case 0x1e43eaa9:         //EURO
+		case 0x1e43eaa9: // EURO
 			return 321;
-		case 0xdf6ba7e:         //UNDO
+		case 0xdf6ba7e: // UNDO
 			return 322;
 		default:
 			return SDLK_UNKNOWN;
@@ -456,9 +456,9 @@ void read_key_config() {
 	size_t i;
 #ifdef LINUX
 	f = el_open_custom("key_linux.ini");
-#else //LINUX
+#else // LINUX
 	f = el_open_custom("key.ini");
-#endif //LINUX
+#endif // LINUX
 	if (f) {
 		while (el_fgets(line, sizeof(line), f)) {
 			parse_key_line(line);

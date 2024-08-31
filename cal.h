@@ -27,8 +27,8 @@ void cal_set_anim_sound(struct cal_anim *my_cal_anim, const char *sound, const c
  */
 void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uint32 use_glow);
 struct cal_anim cal_load_anim(actor_types *act, const char *str, const char *sound, const char *sound_scale, int duration);
-#define cal_cycle_blending_delay  0.1f  /*!< time in seconds for blending from cycle to action or cycle. */
-#define cal_action_blending_delay 0.6f  /*!< time in seconds for blending from action to action or cycle. */
+#define cal_cycle_blending_delay  0.1f /*!< time in seconds for blending from cycle to action or cycle. */
+#define cal_action_blending_delay 0.6f /*!< time in seconds for blending from action to action or cycle. */
 void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay);
 void cal_actor_set_anim(int id, struct cal_anim anim);
 /*!

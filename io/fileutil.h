@@ -45,4 +45,4 @@ Uint32 xz_file_read(FILE *file, void **buffer, Uint64 *size);
 #ifdef __cplusplus
 }
 #endif
-#endif  /* UUID_962d4106_e9b5_41a2_876f_caa6888adf30 */
+#endif /* UUID_962d4106_e9b5_41a2_876f_caa6888adf30 */

@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_firefly.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 FireflyParticle::FireflyParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _size, const coord_t _min_height, const coord_t _max_height) :
 	Particle(_effect, _mover, _pos, _velocity, _size) {
 	color_t hue, saturation, value;
@@ -28,7 +28,7 @@ bool FireflyParticle::idle(const Uint64 delta_t) {
 		return false;
 	}
 	if (randfloat(1.0) < 0.0005) {
-		return false;         // let some particles die ramdomly
+		return false; // let some particles die ramdomly
 	}
 	Vec3 velocity_shift;
 	velocity_shift.randomize();
@@ -76,7 +76,6 @@ FireflyEffect::FireflyEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, std::vect
 	bounds = bounding_range;
 	mover = new BoundingMover(this, center, bounding_range, 1.0);
 	spawner = new NoncheckingFilledBoundingSpawner(bounding_range);
-	//  firefly_count = (int)(spawner->get_area() * _density * 0.15);
 	firefly_count = (int)(MAX_DRAW_DISTANCE_SQUARED * PI * _density * 0.25 * (1.0 + randfloat(1.0)));
 	for (int i = 0; i < firefly_count; i++) {
 		const Vec3 coords = spawner->get_new_coords() + center + Vec3(0.0, -0.125 + randcoord(0.25), 0.0);
@@ -123,5 +122,4 @@ bool FireflyEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

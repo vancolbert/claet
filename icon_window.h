@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 #include "platform.h"
-extern int icons_win;           /*!< the icon window id  */
+extern int icons_win; /*!< the icon window id  */
 typedef enum {NEW_CHARACTER_ICONS=1, MAIN_WINDOW_ICONS=2, } icon_window_mode; /*!< possible icom window modes  */
 /*!
  * \ingroup windows

@@ -15,8 +15,8 @@ extern "C" {
  */
 typedef struct {
 	int msgs; /*!< number of messages arrived so far */
-	char *name;  /*!< name of the player */
-	char **messages;  /*!< array containing all messages arrived so far */
+	char *name; /*!< name of the player */
+	char **messages; /*!< array containing all messages arrived so far */
 } afk_struct;
 /*!
  * Contains the number of message and the number of people that sent messages while AFK and a
@@ -25,7 +25,7 @@ typedef struct {
 struct pm_struct {
 	int msgs; /*!< number of message that arrived while AFK */
 	int ppl; /*!< number of people that sent a messages while AFK */
-	afk_struct *afk_msgs;  /*!< array of \see afk_struct elements */
+	afk_struct *afk_msgs; /*!< array of \see afk_struct elements */
 };
 extern struct pm_struct pm_log;
 extern int afk; /*!< flag indicating whether a player is currently AFK or not */

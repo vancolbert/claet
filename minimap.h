@@ -14,7 +14,7 @@ extern int open_minimap_on_start;
 extern float minimap_size_coefficient;
 void display_minimap();
 int display_minimap_handler(window_info *win);
-//called when map changes or window size changes (we have to reload textures)
+// called when map changes or window size changes (we have to reload textures)
 void change_minimap();
 void save_exploration_map();
 #ifdef __cplusplus

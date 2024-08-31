@@ -7,7 +7,7 @@
 #define EL_PATH_WRAPPER_H
 #ifdef __cplusplus
 extern "C" {
-#endif //C++
+#endif // C++
 #include <stdio.h>
 #include <sys/types.h>
 /**
@@ -199,5 +199,5 @@ int file_rename_config(const char *old_filename, const char *new_filename);
 int file_remove_config(const char *filename);
 #ifdef __cplusplus
 }
-#endif //C++
-#endif //EL_PATH_WRAPPER_H
+#endif // C++
+#endif // EL_PATH_WRAPPER_H

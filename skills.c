@@ -56,7 +56,6 @@ int display_skills_handler(window_info *win) {
 		glVertex3i(win->len_x - (20 * 4) + 16, win->len_y - 4, 0);
 		glEnd();
 	}
-	//
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glBegin(GL_LINES);
 	glVertex3i(win->len_x - (20 * 3) + 4, win->len_y - 4, 0);
@@ -80,7 +79,7 @@ int display_skills_handler(window_info *win) {
 		int xlen = strlen(t->text) * ((t->size)?11:8);
 		if ((t->y - j > 0) && (t->y - j < skills_menu_y_len - 30)) {
 			if (t->ref) {
-				//draw a line
+				// draw a line
 				glColor3f(0.5, 0.5, 0.5);
 				glDisable(GL_TEXTURE_2D);
 				glBegin(GL_LINES);
@@ -132,9 +131,9 @@ int display_skills_handler(window_info *win) {
 }
 int click_skills_handler(window_info *win, int mx, int my, Uint32 flags) {
 	_Text *t = Page[skillspage].T.Next;
-	if (mx > win->len_x - (20 * 4) && my > win->len_y - 20 && my < win->len_y ) {
+	if (mx > win->len_x - (20 * 4) && my > win->len_y - 20 && my < win->len_y) {
 		// Previous
-		if ( mx < win->len_x - (20 * 3)) {
+		if (mx < win->len_x - (20 * 3)) {
 			if (historiquepageskills > 0) {
 				historiquepageskills--;
 				skillspage = HistoriqueSkills[historiquepageskills].page_precedente;
@@ -190,7 +189,7 @@ int click_skills_handler(window_info *win, int mx, int my, Uint32 flags) {
 					if (!strncasecmp(t->ref, "http://", 7)) {
 						open_web_link(t->ref);
 					} else {
-						//changing page
+						// changing page
 						int i;
 						for (i = 0; i < numpage + 1; i++) {
 							if (!xmlStrcasecmp((xmlChar *)Page[i].Name, (xmlChar *)t->ref)) {

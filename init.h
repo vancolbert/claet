@@ -86,7 +86,7 @@ typedef struct {
 	int quickbar_y;
 	int quickbar_flags;
 	/*! @} */
-	int watch_this_stat;    // not used anymore, left here to avoid breaking the file-structure
+	int watch_this_stat; // not used anymore, left here to avoid breaking the file-structure
 	int has_accepted_rules;
 	int quantity[6];
 	int storage_win_x;
@@ -167,7 +167,7 @@ typedef struct {
 	int user_menu_win_x;
 	int user_menu_win_y;
 	/*! @} */
-	//!!!!!!!If you add any new FLOAT option, decrement the reserved thingy accordingly!!!!!!
+	// !!!!!!!If you add any new FLOAT option, decrement the reserved thingy accordingly!!!!!!
 #define NUM_RESERVED 4
 	/*!
 	 * \name do spells start minimized?
@@ -211,9 +211,9 @@ extern char datadir[256]; /*!< the default directory where we look for data file
 extern int use_clipboard; /*!< whether to use CLIPBOARD or PRIMARY for pasting */
 #endif
 extern int disconnected; /*!< indicates whether we are currently connected or not */
-extern int exit_now;    /*!< a flag that indicates we should exit the programm immediately */
-extern int restart_required;    /*!< a flag that the exit should attempt to restart, not just exit */
-extern int allow_restart;   /*!< a flag that indicates if restarting after download is permitted */
+extern int exit_now; /*!< a flag that indicates we should exit the programm immediately */
+extern int restart_required; /*!< a flag that the exit should attempt to restart, not just exit */
+extern int allow_restart; /*!< a flag that indicates if restarting after download is permitted */
 extern char lang[10]; /*!< contains the identifier for the current language. \todo Shouldn't this go into translate.h? */
 extern int video_mode_set;
 extern int nom_change;
@@ -242,4 +242,4 @@ void init_stuff();
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  //__INIT_H__
+#endif // __INIT_H__

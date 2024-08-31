@@ -240,7 +240,7 @@ static GLuint build_texture(image_t *image, const Uint32 wrap_mode_repeat, const
 		return 0;
 	}
 	glGenTextures(1, &id);
-	glBindTexture(GL_TEXTURE_2D, id);       //failsafe
+	glBindTexture(GL_TEXTURE_2D, id); // failsafe
 	bind_texture_id(id);
 	CHECK_GL_ERRORS();
 	if (wrap_mode_repeat != 0) {
@@ -322,7 +322,7 @@ Uint32 load_texture_cached(const char *file_name, const texture_type type) {
 		return slot;
 	} else {
 		LOG_ERROR("Error: out of texture space\n");
-		return TEXTURE_CACHE_MAX;       // ERROR!
+		return TEXTURE_CACHE_MAX; // ERROR!
 	}
 }
 static Uint32 get_supported_compression_formats() {
@@ -1429,19 +1429,16 @@ gl_texture_t *ReadPNGFromFile(const char *filename) {
 	FILE *fp = NULL;
 	png_bytep *row_pointers = NULL;
 	png_uint_32 w, h;
-	// int bit_depth, color_type;
 	int i;
 	/* open image file */
 	fp = fopen(filename, "rb");
 	if (!fp) {
-		//LOG_ERROR (stderr, "error: couldn't open \"%s\"!\n", filename);
 		return NULL;
 	}
 	/* read magic number */
 	fread(magic, 1, sizeof(magic), fp);
 	/* check for valid magic number */
 	if (!png_check_sig(magic, sizeof(magic))) {
-		//LOG_ERROR (stderr, "error: \"%s\" is not a valid PNG image!\n", filename);
 		fclose(fp);
 		return NULL;
 	}
@@ -1460,8 +1457,6 @@ gl_texture_t *ReadPNGFromFile(const char *filename) {
 	}
 	/* create our OpenGL texture object */
 	texinfo = (gl_texture_t *)malloc(sizeof(gl_texture_t));
-	//texinfo->width=0;
-	//texinfo->height=0;
 	/* initialize the setjmp for returning properly after a libpng
 	   error occured */
 	if (setjmp(png_jmpbuf(png_ptr))) {
@@ -1508,7 +1503,6 @@ gl_texture_t *ReadPNGFromFile(const char *filename) {
 	/* update info structure to apply transformations */
 	png_read_update_info(png_ptr, info_ptr);
 	/* retrieve updated information */
-	//png_get_IHDR (png_ptr, info_ptr, (png_uint_32*)(&texinfo->width), (png_uint_32*)(&texinfo->height), &bit_depth, &color_type, NULL, NULL, NULL);
 	png_get_IHDR(png_ptr, info_ptr, &w, &h, &bit_depth, &color_type, NULL, NULL, NULL);
 	texinfo->width = w;
 	texinfo->height = h;

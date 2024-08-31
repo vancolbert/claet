@@ -6,18 +6,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-//Move to multiplayer.h?
+// Move to multiplayer.h?
 typedef struct message {
 	int length;
 	unsigned char *data;
 } message_t;
 typedef struct node {
 	void *data;
-	struct node *next;      /* Pointer to the next node */
+	struct node *next; /* Pointer to the next node */
 } node_t;
 typedef struct queue {
-	node_t *front;  /* Front of the queue */
-	node_t *rear;   /* Back of the queue */
+	node_t *front; /* Front of the queue */
+	node_t *rear; /* Back of the queue */
 	SDL_mutex *mutex; /* Mutex */
 	SDL_cond *condition;
 	int nodes; /* Node counter */
@@ -34,4 +34,4 @@ void *queue_pop_blocking(queue_t *queue);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif //QUEUE_H_
+#endif // QUEUE_H_

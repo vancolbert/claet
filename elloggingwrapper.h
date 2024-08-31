@@ -114,14 +114,12 @@ void init_thread_log(const char *name);
 #define LOG_WARNING(msg, args ...) log_warning(__FILE__, __LINE__, msg, ## args)
 #define LOG_INFO(msg, args ...) log_info(__FILE__, __LINE__, msg, ## args)
 #define LOG_DEBUG(msg, args ...) \
-	do \
-	{ \
+	do { \
 		if (get_log_level() >= llt_debug) \
 		log_debug(__FILE__, __LINE__, msg, ## args); \
 	} while (0)
 #define LOG_DEBUG_VERBOSE(msg, args ...) \
-	do \
-	{ \
+	do { \
 		if (get_log_level() >= llt_debug_verbose) \
 		log_debug_verbose(__FILE__, __LINE__, msg, ## args); \
 	} while (0)
@@ -130,4 +128,4 @@ void init_thread_log(const char *name);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-#endif  /* UUID_f1a7fcd3_705c_45f3_b3df_7d572d295698 */
+#endif /* UUID_f1a7fcd3_705c_45f3_b3df_7d572d295698 */

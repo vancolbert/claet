@@ -257,8 +257,8 @@ static void check_for_problem_drivers() {
 	}
 	my_string = (const char *)glGetString(GL_VERSION);
 /*
-        //should be fixed now
-        //OpenGL Version Format: 2.0.0
+        // should be fixed now
+        // OpenGL Version Format: 2.0.0
         if(is_nvidia)
                 {
                         if(my_string[0]=='1')vertex_program_problem=1;
@@ -271,7 +271,7 @@ static void check_for_problem_drivers() {
 			vertex_program_problem = 1;
 		}
 	}
-	//log the problems
+	// log the problems
 	if (vertex_program_problem) {
 		LOG_TO_CONSOLE(c_red2, "Your card reports having vertex program capabilities, but the support is buggy, so we disabled it.");
 	}

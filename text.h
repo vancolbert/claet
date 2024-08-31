@@ -63,7 +63,7 @@ extern char not_from_the_end_console;
 extern int log_chat; /*!< flag stating whether to log server messages or not */
 extern int current_text_width; /*!< Current wrapping width for text buffers */
 extern ec_reference harvesting_effect_reference;
-extern int summoning_filter; //used to ignore text lines of summoning messages
+extern int summoning_filter; // used to ignore text lines of summoning messages
 void close_chat_log();
 /*!
  * \brief Allocate the character buffer for a text_message
@@ -336,7 +336,7 @@ int find_last_lines_time(int *msg, int *offset, Uint8 filter, int width);
  */
 int find_line_nr(int nr_lines, int line, Uint8 filter, int *msg, int *offset, float zoom, int width);
 // XXX FIXME (Grum): obsolete
-///*!
+/// *!
 // * \ingroup interface_console
 // * \brief displays the console text
 // *
@@ -344,7 +344,6 @@ int find_line_nr(int nr_lines, int line, Uint8 filter, int *msg, int *offset, fl
 // *
 // * \callgraph
 // */
-//void display_console_text();
 /*!
  * \ingroup text_font
  * \brief Clears the text buffer

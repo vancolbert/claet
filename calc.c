@@ -21,7 +21,6 @@
 #define CALCTOK_LOP 10
 #define CALCTOK_MOD 11
 /*Implementation of #calc command
-
  #calc expr
    expr can be any combination of positive (no unary minus) real numbers, [+/-*()] operators and L
    Ln (n is a positive real number) returns the xp for lvl n (fractional too: L1.5 is halfway between L1 and L2)
@@ -43,12 +42,12 @@ CalcTok *calcinspect(CalcStack *cs, int pos);
 void calcpush(CalcStack *cs, CalcTok *ct);
 int calc_error = CALCERR_OK;
 double last_res = 0;
-//XP table
-//using exp_lev from hud.c
+// XP table
+// using exp_lev from hud.c
 #define XPT_MAX 179
 #define XPLDIFF(a, b) (exp_lev[b] - exp_lev[a])
 #define XPL(a) (exp_lev[a])
-//Parsing functions
+// Parsing functions
 int calc_geterror() {
 	int t_err = calc_error;
 	calc_error = CALCERR_OK;
@@ -93,7 +92,7 @@ int reduce_stack(CalcStack *cs) {
 	t2 = (cs2) ? (cs2->type):(0);
 	t3 = (cs3) ? (cs3->type):(0);
 	t4 = (cs4) ? (cs4->type):(0);
-	//L operator
+	// L operator
 	if (t1 == CALCTOK_NUM && t2 == CALCTOK_LOP) {
 		int lvl;
 		calcpop(cs);
@@ -111,7 +110,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs2);
 		return 1;
 	}
-	//X operator
+	// X operator
 	if (t1 == CALCTOK_NUM && t2 == CALCTOK_XOP) {
 		int i;
 		calcpop(cs);
@@ -134,7 +133,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs2);
 		return 1;
 	}
-	//mul
+	// mul
 	if (t1 == CALCTOK_NUM && t2 == CALCTOK_MUL && t3 == CALCTOK_NUM) {
 		calcpop(cs);
 		calcpop(cs);
@@ -148,7 +147,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs3);
 		return 1;
 	}
-	//div
+	// div
 	if (t1 == CALCTOK_NUM && t2 == CALCTOK_DIV && t3 == CALCTOK_NUM) {
 		calcpop(cs);
 		calcpop(cs);
@@ -166,7 +165,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs3);
 		return 1;
 	}
-	//plus&minus
+	// plus&minus
 	if ((t1 == CALCTOK_PLUS || t1 == CALCTOK_MINUS || t1 == CALCTOK_END || t1 == CALCTOK_CPAR) && t2 == CALCTOK_NUM && (t3 == CALCTOK_PLUS || t3 == CALCTOK_MINUS) && t4 == CALCTOK_NUM) {
 		calcpop(cs);
 		calcpop(cs);
@@ -186,7 +185,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs4);
 		return 1;
 	}
-	//modulo
+	// modulo
 	if (t1 == CALCTOK_NUM && t2 == CALCTOK_MOD && t3 == CALCTOK_NUM) {
 		calcpop(cs);
 		calcpop(cs);
@@ -204,7 +203,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs3);
 		return 1;
 	}
-	//pars
+	// pars
 	if (t1 == CALCTOK_CPAR && t2 == CALCTOK_NUM && t3 == CALCTOK_OPAR) {
 		calcpop(cs);
 		calcpop(cs);
@@ -214,7 +213,7 @@ int reduce_stack(CalcStack *cs) {
 		free(cs3);
 		return 1;
 	}
-	//done
+	// done
 	if (t1 == CALCTOK_END && t2 == CALCTOK_NUM && t3 == 0) {
 		calcpop(cs);
 		calcpop(cs);
@@ -309,7 +308,7 @@ CalcTok *next_calctoken(char *str, int *spos) {
 	*spos = pos;
 	return ct;
 }
-//Token stack
+// Token stack
 CalcStack *init_calcstack() {
 	CalcStack *cs = (CalcStack *)malloc(sizeof(CalcStack));
 	cs->pos = 0;
@@ -348,7 +347,6 @@ CalcTok *calcinspect(CalcStack *cs, int p) {
 }
 /*
    int main(int args, char**argv){
-
         char* test="L0";
         double res=calc_exp(test);
         if (trunc(res)==res)	printf("%.0f-----------%i\n",res,calc_error);

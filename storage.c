@@ -56,12 +56,11 @@ int storage_items_cols = 6;
 int storage_items_rows = 6;
 int storage_items_size = 6 * 6;
 int storage_textarea_lines = 1;
-int storage_textarea_size = 5 + 1 * 25 + 5;                    // =25
-int storage_categories_size = (6 * 32 - 2 * 3) / 13;             // =14
+int storage_textarea_size = 5 + 1 * 25 + 5; // =25
+int storage_categories_size = (6 * 32 - 2 * 3) / 13; // =14
 int storage_win_x_len = 10 + 120 + 20 + 10 + 6 * 32 + 20 + 20; // =392
-int storage_win_y_len = 10 + 6 * 32 + 10 + 5 + 15 + 5 + 10;        // =247
-//	Look though the category for the selected item, pick it up if found.
-//
+int storage_win_y_len = 10 + 6 * 32 + 10 + 5 + 15 + 5 + 10; // =247
+// Look though the category for the selected item, pick it up if found.
 static void select_item(int image_id, Uint16 item_id) {
 	int i;
 	int found_at = -1;
@@ -94,10 +93,9 @@ static Uint16 wanted_item_id = -1;
 static int wanted_image_id = -1;
 static void move_to_category(int cat);
 static int find_category(int id);
-//	Called when the category is changed.
-//	- Update the store of items/category.
-//	- If in the process of picking up an item go for it if this is the category.
-//
+// Called when the category is changed.
+// - Update the store of items/category.
+// - If in the process of picking up an item go for it if this is the category.
 static void category_updated(void) {
 	int i;
 	for (i = 0; i < no_storage; i++) {
@@ -108,10 +106,9 @@ static void category_updated(void) {
 		wanted_category = -1;
 	}
 }
-//	Start the process of picking up the specified item from a specified category.
-//	If the category is already selected, try picking up the item now, otherwise
-//	set the requird category, the pick will continue when the category is availble.
-//
+// Start the process of picking up the specified item from a specified category.
+// If the category is already selected, try picking up the item now, otherwise
+// set the requird category, the pick will continue when the category is availble.
 void pickup_storage_item(int image_id, Uint16 item_id, int cat_id) {
 	if ((storage_win < 0) || (find_category(cat_id) == -1)) {
 		do_alert1_sound();
@@ -244,8 +241,8 @@ void get_storage_items(const Uint8 *in_data, int len) {
 		// It's just an update - make sure we're in the right category
 		idx = 2;
 		active_storage_item = SDL_SwapLE16(*((Uint16 *)(&in_data[idx + 6])));
-		//@tosh : on change éventuellement de catégorie, lorsque l'on met
-		//un objet au dépôt.
+		// @tosh : on change éventuellement de catégorie, lorsque l'on met
+		// un objet au dépôt.
 		cat = find_category(in_data[1]);
 		move_to_category(cat);
 		for (i = 0; i < STORAGE_ITEMS_SIZE; i++) {
@@ -298,7 +295,7 @@ void get_storage_items(const Uint8 *in_data, int len) {
 			storage_items[i].id = unset_item_uid;
 		}
 	}
-	for ( ; i < STORAGE_ITEMS_SIZE; i++) {
+	for (; i < STORAGE_ITEMS_SIZE; i++) {
 		storage_items[i].quantity = 0;
 	}
 	vscrollbar_set_pos(storage_win, STORAGE_SCROLLBAR_ITEMS, 0);
@@ -325,7 +322,7 @@ int display_storage_handler(window_info *win) {
 	int n = 0;
 	int pos;
 	int help_text_line = 0;
-	have_storage_list = 0;  //We visited storage, so we may have changed something
+	have_storage_list = 0; // We visited storage, so we may have changed something
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glEnable(GL_TEXTURE_2D);
 	for (i = pos = vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES); i < no_storage_categories && storage_categories[i].id != -1 && i < pos + storage_categories_size; i++, n++) {
@@ -369,12 +366,12 @@ int display_storage_handler(window_info *win) {
 	if (view_only_storage) {
 		Uint32 currentticktime = SDL_GetTicks();
 		if (currentticktime < drop_fail_time) {
-			drop_fail_time = 0;                             /* trap wrap */
+			drop_fail_time = 0; /* trap wrap */
 		}
 		if ((currentticktime - drop_fail_time) < 250) {
-			glColor3f(0.8f, 0.2f, 0.2f);                      /* flash red if tried to drop into */
+			glColor3f(0.8f, 0.2f, 0.2f); /* flash red if tried to drop into */
 		} else {
-			glColor3f(0.37f, 0.37f, 0.39f);         /* otherwise draw greyed out */
+			glColor3f(0.37f, 0.37f, 0.39f); /* otherwise draw greyed out */
 		}
 	}
 	rendergrid(storage_items_cols, storage_items_rows, 280, 10, 32, 32);
@@ -497,7 +494,7 @@ int click_storage_handler(window_info *win, int mx, int my, Uint32 flags) {
 					my_tcp_send(my_socket, str, 6);
 					do_drop_item_sound();
 					if (item_list[item_dragged].quantity <= item_quantity) {
-						item_dragged = -1;                                          //Stop dragging this item...
+						item_dragged = -1; // Stop dragging this item...
 					}
 				} else if (right_click || (view_only_storage && left_click)) {
 					storage_item_dragged = -1;

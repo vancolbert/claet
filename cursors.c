@@ -104,14 +104,14 @@ void load_cursors() {
 		LOG_ERROR("%s: %s (read) [%s]\n", reg_error_str, cursors_file_str, "textures/cursors.bmp");
 		return;
 	}
-	cursors_mem_bmp += 18;          //x length is at offset+18
+	cursors_mem_bmp += 18; // x length is at offset+18
 	cursors_x_length = SDL_SwapLE32(*((int *)cursors_mem_bmp));
-	cursors_mem_bmp += 4;           //y length is at offset+22
+	cursors_mem_bmp += 4; // y length is at offset+22
 	cursors_y_length = SDL_SwapLE32(*((int *)cursors_mem_bmp));
 	cursors_mem_bmp += 46 - 22;
 	cursors_colors_no = SDL_SwapLE32(*((int *)cursors_mem_bmp));
 	cursors_mem_bmp += 54 - 46 + cursors_colors_no * 4;
-	//ok, now transform the bitmap in cursors info
+	// ok, now transform the bitmap in cursors info
 	if (cursors_mem) {
 		free(cursors_mem);
 	}
@@ -121,19 +121,19 @@ void load_cursors() {
 		for (x = 0; x < cursors_x_length; x++) {
 			cur_color = *(cursors_mem_bmp + y * cursors_x_length + x);
 			switch (cur_color) {
-			case 0:                 //transparent
+			case 0: // transparent
 				*(cursors_mem + (i + x) * 2) = 0;
 				*(cursors_mem + (i + x) * 2 + 1) = 0;
 				break;
-			case 1:                 //white
+			case 1: // white
 				*(cursors_mem + (i + x) * 2) = 0;
 				*(cursors_mem + (i + x) * 2 + 1) = 1;
 				break;
-			case 2:                 //black
+			case 2: // black
 				*(cursors_mem + (i + x) * 2) = 1;
 				*(cursors_mem + (i + x) * 2 + 1) = 1;
 				break;
-			case 3:                 //reverse
+			case 3: // reverse
 				*(cursors_mem + (i + x) * 2) = 1;
 				*(cursors_mem + (i + x) * 2 + 1) = 0;
 				break;
@@ -159,7 +159,7 @@ void assign_cursor(int cursor_id) {
 	Uint8 cursor_data[16 * 16 / 8];
 	Uint8 cursor_mask[16 * 16 / 8];
 	Uint8 *cur_cursor_mem;
-	//clear the data and mask
+	// clear the data and mask
 	for (i = 0; i < 16 * 16 / 8; i++) {
 		cursor_data[i] = 0;
 	}
@@ -171,18 +171,18 @@ void assign_cursor(int cursor_id) {
 	for (y = 0; y < cursors_y_length; y++) {
 		for (x = cursor_id * 16; x < cursor_id * 16 + 16; x++) {
 			cur_color = *(cursors_mem + (y * cursors_x_length + x) * 2);
-			*(cur_cursor_mem + i) = cur_color;    //data
+			*(cur_cursor_mem + i) = cur_color; // data
 			cur_color = *(cursors_mem + (y * cursors_x_length + x) * 2 + 1);
-			*(cur_cursor_mem + i + 256) = cur_color;  //mask
+			*(cur_cursor_mem + i + 256) = cur_color; // mask
 			i++;
 		}
 	}
-	//ok, now put the data into the bit data and bit mask
+	// ok, now put the data into the bit data and bit mask
 	for (i = 0; i < 16 * 16; i++) {
 		cur_color = *(cur_cursor_mem + i);
 		cur_byte = i / 8;
 		cur_bit = i % 8;
-		if (cur_color) {     //if it is 0, let it alone, no point in setting it
+		if (cur_color) { // if it is 0, let it alone, no point in setting it
 			switch (cur_bit) {
 			case 0:
 				cur_mask = 128;
@@ -216,7 +216,7 @@ void assign_cursor(int cursor_id) {
 		cur_color = *(cur_cursor_mem + i + 256);
 		cur_byte = i / 8;
 		cur_bit = i % 8;
-		if (cur_color) {     //if it is 0, let it alone, no point in setting it
+		if (cur_color) { // if it is 0, let it alone, no point in setting it
 			if (cur_bit == 0) {
 				cur_mask = 128;
 			} else if (cur_bit == 1) {

@@ -17,7 +17,7 @@ unsigned char *height_map;
 int tile_map_size_x;
 int tile_map_size_y;
 int tile_list[256];
-char dungeon = 0;//no sun
+char dungeon = 0; // no sun
 float ambient_r = 0;
 float ambient_g = 0;
 float ambient_b = 0;
@@ -161,7 +161,7 @@ void draw_tile_map() {
 	build_terrain_buffer();
 	glEnable(GL_TEXTURE_2D);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -199,14 +199,14 @@ void draw_tile_map() {
 	}
 	disable_terrain_texgen();
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);
 	}
 	glEnable(GL_TEXTURE_2D);
 }
-//load only the tiles that are on the map
+// load only the tiles that are on the map
 void load_map_tiles() {
 	int i;
 	char str[128];
@@ -217,7 +217,6 @@ void load_map_tiles() {
 }
 int get_tile_type(int x, int y) {
 	int tile_num = (y / 6) * tile_map_size_x + (x / 6);
-//	printf("X: %d, Y: %d, tile_num: %d\n", x, y, tile_num);
 	if (x >= 0 && (x / 6) <= tile_map_size_x && y >= 0 && (y / 6) <= tile_map_size_y) {
 		return tile_map[tile_num];
 	} else {

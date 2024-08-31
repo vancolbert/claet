@@ -1,12 +1,9 @@
-//
-//  The countdown / stopwatch time
-//
-// 	TODO
-// 		add #command start/stop/reset/mode/set
-// 		add to context menu, dynamic list of previous start values
-//
-//		Author bluap/pjbroad Aug/Dec 2013
-//
+
+// The countdown / stopwatch time
+// TODO
+// add #command start/stop/reset/mode/set
+// add to context menu, dynamic list of previous start values
+// Author bluap/pjbroad Aug/Dec 2013
 #include <cstdlib>
 #include <cmath>
 #include <cstring>
@@ -22,7 +19,6 @@
 // A simple countdown / stopwatch timer class
 // Digital display in main HUD
 // Mouse and context menu control
-//
 class Hud_Timer {
 public:
 Hud_Timer(void) : running(false), use_tick(false), current_value(90),
@@ -62,24 +58,20 @@ enum {CMHT_MODE=0, CMHT_KEEPSTATE, CMHT_SEP1, CMHT_RUNSTATE, CMHT_SETTIME, CMHT_
 };
 static Hud_Timer my_timer;
 // callback for timer popup - new time setting
-//
 static void set_timer_time(const char *text, void *data) {
 	if (text && (strlen(text) > 0)) {
 		my_timer.set_start(atoi(text));
 	}
 }
 // change timer context menu options depending on state
-//
 static void cm_timer_pre_show_handler(window_info *win, int widget_id, int mx, int my, window_info *cm_win) {
 	my_timer.pre_cm_handler();
 }
 // implement the timer context menu options
-//
 static int cm_timer_handler(window_info *win, int widget_id, int mx, int my, int option) {
 	return my_timer.cm_handler(win, option);
 }
 // Called from the main thread 500 ms timer - implement the timer
-//
 void Hud_Timer::update(void) {
 	if (running && use_tick) {
 		if (mode_coundown) {
@@ -98,7 +90,6 @@ void Hud_Timer::update(void) {
 	use_tick = !use_tick;
 }
 // set the start value for the countdown timer, stop running and reset
-//
 void Hud_Timer::set_start(int new_start_value) {
 	if (!mode_coundown) {
 		return;
@@ -113,7 +104,6 @@ void Hud_Timer::set_start(int new_start_value) {
 	current_value = start_value;
 }
 // toggle the timer between countdown and stopwatch mode
-//
 void Hud_Timer::toggle_mode(void) {
 	mode_coundown = !mode_coundown;
 	if (hud_timer_keep_state) {
@@ -126,7 +116,6 @@ void Hud_Timer::toggle_mode(void) {
 	}
 }
 // handle context menu options
-//
 int Hud_Timer::cm_handler(window_info *win, int option) {
 	switch (option) {
 	case CMHT_MODE:
@@ -164,7 +153,6 @@ int Hud_Timer::cm_handler(window_info *win, int option) {
 	return 1;
 }
 // create or destroy the timer context menu depending on if the timer is shown
-//
 void Hud_Timer::check_cm_menu(window_info *win, int base_y_start) {
 	if (cm_valid(cm_id) && (!view_hud_timer || (last_base_y_start != base_y_start))) {
 		destroy_cm();
@@ -178,7 +166,6 @@ void Hud_Timer::check_cm_menu(window_info *win, int base_y_start) {
 	last_base_y_start = base_y_start;
 }
 // display the current time for the hud timer, coloured by stopped or running
-//
 int Hud_Timer::display(window_info *win, int base_y_start) {
 	char str[10];
 	int x;
@@ -205,7 +192,6 @@ int Hud_Timer::display(window_info *win, int base_y_start) {
 	return height;
 }
 // return true if the coords are over the hud timer
-//
 int Hud_Timer::mouse_is_over(window_info *win, int mx, int my) {
 	if ((view_hud_timer) && ((my > (last_base_y_start - height)) && (my < last_base_y_start))) {
 		return 1;
@@ -216,10 +202,9 @@ int Hud_Timer::mouse_is_over(window_info *win, int mx, int my) {
 // Control the hud timer by various mouse clicks:
 // Shift+click changed mode Countdown / Stopwatch
 // For Countdown, mouse wheel up/down decrease/increase start time.
-//		Defaul step 5, +ctrl 1, +alt 30
+// Defaul step 5, +ctrl 1, +alt 30
 // Left-click start/stop timer
 // Mouse wheel click - reset timer.
-//
 int Hud_Timer::mouse_click(Uint32 flags) {
 	// change countdown start
 	if (flags & (ELW_WHEEL_DOWN | ELW_WHEEL_UP)) {
@@ -255,7 +240,6 @@ int Hud_Timer::mouse_click(Uint32 flags) {
 	return 1;
 }
 // clean up timer resource usage
-//
 void Hud_Timer::destroy(void) {
 	destroy_popup();
 	destroy_cm();
@@ -268,7 +252,6 @@ void Hud_Timer::destroy_cm(void) {
 	}
 }
 // if we have a popup window for the timer, destroy it
-//
 void Hud_Timer::destroy_popup(void) {
 	if (input) {
 		close_ipu(input);

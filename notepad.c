@@ -76,7 +76,7 @@ static void accept_popup_window(INPUT_POPUP *ipu) {
 	char *data = ipu->popup_text.data;
 	// skip leading spaces
 	istart = 0;
-	while ( istart < len && isspace(data[istart])) {
+	while (istart < len && isspace(data[istart])) {
 		istart++;
 	}
 	if (istart >= len) {
@@ -85,7 +85,7 @@ static void accept_popup_window(INPUT_POPUP *ipu) {
 	}
 	// remove soft breaks
 	iend = itmp = istart;
-	while ( iend < len ) {
+	while (iend < len) {
 		if (data[iend] != '\r') {
 			data[itmp++] = data[iend];
 		}
@@ -94,7 +94,7 @@ static void accept_popup_window(INPUT_POPUP *ipu) {
 	len = itmp;
 	// stop at first non-printable character if allow_nonprint_chars not set
 	iend = istart;
-	while ( iend < len && (ipu->allow_nonprint_chars || is_printable(data[iend]))) {
+	while (iend < len && (ipu->allow_nonprint_chars || is_printable(data[iend]))) {
 		iend++;
 	}
 	if (iend == istart) {
@@ -218,18 +218,18 @@ void display_popup_win(INPUT_POPUP *ipu, const char *label) {
 /******************************************
 *             Notepad Section            *
 ******************************************/
-//Macro Definitions
+// Macro Definitions
 #define NOTE_LIST_INIT_SIZE 5
 #define NOTE_NAME_LEN       25
 #define MIN_NOTE_SIZE   128
 // Private to this module
 typedef struct {
-	char name[NOTE_NAME_LEN];       // Name to display on tab title.
-	int window;                     // Track which window it owns.
-	int input;                      // Track it's text buffer
-	int button;                     // Track it's close button
-	text_message text;              // Data in the window.
-	int button_id;                  // Button for opening the note
+	char name[NOTE_NAME_LEN]; // Name to display on tab title.
+	int window; // Track which window it owns.
+	int input; // Track it's text buffer
+	int button; // Track it's close button
+	text_message text; // Data in the window.
+	int button_id; // Button for opening the note
 } note;
 static note *note_list = 0;
 static int note_list_size = 0;
@@ -344,7 +344,6 @@ static int notepad_load_file() {
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL) {
 		// Not an error, just an empty notepad
-		//LOG_ERROR ("Empty xml notepad. It will be overwritten.");
 		xmlFreeDoc(doc);
 		return 0;
 	}
@@ -378,7 +377,7 @@ static int notepad_load_file() {
 		} else if (cur->type == XML_ELEMENT_NODE) {
 			LOG_ERROR("%s: [%s]", wrong_note_node, cur->name);
 		}
-		cur = cur->next;         // Advance to the next node.
+		cur = cur->next; // Advance to the next node.
 	}
 	return 1;
 }
@@ -398,8 +397,8 @@ static int click_save_handler(widget_list *w, int UNUSED(mx), int UNUSED(my), Ui
 int notepad_save_file() {
 	int i;
 	char file[256];
-	xmlDocPtr doc = NULL;                      // document pointer
-	xmlNodePtr root_node = NULL, node = NULL;  // node pointers
+	xmlDocPtr doc = NULL; // document pointer
+	xmlNodePtr root_node = NULL, node = NULL; // node pointers
 	safe_snprintf(file, sizeof(file), "%snotes.xml", configdir);
 	doc = xmlNewDoc(BAD_CAST "1.0");
 	root_node = xmlNewNode(NULL, BAD_CAST "PAD");
@@ -459,7 +458,7 @@ static int notepad_remove_category(widget_list *UNUSED(w), int UNUSED(mx), int U
 	// shift all notes after the deleted note one up
 	if (id < nr_notes - 1) {
 		memmove(&(note_list[id]), &(note_list[id + 1]), (nr_notes - id - 1) * sizeof(note));
-		for ( ; id < nr_notes - 1; id++) {
+		for (; id < nr_notes - 1; id++) {
 			note_button_set_pos(id);
 		}
 	}
@@ -597,7 +596,7 @@ void fill_notepad_window() {
 	widget_list *wsave;
 	int note_tabs_width = notepad_win_x_len;
 	int note_tabs_height = notepad_win_y_len - 5;
-	note_button_scroll_height = note_tabs_height - 55 - 20;         // -20 for the tab tags
+	note_button_scroll_height = note_tabs_height - 55 - 20; // -20 for the tab tags
 	note_button_width = (note_tabs_width - note_button_scroll_width - note_button_x_space - 15) / 2;
 	set_window_handler(notepad_win, ELW_HANDLER_DISPLAY, &display_notepad_handler);
 	set_window_handler(notepad_win, ELW_HANDLER_CLICK, &click_buttonwin_handler);
@@ -642,7 +641,7 @@ void notepad_win_update_zoom() {
 		return;
 	}
 	for (i = 0; i < nr_notes; i++) {
-		//@tosh : il faut bien appliquer le zoom sur chaque fenêtre de la note_list :)
+		// @tosh : il faut bien appliquer le zoom sur chaque fenêtre de la note_list :)
 		widget_set_size(note_list[i].window, note_list[i].input, note_zoom);
 	}
 }

@@ -20,8 +20,8 @@ extern int normal_animation_timer;
 extern float normal_camera_deceleration;
 extern float camera_rotation_deceleration;
 extern float camera_tilt_deceleration;
-//New camera features. See draw_scene.c for details
-//Move comments here if desired.
+// New camera features. See draw_scene.c for details
+// Move comments here if desired.
 extern float camera_kludge; /*!< Holds character's y rotation to allow camera to follow character  */
 extern float last_kludge;
 extern int fol_cam;

@@ -17,9 +17,9 @@ extern "C" {
  * @{
  */
 enum {
-	EVENT_MOVEMENT_TIMER,    /*!< event caused by the timer thread */
-	EVENT_UPDATE_PARTICLES,  /*!< update the particles */
-	EVENT_UPDATES_DOWNLOADED,/*!< the event to send when the main updates.lst has been downloaded */
+	EVENT_MOVEMENT_TIMER, /*!< event caused by the timer thread */
+	EVENT_UPDATE_PARTICLES, /*!< update the particles */
+	EVENT_UPDATES_DOWNLOADED, /*!< the event to send when the main updates.lst has been downloaded */
 	EVENT_DOWNLOAD_COMPLETE, /*!< the normal event to send when a download finishes */
 };
 /*! @} */
@@ -53,4 +53,4 @@ int HandleEvent(SDL_Event *event);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  // __EVENTS_H__
+#endif // __EVENTS_H__

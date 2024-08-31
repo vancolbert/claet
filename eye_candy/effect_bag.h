@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_BAG_H
 #define EFFECT_BAG_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class BagParticle : public Particle {
 public:
 BagParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t size);
@@ -42,6 +42,5 @@ ParticleSpawner *spawner;
 Vec3 effect_center;
 bool picked_up;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_BAG_H
+#endif // defined EFFECT_BAG_H

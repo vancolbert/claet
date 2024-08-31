@@ -1,6 +1,5 @@
 /*
         Rewrite of quest log with new context menu features.
-
         Author bluap/pjbroad Feb 2010
  */
 #include <string>

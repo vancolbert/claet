@@ -46,19 +46,19 @@ static Uint32 download_file(const char *file_name, FILE *file, const char *serve
 	// resolve the hostname
 	if ((file_size == 0) || (buffer == 0) || (size == 0)) {
 		LOG_ERROR("buffer: %p, size: %d", buffer, size);
-		return 1;  // can't resolve the hostname
+		return 1; // can't resolve the hostname
 	}
 	got_header = 0;
 	http_status = 0;
 	// resolve the hostname
 	if (SDLNet_ResolveHost(&http_ip, server, 80) < 0) {
 		// caution, always port 80!
-		return 1;  // can't resolve the hostname
+		return 1; // can't resolve the hostname
 	}
 	// open the socket
 	http_sock = SDLNet_TCP_Open(&http_ip);
 	if (http_sock == 0) {
-		return 2;  // failed to open the socket
+		return 2; // failed to open the socket
 	}
 	// send the GET request, try to avoid ISP caching
 	if ((etag != 0) && (strlen(etag) > 0)) {
@@ -72,7 +72,7 @@ static Uint32 download_file(const char *file_name, FILE *file, const char *serve
 	}
 	if (SDLNet_TCP_Send(http_sock, buffer, size) < (int)size) {
 		SDLNet_TCP_Close(http_sock);
-		return 3;  // error in sending the get request
+		return 3; // error in sending the get request
 	}
 	*file_size = 0;
 	// get the response & data
@@ -82,7 +82,6 @@ static Uint32 download_file(const char *file_name, FILE *file, const char *serve
 		len = SDLNet_TCP_Recv(http_sock, buffer, size - 1);
 		// have we gotten the full header?
 		if (len < 0) {
-			// Read error (connection lost);
 			LOG_ERROR("Read error: %d", len);
 			SDLNet_TCP_Close(http_sock);
 			return 5;
@@ -133,7 +132,7 @@ static Uint32 download_file(const char *file_name, FILE *file, const char *serve
 			return 5;
 		}
 	}
-	return 0;  // finished
+	return 0; // finished
 }
 static int download_files_thread(void *_data) {
 	char file_name[256];

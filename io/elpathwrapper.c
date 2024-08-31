@@ -29,7 +29,7 @@
  */
 #define MAX_PATH 1024
 #define MKDIR(file) (mkdir(file, S_IRWXU | S_IRWXG))
-#endif //WINDOWS
+#endif // WINDOWS
 /*
  * Note: If you wish to use this functionality, be very careful.
  * For the typical linux usage, you'd add the following to make.conf:
@@ -101,7 +101,7 @@ const char *get_path_config_base(void) {
 		strcat(locbuffer, cfgdirname);
 	} else {
 		LOG_ERROR("getpath() failed.\tcfgdirname: \"%s\"\tlocbuffer: \"%s\"\tpwd: \"%s\"\n", cfgdirname, locbuffer, pwd);
-		//No luck. fall through to using the folder in PWD
+		// No luck. fall through to using the folder in PWD
 		strcpy(locbuffer, cfgdirname);
 	}
 	strcat(locbuffer, "/");
@@ -151,7 +151,7 @@ FILE *open_file_config(const char *filename, const char *mode) {
 	if (fp != NULL) {
 		return fp;
 	}
-	//Not there? okay, try the current directory
+	// Not there? okay, try the current directory
 	return fopen(filename, mode);
 }
 FILE *open_file_config_no_local(const char *filename, const char *mode) {
@@ -192,7 +192,7 @@ FILE *open_file_data_updates(char *filename, const char *mode, int custom) {
 		filename = check_custom_dir(filename);
 	}
 	if (strlen(updatepath) + strlen(filename) + 1 < MAX_PATH) {
-		safe_snprintf(locbuffer, sizeof(locbuffer), "%s%s", updatepath, filename);      //We could roll the preceding creation of updatepath into this sprintf(), but then we wouldn't have the length check
+		safe_snprintf(locbuffer, sizeof(locbuffer), "%s%s", updatepath, filename); // We could roll the preceding creation of updatepath into this sprintf(), but then we wouldn't have the length check
 		return fopen(locbuffer, mode);
 	}
 	return NULL;
@@ -202,7 +202,7 @@ FILE *open_file_data_datadir(const char *filename, const char *mode) {
 	if (strlen(datadir) + strlen(filename) + 2 < MAX_PATH) {
 		safe_snprintf(locbuffer, sizeof(locbuffer), "%s/%s", datadir, filename);
 		if (!strcmp(mode, "r") || !strcmp(mode, "rb")) {
-			return fopen(locbuffer, mode);                                  // Don't try to create all the directories if we are only trying to read the file!
+			return fopen(locbuffer, mode); // Don't try to create all the directories if we are only trying to read the file!
 		} else {
 			if (mkdir_tree(locbuffer, 0)) {
 				return fopen(locbuffer, mode);
@@ -216,19 +216,19 @@ FILE *open_file_data(const char *in_filename, const char *mode) {
 	FILE *fp = NULL;
 	safe_strncpy(filename, in_filename, sizeof(filename));
 	if (strchr(mode, 'w') == NULL) {
-		//Reading? okay, we check updates first
+		// Reading? okay, we check updates first
 		if ((fp = open_file_data_updates(filename, mode, 0)) != NULL) {
-			//If there, return it. Otherwise we keep looking.
+			// If there, return it. Otherwise we keep looking.
 			return fp;
 		}
 	}
 	if ((fp = open_file_data_datadir(filename, mode)) != NULL) {
-		//If there, return it. Otherwise we keep looking.
+		// If there, return it. Otherwise we keep looking.
 		return fp;
 	}
-	//Writing, and we didn't get the data_dir, likely a permissions problem, so use updates
+	// Writing, and we didn't get the data_dir, likely a permissions problem, so use updates
 	if ((fp = open_file_data_updates(filename, mode, 0)) != NULL) {
-		//If there, return it. Otherwise we keep looking.
+		// If there, return it. Otherwise we keep looking.
 		return fp;
 	}
 	return NULL;
@@ -239,16 +239,16 @@ FILE *open_file_lang(const char *filename, const char *mode) {
 		FILE *fp;
 		safe_snprintf(locbuffer, sizeof(locbuffer), "languages/%s/%s", lang, filename);
 		if ((fp = open_file_data(locbuffer, mode)) != NULL) {
-			//Found in the set language dir? Goodie!
+			// Found in the set language dir? Goodie!
 			return fp;
 		}
 	}
 	if (strlen("languages/") + strlen("en") + strlen(filename) + 2 < MAX_PATH) {
 		safe_snprintf(locbuffer, sizeof(locbuffer), "languages/en/%s", filename);
-		//Okay, we check the 'en' dir as a fallback
+		// Okay, we check the 'en' dir as a fallback
 		return open_file_data(locbuffer, mode);
 	}
-	//We got here? Then _someone_ used a huge filename...
+	// We got here? Then _someone_ used a huge filename...
 	return NULL;
 }
 int normalize_path(const char *path, char *norm_path, int size, int relative_only) {
@@ -297,7 +297,7 @@ int normalize_path(const char *path, char *norm_path, int size, int relative_onl
 				// requested. In both cases, ignore the '..'
 			} else {
 				// Copy the directory name into the path
-				for ( ; idx < sep; idx++, n_idx++) {
+				for (; idx < sep; idx++, n_idx++) {
 					norm_path[n_idx] = path[idx];
 				}
 				norm_path[n_idx++] = '/';
@@ -367,11 +367,10 @@ int mkdir_tree(const char *path, int relative_only) {
 	return 1;
 }
 int mkdir_config(const char *path) {
-	//AKA mkdir(configdir+path);
 	char locbuffer[MAX_PATH];
 	const char *cfgdir = get_path_config();
 	if (strlen(cfgdir) + strlen(path) + 1 > MAX_PATH) {
-		//Path is too large, so do the same thing as system libraries do
+		// Path is too large, so do the same thing as system libraries do
 		errno = ENAMETOOLONG;
 		return -1;
 	}
@@ -404,9 +403,9 @@ int move_file_to_updates(const char *from_file, char *to_file, int custom) {
 	remove(locbufupd);
 	return rename(locbuftmp, locbufupd);
 }
-void file_update_clear_old(void) {      //TODO.
-	//Need a recursive rmdir() call that also deletes files as it goes (rmdir() on linux, at the least, will only remove enpty directories)
-	//Quite possibly call ftw() and delete non-directories as we go, adding directories to a list to rmdir once finished
+void file_update_clear_old(void) { // TODO.
+	// Need a recursive rmdir() call that also deletes files as it goes (rmdir() on linux, at the least, will only remove enpty directories)
+	// Quite possibly call ftw() and delete non-directories as we go, adding directories to a list to rmdir once finished
 }
 void remove_file_updates(char *filename, int custom) {
 	char locbuffer[MAX_PATH];
@@ -437,12 +436,12 @@ int file_md5_check(FILE *fp, const unsigned char *md5) {
 		MD5Close(&local, digest);
 		fclose(fp);
 		if (memcmp(md5, digest, 16) != 0) {
-			res = 1;        //Old
+			res = 1; // Old
 		} else {
-			res = 0;        //Current
+			res = 0; // Current
 		}
 	} else {
-		res = -1;       //Not present
+		res = -1; // Not present
 	}
 	return res;
 }
@@ -476,7 +475,7 @@ int file_update_check(char *filename, const unsigned char *md5, int custom) {
 void file_check_datadir(void) {
 	struct stat fstat;
 #ifdef WINDOWS
-	if (datadir[strlen(datadir) - 1] == '/' || datadir[strlen(datadir) - 1] == '\\') {          // stat() fails with a trailing slash under Windows. :-S
+	if (datadir[strlen(datadir) - 1] == '/' || datadir[strlen(datadir) - 1] == '\\') { // stat() fails with a trailing slash under Windows. :-S
 		datadir[strlen(datadir) - 1] = '\0';
 	}
 #endif // WINDOWS
@@ -490,7 +489,7 @@ void file_check_datadir(void) {
 	}
 #ifdef WINDOWS
 	else {
-		datadir[strlen(datadir)] = '/';                 // Replace the trailing slash
+		datadir[strlen(datadir)] = '/'; // Replace the trailing slash
 	}
 #endif // WINDOWS
 }
@@ -561,9 +560,8 @@ int copy_file(const char *source, const char *dest) {
 		if (bytes_read > 0) {
 			bytes_written = fwrite((void *)buffer, bytes_read, 1, f_out);
 		}
-		if ((bytes_read == 0 && ferror(f_in)) ||     /* Error in read */
-		    (bytes_read > 0 && bytes_written == 0)     /* Error in write */
-		    ) {
+		if ((bytes_read == 0 && ferror(f_in)) || /* Error in read */
+		    (bytes_read > 0 && bytes_written == 0) /* Error in write */) {
 			/* Aarg, read or write error. */
 			fclose(f_in);
 			fclose(f_out);
@@ -572,7 +570,7 @@ int copy_file(const char *source, const char *dest) {
 		}
 	} while (bytes_read > 0);
 	fclose(f_in); /* Ignore errors here */
-	if ( fclose(f_out) != 0 ) {
+	if (fclose(f_out) != 0) {
 		remove(dest);
 		return -4; /* IO error */
 	}

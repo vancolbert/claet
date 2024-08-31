@@ -51,7 +51,6 @@ struct ActorVertex {
 	float m_normal[3];
 	Uint8 m_index[4];
 	float m_texture[2];
-//	float m_bone_count;
 };
 typedef std::map<Sint32, HardwareMeshData> IntMap;
 int last_actor_type = -1;
@@ -358,7 +357,6 @@ extern "C" void build_buffers(actor_types *a) {
 	a->hardware_model->load(0, 0, max_bones_per_mesh);
 	buffer = new ActorVertex[a->hardware_model->getTotalVertexCount()];
 	for (i = 0; i < a->hardware_model->getTotalVertexCount(); i++) {
-//		buffer[i].m_bone_count = 0;
 		for (j = 0; j < 3; j++) {
 			buffer[i].m_vertex[j] = vertex_buffer[i * 3 + j];
 		}

@@ -100,7 +100,7 @@ void change_depth_framebuffer_size(int width, int height, GLuint *fbo, GLuint *f
  * @callgraph
  */
 void check_fbo_formats();
-#define CHECK_FBO_ERRORS()      /**< NOP */
+#define CHECK_FBO_ERRORS() /**< NOP */
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -9,12 +9,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int notepad_win;    /*!< ID of the notepad window */
-extern int popup_win;      /*!< ID of the popup window */
+extern int notepad_win; /*!< ID of the notepad window */
+extern int popup_win; /*!< ID of the popup window */
 extern int notepad_loaded; /*!< boolean flag, indicating whether the notepad was loaded before. */
-extern int notepad_win_x;  /*!< x-coordinate of the notepad position */
-extern int notepad_win_y;  /*!< y-coordinate of the notepad position */
-extern float note_zoom;    /*!< Size of the text in the note pad */
+extern int notepad_win_x; /*!< x-coordinate of the notepad position */
+extern int notepad_win_y; /*!< y-coordinate of the notepad position */
+extern float note_zoom; /*!< Size of the text in the note pad */
 /* state structure for an input popup window */
 typedef struct {
 	int popup_win, popup_field, popup_label, popup_ok, popup_no;

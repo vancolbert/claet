@@ -14,4 +14,4 @@ extern int hud_timer_keep_state;
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  //__HUD_TIMER_H
+#endif // __HUD_TIMER_H

@@ -67,7 +67,7 @@ typedef struct {
 	int part_sys_type; /*!< type of the particle system. This is one of the values defined in particle system kinds. */
 	GLenum sblend, dblend; /*!< blending factors for the src and dst of the particle system */
 	int total_particle_no; /*!< current number of particles in the system */
-	int ttl;  /*!< ttl should be negative for systems that don't use it */
+	int ttl; /*!< ttl should be negative for systems that don't use it */
 	int part_texture;
 	float part_size;
 	int random_func;
@@ -77,7 +77,7 @@ typedef struct {
 	/*! \{ */
 	float minx, miny, minz;
 	float maxx, maxy, maxz;
-	float constrain_rad_sq;             /*!< <=0 means not used */
+	float constrain_rad_sq; /*!< <=0 means not used */
 	float vel_minx, vel_miny, vel_minz;
 	float vel_maxx, vel_maxy, vel_maxz;
 	float minr, ming, minb, mina;
@@ -133,7 +133,7 @@ extern int particles_percentage;
 #define LOCK_PARTICLES_LIST()   CHECK_AND_LOCK_MUTEX(particles_list_mutex)
 #define UNLOCK_PARTICLES_LIST() CHECK_AND_UNLOCK_MUTEX(particles_list_mutex)
 /*! @} */
-//INITIALIZATION AND CLEANUP FUNCTIONS
+// INITIALIZATION AND CLEANUP FUNCTIONS
 /*!
  * \ingroup loadsave
  * \brief	Checks the particle def list for filename, if not found it will be loaded
@@ -193,7 +193,7 @@ void init_particles();
  * \callgraph
  */
 void end_particles();
-//CREATION OF NEW PARTICLES AND SYSTEMS
+// CREATION OF NEW PARTICLES AND SYSTEMS
 /*!
  * \ingroup particles
  * \brief Compute the bounding box for a particle system
@@ -239,7 +239,7 @@ int add_particle_sys_at_tile(const char *file_name, int x_tile, int y_tile, unsi
 // Grum: included here for the map editor
 void create_particle(particle_sys *sys, particle *result);
 int create_particle_sys(particle_sys_def *def, float x, float y, float z, unsigned int dynamic);
-//RENDERING FUNCTIONS
+// RENDERING FUNCTIONS
 /*!
  * \ingroup display_utils
  * \brief Displays the particle systems
@@ -249,7 +249,7 @@ int create_particle_sys(particle_sys_def *def, float x, float y, float z, unsign
  * \callgraph
  */
 void display_particles();
-//UPDATE FUNCTIONS
+// UPDATE FUNCTIONS
 /*!
  * \ingroup particles
  * \brief Updates all particles
@@ -259,7 +259,7 @@ void display_particles();
  * \callgraph
  */
 void update_particles();
-//MISC HELPER FUNCTIONS
+// MISC HELPER FUNCTIONS
 /*!
  * \ingroup misc_utils
  * \brief Adds all teleporters from the given list.

@@ -120,7 +120,6 @@ void draw_special_cursors() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPushMatrix();
 	glTranslatef(mouse_x, mouse_y, 0.0);
-	//printf("mouse_x=%d mouse_y=%d\n", mouse_x, mouse_y);
 	if (have_mouse) {
 		glRotatef(ret_spin, 0.0, 0.0, 1.0);
 		glColor4fv(ret_color);
@@ -210,7 +209,7 @@ void toggle_have_mouse() {
 }
 void toggle_first_person() {
 	if (first_person == 0) {
-		//rotate camera where actor is looking at
+		// rotate camera where actor is looking at
 		actor *me = get_our_actor();
 		if (me) {
 			rz = me->z_rot;
@@ -226,7 +225,6 @@ void toggle_first_person() {
 	}
 	++adjust_view;
 	resize_root_window();
-	//set_all_intersect_update_needed(main_bbox_tree);
 }
 // This is the main part of the old check_cursor_change ()
 int mouseover_game_handler(window_info *win, int mx, int my) {
@@ -246,15 +244,15 @@ int mouseover_game_handler(window_info *win, int mx, int my) {
 		} else if (action_mode == ACTION_USE_WITEM) {
 			elwin_mouse = CURSOR_USE_WITEM;
 		}
-		//see if the object is a harvestable resource.
+		// see if the object is a harvestable resource.
 		else if (objects_list[object_under_mouse]->flags & OBJ_3D_HARVESTABLE) {
 			elwin_mouse = CURSOR_HARVEST;
 		}
-		//see if the object is an entrable resource.
+		// see if the object is an entrable resource.
 		else if (objects_list[object_under_mouse]->flags & OBJ_3D_ENTRABLE) {
 			elwin_mouse = CURSOR_ENTER;
 		}
-		//hmm, no usefull object, so select walk....
+		// hmm, no usefull object, so select walk....
 		else {
 			if (spell_result == 2) {
 				elwin_mouse = CURSOR_WAND;
@@ -337,7 +335,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags) {
 		camera_zoom_dir = 1;
 		return 1;
 	}
-	if (mx > win->len_x - 64 && my < 54 ) { // 10 pixels dead space to try to prevent accidental misclicks
+	if (mx > win->len_x - 64 && my < 54) { // 10 pixels dead space to try to prevent accidental misclicks
 		if (logo_click_to_url) {
 			open_web_link(LOGO_URL_LINK);
 		}
@@ -459,7 +457,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags) {
 		return 1;
 	}
 	if (storage_item_dragged != -1) {
-		//TODO: Withdraw from storage, drop on ground...
+		// TODO: Withdraw from storage, drop on ground...
 	}
 	if (walk_after_spell == 1) {
 		if (pf_follow_path && !((mx >= window_width - hud_x) || (my >= window_height - hud_y)) && !(thing_under_the_mouse == UNDER_MOUSE_PLAYER || thing_under_the_mouse == UNDER_MOUSE_NPC) && current_cursor != CURSOR_WAND) {
@@ -735,7 +733,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags) {
 	right_click = 2;
 	return 1;
 }
-Uint32 next_fps_time = 0;       // made global so the other modes can keep it from goin stale
+Uint32 next_fps_time = 0; // made global so the other modes can keep it from goin stale
 int last_count = 0;
 int display_game_handler(window_info *win) {
 	static int main_count = 0;
@@ -751,7 +749,7 @@ int display_game_handler(window_info *win) {
 		return 1;
 	}
 	if (yourself == -1) {
-		return 1;           //we don't have ourselves
+		return 1; // we don't have ourselves
 	}
 	for (i = 0; i < max_actors; i++) {
 		if (actors_list[i] && actors_list[i]->actor_id == yourself) {
@@ -759,12 +757,11 @@ int display_game_handler(window_info *win) {
 		}
 	}
 	if (i > max_actors) {
-		return 1;           //we still don't have ourselves
+		return 1; // we still don't have ourselves
 	}
 	current_cluster = get_actor_cluster();
 	main_count++;
 	last_count++;
-	//if (quickbar_win>0) windows_list.window[quickbar_win].displayed=1;
 	if (fps[0] < 5) {
 		mouse_rate = 1;
 		read_mouse_now = 1;
@@ -882,9 +879,9 @@ int display_game_handler(window_info *win) {
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 		CHECK_GL_ERRORS();
-	}       // end of active display check
+	} // end of active display check
 	else {
-		display_actors(1, DEFAULT_RENDER_PASS);         // we need to 'touch' all the actors even if not drawing to avoid problems
+		display_actors(1, DEFAULT_RENDER_PASS); // we need to 'touch' all the actors even if not drawing to avoid problems
 	}
 	CHECK_GL_ERRORS();
 	ec_idle();
@@ -896,7 +893,7 @@ int display_game_handler(window_info *win) {
 		last_count = 0;
 		draw_delay = 20;
 		// Return to 2D mode to draw the other windows
-		glPopMatrix();  // restore the state
+		glPopMatrix(); // restore the state
 		Enter2DMode();
 		return 1;
 	}
@@ -904,10 +901,10 @@ int display_game_handler(window_info *win) {
 		weather_render();
 	}
 	CHECK_GL_ERRORS();
-	//particles should be last, we have no Z writting
+	// particles should be last, we have no Z writting
 	display_particles();
 	CHECK_GL_ERRORS();
-	//we do this because we don't want the rain/particles to mess with our cursor
+	// we do this because we don't want the rain/particles to mess with our cursor
 	ec_draw();
 	CHECK_GL_ERRORS();
 	last_texture = -1;
@@ -916,7 +913,7 @@ int display_game_handler(window_info *win) {
 	display_map_markers();
 	display_map_marks();
 	Enter2DMode();
-	//get the FPS, etc
+	// get the FPS, etc
 	if (next_fps_time < cur_time) {
 		fps[4] = fps[3];
 		fps[3] = fps[2];
@@ -930,8 +927,7 @@ int display_game_handler(window_info *win) {
 	if (!no_adjust_shadows) {
 		if (fps_average < 5.0f) {
 			times_FPS_below_3++;
-			if (times_FPS_below_3 > 10 && (shadows_on || use_eye_candy
-						       )) {
+			if (times_FPS_below_3 > 10 && (shadows_on || use_eye_candy)) {
 				put_colored_text_in_buffer(c_red1, CHAT_SERVER, (unsigned char *)low_framerate_str, -1);
 				times_FPS_below_3 = 0;
 				if (shadows_on) {
@@ -974,7 +970,7 @@ int display_game_handler(window_info *win) {
 		}
 		filter = use_windowed_chat == 1 ? current_filter : FILTER_ALL;
 		if (find_last_lines_time(&msg, &offset, filter, console_text_width)) {
-			set_font(chat_font);    // switch to the chat font
+			set_font(chat_font); // switch to the chat font
 			// Ajout d'un fond semi-transparent derrière les lignes d'historique
 			if (chat_alpha_background > 0) {
 				glDisable(GL_TEXTURE_2D);
@@ -991,12 +987,12 @@ int display_game_handler(window_info *win) {
 				glEnable(GL_TEXTURE_2D);
 			}
 			draw_messages(10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int)(1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
-			set_font(0);    // switch to fixed
+			set_font(0); // switch to fixed
 		}
 		// Ajout d'un fond semi-transparent derrière la ligne de saisie
 		if (chat_alpha_background && ((text_field *)input_widget->widget_info)->cursor) {
 			ytext = window_height - HUD_MARGIN_Y;
-			set_font(chat_font);    // switch to the chat font
+			set_font(chat_font); // switch to the chat font
 			glDisable(GL_TEXTURE_2D);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1009,7 +1005,7 @@ int display_game_handler(window_info *win) {
 			glEnd();
 			glDisable(GL_BLEND);
 			glEnable(GL_TEXTURE_2D);
-			set_font(0);    // switch to fixed
+			set_font(0); // switch to fixed
 		}
 	}
 	anything_under_the_mouse(0, UNDER_MOUSE_NO_CHANGE);
@@ -1023,7 +1019,7 @@ int display_game_handler(window_info *win) {
 	display_highlight_markers();
 	glEnable(GL_LIGHTING);
 	// Return to 2D mode to draw the other windows
-	glPopMatrix();  // restore the state
+	glPopMatrix(); // restore the state
 	Enter2DMode();
 	if ((input_widget != NULL) && (input_widget->window_id != win->window_id) && !get_show_window(chat_win)) {
 		input_widget_move_to_win(win->window_id);
@@ -1098,9 +1094,9 @@ void hide_all_windows() {
 	 * time it hid windows itself. If you alt+d to reopen windows, manually close them all, and alt+d
 	 * again, it'll reopen the same ones.
 	 */
-	static unsigned int were_open = 0;      //Currently up to 14 windows are managed by this function.
-	//If you add more windows, you must ensure that the int is at least 'windows' bits long.
-	if (get_show_window(ground_items_win) > 0 || get_show_window(items_win) > 0 || get_show_window(buddy_win) > 0 || get_show_window(manufacture_win) > 0 || get_show_window(elconfig_win) > 0 || get_show_window(sigil_win) > 0 || get_show_window(tab_stats_win) > 0 || get_show_window(tab_help_win) > 0 || get_show_window(storage_win) > 0 || get_show_window(dialogue_win) > 0 || (get_show_window(minimap_win) > 0 && !pin_minimap) || get_show_window(tab_info_win) > 0) { //Okay, hide the open ones.
+	static unsigned int were_open = 0; // Currently up to 14 windows are managed by this function.
+	// If you add more windows, you must ensure that the int is at least 'windows' bits long.
+	if (get_show_window(ground_items_win) > 0 || get_show_window(items_win) > 0 || get_show_window(buddy_win) > 0 || get_show_window(manufacture_win) > 0 || get_show_window(elconfig_win) > 0 || get_show_window(sigil_win) > 0 || get_show_window(tab_stats_win) > 0 || get_show_window(tab_help_win) > 0 || get_show_window(storage_win) > 0 || get_show_window(dialogue_win) > 0 || (get_show_window(minimap_win) > 0 && !pin_minimap) || get_show_window(tab_info_win) > 0) { // Okay, hide the open ones.
 		if (get_window_showable(ground_items_win) > 0) {
 			unsigned char protocol_name;
 			hide_window(ground_items_win);
@@ -1174,7 +1170,7 @@ void hide_all_windows() {
 		} else {
 			were_open &= ~(1 << 10);
 		}
-	} else {        //None were open, restore the ones that were open last time the key was pressed
+	} else { // None were open, restore the ones that were open last time the key was pressed
 		if (were_open & 1 << 0) {
 			show_window(items_win);
 		}
@@ -1209,7 +1205,7 @@ void hide_all_windows() {
 }
 static void toggle_sit_stand() {
 	Uint8 str[4];
-	//Send message to server...
+	// Send message to server...
 	str[0] = SIT_DOWN;
 	str[1] = !you_sit;
 	my_tcp_send(my_socket, str, 2);
@@ -1225,7 +1221,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 	int shift_on = key & ELW_SHIFT;
 	// Gestion des retour de claviers en unicode plutot que par l'emplacement
 	// de la touche
-	if ( shift_on ) {
+	if (shift_on) {
 		unikey |= ELW_SHIFT && ELW_CTRL;
 	} else if (ctrl_on) {
 		// Lorsque l'on appuie sur CTRL-a, le retour de l'unicode vaut 1,
@@ -1237,8 +1233,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 	}
      #ifdef WINDOWS
 	// pour les raccourcis qui ne fonctionne pas utiliser unikey en place de key
-	if (alt_on ) {
-		// unikey += 0;
+	if (alt_on) {
 		unikey |= ELW_ALT;
 	}
      #endif
@@ -1323,9 +1318,9 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 	}
 #ifdef WINDOWS
 	else if (unikey == K_VOIR_MUSIQUE_CARTE)
-#else //WINDOWS
+#else // WINDOWS
 	else if (key == K_VOIR_MUSIQUE_CARTE)
-#endif //WINDOWS
+#endif // WINDOWS
 	{
 		voir_musique_carte = !voir_musique_carte;
 	} else if (key == K_NOTEPAD) {
@@ -1371,7 +1366,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 		widget_list *widget;
 		tab_collection *collection;
 		switch (use_windowed_chat) {
-		case 1:         //Tabs
+		case 1: // Tabs
 			if (current_bar == 1) {
 				if (current_tab == nb_tab_button_1 - 1) {
 					if (nb_ligne_tabs == 2) {
@@ -1395,7 +1390,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 				}
 			}
 			break;
-		case 2:         //Window
+		case 2: // Window
 			widget = widget_find(chat_win, chat_tabcollection_id);
 			collection = widget->widget_info;
 			if (active_tab == collection->nr_tabs - 1) {
@@ -1414,7 +1409,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 		widget_list *widget;
 		tab_collection *collection;
 		switch (use_windowed_chat) {
-		case 1:         //Tab
+		case 1: // Tab
 			if (current_bar == 1) {
 				if (current_tab == 2) {
 					if (nb_ligne_tabs == 2) {
@@ -1438,7 +1433,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 				}
 			}
 			break;
-		case 2:         //Window
+		case 2: // Window
 			widget = widget_find(chat_win, chat_tabcollection_id);
 			collection = widget->widget_info;
 			if (active_tab == 2) {
@@ -1461,7 +1456,7 @@ int keypress_root_common(Uint32 key, Uint32 unikey) {
 			windows_list.window[top_SWITCHABLE_OPAQUE_window_drawn].opaque ^= 1;
 		}
 	} else if (key == K_REPEATSPELL) { // REPEAT spell command
-		if ( !get_show_window(trade_win)) {
+		if (!get_show_window(trade_win)) {
 			repeat_spell();
 		}
 	} else {
@@ -1511,12 +1506,12 @@ int text_input_handler(Uint32 key, Uint32 unikey) {
 int keypress_game_handler(window_info *win, int mx, int my, Uint32 key, Uint32 unikey) {
 	Uint16 keysym = key & 0xffff;
 	// first try the keypress handler for all root windows
-	if ( keypress_root_common(key, unikey)) {
+	if (keypress_root_common(key, unikey)) {
 		return 1;
 	} else if (key == K_TABCOMPLETE && input_text_line.len > 0) {
 		do_tab_complete(&input_text_line);
 	} else if (key == K_TURNLEFT) {
-		//Moved delay to my_tcp_send
+		// Moved delay to my_tcp_send
 		Uint8 str[2];
 		str[0] = TURN_LEFT;
 		my_tcp_send(my_socket, str, 1);
@@ -1587,7 +1582,7 @@ int keypress_game_handler(window_info *win, int mx, int my, Uint32 key, Uint32 u
 		if (key == K_MARKFILTER) {
 			mark_filter_active = 1;
 		}
-		if ( switch_to_game_map()) {
+		if (switch_to_game_map()) {
 			if (have_mouse) {
 				toggle_have_mouse();
 				keep_grabbing_mouse = 1;
@@ -1636,7 +1631,7 @@ int keypress_game_handler(window_info *win, int mx, int my, Uint32 key, Uint32 u
 			show_window(console_root_win);
 		}
 		// see if the common text handler can deal with it
-		else if ( !text_input_handler(key, unikey)) {
+		else if (!text_input_handler(key, unikey)) {
 			// nothing we can handle
 			return 0;
 		}

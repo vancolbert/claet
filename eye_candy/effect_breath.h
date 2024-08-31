@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_BREATH_H
 #define EFFECT_BREATH_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class BreathEffect : public Effect {
 public:
 enum BreathType {
@@ -77,6 +77,5 @@ virtual light_t get_light_level() {
 TextureEnum texture;
 BreathEffect::BreathType type;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_BREATH_H
+#endif // defined EFFECT_BREATH_H

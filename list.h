@@ -11,7 +11,7 @@ typedef struct list_node {
 } list_node_t;
 typedef void (*list_free_func_t)(void *);
 #define list_for_each_node(node, list) \
-	for ( node = list; node; node = node->next )
+	for (node = list; node; node = node->next)
 list_node_t *list_push(list_node_t **head, void *data);
 void *list_pop(list_node_t **head);
 void list_destroy(list_node_t *head);
@@ -66,4 +66,4 @@ list_node_t *list_append(list_node_t **head, void *data);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif //LIST_H__
+#endif // LIST_H__

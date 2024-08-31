@@ -20,7 +20,7 @@ void update_actor_buffs(int actor_id, Uint32 in_buffs) {
 	actor *act;
 	act = get_actor_ptr_from_id(actor_id);
 	if (!act) {
-		//if we got here, it means we don't have this actor, so get it from the server...
+		// if we got here, it means we don't have this actor, so get it from the server...
 	} else {
 		act->buffs = in_buffs;
 		update_buff_eye_candy(actor_id);
@@ -45,9 +45,8 @@ void update_buff_eye_candy(int actor_id) {
                 }
  */
 // removed by Roja's request
-//		if (act->buffs & BUFF_MAGIC_IMMUNITY && act->ec_buff_reference[((Uint32)(log(BUFF_MAGIC_IMMUNITY)/log(2)))] == NULL) {
-//			act->ec_buff_reference[((Uint32)(log(BUFF_MAGIC_IMMUNITY)/log(2)))] = ec_create_ongoing_magic_immunity2(act, 1.0, 1.0, (poor_man ? 6 : 10), 1.0);
-//		}
+// if (act->buffs & BUFF_MAGIC_IMMUNITY && act->ec_buff_reference[((Uint32)(log(BUFF_MAGIC_IMMUNITY)/log(2)))] == NULL) {
+// }
 		// turn off effects
 		for (i = 0; i < NUM_BUFFS; i++) {
 			if (act->ec_buff_reference[i] != NULL && !(act->buffs & ((Uint32)pow(2, i)))) {
@@ -73,7 +72,7 @@ void draw_buffs(int actor_id, float x, float y, float z) {
 		int x_off = 0;
 		// textures
 		int texture_ids[NUM_BUFFS];
-		//enable alpha filtering, so we have some alpha key
+		// enable alpha filtering, so we have some alpha key
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.1f);
 		glEnable(GL_BLEND);
@@ -117,7 +116,7 @@ void draw_buffs(int actor_id, float x, float y, float z) {
 		    + ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * 1.0f / ALT_INGAME_FONT_X_LEN; // healthbar_y_len from actors.c
 		for (i = 0; i < num_buffs; i++) {
 			cur_tex = texture_ids[i];
-			//now get the texture coordinates, copied from spells.c
+			// now get the texture coordinates, copied from spells.c
 			u_start = 0.125f * (cur_tex % 8);
 			u_end = u_start + 0.125f;
 			v_start = 0.125f * (cur_tex / 8);

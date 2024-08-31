@@ -724,7 +724,7 @@ int progressbar_draw(widget_list *W) {
 		if (have_bar_colors) {
 			glColor3fv(&b->colors[0]);
 		}
-		glVertex3i(W->pos_x, W->pos_y + 0, 0);        //LabRat: fix unfilled pixels in progress bar
+		glVertex3i(W->pos_x, W->pos_y + 0, 0); // LabRat: fix unfilled pixels in progress bar
 		if (have_bar_colors) {
 			glColor3fv(&right_colors[0]);
 		}
@@ -736,7 +736,7 @@ int progressbar_draw(widget_list *W) {
 		if (have_bar_colors) {
 			glColor3fv(&b->colors[9]);
 		}
-		glVertex3i(W->pos_x, W->pos_y + W->len_y, 0);        //LabRat: fix unfilled pixels in progress bar
+		glVertex3i(W->pos_x, W->pos_y + W->len_y, 0); // LabRat: fix unfilled pixels in progress bar
 		glColor3f(0.77f, 0.57f, 0.39f);
 		glEnd();
 	}
@@ -745,7 +745,7 @@ int progressbar_draw(widget_list *W) {
 	} else {
 		glColor3f(0.77f, 0.57f, 0.39f);
 	}
-	//LabRat: Draw bounding box after progress bar
+	// LabRat: Draw bounding box after progress bar
 	glBegin(GL_LINE_LOOP);
 	glVertex3i(W->pos_x, W->pos_y, 0);
 	glVertex3i(W->pos_x + W->len_x, W->pos_y, 0);
@@ -1007,8 +1007,6 @@ int tab_collection_select_tab(int window_id, Uint32 widget_id, int tab) {
 			// Don't show the tab, because the parent window might
 			// be hidden. The widget drawing code will take care
 			// of it.
-			//show_window (col->tabs[tab].content_id);
-			//select_window (col->tabs[tab].content_id);
 			return tab;
 		}
 	}
@@ -1258,7 +1256,6 @@ int tab_collection_click(widget_list *W, int x, int y, Uint32 flags) {
 				col->cur_tab = itag;
 				hide_window(col->tabs[ctag].content_id);
 				show_window(col->tabs[itag].content_id);
-				//select_window (col->tabs[itag].content_id);
 				do_click_sound();
 			}
 			return 1;
@@ -1409,7 +1406,7 @@ int tab_add(int window_id, Uint32 col_id, const char *label, Uint16 tag_width, i
 // text field
 void _text_field_set_nr_visible_lines(widget_list *w) {
 	text_field *tf = w->widget_info;
-	if (tf != NULL /* && (w->Flags & TEXT_FIELD_EDITABLE)*/ ) {
+	if (tf != NULL /* && (w->Flags & TEXT_FIELD_EDITABLE)*/) {
 		float displayed_font_y_size = floor(DEFAULT_FONT_Y_LEN * tf->buffer[tf->msg].wrap_zoom);
 		tf->nr_visible_lines = (int)((w->len_y - 2 * tf->y_space) / displayed_font_y_size);
 		if (tf->nr_visible_lines < 0) {
@@ -1651,10 +1648,10 @@ void _text_field_cursor_right(widget_list *w, int skipword) {
 void _text_field_cursor_up(widget_list *w) {
 	text_field *tf = w->widget_info;
 	text_message *msg;
-	int line_start;      // The beginning of the line we're processing
+	int line_start; // The beginning of the line we're processing
 	int prev_line_start; // Beginning of the line before the line with the cursor
-	int cursor_offset;   // Position of the cursor on this line
-	int prev_line_length;// Length of the previous line
+	int cursor_offset; // Position of the cursor on this line
+	int prev_line_length; // Length of the previous line
 	if (tf == NULL || tf->cursor_line <= 0) {
 		return;
 	}
@@ -1686,11 +1683,11 @@ void _text_field_cursor_up(widget_list *w) {
 void _text_field_cursor_down(widget_list *w) {
 	text_field *tf = w->widget_info;
 	text_message *msg;
-	int line_start;      // The beginning of the line we're processing
+	int line_start; // The beginning of the line we're processing
 	int next_line_start; // Beginning of the line after the line with the cursor
-	int next_line_end;   // End of the line after the line with the cursor
-	int cursor_offset;   // Position of the cursor on this line
-	int next_line_length;// Length of the next line
+	int next_line_end; // End of the line after the line with the cursor
+	int cursor_offset; // Position of the cursor on this line
+	int next_line_length; // Length of the next line
 	if (tf == NULL || tf->cursor_line >= tf->nr_lines - 1) {
 		return;
 	}
@@ -1829,7 +1826,7 @@ void _text_field_delete_backward(widget_list *w) {
 	if (msg->data[i - 1] == '\n') {
 		nr_del_lines++;
 	}
-	for ( ; i <= msg->len; i++) {
+	for (; i <= msg->len; i++) {
 		msg->data[i - n] = msg->data[i];
 	}
 	msg->len -= n;
@@ -2055,7 +2052,7 @@ int text_field_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unike
 		_text_field_copy_to_clipboard(tf);
 		return 1;
 	}
-	if ( !(w->Flags & TEXT_FIELD_EDITABLE)) {
+	if (!(w->Flags & TEXT_FIELD_EDITABLE)) {
 		return 0;
 	}
 	if (w->Flags & TEXT_FIELD_NO_KEYPRESS) {
@@ -2167,7 +2164,7 @@ int text_field_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unike
 		}
 		start_paste(w);
 		return 1;
-	} else if (!alt_on && !ctrl_on && (is_printable(ch) || (ch == SDLK_RETURN && !(w->Flags & TEXT_FIELD_IGNORE_RETURN))) && ch != '`' ) {
+	} else if (!alt_on && !ctrl_on && (is_printable(ch) || (ch == SDLK_RETURN && !(w->Flags & TEXT_FIELD_IGNORE_RETURN))) && ch != '`') {
 		if (!TEXT_FIELD_SELECTION_EMPTY(&tf->select)) {
 			text_field_remove_selection(tf);
 			TEXT_FIELD_CLEAR_SELECTION(&tf->select);
@@ -2372,7 +2369,7 @@ int text_field_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x
 	T->offset = 0;
 	T->buffer = buf;
 	T->buf_size = buf_size;
-	T->nr_lines = 1; //We'll always have one line in the text field.
+	T->nr_lines = 1; // We'll always have one line in the text field.
 	T->chan_nr = chan_filt;
 	T->cursor = (Flags & TEXT_FIELD_EDITABLE) ? 0 : -1;
 	T->cursor_line = T->cursor;
@@ -2508,7 +2505,7 @@ int text_field_draw(widget_list *w) {
 			tf->select.lines[i].chr = tf->buffer[tf->select.lines[i].msg].len;
 		}
 	}
-	set_font(0);    // switch to fixed
+	set_font(0); // switch to fixed
 	return 1;
 }
 int text_field_set_buf_pos(int window_id, Uint32 widget_id, int msg, int offset) {
@@ -2556,7 +2553,7 @@ int text_field_clear(int window_id, Uint32 widget_id) {
 	}
 	return 1;
 }
-//password entry field. We act like a restricted text entry with multiple modes
+// password entry field. We act like a restricted text entry with multiple modes
 // quite straightforward - we just add or remove from the end
 int pword_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unikey) {
 	Uint8 ch = key_to_char(unikey);
@@ -2577,7 +2574,7 @@ int pword_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unikey) {
 			pword->password[i - 1] = '\0';
 		}
 		return 1;
-	} else if (!alt_on && !ctrl_on && is_printable(ch) && ch != '`' ) {
+	} else if (!alt_on && !ctrl_on && is_printable(ch) && ch != '`') {
 		int i;
 		for (i = 0; pword->password[i] != '\0' && i < pword->max_chars - 1; i++) {}
 		if (i >= 0) {
@@ -2598,7 +2595,7 @@ int pword_field_click(widget_list *w, int mx, int my, Uint32 flags) {
 	if (pword->status == P_NONE) {
 		return -1;
 	} else {
-		return 1;   // Don't fall through
+		return 1; // Don't fall through
 	}
 }
 int pword_field_draw(widget_list *w) {
@@ -2843,7 +2840,7 @@ const struct WIDGET_TYPE multiselect_type = {
 };
 int multiselect_add_extended(int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, int width, Uint16 max_height, float size, float r, float g, float b, float hr, float hg, float hb, int max_buttons) {
 	multiselect *T = calloc(1, sizeof(multiselect));
-	//Save info
+	// Save info
 	T->max_buttons = max_buttons > 0 ? max_buttons : 2;
 	T->selected_button = 0;
 	T->next_value = 0;
@@ -2869,7 +2866,7 @@ int spinbutton_keypress(widget_list *widget, int mx, int my, Uint32 key, Uint32 
 		char ch = key_to_char(unikey);
 		switch (button->type) {
 		case SPIN_INT:
-			i_tmp = ch - '0';       //Convert char to int
+			i_tmp = ch - '0'; // Convert char to int
 			if (ch >= '0' && ch <= '9') {
 				if (*(int *)button->data * 10 + i_tmp > button->max) {
 					/* Make sure we don't exceed any limits */
@@ -2937,21 +2934,21 @@ int spinbutton_keypress(widget_list *widget, int mx, int my, Uint32 key, Uint32 
 	return 0;
 }
 // Note: Discards dx and dy when used for drag. Must be altered if the drag
-//		handler changes.
+// handler changes.
 int spinbutton_click(widget_list *widget, int mx, int my, Uint32 flags) {
 	if (widget != NULL && widget->widget_info != NULL) {
 		spinbutton *button = widget->widget_info;
 		Uint8 action = 0;
 		if (flags & ELW_WHEEL_UP) {
-			action = 'i'; //i for increase
+			action = 'i'; // i for increase
 		} else if (flags & ELW_WHEEL_DOWN) {
-			action = 'd'; //d for decrease
+			action = 'd'; // d for decrease
 		} else if (mx > widget->len_x - 20) {
 			/* Click on one of the arrows */
 			if (my < widget->len_y / 2) {
-				action = 'i'; //i for increase
+				action = 'i'; // i for increase
 			} else {
-				action = 'd'; //d for decrease
+				action = 'd'; // d for decrease
 			}
 			do_click_sound();
 		} else {
@@ -2977,8 +2974,8 @@ int spinbutton_click(widget_list *widget, int mx, int my, Uint32 flags) {
 			case SPIN_FLOAT:
 				switch (action) {
 				case 'i':
-					//if(*(float *)button->data + button->interval <= button->max+0.000001) { //+0.000001 to avoid issues with floating point values
-					if (*(float *)button->data + button->interval <= button->max) {                 // NOTE: Can't do that, values > max may cause crashes. Change the max value intead.
+					// if(*(float *)button->data + button->interval <= button->max+0.000001) { // +0.000001 to avoid issues with floating point values
+					if (*(float *)button->data + button->interval <= button->max) { // NOTE: Can't do that, values > max may cause crashes. Change the max value intead.
 						*(float *)button->data += button->interval;
 					} else {
 						*(float *)button->data = button->max;
@@ -3061,10 +3058,10 @@ int spinbutton_draw(widget_list *widget) {
 	glEnd();
 	/* Up arrow */
 	glBegin(GL_QUADS);
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y / 4 + 2, 0); //Left corner
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 10, widget->pos_y + 2, 0);     //Top
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 15, widget->pos_y + widget->len_y / 4 + 2, 0); //Right corner
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y / 4 + 2, 0); //Back to the beginning
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y / 4 + 2, 0); // Left corner
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 10, widget->pos_y + 2, 0); // Top
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 15, widget->pos_y + widget->len_y / 4 + 2, 0); // Right corner
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y / 4 + 2, 0); // Back to the beginning
 	glEnd();
 	/* Button separator */
 	glBegin(GL_LINES);
@@ -3073,10 +3070,10 @@ int spinbutton_draw(widget_list *widget) {
 	glEnd();
 	/* Down arrow */
 	glBegin(GL_QUADS);
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y - widget->len_y / 4 - 2, 0); //Left corner
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 10, widget->pos_y + widget->len_y - 2, 0);     //Bottom
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 15, widget->pos_y + widget->len_y - widget->len_y / 4 - 2, 0); //Right corner
-	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y - widget->len_y / 4 - 2, 0); //Back to the beginning
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y - widget->len_y / 4 - 2, 0); // Left corner
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 10, widget->pos_y + widget->len_y - 2, 0); // Bottom
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 15, widget->pos_y + widget->len_y - widget->len_y / 4 - 2, 0); // Right corner
+	glVertex3i(widget->pos_x + widget->len_x - 20 + 5, widget->pos_y + widget->len_y - widget->len_y / 4 - 2, 0); // Back to the beginning
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 	return 1;

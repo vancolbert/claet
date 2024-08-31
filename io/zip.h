@@ -1,26 +1,18 @@
 /* zip.h -- IO on .zip files using zlib
    Version 1.1, February 14h, 2010
-   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-
+   part of the MiniZip project - (http://www.winimage.com/zLibDll/minizip.html)
+         Copyright (C) 1998-2010 Gilles Vollant (minizip) (http://www.winimage.com/zLibDll/minizip.html)
          Modifications for Zip64 support
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
-
+         Copyright (C) 2009-2010 Mathias Svensson (http://result42.com)
          For more info read MiniZip_info.txt
-
          ---------------------------------------------------------------------------
-
    Condition of use and distribution are the same than zlib :
-
    This software is provided 'as-is', without any express or implied
    warranty.  In no event will the authors be held liable for any damages
    arising from the use of this software.
-
    Permission is granted to anyone to use this software for any purpose,
    including commercial applications, and to alter it and redistribute it
    freely, subject to the following restrictions:
-
    1. The origin of this software must not be misrepresented; you must not
      claim that you wrote the original software. If you use this software
      in a product, an acknowledgment in the product documentation would be
@@ -28,20 +20,16 @@
    2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
    3. This notice may not be removed or altered from any source distribution.
-
         ---------------------------------------------------------------------------
-
         Changes
-
         See header of zip.h
-
  */
 #ifndef _zip12_H
 #define _zip12_H
 #ifdef __cplusplus
 extern "C" {
 #endif
-//#define HAVE_BZIP2
+// #define HAVE_BZIP2
 #ifndef _ZLIB_H
 #include "zlib.h"
 #endif
@@ -78,19 +66,19 @@ typedef voidp zipFile;
 /* default memLevel */
 /* tm_zip contain date/time info */
 typedef struct tm_zip_s {
-	uInt tm_sec;        /* seconds after the minute - [0,59] */
-	uInt tm_min;        /* minutes after the hour - [0,59] */
-	uInt tm_hour;       /* hours since midnight - [0,23] */
-	uInt tm_mday;       /* day of the month - [1,31] */
-	uInt tm_mon;        /* months since January - [0,11] */
-	uInt tm_year;       /* years - [1980..2044] */
+	uInt tm_sec; /* seconds after the minute - [0,59] */
+	uInt tm_min; /* minutes after the hour - [0,59] */
+	uInt tm_hour; /* hours since midnight - [0,23] */
+	uInt tm_mday; /* day of the month - [1,31] */
+	uInt tm_mon; /* months since January - [0,11] */
+	uInt tm_year; /* years - [1980..2044] */
 } tm_zip;
 typedef struct {
-	tm_zip tmz_date;        /* date in understandable format           */
-	uLong dosDate;         /* if dos_date == 0, tmu_date is used      */
+	tm_zip tmz_date; /* date in understandable format           */
+	uLong dosDate; /* if dos_date == 0, tmu_date is used      */
 /*    uLong       flag;        */   /* general purpose bit flag        2 bytes */
-	uLong internal_fa;      /* internal file attributes        2 bytes */
-	uLong external_fa;      /* external file attributes        4 bytes */
+	uLong internal_fa; /* internal file attributes        2 bytes */
+	uLong external_fa; /* external file attributes        4 bytes */
 } zip_fileinfo;
 typedef const char *zipcharpc;
 #define APPEND_STATUS_CREATE        (0)
@@ -157,7 +145,6 @@ extern int ZEXPORT zipOpenNewFileInZip64 OF((zipFile file,
    level contain the level of compression (can be Z_DEFAULT_COMPRESSION)
    zip64 is set to 1 if a zip64 extended information block should be added to the local file header.
                     this MUST be '1' if the uncompressed size is >= 0xffffffff.
-
  */
 extern int ZEXPORT zipOpenNewFileInZip2 OF((zipFile file,
 					    const char *filename,
@@ -217,8 +204,7 @@ extern int ZEXPORT zipOpenNewFileInZip3_64 OF((zipFile file,
 					       int strategy,
 					       const char *password,
 					       uLong crcForCrypting,
-					       int zip64
-					       ));
+					       int zip64));
 /*
    Same than zipOpenNewFileInZip2, except
     windowBits,memLevel,,strategy : see parameter strategy in deflateInit2
@@ -242,8 +228,7 @@ extern int ZEXPORT zipOpenNewFileInZip4 OF((zipFile file,
 					    const char *password,
 					    uLong crcForCrypting,
 					    uLong versionMadeBy,
-					    uLong flagBase
-					    ));
+					    uLong flagBase));
 extern int ZEXPORT zipOpenNewFileInZip4_64 OF((zipFile file,
 					       const char *filename,
 					       const zip_fileinfo *zipfi,
@@ -262,8 +247,7 @@ extern int ZEXPORT zipOpenNewFileInZip4_64 OF((zipFile file,
 					       uLong crcForCrypting,
 					       uLong versionMadeBy,
 					       uLong flagBase,
-					       int zip64
-					       ));
+					       int zip64));
 /*
    Same than zipOpenNewFileInZip4, except
     versionMadeBy : value for Version made by field
@@ -298,17 +282,12 @@ extern int ZEXPORT zipClose OF((zipFile file,
 extern int ZEXPORT zipRemoveExtraInfoBlock OF((char *pData, int *dataLen, short sHeader));
 /*
    zipRemoveExtraInfoBlock -  Added by Mathias Svensson
-
    Remove extra information block from a extra information data for the local file header or central directory header
-
    It is needed to remove ZIP64 extra information blocks when before data is written if using RAW mode.
-
    0x0001 is the signature header for the ZIP64 extra information blocks
-
    usage.
                         Remove ZIP64 Extra information from a central director extra field data
               zipRemoveExtraInfoBlock(pCenDirExtraFieldData, &nCenDirExtraFieldDataLen, 0x0001);
-
                         Remove ZIP64 Extra information from a Local File Header extra field data
         zipRemoveExtraInfoBlock(pLocalHeaderExtraFieldData, &nLocalHeaderExtraFieldDataLen, 0x0001);
  */

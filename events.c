@@ -29,14 +29,13 @@ int adding_mark = 0;
 int mark_x, mark_y;
 int max_mark = 0;
 int right_click_long = 0;
-int init_time = 0; //nombre de millisecondes après un clic down droit
+int init_time = 0; // nombre de millisecondes après un clic down droit
 int instant_time = 0;
 /* Merci à Hasdrubal qui a passé toute une soirée à compter des millisecondes */
-const int temps_long_clic = 550; //nombre de millisecondes après lesquelles on ne change pas le curseur
-const int temps_long_rotate = 200; //nombre de millisecondes après lesquelles on fait tourner la caméra
+const int temps_long_clic = 550; // nombre de millisecondes après lesquelles on ne change pas le curseur
+const int temps_long_rotate = 200; // nombre de millisecondes après lesquelles on fait tourner la caméra
 marking marks[MAX_MARKINGS];
 SDLMod mod_key_status;
-//Uint32 last_turn_around=0;
 int shift_on;
 int alt_on;
 int ctrl_on;
@@ -102,7 +101,7 @@ int HandleEvent(SDL_Event *event) {
 	} else {
 		shift_on = 0;
 	}
-	//AltGR users still do not have AltGr working properly. Currently we have to accept only the left ALT key
+	// AltGR users still do not have AltGr working properly. Currently we have to accept only the left ALT key
 	if (mod_key_status & KMOD_ALT && !(mod_key_status & KMOD_MODE)) {
 		alt_on = 1;
 	}
@@ -121,7 +120,7 @@ int HandleEvent(SDL_Event *event) {
 	} else {
 		meta_on = 0;
 	}
-	switch ( event->type ) {
+	switch (event->type) {
 #if !defined(WINDOWS) && !defined(OSX)
 	case SDL_SYSWMEVENT:
 		if (event->syswm.msg->event.xevent.type == SelectionNotify) {
@@ -133,17 +132,17 @@ int HandleEvent(SDL_Event *event) {
 #endif
 	case SDL_KEYDOWN:
 		if (!(SDL_GetAppState() & SDL_APPINPUTFOCUS)) {
-			break;          //don't have focus, so we shouldn't be getting keystrokes
+			break; // don't have focus, so we shouldn't be getting keystrokes
 		}
 		key = (Uint16)event->key.keysym.sym;
-		//use the modifiers that were on when the key was pressed, not when we go to check
+		// use the modifiers that were on when the key was pressed, not when we go to check
 		if (event->key.keysym.mod & KMOD_SHIFT) {
 			key |= ELW_SHIFT;
 		}
 		if (event->key.keysym.mod & KMOD_CTRL) {
 			key |= ELW_CTRL;
 		}
-		//AltGR users still do not have AltGr working properly. Currently we have to accept only the left ALT key
+		// AltGR users still do not have AltGr working properly. Currently we have to accept only the left ALT key
 		if (event->key.keysym.mod & KMOD_ALT && !(event->key.keysym.mod & KMOD_MODE)) {
 			key |= ELW_ALT;
 		}
@@ -154,38 +153,38 @@ int HandleEvent(SDL_Event *event) {
 			key |= ELW_META;
 		}
 		if (afk_time) {
-			last_action_time = cur_time;            // Set the latest event... Don't let the modifiers ALT, CTRL and SHIFT change the state
+			last_action_time = cur_time; // Set the latest event... Don't let the modifiers ALT, CTRL and SHIFT change the state
 		}
 		// Prise en compte des nombres sur le pavé numrérique même si Verr num n'est pas activé
 		if (key == 256) {
-			event->key.keysym.unicode = 48;     // Touche 0
+			event->key.keysym.unicode = 48; // Touche 0
 		}
 		if (key == 257) {
-			event->key.keysym.unicode = 49;     // Touche 1
+			event->key.keysym.unicode = 49; // Touche 1
 		}
 		if (key == 258) {
-			event->key.keysym.unicode = 50;     // Touche 2
+			event->key.keysym.unicode = 50; // Touche 2
 		}
 		if (key == 259) {
-			event->key.keysym.unicode = 51;     // Touche 3
+			event->key.keysym.unicode = 51; // Touche 3
 		}
 		if (key == 260) {
-			event->key.keysym.unicode = 52;     // Touche 4
+			event->key.keysym.unicode = 52; // Touche 4
 		}
 		if (key == 261) {
-			event->key.keysym.unicode = 53;     // Touche 5
+			event->key.keysym.unicode = 53; // Touche 5
 		}
 		if (key == 262) {
-			event->key.keysym.unicode = 54;     // Touche 6
+			event->key.keysym.unicode = 54; // Touche 6
 		}
 		if (key == 263) {
-			event->key.keysym.unicode = 55;     // Touche 7
+			event->key.keysym.unicode = 55; // Touche 7
 		}
 		if (key == 264) {
-			event->key.keysym.unicode = 56;     // Touche 8
+			event->key.keysym.unicode = 56; // Touche 8
 		}
 		if (key == 265) {
-			event->key.keysym.unicode = 57;     // Touche 9
+			event->key.keysym.unicode = 57; // Touche 9
 		}
 		// Gestion pour Linux des problêmes avec les lettres et les
 		// accents circonflexes sous linux
@@ -227,7 +226,7 @@ int HandleEvent(SDL_Event *event) {
 		}
 #ifdef WINDOWS
 		// correction bug mantis num 254
-		//@TRINITA 2010 le ` est inutile !
+		// @TRINITA 2010 le ` est inutile !
 		else if ((event->key.keysym.unicode == 96) && (circonflexe == 0)) {
 			event->key.keysym.unicode = 0;
 			circonflexe = 0;
@@ -267,12 +266,12 @@ int HandleEvent(SDL_Event *event) {
 	case SDL_MOUSEBUTTONDOWN:
 	case SDL_MOUSEBUTTONUP:
 		// make sure the mouse button is our window, or else we ignore it
-		//Checking if we have keyboard focus for a mouse click is wrong, but SDL doesn't care to tell us we have mouse focus when someone alt-tabs back in and the mouse was within bounds of both other and EL windows. Blech.
+		// Checking if we have keyboard focus for a mouse click is wrong, but SDL doesn't care to tell us we have mouse focus when someone alt-tabs back in and the mouse was within bounds of both other and EL windows. Blech.
 		if (event->button.x >= window_width || event->button.y >= window_height || !((SDL_GetAppState() & SDL_APPMOUSEFOCUS) || (SDL_GetAppState() & SDL_APPINPUTFOCUS))) {
 			break;
 		}
 		if (afk_time && event->type == SDL_MOUSEBUTTONDOWN) {
-			last_action_time = cur_time;            // Set the latest events - don't make mousemotion set the afk_time... (if you prefer that mouse motion sets/resets the afk_time, then move this one step below...
+			last_action_time = cur_time; // Set the latest events - don't make mousemotion set the afk_time... (if you prefer that mouse motion sets/resets the afk_time, then move this one step below...
 		}
 	// fallthrough
 	case SDL_MOUSEMOTION:
@@ -308,7 +307,7 @@ int HandleEvent(SDL_Event *event) {
 				}
 				left_click = 0;
 			}
-			if (event->type == SDL_MOUSEMOTION && (event->motion.state & SDL_BUTTON_RMASK)) {       //mouvement + bouton droit enfoncé
+			if (event->type == SDL_MOUSEMOTION && (event->motion.state & SDL_BUTTON_RMASK)) { // mouvement + bouton droit enfoncé
 #ifdef OSX
 				if (osx_right_mouse_cam) {
 					have_mouse = 1;
@@ -377,7 +376,7 @@ int HandleEvent(SDL_Event *event) {
 				flags |= ELW_WHEEL_DOWN;
 			}
 		}
-		if ( left_click == 1 || right_click == 1 || middle_click == 1 || (flags & (ELW_WHEEL_UP | ELW_WHEEL_DOWN))) {
+		if (left_click == 1 || right_click == 1 || middle_click == 1 || (flags & (ELW_WHEEL_UP | ELW_WHEEL_DOWN))) {
 			click_in_windows(mouse_x, mouse_y, flags);
 		}
 		if (left_click >= 1) {

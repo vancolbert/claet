@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_smoke.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 SmokeParticle::SmokeParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _sqrt_scale, const coord_t _max_size, const coord_t size_scalar, const alpha_t alpha_scale) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 size_scalar * (0.5f + randcoord())) {
@@ -12,12 +12,8 @@ SmokeParticle::SmokeParticle(Effect *_effect, ParticleMover *_mover, const Vec3 
 	const color_t color_scale = square(randcolor(0.6));
 	color_t hue, saturation, value;
 	hue = randcolor(1.0);
-	//  saturation = 1.0 - (color_scale + 0.15) / (0.15 + color_scale + square(randcolor(0.15)));
 	saturation = color_scale;
 	value = square(randcolor(0.15)) + color_scale + 0.15;
-	//  color[0] = square(randcolor(0.15)) + color_scale + 0.15;
-	//  color[1] = square(randcolor(0.15)) + color_scale + 0.15;
-	//  color[2] = square(randcolor(0.15)) + color_scale + 0.15;
 	hue += hue_adjust;
 	if (hue > 1.0) {
 		hue -= 1.0;
@@ -75,9 +71,7 @@ SmokeEffect::SmokeEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const color_t
 	bounds = NULL;
 	mover = new GradientMover(this);
 	spawner = new FilledDiscSpawner(0.2 * sqrt_scale);
-	//  Test code:
-	//  Particle* p = new SmokeParticle(this, mover, *pos, Vec3(0.0, 0.0, 0.0), hue_adjust, saturation_adjust, sqrt_scale, max_size, size_scalar, alpha_scalar);
-	//  base->push_back_particle(p);
+	// Test code:
 	/*
 	   for (int i = 0; i < LOD * 4; i++)
 	   {
@@ -121,5 +115,4 @@ bool SmokeEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

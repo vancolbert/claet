@@ -381,7 +381,7 @@ void init_session(void) {
 		set_session_exp_to_current();
 		session_start_time = cur_time;
 		reconnecting = 1;
-	} else if ( disconnect_time != 0 ) {
+	} else if (disconnect_time != 0) {
 		session_start_time += (cur_time - disconnect_time);
 		disconnect_time = 0;
 	}

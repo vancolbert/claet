@@ -9,4 +9,4 @@ void init_hud_indicators(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  //__HUD_INDICATORS_H
+#endif // __HUD_INDICATORS_H

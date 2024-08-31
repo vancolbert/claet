@@ -3,9 +3,9 @@
 #include <string.h>
 #include <math.h>
 #include "platform.h"
-#ifdef  __GNUC__
+#ifdef __GNUC__
  #include <unistd.h>
-#ifdef  WINDOWS
+#ifdef WINDOWS
  #include   <process.h>
 #endif
 #endif
@@ -13,7 +13,7 @@
  #include <windows.h>
  #undef WRITE_XML
 char *win_command_line;
-#endif //WINDOWS
+#endif // WINDOWS
 #include "2d_objects.h"
 #include "3d_objects.h"
 #include "actor_scripts.h"
@@ -63,15 +63,15 @@ char *win_command_line;
 #include "weather.h"
 #include "fsaa/fsaa.h"
 #include "font.h"
-Uint32 cur_time = 0, last_time = 0;//for FPS
+Uint32 cur_time = 0, last_time = 0; // for FPS
 char nom_version[] = NOM_VERSION;
 char version_string[] = VER_STRING;
 int client_version_major = VER_MAJOR;
 int client_version_minor = VER_MINOR;
 int client_version_release = VER_RELEASE;
 int client_version_patch = VER_BUILD;
-int version_first_digit = 50;     //protocol/game version sent to server
-int version_second_digit = 75;    //45
+int version_first_digit = 50; // protocol/game version sent to server
+int version_second_digit = 75; // 45
 // peut-on afficher l'Al Manakh?
 int show_am = 0;
 int gargc;
@@ -131,19 +131,19 @@ int start_rendering() {
 	network_thread_data[1] = &done;
 	network_thread = SDL_CreateThread(get_message_from_server, network_thread_data);
 	/* Loop until done. */
-	while ( !done ) {
+	while (!done) {
 		SDL_Event event;
 		// handle SDL events
 		in_main_event_loop = 1;
-		while ( SDL_PollEvent(&event)) {
+		while (SDL_PollEvent(&event)) {
 			done = HandleEvent(&event);
 		}
 		in_main_event_loop = 0;
-		//advance the clock
+		// advance the clock
 		cur_time = SDL_GetTicks();
 		// update the approximate distance moved
 		update_session_distance();
-		//check for network data
+		// check for network data
 		if (!queue_isempty(message_queue)) {
 			message_t *message;
 			while ((message = queue_pop(message_queue)) != NULL) {
@@ -152,7 +152,7 @@ int start_rendering() {
 				free(message);
 			}
 		}
-		my_tcp_flush(my_socket);            // make sure the tcp output buffer is set
+		my_tcp_flush(my_socket); // make sure the tcp output buffer is set
 		if (have_a_map && cur_time > last_frame_and_command_update + 60) {
 			LOCK_ACTORS_LISTS();
 			next_command();
@@ -169,17 +169,17 @@ int start_rendering() {
 		if (!limit_fps || (cur_time - last_time && 1000 / (cur_time - last_time) <= limit_fps)) {
 			weather_update();
 			animate_actors();
-			//draw everything
+			// draw everything
 			draw_scene();
 			last_time = cur_time;
 		} else {
-			SDL_Delay(1);        //give up timeslice for anyone else
+			SDL_Delay(1); // give up timeslice for anyone else
 		}
-		//cache handling
+		// cache handling
 		if (cache_system) {
 			cache_system_maint();
 		}
-		//see if we need to exit
+		// see if we need to exit
 		if (exit_now) {
 			done = 1;
 			break;
@@ -194,10 +194,10 @@ int start_rendering() {
 	if (pm_log.ppl) {
 		free_pm_log();
 	}
-	//save all local data
+	// save all local data
 	save_local_data(NULL, 0);
-	destroy_sound();                // Cleans up physical elements of the sound system and the streams thread
-	clear_sound_data();             // Cleans up the config data
+	destroy_sound(); // Cleans up physical elements of the sound system and the streams thread
+	clear_sound_data(); // Cleans up the config data
 	ec_destroy_all_effects();
 	if (have_a_map) {
 		destroy_map();
@@ -255,11 +255,11 @@ void    read_command_line() {
 				check_var(gargv[i] + 2, COMMAND_LINE_LONG_VAR);
 			} else {
 				char str[200];
-				if (strchr(gargv[i], '=') != NULL) {                            //eg -u=name
+				if (strchr(gargv[i], '=') != NULL) { // eg -u=name
 					safe_snprintf(str, sizeof(str), "%s", gargv[i]);
-				} else if (i >= gargc - 1 || gargv[i + 1][0] == '-') {                  //eg -uname
+				} else if (i >= gargc - 1 || gargv[i + 1][0] == '-') { // eg -uname
 					safe_snprintf(str, sizeof(str), "%s", gargv[i]);
-				} else {                                //eg -u name
+				} else { // eg -u name
 					safe_snprintf(str, sizeof(str), "%s %s", gargv[i], gargv[i + 1]);
 				}
 				check_var(str + 1, COMMAND_LINE_SHORT_VAR);
@@ -357,7 +357,7 @@ int main(int argc, char **argv)
 		LOG_INFO("Restarting %s\n", *argv);
 		execv(*argv, argv);
 	}
-#endif  //WINDOWS
+#endif // WINDOWS
 	return 0;
 }
 #ifdef WINDOWS
@@ -373,7 +373,7 @@ static int makeargv(char *s, char *delimiters, char ***argvp) {
 	if ((t = malloc(strlen(snew) + 1)) == NULL) {
 		return -1;
 	}
-	strcpy(t, snew);        // It's fine that this isn't strncpy, since t is sizeof(snew) + 1.
+	strcpy(t, snew); // It's fine that this isn't strncpy, since t is sizeof(snew) + 1.
 	numtokens = 0;
 	if (strtok(t, delimiters) != NULL) {
 		for (numtokens = 1; strtok(NULL, delimiters) != NULL; numtokens++) {}
@@ -394,7 +394,7 @@ static int makeargv(char *s, char *delimiters, char ***argvp) {
 	*((*argvp) + numtokens) = NULL;
 	return numtokens;
 }
-//frees the char** created by makeargv
+// frees the char** created by makeargv
 static void freemakeargv(char **argv) {
 	if (argv == NULL) {
 		return;
@@ -419,14 +419,14 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {
 		ZeroMemory(&si, sizeof(si));
 		si.cb = sizeof(si);
 		ZeroMemory(&pi, sizeof(pi));
-		CreateProcess(NULL, win_command_line, NULL,                   // Process handle not inheritable.
-			      NULL,             // Thread handle not inheritable.
-			      FALSE,            // Set handle inheritance to FALSE.
+		CreateProcess(NULL, win_command_line, NULL, // Process handle not inheritable.
+			      NULL, // Thread handle not inheritable.
+			      FALSE, // Set handle inheritance to FALSE.
 			      DETACHED_PROCESS, // Keep this separate
-			      NULL,             // Use parent's environment block.
-			      NULL,             // Use parent's starting directory.
-			      &si,              // Pointer to STARTUPINFO structure.
-			      &pi);    // Pointer to PROCESS_INFORMATION structure
+			      NULL, // Use parent's environment block.
+			      NULL, // Use parent's starting directory.
+			      &si, // Pointer to STARTUPINFO structure.
+			      &pi); // Pointer to PROCESS_INFORMATION structure
 	}
 	return 0;
 }

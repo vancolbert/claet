@@ -4,10 +4,10 @@
  */
 #ifndef EFFECT_TELEPORTER_H
 #define EFFECT_TELEPORTER_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class TeleporterParticle : public Particle {
 public:
 TeleporterParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t size_scalar);
@@ -44,6 +44,5 @@ coord_t scale;
 Vec3 teleporter_color;
 std::vector< std::pair<float *, Uint64> > targets;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_TELEPORTER_H
+#endif // defined EFFECT_TELEPORTER_H

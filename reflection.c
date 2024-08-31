@@ -217,7 +217,7 @@ static __inline__ void init_depth() {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 }
-//if there is any reflecting tile, returns 1, otherwise 0
+// if there is any reflecting tile, returns 1, otherwise 0
 int find_reflection() {
 	unsigned int idx;
 	idx = main_bbox_tree->cur_intersect_type;
@@ -436,13 +436,10 @@ void display_3d_reflection() {
 		set_cur_intersect_type(main_bbox_tree, INTERSECTION_TYPE_REFLECTION);
 		calculate_reflection_frustum(water_depth_offset);
 		enable_reflection_clip_planes();
-//	draw_tile_map();
-//	display_2d_objects();
 		display_objects();
 		display_ground_objects();
 		display_actors(0, REFLECTION_RENDER_PASS);
 		display_alpha_objects();
-//	display_blended_objects();
 		set_cur_intersect_type(main_bbox_tree, cur_intersect_type);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -774,7 +771,7 @@ void draw_dungeon_sky_background() {
 	}
 	glColor3fv(color);
 	glBegin(GL_QUADS);
-	//draw the sky background
+	// draw the sky background
 	if (use_frame_buffer && (water_shader_quality > 0) && show_reflection) {
 		glVertex3i(0, 0, 0);
 		glVertex3i(0, reflection_texture_height, 0);

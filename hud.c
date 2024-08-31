@@ -20,7 +20,7 @@
 #include "interface.h"
 #include "items.h"
 #include "item_info.h"
-#include "keys.h" //Avoid problems with SHIFT, ALT, CTRL
+#include "keys.h" // Avoid problems with SHIFT, ALT, CTRL
 #include "knowledge.h"
 #include "manufacture.h"
 #include "mapwin.h"
@@ -62,7 +62,7 @@
 #define ATTACK 4
 #define USE 5
 Uint32 exp_lev[200];
-hud_interface last_interface = HUD_INTERFACE_NEW_CHAR; //Current interface (game or new character)
+hud_interface last_interface = HUD_INTERFACE_NEW_CHAR; // Current interface (game or new character)
 int show_coord = 0;
 int show_coord_2 = 0;
 int rot_boussole = 0;
@@ -109,13 +109,13 @@ int qb_action_mode = ACTION_USE;
 int show_stats_in_hud = 0;
 int show_statbars_in_hud = 0;
 int show_attr_boosted = 0;
-static int first_disp_stat = 0;                                 /* first skill that will be display */
-static int num_disp_stat = NUM_WATCH_STAT - 1;    /* number of skills to be displayed */
-static int statbar_start_y = 0;                                 /* y coord in window of top if stats bar */
-static int stat_mouse_is_over = -1;                             /* set to stat of the is mouse over that bar */
-static int mouse_over_clock = 0;                                /* 1 if mouse is over digital or analogue clock */
-static int mouse_over_compass = 0;                              /* 1 if mouse is over the compass */
-static int mouse_over_knowledge_bar = 0;                        /* 1 if mouse is over the knowledge bar */
+static int first_disp_stat = 0; /* first skill that will be display */
+static int num_disp_stat = NUM_WATCH_STAT - 1; /* number of skills to be displayed */
+static int statbar_start_y = 0; /* y coord in window of top if stats bar */
+static int stat_mouse_is_over = -1; /* set to stat of the is mouse over that bar */
+static int mouse_over_clock = 0; /* 1 if mouse is over digital or analogue clock */
+static int mouse_over_compass = 0; /* 1 if mouse is over the compass */
+static int mouse_over_knowledge_bar = 0; /* 1 if mouse is over the knowledge bar */
 static const int knowledge_bar_height = SMALL_FONT_Y_LEN + 6;
 static const int stats_bar_height = SMALL_FONT_Y_LEN;
 int confirm_quitter_fenetre = -1;
@@ -211,7 +211,7 @@ void draw_hud_interface() {
 // check to see if a mouse click was on the hud
 // used in non-standard modes
 int check_hud_interface() {
-	return click_in_windows(mouse_x, mouse_y, 0);   // temporarily here for testing
+	return click_in_windows(mouse_x, mouse_y, 0); // temporarily here for testing
 }
 // hud frame section
 float vertical_bar_u_start = (float)192 / 256;
@@ -277,21 +277,21 @@ void switch_action_mode(int *mode, int id) {
 	item_action_mode = qb_action_mode = action_mode = *mode;
 }
 void view_console_win(int *win, int id) {
-	if ( get_show_window(console_root_win) && !locked_to_console ) {
+	if (get_show_window(console_root_win) && !locked_to_console) {
 		hide_window(console_root_win);
 		show_window(game_root_win);
 		// Undo stupid quickbar hack
-		if ( !get_show_window(quickbar_win)) {
+		if (!get_show_window(quickbar_win)) {
 			show_window(quickbar_win);
 		}
-		if ( !get_show_window(quickspell_win)) {
+		if (!get_show_window(quickspell_win)) {
 			show_window(quickspell_win);
 		}
 	} else {
-		if ( get_show_window(game_root_win)) {
+		if (get_show_window(game_root_win)) {
 			hide_window(game_root_win);
 		}
-		if ( get_show_window(map_root_win)) {
+		if (get_show_window(map_root_win)) {
 			switch_from_game_map();
 			hide_window(map_root_win);
 		}
@@ -299,19 +299,19 @@ void view_console_win(int *win, int id) {
 	}
 }
 void view_map_win(int *win, int id) {
-	if ( get_show_window(map_root_win) && !locked_to_console ) {
+	if (get_show_window(map_root_win) && !locked_to_console) {
 		switch_from_game_map();
 		hide_window(map_root_win);
 		show_window(game_root_win);
 		// Undo stupid quickbar hack
-		if ( !get_show_window(quickbar_win)) {
+		if (!get_show_window(quickbar_win)) {
 			show_window(quickbar_win);
 		}
-	} else if ( switch_to_game_map() && !locked_to_console ) {
-		if ( get_show_window(game_root_win)) {
+	} else if (switch_to_game_map() && !locked_to_console) {
+		if (get_show_window(game_root_win)) {
 			hide_window(game_root_win);
 		}
-		if ( get_show_window(console_root_win)) {
+		if (get_show_window(console_root_win)) {
 			hide_window(console_root_win);
 		}
 		show_window(map_root_win);
@@ -371,7 +371,7 @@ void view_window(int *window, int id) {
 		}
 	}
 	if (*window < 0) {
-		//OK, the window has not been created yet - use the standard functions
+		// OK, the window has not been created yet - use the standard functions
 		if (window == &items_win) {
 			display_items_menu();
 		} else if (window == &sigil_win) {
@@ -498,7 +498,7 @@ void show_sized_help_coloured(const char *help_message, int x, int y, float r, f
 	}
 }
 // Stats bars in the bottom HUD .....
-int watch_this_stats[MAX_WATCH_STATS] = {NUM_WATCH_STAT - 1, 0, 0, 0, 0};  // default to only watching overall
+int watch_this_stats[MAX_WATCH_STATS] = {NUM_WATCH_STAT - 1, 0, 0, 0, 0}; // default to only watching overall
 int max_food_level = 45;
 static int exp_bar_text_len = 9.5 * SMALL_FONT_X_LEN;
 static const int stats_bar_text_len = 4.5 * SMALL_FONT_X_LEN;
@@ -680,7 +680,7 @@ static void cm_statsbar_pre_show_handler(window_info *win, int widget_id, int mx
 void init_stats_display() {
 	int num_exp = get_num_statsbar_exp();
 	int actual_num_exp = 0;
-	//create the stats bar window
+	// create the stats bar window
 	if (stats_bar_win < 0) {
 		stats_bar_win = create_window("Stats Bar", -1, 0, 0, window_height - 44, window_width - HUD_MARGIN_X, 12, ELW_TITLE_NONE | ELW_SHOW_LAST);
 		set_window_handler(stats_bar_win, ELW_HANDLER_DISPLAY, &display_stats_bar_handler);
@@ -744,7 +744,7 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 	glDisable(GL_TEXTURE_2D);
 	if (i >= 0) {
 		glBegin(GL_QUADS);
-		//draw the colored section
+		// draw the colored section
 		glColor3f(r2, g2, b2);
 		glVertex3i(x, y + 10, 0);
 		glColor3f(r, g, b);
@@ -766,7 +766,6 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 	glEnable(GL_TEXTURE_2D);
 	// handle the text
 	safe_snprintf(buf, sizeof(buf), "%d", val);
-	//glColor3f(0.8f, 0.8f, 0.8f); moved to next line
 	draw_string_small_shadowed(x - (1 + 8 * strlen(buf)) - 1, y - 2, (unsigned char *)buf, 1, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 }
 static void draw_side_stats_bar(const int x, const int y, const int baselev, const int cur_exp, const int nl_exp, size_t colour) {
@@ -779,7 +778,7 @@ static void draw_side_stats_bar(const int x, const int y, const int baselev, con
 	glDisable(GL_TEXTURE_2D);
 	if (len >= 0) {
 		glBegin(GL_QUADS);
-		//draw the colored section
+		// draw the colored section
 		glColor3fv(colours[colour][0]);
 		glVertex3i(x, y + 13, 0);
 		glColor3fv(colours[colour][1]);
@@ -858,14 +857,14 @@ int     display_stats_bar_handler(window_info *win) {
 		last_time = SDL_GetTicks();
 	}
 	over_health_bar = statbar_cursor_x > health_bar_start_x && statbar_cursor_x < health_bar_start_x + stats_bar_len;
-	//get the adjusted length
+	// get the adjusted length
 	if (!your_info.material_points.cur || !your_info.material_points.base) {
-		health_adjusted_x_len = 0;//we don't want a div by 0
+		health_adjusted_x_len = 0; // we don't want a div by 0
 	} else {
 		health_adjusted_x_len = stats_bar_len / ((float)your_info.material_points.base / (float)your_info.material_points.cur);
 	}
 	if (your_info.food_level <= 0) {
-		food_adjusted_x_len = 0;//we don't want a div by 0
+		food_adjusted_x_len = 0; // we don't want a div by 0
 	} else {
 		food_adjusted_x_len = stats_bar_len / ((float)max_food_level / (float)your_info.food_level);
 	}
@@ -873,20 +872,20 @@ int     display_stats_bar_handler(window_info *win) {
 		food_adjusted_x_len = stats_bar_len;
 	}
 	if (!your_info.ethereal_points.cur || !your_info.ethereal_points.base) {
-		mana_adjusted_x_len = 0;//we don't want a div by 0
+		mana_adjusted_x_len = 0; // we don't want a div by 0
 	} else {
 		mana_adjusted_x_len = stats_bar_len / ((float)your_info.ethereal_points.base / (float)your_info.ethereal_points.cur);
 	}
 	if (!your_info.carry_capacity.cur || !your_info.carry_capacity.base) {
-		load_adjusted_x_len = 0;//we don't want a div by 0
+		load_adjusted_x_len = 0; // we don't want a div by 0
 	} else {
 		load_adjusted_x_len = stats_bar_len / ((float)your_info.carry_capacity.base / (float)your_info.carry_capacity.cur);
 	}
 	draw_stats_bar(health_bar_start_x, health_bar_start_y, your_info.material_points.cur, health_adjusted_x_len, 1.0f, 0.2f, 0.2f, 0.5f, 0.2f, 0.2f);
 	if (your_info.food_level <= 45) {
-		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 1.0f, 0.2f, 0.5f, 0.5f, 0.2f); //yellow
+		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 1.0f, 0.2f, 0.5f, 0.5f, 0.2f); // yellow
 	} else {
-		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 0.5f, 0.0f, 0.7f, 0.3f, 0.0f); //orange
+		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 0.5f, 0.0f, 0.7f, 0.3f, 0.0f); // orange
 	}
 	draw_stats_bar(mana_bar_start_x, mana_bar_start_y, your_info.ethereal_points.cur, mana_adjusted_x_len, 0.2f, 0.2f, 1.0f, 0.2f, 0.2f, 0.5f);
 	draw_stats_bar(load_bar_start_x, load_bar_start_y, your_info.carry_capacity.base - your_info.carry_capacity.cur, load_adjusted_x_len, 0.6f, 0.4f, 0.4f, 0.4f, 0.2f, 0.2f);
@@ -902,7 +901,7 @@ int     display_stats_bar_handler(window_info *win) {
 			show_help((char *)attributes.carry_capacity.name, load_bar_start_x + stats_bar_len + 10, -3);
 		}
 	}
-	//Ajout stats sur le HUD
+	// Ajout stats sur le HUD
 	if (show_attr_boosted) {
 		unsigned char force_str[10];
 		unsigned char agilite_str[10];
@@ -925,222 +924,222 @@ int     display_stats_bar_handler(window_info *win) {
 			r_stat = 0.2f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert
+		} // vert
 		else if (your_info.phy.cur - your_info.phy.base == 4) {
 			r_stat = 0.5f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert jauni
+		} // vert jauni
 		else if (your_info.phy.cur - your_info.phy.base == 3) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //jaune
+		} // jaune
 		else if (your_info.phy.cur - your_info.phy.base == 2) {
 			r_stat = 1.0f;
 			g_stat = 0.5f;
 			b_stat = 0.0f;
-		}                                                                                          //orange
+		} // orange
 		else if (your_info.phy.cur - your_info.phy.base == 1) {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		else if (your_info.phy.cur - your_info.phy.base == 0) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 1.0f;
-		}                                                                                          //blanc
+		} // blanc
 		else {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                         //red
+		} // red
 		draw_string_small_shadowed(xOffsetBuff + 10, food_bar_start_y + 15, force_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
 		xOffsetBuff += 50;
 		if (your_info.coo.cur - your_info.coo.base >= 5) {
 			r_stat = 0.2f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert
+		} // vert
 		else if (your_info.coo.cur - your_info.coo.base == 4) {
 			r_stat = 0.5f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert jauni
+		} // vert jauni
 		else if (your_info.coo.cur - your_info.coo.base == 3) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //jaune
+		} // jaune
 		else if (your_info.coo.cur - your_info.coo.base == 2) {
 			r_stat = 1.0f;
 			g_stat = 0.5f;
 			b_stat = 0.0f;
-		}                                                                                          //orange
+		} // orange
 		else if (your_info.coo.cur - your_info.coo.base == 1) {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		else if (your_info.coo.cur - your_info.coo.base == 0) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 1.0f;
-		}                                                                                          //blanc
+		} // blanc
 		else {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		draw_string_small_shadowed(xOffsetBuff + 10, food_bar_start_y + 15, agilite_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
 		xOffsetBuff += 50;
 		if (your_info.rea.cur - your_info.rea.base >= 5) {
 			r_stat = 0.2f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert
+		} // vert
 		else if (your_info.rea.cur - your_info.rea.base == 4) {
 			r_stat = 0.5f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert jauni
+		} // vert jauni
 		else if (your_info.rea.cur - your_info.rea.base == 3) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //jaune
+		} // jaune
 		else if (your_info.rea.cur - your_info.rea.base == 2) {
 			r_stat = 1.0f;
 			g_stat = 0.5f;
 			b_stat = 0.0f;
-		}                                                                                          //orange
+		} // orange
 		else if (your_info.rea.cur - your_info.rea.base == 1) {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		else if (your_info.rea.cur - your_info.rea.base == 0) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 1.0f;
-		}                                                                                          //blanc
+		} // blanc
 		else {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		draw_string_small_shadowed(xOffsetBuff + 10, food_bar_start_y + 15, intel_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
 		xOffsetBuff = window_height;
 		if (your_info.wil.cur - your_info.wil.base >= 5) {
 			r_stat = 0.2f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert
+		} // vert
 		else if (your_info.wil.cur - your_info.wil.base == 4) {
 			r_stat = 0.5f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert jauni
+		} // vert jauni
 		else if (your_info.wil.cur - your_info.wil.base == 3) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //jaune
+		} // jaune
 		else if (your_info.wil.cur - your_info.wil.base == 2) {
 			r_stat = 1.0f;
 			g_stat = 0.5f;
 			b_stat = 0.0f;
-		}                                                                                          //orange
+		} // orange
 		else if (your_info.wil.cur - your_info.wil.base == 1) {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		else if (your_info.wil.cur - your_info.wil.base == 0) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 1.0f;
-		}                                                                                          //blanc
+		} // blanc
 		else {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		draw_string_small_shadowed(xOffsetBuff + 10, food_bar_start_y + 27, volonte_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
 		xOffsetBuff += 50;
 		if (your_info.ins.cur - your_info.ins.base >= 5) {
 			r_stat = 0.2f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert
+		} // vert
 		else if (your_info.ins.cur - your_info.ins.base == 4) {
 			r_stat = 0.5f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert jauni
+		} // vert jauni
 		else if (your_info.ins.cur - your_info.ins.base == 3) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //jaune
+		} // jaune
 		else if (your_info.ins.cur - your_info.ins.base == 2) {
 			r_stat = 1.0f;
 			g_stat = 0.5f;
 			b_stat = 0.0f;
-		}                                                                                          //orange
+		} // orange
 		else if (your_info.ins.cur - your_info.ins.base == 1) {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		else if (your_info.ins.cur - your_info.ins.base == 0) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 1.0f;
-		}                                                                                          //blanc
+		} // blanc
 		else {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		draw_string_small_shadowed(xOffsetBuff + 10, food_bar_start_y + 27, instinct_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
 		xOffsetBuff += 50;
 		if (your_info.vit.cur - your_info.vit.base >= 5) {
 			r_stat = 0.2f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert
+		} // vert
 		else if (your_info.vit.cur - your_info.vit.base == 4) {
 			r_stat = 0.5f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //vert jauni
+		} // vert jauni
 		else if (your_info.vit.cur - your_info.vit.base == 3) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 0.2f;
-		}                                                                                          //jaune
+		} // jaune
 		else if (your_info.vit.cur - your_info.vit.base == 2) {
 			r_stat = 1.0f;
 			g_stat = 0.5f;
 			b_stat = 0.0f;
-		}                                                                                          //orange
+		} // orange
 		else if (your_info.vit.cur - your_info.vit.base == 1) {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		else if (your_info.vit.cur - your_info.vit.base == 0) {
 			r_stat = 1.0f;
 			g_stat = 1.0f;
 			b_stat = 1.0f;
-		}                                                                                          //blanc
+		} // blanc
 		else {
 			r_stat = 1.0f;
 			g_stat = 0.2f;
 			b_stat = 0.2f;
-		}                                                                                          //red
+		} // red
 		draw_string_small_shadowed(xOffsetBuff + 10, food_bar_start_y + 27, aura_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
 	}
 	if (over_health_bar) {
@@ -1200,7 +1199,7 @@ static void context_hud_pre_show_handler(window_info *win, int widget_id, int mx
 void init_misc_display(hud_interface type) {
 	int y_len = 128 + DEFAULT_FONT_Y_LEN + knowledge_bar_height + get_height_of_timer() + (NUM_WATCH_STAT - 1) * stats_bar_height;
 	int i;
-	//create the misc window
+	// create the misc window
 	if (misc_win < 0) {
 		misc_win = create_window("Misc", -1, 0, window_width - HUD_MARGIN_X, window_height - y_len, HUD_MARGIN_X, y_len, ELW_TITLE_NONE | ELW_SHOW_LAST);
 		set_window_handler(misc_win, ELW_HANDLER_DISPLAY, &display_misc_handler);
@@ -1295,14 +1294,14 @@ void change_max_nutri(int max) {
 }
 int display_misc_handler(window_info *win) {
 	int base_y_start = win->len_y - (view_analog_clock?128:64) - (view_digital_clock?DEFAULT_FONT_Y_LEN:0);
-	char str[40];   // one extra incase the length of the day ever changes
+	char str[40]; // one extra incase the length of the day ever changes
 	int coord_y = 285;
 	bind_texture(hud_text);
 	// allow for transparency
-	glEnable(GL_ALPHA_TEST);//enable alpha filtering, so we have some alpha key
+	glEnable(GL_ALPHA_TEST); // enable alpha filtering, so we have some alpha key
 	glAlphaFunc(GL_GREATER, 0.09f);
-	//draw the compass
-	//@tosh : On fait tourner la boussole plutôt que l'aiguille.
+	// draw the compass
+	// @tosh : On fait tourner la boussole plutôt que l'aiguille.
 	if (rot_boussole) {
 		glPushMatrix();
 		glTranslatef(32, win->len_y - 32, 0);
@@ -1317,12 +1316,12 @@ int display_misc_handler(window_info *win) {
 		draw_2d_thing(compass_u_start, compass_v_start, compass_u_end, compass_v_end, 0, win->len_y - 64, 64, win->len_y);
 	}
 	if (view_analog_clock > 0) {
-		//draw the clock
+		// draw the clock
 		draw_2d_thing(clock_u_start, clock_v_start, clock_u_end, clock_v_end, 0, win->len_y - 128, 64, win->len_y - 64);
 	}
 	glEnd();
-	//draw the compass needle
-	//@tosh : L'aiguille ne tourne plus
+	// draw the compass needle
+	// @tosh : L'aiguille ne tourne plus
 	if (rot_boussole) {
 		glBegin(GL_QUADS);
 		draw_2d_thing(needle_u_start, needle_v_start, needle_u_end, needle_v_end, 32 - 5, win->len_y - 60, 32 + 5, win->len_y - 4);
@@ -1337,7 +1336,7 @@ int display_misc_handler(window_info *win) {
 		glPopMatrix();
 	}
 	if (view_analog_clock > 0) {
-		//draw the clock needle
+		// draw the clock needle
 		glAlphaFunc(GL_GREATER, 0.05f);
 		glPushMatrix();
 		glTranslatef(32, win->len_y - 96, 0);
@@ -1348,10 +1347,9 @@ int display_misc_handler(window_info *win) {
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
 	}
-	//Digital Clock
+	// Digital Clock
 	if (view_digital_clock > 0) {
 		int x;
-		//glColor3f(0.77f, 0.57f, 0.39f); // useless
 		if (show_game_seconds) {
 			safe_snprintf(str, sizeof(str), "%1d:%02d:%02d", real_game_minute / 60, real_game_minute % 60, real_game_second);
 			draw_string_shadowed_width(5, 4 + base_y_start, (unsigned char *)str, win->len_x - 5, 1, 0.77f, 0.57f, 0.39f, 0.0f, 0.0f, 0.0f);
@@ -1457,7 +1455,7 @@ int display_misc_handler(window_info *win) {
 	if (show_coord_2) {
 		char str[9];
 		actor *me = get_actor_ptr_from_id(yourself);
-		if ( me != NULL) {
+		if (me != NULL) {
 			glColor3f(0.0f, 1.0f, 1.0f);
 			snprintf(str, sizeof(str), "%3i,%3i", (int)(me->x_tile_pos), (int)(me->y_tile_pos));
 			draw_string_small_shadowed(5, coord_y - 12, (unsigned char *)str, 1, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
@@ -1521,7 +1519,7 @@ int     click_misc_handler(window_info *win, int mx, int my, Uint32 flags) {
 	if (flags & ELW_CTRL) {
 		return 0;
 	}
-	//check to see if we clicked on the clock
+	// check to see if we clicked on the clock
 	if (view_digital_clock > 0) {
 		clockheight += DEFAULT_FONT_Y_LEN;
 	}
@@ -1541,7 +1539,7 @@ int     click_misc_handler(window_info *win, int mx, int my, Uint32 flags) {
 		send_input_text_line("#recherches", 11);
 		return 1;
 	}
-	//check to see if we clicked on the compass
+	// check to see if we clicked on the compass
 	if (my > win->len_y - 64 && my < win->len_y) {
 		unsigned char protocol_name;
 		do_click_sound();
@@ -1552,7 +1550,7 @@ int     click_misc_handler(window_info *win, int mx, int my, Uint32 flags) {
 		my_tcp_send(my_socket, &protocol_name, 1);
 		return 1;
 	}
-	//check to see if we clicked on the stats
+	// check to see if we clicked on the stats
 	if (in_stats_bar) {
 		handle_stats_selection(first_disp_stat + ((my - statbar_start_y) / stats_bar_height) + 1, flags);
 		return 1;

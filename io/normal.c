@@ -22,41 +22,32 @@
         float w;
         Uint32 xbits, ybits;
         Uint16 result;
-
         result = 0;
-
         if (tmp[0] < 0.0f)
         {
                 result |= XSIGN_MASK;
                 tmp[0] = -tmp[0];
         }
-
         if (tmp[1] < 0.0f)
         {
                 result |= YSIGN_MASK;
                 tmp[1] = -tmp[1];
         }
-
         if (tmp[2] < 0.0f)
         {
                 result |= ZSIGN_MASK;
                 tmp[2] = -tmp[2];
         }
-
         // project the normal onto the plane that goes through
         // X0=(1,0,0),Y0=(0,1,0),Z0=(0,0,1).
-
         // on that plane we choose an (projective!) coordinate system
         // such that X0->(0,0), Y0->(126,0), Z0->(0,126),(0,0,0)->Infinity
-
         // a little slower... old pack was 4 multiplies and 2 adds.
         // This is 2 multiplies, 2 adds, and a divide....
         w = 126.0f / (tmp[0] + tmp[1] + tmp[2]);
         xbits = (Uint32)(tmp[0] * w);
         ybits = (Uint32)(tmp[1] * w);
-
         // Now we can be sure that 0<=xp<=126, 0<=yp<=126, 0<=xp+yp<=126
-
         // however for the sampling we want to transform this triangle
         // into a rectangle.
         if (xbits >= 64)
@@ -64,12 +55,10 @@
                 xbits = 127 - xbits;
                 ybits = 127 - ybits;
         }
-
         // now we that have xp in the range (0,127) and yp in the range (0,63),
         // we can pack all the bits together
         result |= xbits << 7;
         result |= ybits;
-
         return result;
    }*/
 void uncompress_normal(const Uint16 value, float *normal) {

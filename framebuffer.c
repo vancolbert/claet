@@ -288,7 +288,7 @@ void make_color_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_dept
 		CHECK_GL_ERRORS();
 		CHECK_FBO_ERRORS();
 	}
-	//Turn off our frame buffer object
+	// Turn off our frame buffer object
 	ELglBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_GL_ERRORS();
@@ -324,8 +324,8 @@ void make_depth_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_text
 		return;
 	}
 	// create objects
-	ELglGenFramebuffersEXT(1, fbo);// frame buffer
-	glGenTextures(1, fbo_texture);// texture
+	ELglGenFramebuffersEXT(1, fbo); // frame buffer
+	glGenTextures(1, fbo_texture); // texture
 	glGetIntegerv(GL_DEPTH_BITS, &depth_bits);
 	glBindTexture(GL_TEXTURE_2D, *fbo_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -343,7 +343,7 @@ void make_depth_framebuffer(int width, int height, GLuint *fbo, GLuint *fbo_text
 	glReadBuffer(GL_NONE);
 	CHECK_GL_ERRORS();
 	CHECK_FBO_ERRORS();
-	//Turn off our frame buffer object
+	// Turn off our frame buffer object
 	ELglBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_GL_ERRORS();

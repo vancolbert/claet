@@ -20,7 +20,7 @@ int my_UTF8Toisolat1(char **dest, size_t *lu, char **src, size_t *len);
 char *trim(char *str) {
 	char *ibuf, *obuf;
 	if (str) {
-		for (ibuf = obuf = str; *ibuf; ) {
+		for (ibuf = obuf = str; *ibuf;) {
 			while (*ibuf && (isspace(*ibuf))) {
 				ibuf++;
 			}
@@ -38,7 +38,7 @@ char *trim(char *str) {
 xmlChar *xmlTrim(xmlChar *str) {
 	xmlChar *ibuf, *obuf;
 	if (str) {
-		for (ibuf = obuf = str; *ibuf; ) {
+		for (ibuf = obuf = str; *ibuf;) {
 			while (*ibuf && (isspace(*ibuf))) {
 				ibuf++;
 			}
@@ -169,10 +169,10 @@ Sint32 my_strncompare(const char *dest, const char *src, Sint32 len) {
 		ch1 = src[i];
 		ch2 = dest[i];
 		if (ch1 >= 65 && ch1 <= 90) {
-			ch1 += 32;                    //make lowercase
+			ch1 += 32; // make lowercase
 		}
 		if (ch2 >= 65 && ch2 <= 90) {
-			ch2 += 32;                    //make lowercase
+			ch2 += 32; // make lowercase
 		}
 		if (ch1 != ch2) {
 			break;
@@ -206,12 +206,12 @@ Sint32 my_isupper(const char *src, int len) {
 			alpha++;
 		}
 		if ((isdigit((unsigned char)*src) && alpha < len / 2) || *src != toupper(*src)) {
-			return 0;                                                                 //at least one lower
+			return 0; // at least one lower
 		}
 		src++;
 		len--;
 	}
-	return 1;       // is all upper or all num
+	return 1; // is all upper or all num
 }
 char *my_tolower(char *src) {
 	char *dest = src;
@@ -245,11 +245,11 @@ char **get_lines_dialogue(char *str, int chars_per_line) {
 				}
 				cur[i] = str[i];
 			}
-			if (i >= chars_per_line) {//Wrap it
+			if (i >= chars_per_line) { // Wrap it
 				j = i;
-				//go back to the last space
+				// go back to the last space
 				while (i) {
-					if ( i + 1 <= j) {
+					if (i + 1 <= j) {
 						if (str[i] == '/' || str[i] == '-' || str[i] == '?' || str[i] == '!' || (str[i] == ' ' && (str[i + 1] != ':' && str[i + 1] != ';' && str[i + 1] != '?' && str[i + 1] != '!' && str[i + 1] != '"')) || str[i] == '\n' || str[i] == '\r') {
 							break;
 						}
@@ -261,7 +261,7 @@ char **get_lines_dialogue(char *str, int chars_per_line) {
 					i--;
 				}
 				if (!i) {
-					//Force a break then...
+					// Force a break then...
 					i = chars_per_line;
 				}
 			}
@@ -269,7 +269,7 @@ char **get_lines_dialogue(char *str, int chars_per_line) {
 			cur[i] = 0;
 		}
 		if (my_str) {
-			my_str[lines] = NULL;//Used to get the bounds for displaying each line
+			my_str[lines] = NULL; // Used to get the bounds for displaying each line
 		}
 	}
 	return my_str;
@@ -294,11 +294,11 @@ char **get_lines(char *str, int chars_per_line) {
 				}
 				cur[i] = str[i];
 			}
-			if (i >= chars_per_line) {//Wrap it
+			if (i >= chars_per_line) { // Wrap it
 				j = i;
-				//go back to the last space
+				// go back to the last space
 				while (i) {
-					if ( i + 1 <= j) {
+					if (i + 1 <= j) {
 						if (str[i] == '/' || str[i] == '-' || str[i] == '?' || str[i] == '!' || (str[i] == ' ' && (str[i + 1] != ':' && str[i + 1] != ';' && str[i + 1] != '?' && str[i + 1] != '!' && str[i + 1] != '"')) || str[i] == '\n' || str[i] == '\r') {
 							break;
 						}
@@ -315,7 +315,7 @@ char **get_lines(char *str, int chars_per_line) {
 						str++;
 					}
 				} else {
-					//Force a break then...
+					// Force a break then...
 					i = chars_per_line;
 				}
 			}
@@ -323,7 +323,7 @@ char **get_lines(char *str, int chars_per_line) {
 			cur[i] = 0;
 		}
 		if (my_str) {
-			my_str[lines] = NULL;//Used to get the bounds for displaying each line
+			my_str[lines] = NULL; // Used to get the bounds for displaying each line
 		}
 	}
 	return my_str;
@@ -589,7 +589,7 @@ char *substitute_char_with_string(const char *str, char **out_str, char to_sub, 
 	alloc_len = strlen(str) + amp_count * (strlen(with_sub) - 1) + 1;
 	*out_str = (char *)realloc(*out_str, alloc_len);
 	**out_str = '\0';
-	for (start_ptr = str; (end_ptr = strchr(start_ptr, to_sub)) != NULL; ) {
+	for (start_ptr = str; (end_ptr = strchr(start_ptr, to_sub)) != NULL;) {
 		while (start_ptr < end_ptr) {
 			(*out_str)[out_len++] = *start_ptr++;
 		}

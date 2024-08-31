@@ -13,12 +13,12 @@
 int afk = 0;
 int last_action_time = 0;
 int afk_time = DEFAULT_AFK_MINUTES * 60000;
-int afk_time_conf = DEFAULT_AFK_MINUTES; //For elconfig window
+int afk_time_conf = DEFAULT_AFK_MINUTES; // For elconfig window
 char afk_message[MAX_TEXT_MESSAGE_LENGTH] = {0};
 char afk_title[101];
 int afk_local = 0;
 struct pm_struct pm_log;
-void print_return_message(void);    /* forward declaration */
+void print_return_message(void); /* forward declaration */
 void free_pm_log() {
 	int i;
 	for (; --pm_log.ppl >= 0;) {
@@ -53,7 +53,7 @@ void go_ifk() {
 	afk = 0;
 }
 void check_afk_state(void) {
-	//AFK?
+	// AFK?
 	if (!disconnected && afk_time) {
 		if (cur_time - last_action_time > afk_time) {
 			if (!afk) {
@@ -134,7 +134,7 @@ void add_message_to_pm_log(char *message, int len, Uint8 channel) {
 	char last_msg_from[32];
 	int last_msg_len;
 	int z;
-	char mymsg[512]; //, *msg_pointer;
+	char mymsg[512]; // , *msg_pointer;
 	safe_strncpy(mymsg, message, sizeof(mymsg));
 	if (channel == CHAT_LOCAL) {
 		char *msg_pointer;
@@ -150,7 +150,6 @@ void add_message_to_pm_log(char *message, int len, Uint8 channel) {
 		safe_strncpy(last_msg_from, mymsg, sizeof(last_msg_from));
 		safe_strncpy(mymsg, msg_pointer + 2, sizeof(mymsg));
 	} else {
-		// *mymsg = message;
 		safe_strncpy(last_msg_from, last_pm_from, sizeof(last_msg_from));
 	}
 	last_msg_len = strlen(last_msg_from);
@@ -189,7 +188,7 @@ int is_talking_about_me(const char *server_msg, int len, char everywhere) {
 		return 0;
 	}
 	if (!everywhere && (server_msg[0] == '[' || server_msg[0] == '#')) {
-		return 0; //Only do local chat
+		return 0; // Only do local chat
 	}
 	if (nom_change == 1) {
 		return 0;
@@ -199,7 +198,7 @@ int is_talking_about_me(const char *server_msg, int len, char everywhere) {
 	while (msg[a] && msg[a] != ':' && is_printable(msg[a])) {
 		a++;
 	}
-	//We do need the name of ourselves...
+	// We do need the name of ourselves...
 	while (a < 199 && msg[a] != '\0') {
 		if ((msg[a] == ' ' || (is_color(msg[a]))) && !my_namecmp(msg + 1 + a)) {
 			return 1;
@@ -218,7 +217,6 @@ void send_afk_message(const char *server_msg, int len, Uint8 channel) {
 		safe_snprintf((char *)sendtext, sizeof(sendtext), "%c%s %s", SEND_PM, last_pm_from, afk_message);
 	} else {
 		int i, j;
-		//char *name = (char *)calloc(32, sizeof (char));
 		char name[32] = {0};
 		// Copy the name. This ought to work for both local chat and
 		// trade attempts

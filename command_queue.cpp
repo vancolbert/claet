@@ -1,19 +1,14 @@
 /*
    Queues #commands: handles the muti-command line format and input of parameters.
-
    Extracted from user_menu.cpp so that others can create queues.
-
    Each Line object has two or more fields, the field separator is "||". The
    first field is the text tag, the remaining field or fields are the
    associated commands.
-
    Commands can prompt for user input. If the command contains text inside "<>",
    e.g. "some text <more text> some other text" then the text inside the "<>" will
    be used as a prompt and the "<...>" replaced by the text entered by the user.
    You can include as many input prompts as you wish.
-
    pjbroad/bluap January 2013
-
  */
 /* To Do:
         - block use of #suicide #reset #killme #change_pass - may be store in file
@@ -31,10 +26,8 @@
 #include "translate.h"
 #include "command_queue.hpp"
 namespace CommandQueue {
-//
-//	Construct a command object from a command string.  Parsing for
-//	input fields and splitting into text/input sections.
-//
+// Construct a command object from a command string.  Parsing for
+// input fields and splitting into text/input sections.
 Command::Command(const std::string &command_text) {
 	std::string::size_type from_index = 0;
 	std::string::size_type to_index = 0;
@@ -68,11 +61,9 @@ Command::Command(const std::string &command_text) {
 	if (text_segments.empty() && param_prompts.empty()) {
 		invalid_command = true;
 	}
-}         // end Command::Command()
-//
-//	Given the paramters, contruct the command to issue from
-//	the text sections and parameter values.
-//
+} // end Command::Command()
+// Given the paramters, contruct the command to issue from
+// the text sections and parameter values.
 void Command::action(const std::vector<std::string> &params) const {
 	// log to the user an invalid command, formatting error
 	if (invalid_command) {
@@ -96,9 +87,7 @@ void Command::action(const std::vector<std::string> &params) const {
 	safe_strncpy(temp, command_text.str().c_str(), command_len);
 	parse_input(temp, strlen(temp));
 }
-//
-//	Echo the command to the console, a menu window option
-//
+// Echo the command to the console, a menu window option
 void Command::echo(void) const {
 	// append command text + parameter + text + paramter e.t.c.
 	std::ostringstream command_text;
@@ -117,18 +106,14 @@ void Command::echo(void) const {
 		LOG_TO_CONSOLE(c_red1, um_invalid_command_str);
 	}
 }
-//
-//	Initialise the command queue
-//
+// Initialise the command queue
 Queue::Queue(void) : last_time(0) {
 	init_ipu(&ipu, -1, 300, 100, MAX_TEXT_MESSAGE_LENGTH, 3, cancel_handler, input_handler);
 	ipu.x = (window_width - ipu.popup_x_len) / 2;
 	ipu.y = (window_height - ipu.popup_y_len) / 2;
 	ipu.data = static_cast<void *>(this);
 }
-//
-//	If the command queue is not empty, process the next command.
-//
+// If the command queue is not empty, process the next command.
 void Queue::process(bool just_echo) {
 	// if required, print all the commands to the console emptying the queue
 	while (just_echo && !commands.empty()) {
@@ -159,9 +144,7 @@ void Queue::process(bool just_echo) {
 	params.clear();
 	last_time = curr_time;
 }
-//
-//	The input popup window cancel callback
-//
+// The input popup window cancel callback
 void Queue::cancel(void) {
 	if (commands.empty()) {
 		return;
@@ -171,16 +154,12 @@ void Queue::cancel(void) {
 	}
 	params.clear();
 }
-//
-//	If the user menu window is closed, clear the queue
-//
+// If the user menu window is closed, clear the queue
 void Queue::clear(void) {
 	cancel();
 	hide_window(ipu.popup_win);
 }
-//
-//	Set the delay between executing commands on a single user menu line
-//
+// Set the delay between executing commands on a single user menu line
 void Queue::set_wait_time_ms(Uint32 time_ms) {
 	if (time_ms > min_wait_time_ms) {
 		wait_time_ms = time_ms;
@@ -188,12 +167,10 @@ void Queue::set_wait_time_ms(Uint32 time_ms) {
 		wait_time_ms = min_wait_time_ms;
 	}
 }
-//	protect the server - the minimum wait time, in milli-seconds, between executing commands
+// protect the server - the minimum wait time, in milli-seconds, between executing commands
 const Uint32 Queue::min_wait_time_ms = 500;
 Uint32 Queue::wait_time_ms = Queue::min_wait_time_ms;
-//
 // construct a menu line from a text string
-//
 Line::Line(const std::string &line_text) {
 	std::string::size_type from_index = 0;
 	std::string::size_type to_index = 0;
@@ -226,19 +203,15 @@ Line::Line(const std::string &line_text) {
 	for (size_t i = 1; i < fields.size(); i++) {
 		command_list.push_back(Command(fields[i]));
 	}
-}         // end Line::Line()
-//
-//	action the selected menu options
-//
+} // end Line::Line()
+// action the selected menu options
 void Line::action(Queue &cq) const {
 	for (size_t i = 0; i < command_list.size(); i++) {
 		cq.add(command_list[i]);
 	}
 }
 } // end CommandQueue namespace
-//
-//	External Interface functions
-//
+// External Interface functions
 extern "C"
 {
 void set_command_queue_wait_time_ms(Uint32 wait_time_ms) {

@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_summon.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 OuterSummonParticle::OuterSummonParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, const Uint16 _LOD) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 _size * (0.2 + randcoord())) {
@@ -24,7 +24,7 @@ bool OuterSummonParticle::idle(const Uint64 delta_t) {
 	if (alpha < 0.03) {
 		return false;
 	}
-	if (!pos.is_valid()) {       // Outer summon particles are at risk for running off to infinity.
+	if (!pos.is_valid()) { // Outer summon particles are at risk for running off to infinity.
 		return false;
 	}
 	const alpha_t scalar = std::pow(0.5f, (float)delta_t / 100000);
@@ -53,7 +53,7 @@ bool InnerSummonParticle::idle(const Uint64 delta_t) {
 	if (effect->recall) {
 		return false;
 	}
-	if (!pos.is_valid()) {       // Outer summon particles are at risk for running off to infinity.
+	if (!pos.is_valid()) { // Outer summon particles are at risk for running off to infinity.
 		return false;
 	}
 	if (state == 0) {
@@ -205,7 +205,6 @@ SummonEffect::SummonEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const Summo
 		outer_spawner->ifs_elements.push_back(new IFSLinearElement(Vec3(0.7, 0.0, 0.8), 0.2));
 		outer_spawner->ifs_elements.push_back(new IFSLinearElement(Vec3(-0.7, 0.0, -0.8), 0.3));
 		outer_spawner->ifs_elements.push_back(new IFS2DSwirlElement(0.5));
-		//      outer_spawner->ifs_elements.push_back(new IFSSinusoidalElement(2.5, Vec3(1.3, 0.0, 2.3), Vec3(0.88, 0.0, 0.93), Vec3(1.0, 0.0, 1.0)));
 		outer_spawner->ifs_elements.push_back(new IFSRingElement(0.5, Vec3(0.0, 0.0, 0.0), Vec3(1.0, 1e6, 1.0)));
 		break;
 	case WOLF:
@@ -511,7 +510,7 @@ SummonEffect::SummonEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const Summo
 		break;
 	}
 	outer_alpha = 1.0;
-	LOD = 100;         // Force refresh
+	LOD = 100; // Force refresh
 	request_LOD((float)base->last_forced_LOD);
 	inner_color[0] = outer_color[0];
 	inner_color[1] = outer_color[1];
@@ -823,5 +822,4 @@ bool SummonEffect::idle(const Uint64 usec) {
 	gravity_center.y += usec / 10000000.0;
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

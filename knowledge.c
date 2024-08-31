@@ -50,7 +50,7 @@ const char *noms_categories[] = {
 	"Inconnue"
 };
 typedef struct {
-	Uint8 id;    // type de catégorie dans les connaissances
+	Uint8 id; // type de catégorie dans les connaissances
 	char nom[100];
 	Uint8 mouse_over;
 	Uint8 click;
@@ -59,11 +59,11 @@ typedef struct {
 } categorie;
 #define MAX_CATEGORIES 30
 categorie categories[MAX_CATEGORIES]; // liste des catégories
-int nb_categories = 0;       // nombre de catégories à afficher (= max pos - 1)
+int nb_categories = 0; // nombre de catégories à afficher (= max pos - 1)
 int categorie_courante = -1; // catégorie sélectionnée pour affichage des connaissances
-int nb_liste_courante = 0;   // nombre de connaissances dans la liste courante
+int nb_liste_courante = 0; // nombre de connaissances dans la liste courante
 knowledge liste_courante[KNOWLEDGE_LIST_SIZE]; // connaissances de la catégorie courante
-int separation = 133;        // aligné avec l'onglet pour faire joli...
+int separation = 133; // aligné avec l'onglet pour faire joli...
 int saut_ligne = 13;
 void check_book_known() {
 	static Uint16 last_checked_book = -1;
@@ -231,7 +231,7 @@ int display_knowledge_handler(window_info *win) {
 	glVertex3i(win->len_x, 200, 0);
 	glVertex3i(0, 300, 0);
 	glVertex3i(win->len_x, 300, 0);
-	//progress bar
+	// progress bar
 	glVertex3i(445, 315, 0);
 	glVertex3i(570, 315, 0);
 	glVertex3i(445, 335, 0);
@@ -242,7 +242,7 @@ int display_knowledge_handler(window_info *win) {
 	glVertex3i(570, 335, 0);
 	glEnd();
 	glBegin(GL_QUADS);
-	//progress bar
+	// progress bar
 	glColor3f(0.40f, 0.40f, 1.00f);
 	glVertex3i(446, 316, 0);
 	glVertex3i(445 + progress, 316, 0);
@@ -252,7 +252,7 @@ int display_knowledge_handler(window_info *win) {
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
-	//draw text
+	// draw text
 	draw_string_small(4, 210, (unsigned char *)knowledge_string, 4);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	draw_string_small(10, 320, (unsigned char *)researching_str, 1);
@@ -437,7 +437,7 @@ void get_new_knowledge(Uint16 idx) {
 		}
 	}
 	if (idx_connaissance == knowledge_count) {
-		return;                                  // connaissance non trouvée !
+		return; // connaissance non trouvée !
 	}
 	knowledge_list[idx_connaissance].present = 1;
 	// mise à jour du compteur de connaissances lues dans la catégorie
@@ -447,7 +447,7 @@ void get_new_knowledge(Uint16 idx) {
 		}
 	}
 	if (idx_categorie == nb_categories) {
-		return;                             // catégorie non trouvée !
+		return; // catégorie non trouvée !
 	}
 	categories[idx_categorie].nbpresent++; // à moins qu'un recomptage complet soit plus sûr ?
 	// changement de l'état si nécessaire dans la liste courante
@@ -458,7 +458,7 @@ void get_new_knowledge(Uint16 idx) {
 			}
 		}
 		if (idx_connaissance == nb_liste_courante) {
-			return;                                    // connaissance non trouvée !
+			return; // connaissance non trouvée !
 		}
 		liste_courante[idx_connaissance].present = 1;
 	}

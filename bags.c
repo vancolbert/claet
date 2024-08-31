@@ -40,8 +40,6 @@ static int mouseover_ground_item_pos = -1;
 int view_ground_items = 0;
 // forward declarations
 void draw_pick_up_menu();
-// float get_bag_offset_x(float pos_x, float pos_y, int bag_id, int map_x, int map_y);
-// float get_bag_offset_y(float pos_x, float pos_y, int bag_id, int map_x, int map_y);
 float get_bag_rotation(float pos_x, float pos_y, int bag_id, int map_x, int map_y);
 float get_bag_tilt(float pos_x, float pos_y, int bag_id, int map_x, int map_y);
 void strap_word(char *in, char *out) {
@@ -74,9 +72,7 @@ void strap_word(char *in, char *out) {
         // normalize them to -1 ... +1
         // then divide by 16 to normalize the return value to -0.0625 ... + 0.0625
         // (a tile is 0.5 wide)
-        return (sinf(powf(digest[0], 2.0f)) + sinf(powf(digest[1], 2.0f)) + sinf(
-                sqrtf(abs((float) digest[2]))) + cosf((float) digest[3]) + sinf(
-                (float) digest[4])) / 80.0f * ((((int) abs(digest[5])) % 3 == 0) ? 1.0f : -1.0f);
+        return (sinf(powf(digest[0], 2.0f)) + sinf(powf(digest[1], 2.0f)) + sinf(sqrtf(abs((float) digest[2]))) + cosf((float) digest[3]) + sinf((float) digest[4])) / 80.0f * ((((int) abs(digest[5])) % 3 == 0) ? 1.0f : -1.0f);
    }*/
 /*float get_bag_offset_y(float pos_x, float pos_y, int bag_id, int map_x, int map_y)
    {
@@ -93,9 +89,7 @@ void strap_word(char *in, char *out) {
         // normalize them to -1 ... +1
         // then divide by 16 to normalize the return value to -0.0625 ... + 0.0625
         // (a tile is 0.5 wide)
-        return (cosf(powf(digest[1], 2.0f)) + cosf(powf(digest[2], 2.0f)) + cosf(
-                sqrtf(abs((float) digest[3]))) + sinf((float) digest[4]) + cosf(
-                (float) digest[5])) / 80.0f * ((((int) abs(digest[6])) % 3 == 0) ? 1.0f : -1.0f);
+        return (cosf(powf(digest[1], 2.0f)) + cosf(powf(digest[2], 2.0f)) + cosf(sqrtf(abs((float) digest[3]))) + sinf((float) digest[4]) + cosf((float) digest[5])) / 80.0f * ((((int) abs(digest[6])) % 3 == 0) ? 1.0f : -1.0f);
    }*/
 float get_bag_rotation(float pos_x, float pos_y, int bag_id, int map_x, int map_y) {
 	char str[64];
@@ -129,24 +123,23 @@ void put_bag_on_ground(int bag_x, int bag_y, int bag_id) {
 	float x, y, z;
 	int obj_3d_id;
 	int snd;
-	//now, get the Z position
+	// now, get the Z position
 	if (!get_tile_valid(bag_x, bag_y)) {
-		//Warn about this error:
+		// Warn about this error:
 		LOG_WARNING("A bag was placed OUTSIDE the map!\n");
 		return;
 	}
 	z = get_tile_height(bag_x, bag_y);
-	//convert from height values to meters
+	// convert from height values to meters
 	x = (float)bag_x / 2;
 	y = (float)bag_y / 2;
-	//center the object (slightly randomized)
+	// center the object (slightly randomized)
 	x = x + 0.25f; // + get_bag_offset_x(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y);
 	y = y + 0.25f; // + get_bag_offset_y(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y);
 	// DEBUG
 	// printf("bag <%i> (%f,%f) rot %f tilt %f\n", bag_id, x, y,
-	//	get_bag_rotation(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y),
-	//	get_bag_tilt(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y));
-	//Launch the animation
+	// get_bag_rotation(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y),
+	// Launch the animation
 	if (use_eye_candy) {
 		ec_create_bag_drop(x, y, z, (poor_man ? 6 : 10));
 	}
@@ -157,7 +150,7 @@ void put_bag_on_ground(int bag_x, int bag_y, int bag_id) {
 		}
 	}
 	obj_3d_id = add_e3d("./3dobjects/bag1.e3d", x, y, z, get_bag_tilt(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y), 0, get_bag_rotation(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y), 1, 0, 1.0f, 1.0f, 1.0f, 1);
-	//now, find a place into the bags list, so we can destroy the bag properly
+	// now, find a place into the bags list, so we can destroy the bag properly
 	bag_list[bag_id].x = bag_x;
 	bag_list[bag_id].y = bag_y;
 	bag_list[bag_id].obj_3d_id = obj_3d_id;
@@ -165,12 +158,12 @@ void put_bag_on_ground(int bag_x, int bag_y, int bag_id) {
 void add_bags_from_list(const Uint8 *data) {
 	Uint16 bags_no;
 	int i;
-	int bag_x, bag_y, my_offset; //bag_type unused?
+	int bag_x, bag_y, my_offset; // bag_type unused?
 	float x, y, z;
 	int obj_3d_id, bag_id;
 	bags_no = data[0];
 	if (bags_no > NUM_BAGS) {
-		return;//something nasty happened
+		return; // something nasty happened
 	}
 	for (i = 0; i < bags_no; i++) {
 		my_offset = i * 5 + 1;
@@ -180,17 +173,17 @@ void add_bags_from_list(const Uint8 *data) {
 		if (bag_id >= NUM_BAGS) {
 			continue;
 		}
-		//now, get the Z position
+		// now, get the Z position
 		if (!get_tile_valid(bag_x, bag_y)) {
-			//Warn about this error!
+			// Warn about this error!
 			LOG_WARNING("A bag was located OUTSIDE the map!\n");
 			continue;
 		}
 		z = get_tile_height(bag_x, bag_y);
-		//convert from height values to meters
+		// convert from height values to meters
 		x = (float)bag_x / 2;
 		y = (float)bag_y / 2;
-		//center the object (slightly randomized)
+		// center the object (slightly randomized)
 		x = x + 0.25f; // + get_bag_offset_x(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y);
 		y = y + 0.25f; // + get_bag_offset_y(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y);
 		// DEBUG
@@ -237,7 +230,7 @@ void remove_bag(int bag_id) {
 }
 void remove_all_bags() {
 	int i;
-	for (i = 0; i < NUM_BAGS; i++) {   // clear bags list!!!!
+	for (i = 0; i < NUM_BAGS; i++) { // clear bags list!!!!
 		bag_list[i].obj_3d_id = -1;
 	}
 }
@@ -260,7 +253,7 @@ void open_bag(int object_id) {
 		}
 	}
 }
-//do the flags later on
+// do the flags later on
 void get_bag_item(const Uint8 *data) {
 	int pos;
 	pos = data[6];
@@ -284,14 +277,14 @@ void pick_up_all_items(void) {
 		}
 	}
 }
-//put the flags later on
+// put the flags later on
 void get_bags_items_list(const Uint8 *data) {
 	Uint16 items_no;
 	int i;
 	int pos;
 	int my_offset;
 	view_ground_items = 1;
-	//clear the list
+	// clear the list
 	clear_groundlist();
 	items_no = data[0];
 	if (items_no > ITEMS_PER_BAG) {
@@ -305,7 +298,7 @@ void get_bags_items_list(const Uint8 *data) {
 		ground_item_list[pos].id = unset_item_uid;
 		ground_item_list[pos].pos = pos;
 	}
-	//	If we have auto bag empting set, only do so within 1 second of pressing getall
+	// If we have auto bag empting set, only do so within 1 second of pressing getall
 	if (ground_items_empty_next_bag) {
 		if (abs(ground_items_empty_next_bag - SDL_GetTicks()) < 1000) {
 			pick_up_all_items();
@@ -352,7 +345,7 @@ int display_ground_items_handler(window_info *win) {
 	glColor3f(0.77f, 0.57f, 0.39f);
 	draw_string_small(win->len_x - (GRIDSIZE - 5), ELW_BOX_SIZE + 3 + yoffset, (unsigned char *)my_str, 2);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//ok, now let's draw the objects...
+	// ok, now let's draw the objects...
 	for (i = ITEMS_PER_BAG - 1; i >= 0; --i) {
 		if (ground_item_list[i].quantity > 0) {
 			/* autant réutiliser la fonction draw_item */

@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_staff.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 StaffParticle::StaffParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 std::min(1.0f, _size * (0.2f + randcoord()))) {
@@ -120,5 +120,4 @@ bool StaffEffect::idle(const Uint64 usec) {
 	old_end = *pos;
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

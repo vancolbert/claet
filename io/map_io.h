@@ -9,12 +9,12 @@
 extern "C" {
 #endif
 extern char map_file_name[256]; /**< filename of the current map */
-#define MF_PLAINS               0x00000001 //It can rain here
-#define MF_SNOW                 0x00000002 //It can snow here
-#define MF_DESERT               0x00000004 //It can be darned hot here :P
+#define MF_PLAINS               0x00000001 // It can rain here
+#define MF_SNOW                 0x00000002 // It can snow here
+#define MF_DESERT               0x00000004 // It can be darned hot here :P
 #define MF_DUNGEON      0x00000008
 #define MF_HOUSE                0x00000010
-#define MF_BOAT         0x00000020 //Tilt the ground level slightly?
+#define MF_BOAT         0x00000020 // Tilt the ground level slightly?
 /*
  #define RESERVED 	0x00000040
  #define RESERVED	0x00000080
@@ -61,9 +61,9 @@ typedef struct {
 	float z_rot;
 	/** @} */
 	char self_lit; /**< indicator if this object3d is self lit or not */
-	char blended;  /**< indicates whether this object3d is blended with some other objects or not */
-	char pad[2];   /**< Padding bytes are inserted here by gcc and so ended up in the map format, make them explicit */
-	float r, g, b;   /**< red, green and blue color values of the object */
+	char blended; /**< indicates whether this object3d is blended with some other objects or not */
+	char pad[2]; /**< Padding bytes are inserted here by gcc and so ended up in the map format, make them explicit */
+	float r, g, b; /**< red, green and blue color values of the object */
 	/** @name Scaling of the object3d
 	 *  Will be used in the future
 	 * @{ */
@@ -220,4 +220,4 @@ int get_tile_map_sizes(const char *file_name, int *x, int *y);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  // _MAP_IO_H_
+#endif // _MAP_IO_H_

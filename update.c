@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
-#ifdef  WINDOWS
+#ifdef WINDOWS
  #define strdup _strdup
  #include <direct.h>
-#else   //WINDOWS
+#else // WINDOWS
  #include <sys/types.h>
  #include <sys/stat.h>
-#endif  //WINDOWS
+#endif // WINDOWS
  #include <zlib.h>
 #include <time.h>
 #include <SDL_net.h>
@@ -29,14 +29,14 @@
 #include "translate.h"
 #include "io/elpathwrapper.h"
 #include "threads.h"
-void create_update_root_window(int width, int height, int time);                // Pre-declare this
-int update_attempt_count;   // count how many update attempts have been tried (hopefully diff servers)
-int temp_counter;           // collision prevention during downloads just incase more then one ever starts
-int update_busy;            // state & lockout control to prevent two updates running at the same time
-char update_server[128];    // the current server we are getting updates from
+void create_update_root_window(int width, int height, int time); // Pre-declare this
+int update_attempt_count; // count how many update attempts have been tried (hopefully diff servers)
+int temp_counter; // collision prevention during downloads just incase more then one ever starts
+int update_busy; // state & lockout control to prevent two updates running at the same time
+char update_server[128]; // the current server we are getting updates from
 unsigned int num_update_servers;
-char *update_servers[32];       // we cant handle more then 32 different servers
-int is_this_files_lst = 0;       // files.lst changes its name if it is a custom update
+char *update_servers[32]; // we cant handle more then 32 different servers
+int is_this_files_lst = 0; // files.lst changes its name if it is a custom update
 char files_lst[256] = {0};
 char name_BlackLst[32] = "files_bl.lst";
 // we need a simple queue system so that the MD5 processing is in parallel with downloading
@@ -61,13 +61,12 @@ void    init_update() {
 	}
 	// initialize variables
 	update_busy++;
-	update_attempt_count = 0;        // no downloads have been attempted
-	temp_counter = 0;                        //start with download name with 0
-	restart_required = 0;            // no restart needed yet
-	allow_restart = 1;                       // automated restart allowed
+	update_attempt_count = 0; // no downloads have been attempted
+	temp_counter = 0; // start with download name with 0
+	restart_required = 0; // no restart needed yet
+	allow_restart = 1; // automated restart allowed
 	// create the mutex & init the download que
 	if (!download_mutex) {
-//		file_update_clear_old();	// There is no reason to delete all the previous files. We only remove the ones out of date.
 		download_mutex = SDL_CreateMutex();
 		download_queue_size = 0;
 		memset(download_queue, 0, sizeof(download_queue));
@@ -127,7 +126,7 @@ void clean_update() {
 }
 // handle the update file event
 static void do_handle_update_download(struct http_get_struct *get) {
-	static int mkdir_res = -1;  // flag as not tried
+	static int mkdir_res = -1; // flag as not tried
 	int sts;
 	// try to make sure the directory is there
 	if (mkdir_res < 0) {
@@ -156,7 +155,7 @@ static void do_handle_update_download(struct http_get_struct *get) {
 		assert(get->thread_index < MAX_THREADS);
 		SDL_WaitThread(thread_list[get->thread_index], NULL);
 		thread_list[get->thread_index] = NULL;
-		//no, we need to free the memory and try again
+		// no, we need to free the memory and try again
 		if (get->fp) {
 			fclose(get->fp);
 		}
@@ -194,9 +193,9 @@ static void do_handle_update_download(struct http_get_struct *get) {
 		if (fp == NULL) {
 			LOG_ERROR("%s: %s \"tmp/temp000.dat\": %s\n", reg_error_str, cant_open_file, strerror(errno));
 		} else {
-			if (is_this_files_lst) { //files.lst
+			if (is_this_files_lst) { // files.lst
 				safe_snprintf(filename, sizeof(filename), "http://%s/~ale/updates%d%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, VER_BUILD, files_lst);
-			} else {        //custom_files.lst
+			} else { // custom_files.lst
 				safe_snprintf(filename, sizeof(filename), "http://%s/~ale/updates/%s", update_server, files_lst);
 			}
 			LOG_DEBUG("* server %s filename %s", update_server, filename);
@@ -216,7 +215,7 @@ void handle_update_download(struct http_get_struct *get) {
 }
 // start the background checking of updates
 void    do_updates() {
-	if (update_busy++ > 1) {   // dont double process
+	if (update_busy++ > 1) { // dont double process
 		return;
 	}
 	// start the background process
@@ -289,9 +288,7 @@ void   add_to_download(const char *filename, const Uint8 *md5) {
 		download_queue[download_queue_size] = strdup(filename);
 		download_MD5s[download_queue_size] = calloc(1, 16);
 		memcpy(download_MD5s[download_queue_size], md5, 16);
-		// char *curr_file = download_queue[--download_queue_size];
-		// Uint8 *curr_md5 = download_MD5s[download_queue_size];
-		if ( file_in_bl(download_queue[download_queue_size], download_MD5s[download_queue_size]) == 1 ) {
+		if (file_in_bl(download_queue[download_queue_size], download_MD5s[download_queue_size]) == 1) {
 			LOG_ERROR("I can't download this file ... see the black list !  %s", download_queue[download_queue_size]);
 			// unlock the mutex and return
 			CHECK_AND_UNLOCK_MUTEX(download_mutex);
@@ -330,7 +327,7 @@ void   add_to_download(const char *filename, const Uint8 *md5) {
 // finish up on one file that just downloaded
 void    handle_file_download(struct http_get_struct *get) {
 	int sts;
-	if (!get) {  // huh? what are you doing?
+	if (!get) { // huh? what are you doing?
 		return;
 	}
 	// lock the mutex
@@ -413,7 +410,7 @@ void http_threaded_get_file(char *server, char *path, FILE *fp, Uint8 *md5, Uint
 	download_cur_md5 = spec->md5 = md5;
 	spec->fp = fp;
 	spec->event = event;
-	spec->status = -1;   // just so we don't start with 0
+	spec->status = -1; // just so we don't start with 0
 	// find a slot to store the thread handle so we can wait for it later
 	{
 		size_t i;
@@ -457,7 +454,7 @@ int http_get_file_thread_handler(void *specs) {
 	event.type = SDL_USEREVENT;
 	event.user.code = spec->event;
 	event.user.data1 = spec;
-	SDL_Delay(500);                 // FIXME: This should _not_ be necessary, but appears to be so recently under Windows
+	SDL_Delay(500); // FIXME: This should _not_ be necessary, but appears to be so recently under Windows
 	SDL_PushEvent(&event);
 	// NOTE: it is up to the EVENT handler to close the handle & free the spec pointer in data1
 	return 0;
@@ -471,22 +468,21 @@ int http_get_file(char *server, char *path, FILE *fp) {
 	int got_header = 0;
 	int http_status = 0;
 	// resolve the hostname
-	if (SDLNet_ResolveHost(&http_ip, server, 80) < 0) {  // caution, always port 80!
-		return 1;  // can't resolve the hostname
+	if (SDLNet_ResolveHost(&http_ip, server, 80) < 0) { // caution, always port 80!
+		return 1; // can't resolve the hostname
 	}
 	// open the socket
 	http_sock = SDLNet_TCP_Open(&http_ip);
 	if (!http_sock) {
-		return 2;  // failed to open the socket
+		return 2; // failed to open the socket
 	}
 	// send the GET request, try to avoid ISP caching
 	safe_snprintf(message, sizeof(message), "GET %s HTTP/1.1\r\nHost: %s\r\nCONNECTION:CLOSE\r\nCACHE-CONTROL:NO-CACHE\r\nREFERER:%s\r\nUSER-AGENT:AUTOUPDATE %s\r\n\r\n", path, server, "autoupdate", FILE_VERSION);
-	//printf("%s",message);
 	len = strlen(message);
 	if (SDLNet_TCP_Send(http_sock, message, len) < len) {
 		// close the socket to prevent memory leaks
 		SDLNet_TCP_Close(http_sock);
-		return 3;  // error in sending the get request
+		return 3; // error in sending the get request
 	}
 	// get the response & data
 	while (len > 0) {
@@ -526,7 +522,7 @@ int http_get_file(char *server, char *path, FILE *fp) {
 			return 5;
 		}
 	}
-	return 0;  // finished
+	return 0; // finished
 }
 /* Update window code */
 int update_root_win = -1;
@@ -537,12 +533,10 @@ void init_update_interface(float text_size, int count, int len_x, int len_y) {
 }
 void draw_update_interface(int len_x, int len_y) {
 	char str[200];
-//	float diff = (float) (len_x - len_y) / 2;
 	float window_ratio = (float)len_y / 480.0f;
 	draw_string((len_x - (strlen(update_complete_str) * 11)) / 2, 200 * window_ratio, (unsigned char *)update_complete_str, 0);
 	draw_string((len_x - (strlen(fichier_telecharge) * 11)) / 2, 230 * window_ratio, (unsigned char *)fichier_telecharge, 0);
 /*	Possibly use this box to display the list of files updated?
-
         glDisable(GL_TEXTURE_2D);
         glColor3f(0.77f,0.57f,0.39f);
         glBegin(GL_LINES);
@@ -583,7 +577,7 @@ int click_update_root_handler(window_info *win, int mx, int my, Uint32 flags) {
 int keypress_update_root_handler(window_info *win, int mx, int my, Uint32 key, Uint32 unikey) {
 	Uint16 keysym = key & 0xffff;
 	// first, try to see if we pressed Alt+x, to quit.
-	if ( check_quit_or_fullscreen(key)) {
+	if (check_quit_or_fullscreen(key)) {
 		return 1;
 	} else if (keysym == SDLK_RETURN) {
 		exit_now = 1;
@@ -618,15 +612,13 @@ int file_in_bl(char *wget_file, Uint8 *wget_md5) {
 	char buffer[512];
 	fp = my_fopen(name_BlackLst, "rb");
 	if (fp) {
-		while ( fgets(buffer, 512, fp) != NULL  ) {
+		while (fgets(buffer, 512, fp) != NULL) {
 			char *p = strchr(buffer, '\n');
 			if (p != NULL) {
 				*p = 0;
 			}
-			if ( strlen(buffer) > 0 ) {
-				// --- log_error("[DEBUG] - ****** CHECK ****** file_in_bl: %s - wget_file: %s ", buffer, wget_file);
-				if ( strcmp(buffer, wget_file) == 0 ) {
-					// --- log_error("Match find in black list file ! %s", wget_file);
+			if (strlen(buffer) > 0) {
+				if (strcmp(buffer, wget_file) == 0) {
 					iReturn = 1;
 					break;
 				}

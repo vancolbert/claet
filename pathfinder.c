@@ -48,7 +48,7 @@ static PF_TILE *pf_get_next_open_tile() {
 		PF_TILE *tmp = pf_open.tiles[0] = pf_open.tiles[pf_open.count];
 		tmp->open_pos = 0;
 		i = 0;
-		while ((j = 2 * i + 1) < pf_open.count ) {
+		while ((j = 2 * i + 1) < pf_open.count) {
 			if (j + 1 < pf_open.count && pf_open.tiles[j + 1]->f < pf_open.tiles[j]->f) {
 				j++;
 			}
@@ -160,25 +160,25 @@ int checkvisitedlist(int x, int y) {
 	 * This (slightly) optimised version of the code stores the X and Y in the same word
 	 * x is bits 0-15, y is bits 16-31
 	 */
-	int i, visited = 0, tx, ty;//visited: Is this square already in the list?
+	int i, visited = 0, tx, ty; // visited: Is this square already in the list?
 	int square;
 	x &= 0xFFFF;
 	y &= 0xFFFF;
 	square = x | (y << 16);
 	for (i = 20 - 1; i > 0; i--) {
 		if (pf_visited_squares[i] == square) {
-			visited = 1; //yes
+			visited = 1; // yes
 		}
-		//move everything in the list up one place
-		//to make room for the new square
+		// move everything in the list up one place
+		// to make room for the new square
 		pf_visited_squares[i] = pf_visited_squares[i - 1];
 	}
 	if (pf_visited_squares[0] == square) {
-		visited = 1; //yes
+		visited = 1; // yes
 	}
-	//put the new square at the start of the list
+	// put the new square at the start of the list
 	pf_visited_squares[0] = square;
-	//check if we have visited and the destination is close to us
+	// check if we have visited and the destination is close to us
 	if (visited) {
 		if (pf_dst_tile->x > x) {
 			tx = pf_dst_tile->x - x;
@@ -191,9 +191,9 @@ int checkvisitedlist(int x, int y) {
 			ty = y - pf_dst_tile->y;
 		}
 		if (tx < 5 && ty < 5) {
-			visited = 1;//yes
+			visited = 1; // yes
 		} else {
-			visited = 0;//yes
+			visited = 0; // yes
 		}
 	}
 	return visited;

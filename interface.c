@@ -260,40 +260,39 @@ void Leave2DMode() {
 	} else {
 		glDisable(GL_FOG);
 	}
-	//glViewport(0, 0, window_width-hud_x, window_height-hud_y);	// Reset The Current Viewport
 }
 /* The video modes start with index 1. So field 0 stands for video mode 1 */
 video_mode_t video_modes[] = {
-	{640, 480, 16, NULL, {0, 0}},    /*  1 */
-	{640, 480, 32, NULL, {0, 0}},    /*  2 */
-	{800, 600, 16, NULL, {0, 0}},    /*  3 */
-	{800, 600, 32, NULL, {0, 0}},    /*  4 */
-	{1024, 768, 16, NULL, {0, 0}},   /*  5 */
-	{1024, 768, 32, NULL, {0, 0}},   /*  6 */
-	{1152, 864, 16, NULL, {0, 0}},   /*  7 */
-	{1152, 864, 32, NULL, {0, 0}},   /*  8 */
-	{1280, 1024, 16, NULL, {0, 0}},  /*  9 */
-	{1280, 1024, 32, NULL, {0, 0}},  /* 10 */
-	{1600, 1200, 16, NULL, {0, 0}},  /* 11 */
-	{1600, 1200, 32, NULL, {0, 0}},  /* 12 */
-	{1280, 800, 16, NULL, {0, 0}},   /* 13 */
-	{1280, 800, 32, NULL, {0, 0}},   /* 14 */
-	{1440, 900, 16, NULL, {0, 0}},   /* 15 */
-	{1440, 900, 32, NULL, {0, 0}},   /* 16 */
-	{1680, 1050, 16, NULL, {0, 0}},  /* 17 */
-	{1680, 1050, 32, NULL, {0, 0}},  /* 18 */
-	{1400, 1050, 16, NULL, {0, 0}},  /* 19 */
-	{1400, 1050, 32, NULL, {0, 0}},  /* 20 */
-	{800, 480, 16, NULL, {0, 0}},    /* 21 */
-	{800, 480, 32, NULL, {0, 0}},    /* 22 */
-	{1920, 1200, 16, NULL, {0, 0}},  /* 23 */
-	{1920, 1200, 32, NULL, {0, 0}},  /* 24 */
-	{1024, 600, 16, NULL, {0, 0}},   /* 25 */
-	{1024, 600, 32, NULL, {0, 0}},   /* 26 */
-	{1920, 1080, 16, NULL, {0, 0}},  /* 27 */
-	{1920, 1080, 32, NULL, {0, 0}},  /* 28 */
-	{1366, 768, 16, NULL, {0, 0}},  /* 29 */
-	{1366, 768, 32, NULL, {0, 0}},  /* 30 */
+	{640, 480, 16, NULL, {0, 0}}, /*  1 */
+	{640, 480, 32, NULL, {0, 0}}, /*  2 */
+	{800, 600, 16, NULL, {0, 0}}, /*  3 */
+	{800, 600, 32, NULL, {0, 0}}, /*  4 */
+	{1024, 768, 16, NULL, {0, 0}}, /*  5 */
+	{1024, 768, 32, NULL, {0, 0}}, /*  6 */
+	{1152, 864, 16, NULL, {0, 0}}, /*  7 */
+	{1152, 864, 32, NULL, {0, 0}}, /*  8 */
+	{1280, 1024, 16, NULL, {0, 0}}, /*  9 */
+	{1280, 1024, 32, NULL, {0, 0}}, /* 10 */
+	{1600, 1200, 16, NULL, {0, 0}}, /* 11 */
+	{1600, 1200, 32, NULL, {0, 0}}, /* 12 */
+	{1280, 800, 16, NULL, {0, 0}}, /* 13 */
+	{1280, 800, 32, NULL, {0, 0}}, /* 14 */
+	{1440, 900, 16, NULL, {0, 0}}, /* 15 */
+	{1440, 900, 32, NULL, {0, 0}}, /* 16 */
+	{1680, 1050, 16, NULL, {0, 0}}, /* 17 */
+	{1680, 1050, 32, NULL, {0, 0}}, /* 18 */
+	{1400, 1050, 16, NULL, {0, 0}}, /* 19 */
+	{1400, 1050, 32, NULL, {0, 0}}, /* 20 */
+	{800, 480, 16, NULL, {0, 0}}, /* 21 */
+	{800, 480, 32, NULL, {0, 0}}, /* 22 */
+	{1920, 1200, 16, NULL, {0, 0}}, /* 23 */
+	{1920, 1200, 32, NULL, {0, 0}}, /* 24 */
+	{1024, 600, 16, NULL, {0, 0}}, /* 25 */
+	{1024, 600, 32, NULL, {0, 0}}, /* 26 */
+	{1920, 1080, 16, NULL, {0, 0}}, /* 27 */
+	{1920, 1080, 32, NULL, {0, 0}}, /* 28 */
+	{1366, 768, 16, NULL, {0, 0}}, /* 29 */
+	{1366, 768, 32, NULL, {0, 0}}, /* 30 */
 };
 const int video_modes_count = sizeof(video_modes) / sizeof(*video_modes);
 void build_video_mode_array() {
@@ -325,7 +324,7 @@ void draw_console_pic(int which_texture) {
 	bind_texture(which_texture);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-	//draw the texture
+	// draw the texture
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3i(0, 0, 0);
 	glTexCoord2f(0.0f, 1.0f);
@@ -357,8 +356,8 @@ void draw_2d_thing_r(float u_start, float v_start, float u_end, float v_end, int
 	glVertex3i(x_end, y_end, 0);
 }
 void add_char_to_username(unsigned char ch) {
-	//@tosh : le MAX_USERNAME_LENGTH-1 permet d'éviter qu'un caractère dépasse du champ
-	if ((/*(ch>=48 && ch<=57) || */ (ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122) || (ch == '_')) && username_text_length < MAX_USERNAME_LENGTH - 1) {            // MAX_USERNAME_LENGTH includes the null terminator
+	// @tosh : le MAX_USERNAME_LENGTH-1 permet d'éviter qu'un caractère dépasse du champ
+	if (( /*(ch>=48 && ch<=57) || */ (ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122) || (ch == '_')) && username_text_length < MAX_USERNAME_LENGTH - 1) { // MAX_USERNAME_LENGTH includes the null terminator
 		username_str[username_text_length] = ch;
 		username_str[username_text_length + 1] = 0;
 		username_text_length++;
@@ -373,7 +372,7 @@ void add_char_to_username(unsigned char ch) {
 	}
 }
 void add_char_to_password(unsigned char ch) {
-	if ((ch >= 32 && ch <= 126) && password_text_length < MAX_USERNAME_LENGTH - 1) {            // MAX_USERNAME_LENGTH includes the null terminator
+	if ((ch >= 32 && ch <= 126) && password_text_length < MAX_USERNAME_LENGTH - 1) { // MAX_USERNAME_LENGTH includes the null terminator
 		password_str[password_text_length] = ch;
 		display_password_str[password_text_length] = '*';
 		password_str[password_text_length + 1] = 0;
@@ -393,7 +392,6 @@ void add_char_to_password(unsigned char ch) {
 void draw_ingame_interface() {
 	glColor3f(1.0f, 1.0f, 1.0f);
 	draw_hud_frame();
-	//draw_hud_interface();
 	display_spells_we_have();
 }
 GLuint map_text;
@@ -401,7 +399,7 @@ static int cont_text = -1; // index in texture cache for continent map
 GLuint inspect_map_text = 0;
 int show_continent_map_boundaries = 1;
 GLuint legend_text = 0;
-int cur_map;  //Is there a better way to do this?
+int cur_map; // Is there a better way to do this?
 static const char *cont_map_file_names[] = {
 	"./maps/1_seridia",
 	"./maps/2_irilion"
@@ -441,7 +439,7 @@ void read_mapinfo() {
 				// not a valid continent
 				continue;
 			}
-			if (imap >= maps_size /*- 1*/ ) {
+			if (imap >= maps_size /*- 1*/) {
 				// Uh oh, we didn't allocate enough space
 				maps_size += DEFAULT_CONTMAPS_SIZE;
 				continent_maps = realloc(continent_maps, maps_size * sizeof(struct draw_map));
@@ -576,7 +574,7 @@ static void draw_marks(marking *the_marks, int the_max_mark, int the_tile_map_si
 	for (i = 0; i < the_max_mark; i++) {
 		int x = the_marks[i].x;
 		int y = the_marks[i].y;
-		if ( x > 0 ) {
+		if (x > 0) {
 			// if filtering marks, don't display if it doesn't match the current filter
 			if (mark_filter_active && (get_string_occurance(mark_filter_text, the_marks[i].text, strlen(the_marks[i].text), 1) == -1)) {
 				continue;
@@ -708,7 +706,7 @@ void draw_game_map(int map, int mouse_mini) {
 // this is necessary for the text over map
 // need to execute this for any map now
 // because of the coordinate display - Lachesis
-	if (map /*&&(adding_mark||max_mark>0)*/ ) {
+	if (map /*&&(adding_mark||max_mark>0)*/) {
 		glViewport(0, 0 + hud_y, window_width - hud_x, window_height - hud_y);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -759,7 +757,7 @@ void draw_game_map(int map, int mouse_mini) {
 			voir_musique_sur_carte();
 		}
 	}
-	//if we're following a path, draw the destination on the map
+	// if we're following a path, draw the destination on the map
 	if (pf_follow_path && inspect_map_text == 0) {
 		int px = pf_dst_tile->x;
 		int py = pf_dst_tile->y;
@@ -777,12 +775,12 @@ void draw_game_map(int map, int mouse_mini) {
 		draw_mark_pin(screen_x, screen_y, mapmark_zoom, 0.9f, 0.0f, 0.0f);
 		glEnd();
 	}
-	//ok, now let's draw our possition...
+	// ok, now let's draw our possition...
 	if ((me = get_our_actor()) != NULL && inspect_map_text == 0) {
 		x = me->x_tile_pos;
 		y = me->y_tile_pos;
 	} else {
-		//We don't exist (usually happens when teleporting)
+		// We don't exist (usually happens when teleporting)
 		x = -1;
 		y = -1;
 	}
@@ -797,7 +795,7 @@ void draw_game_map(int map, int mouse_mini) {
 		screen_x = 151 + 600 * x / (tile_map_size_x * 6);
 		screen_y = 601 - 600 * y / (tile_map_size_y * 6);
 	}
-	if ((map || !dungeon) && x != -1 ) {
+	if ((map || !dungeon) && x != -1) {
 		draw_mark_pin(screen_x, screen_y, mapmark_zoom, 0.0f, 0.0f, 0.9f);
 	}
 	if (!map && show_continent_map_boundaries && cont_text != fallback_text) {
@@ -911,13 +909,10 @@ void put_mark_on_map_on_mouse_position() {
 		/* Lachesis: reusing available code from pathfinder.c
 		   int min_mouse_x = (window_width-hud_x)/6;
 		   int min_mouse_y = 0;
-
 		   int max_mouse_x = min_mouse_x+((window_width-hud_x)/1.5);
 		   int max_mouse_y = window_height - hud_y;
-
 		   int screen_map_width = max_mouse_x - min_mouse_x;
 		   int screen_map_height = max_mouse_y - min_mouse_y;
-
 		   // FIXME (Malaclypse): should be moved above the screen_map_* init, to avoid additional computation
 		   if (mouse_x < min_mouse_x
 		 || mouse_x > max_mouse_x
@@ -925,7 +920,6 @@ void put_mark_on_map_on_mouse_position() {
 		 || mouse_y > max_mouse_y) {
 		   return;
 		   }
-
 		   mark_x = ((mouse_x - min_mouse_x) * tile_map_size_x * 6) / screen_map_width;
 		   mark_y = (tile_map_size_y * 6) - ((mouse_y * tile_map_size_y * 6) / screen_map_height);
 		 */
@@ -947,7 +941,6 @@ int put_mark_on_current_position(char *name) {
 		   marks[max_mark].x = me->x_tile_pos;
 		   marks[max_mark].y = me->y_tile_pos;
 		   memset(marks[max_mark].text,0,500);
-
 		   my_strncp(marks[max_mark].text,name,500);
 		   marks[max_mark].text[strlen(marks[max_mark].text)]=0;
 		   max_mark++;
@@ -967,7 +960,7 @@ void delete_mark_on_map_on_mouse_position() {
 	// delete mark closest to cursor
 	min_distance = 20 * 20; // only check close marks
 	closest_mark = NULL;
-	for ( i = 0 ; i < max_mark ; i++ ) {
+	for (i = 0 ; i < max_mark ; i++) {
 		int distance, dx, dy;
 		marking *const mark = &marks[i];
 		// skip masked marks
@@ -1004,7 +997,7 @@ void edit_mark_on_map_on_mouse_position() {
 	// edit mark closest to cursor
 	min_distance = 20 * 20; // only check close marks
 	closest_mark = NULL;
-	for ( i = 0 ; i < max_mark ; i++ ) {
+	for (i = 0 ; i < max_mark ; i++) {
 		int distance, dx, dy;
 		marking *const mark = &marks[i];
 		// skip masked marks
@@ -1129,29 +1122,23 @@ void resize_all_root_windows(Uint32 w, Uint32 h) {
         float u_first_end=0;
         float v_first_start=1.0f-(float)160/256;
         float v_first_end=1.0f-(float)175/256;
-
         float u_middle_start=(float)32/256;
         float u_middle_end=(float)63/256;
         float v_middle_start=1.0f-(float)160/256;
         float v_middle_end=1.0f-(float)175/256;
-
         float u_last_start=0;
         float u_last_end=(float)31/256;
         float v_last_start=1.0f-(float)160/256;
         float v_last_end=1.0f-(float)175/256;
-
         int segments_no;
         int i;
-
         glColor3f(1.0f,1.0f,1.0f);
-        //ok, now draw that shit...
+        // ok, now draw that shit...
         segments_no=x_len/32;
-
         get_and_set_texture_id(icons_text);
         glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.03f);
         glBegin(GL_QUADS);
-
         glTexCoord2f(u_first_end,v_first_start);
         glVertex3i(x,y,0);
         glTexCoord2f(u_first_end,v_first_end);
@@ -1160,7 +1147,6 @@ void resize_all_root_windows(Uint32 w, Uint32 h) {
         glVertex3i(x+32,y+16,0);
         glTexCoord2f(u_first_start,v_first_start);
         glVertex3i(x+32,y,0);
-
         for(i=1;i<segments_no-1;i++)
                 {
                         glTexCoord2f(u_middle_end,v_middle_start);
@@ -1172,7 +1158,6 @@ void resize_all_root_windows(Uint32 w, Uint32 h) {
                         glTexCoord2f(u_middle_start,v_middle_start);
                         glVertex3i(x+i*32+32,y,0);
                 }
-
         glTexCoord2f(u_last_end,v_last_start);
         glVertex3i(x+i*32,y,0);
         glTexCoord2f(u_last_end,v_last_end);
@@ -1181,7 +1166,6 @@ void resize_all_root_windows(Uint32 w, Uint32 h) {
         glVertex3i(x+i*32+32,y+16,0);
         glTexCoord2f(u_last_start,v_last_start);
         glVertex3i(x+i*32+32,y,0);
-
         glEnd();
         glDisable(GL_ALPHA_TEST);
    }

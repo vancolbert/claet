@@ -14,38 +14,38 @@ const float Y_OFFSET = 0.25;
    more effects
    adjust effects based on actor size and if sitting
  */
-//much of this is based on the highlight.c code
+// much of this is based on the highlight.c code
 #define SPECIAL_EFFECT_LIFESPAN (500)
 #define SPECIAL_EFFECT_SHIELD_LIFESPAN (1500)
 #define SPECIAL_EFFECT_HEAL_LIFESPAN (5000)
 #define SPECIAL_EFFECT_RESTORATION_LIFESPAN (1500)
-#define NUMBER_OF_SPECIAL_EFFECTS       (100)   // 100 active in one area should be enough, right?
+#define NUMBER_OF_SPECIAL_EFFECTS       (100) // 100 active in one area should be enough, right?
 #define STATIC_SFX -2
 typedef struct {
-	short x;                // used to store x_tile_pos and y_tile_pos
-	short y;                // will probably need a z too eventually
-	actor *owner;   // will be NULL for stationary effects
+	short x; // used to store x_tile_pos and y_tile_pos
+	short y; // will probably need a z too eventually
+	actor *owner; // will be NULL for stationary effects
 	int timeleft;
-	int lifespan;   // total lifespan of effect
-	int type;               // type of effect / spell that was cast
+	int lifespan; // total lifespan of effect
+	int type; // type of effect / spell that was cast
 	int active;
-	int caster;             //is this caster or target, static effects will be set to STATIC_SFX
-	Uint32 last_time;       //for timing length of effect especially while in console
+	int caster; // is this caster or target, static effects will be set to STATIC_SFX
+	Uint32 last_time; // for timing length of effect especially while in console
 } special_effect;
 special_effect sfx_markers[NUMBER_OF_SPECIAL_EFFECTS];
 int sfx_enabled = 1;
 const static float dx = (TILESIZE_X / 6);
 const static float dy = (TILESIZE_Y / 6);
-//Allocate a spot for a new special effect
+// Allocate a spot for a new special effect
 special_effect *get_free_special_effect() {
 	int i;
-	//find the first free slot
+	// find the first free slot
 	for (i = 0; i < NUMBER_OF_SPECIAL_EFFECTS; i++) {
 		if (!sfx_markers[i].active) {
 			return &sfx_markers[i];
 		}
 	}
-	return NULL;    // all memory for special effects has been taken
+	return NULL; // all memory for special effects has been taken
 }
 // Initialize a new special effect
 void add_sfx(special_effect_enum effect, Uint16 playerid, int caster) {
@@ -57,7 +57,7 @@ void add_sfx(special_effect_enum effect, Uint16 playerid, int caster) {
 		LOG_TO_CONSOLE(c_purple2, str);
 		return;
 	}
-	if (this_actor == NULL ) {
+	if (this_actor == NULL) {
 		return;
 	}
 	// this switch is for differentiating static vs mobile effects
@@ -66,17 +66,17 @@ void add_sfx(special_effect_enum effect, Uint16 playerid, int caster) {
 	case SPECIAL_EFFECT_HEAL_SUMMONED:
 	case SPECIAL_EFFECT_INVASION_BEAMING:
 	case SPECIAL_EFFECT_TELEPORT_TO_RANGE:
-		m->x = this_actor->x_tile_pos;                  //static effects will not store a actor by convention
-		m->y = this_actor->y_tile_pos;                  // but we need to know where they were cast
+		m->x = this_actor->x_tile_pos; // static effects will not store a actor by convention
+		m->y = this_actor->y_tile_pos; // but we need to know where they were cast
 		break;
-	default:                                                                        // all others are movable effects
-		m->owner = this_actor;                                  //let sfx_marker know who is target of effect
-		m->x = m->owner->x_tile_pos;                    // NOTE: x_tile_pos is 2x x_pos (and same for y)
+	default: // all others are movable effects
+		m->owner = this_actor; // let sfx_marker know who is target of effect
+		m->x = m->owner->x_tile_pos; // NOTE: x_tile_pos is 2x x_pos (and same for y)
 		m->y = m->owner->y_tile_pos;
 		break;
 	}
 	m->type = effect;
-	m->last_time = cur_time;                                        //global cur_time
+	m->last_time = cur_time; // global cur_time
 	// this switch is for setting different effect lengths
 	switch (effect) {
 	case SPECIAL_EFFECT_HEAL:
@@ -99,16 +99,16 @@ void add_sfx(special_effect_enum effect, Uint16 playerid, int caster) {
 		break;
 	}
 	m->active = 1;
-	m->caster = caster;                                                     // should = 1 if caster of spell, 0 otherwise
+	m->caster = caster; // should = 1 if caster of spell, 0 otherwise
 }
-//basic shape template that allows for rotation and duplication
+// basic shape template that allows for rotation and duplication
 void do_shape_spikes(float x, float y, float z, float center_offset_x, float center_offset_y, float base_offset_z, float a) {
 	int i;
-	//save the world
+	// save the world
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	glRotatef(270.0f * a, 0.0f, 0.0f, 1.0f);
-	//now create eight copies of the object, each separated by 45 degrees
+	// now create eight copies of the object, each separated by 45 degrees
 	for (i = 0; i < 8; i++) {
 		glRotatef(45.f, 0.0f, 0.0f, 1.0f);
 		glBegin(GL_POLYGON);
@@ -119,17 +119,17 @@ void do_shape_spikes(float x, float y, float z, float center_offset_x, float cen
 		glVertex3f(-2.0f * dx - center_offset_x, -2.0f * dy - center_offset_y, base_offset_z);
 		glEnd();
 	}
-	//return to the world
+	// return to the world
 	glPopMatrix();
 }
-//example halos moving in opposite directions, not yet optimized, and still just an example
+// example halos moving in opposite directions, not yet optimized, and still just an example
 void do_double_spikes(float x, float y, float z, float center_offset_x, float center_offset_y, float base_offset_z, float a) {
 	int i;
-	//save the world
+	// save the world
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	glRotatef(270.0f * a, 0.0f, 0.0f, 1.0f);
-	//now create eight copies of the object, each separated by 45 degrees
+	// now create eight copies of the object, each separated by 45 degrees
 	for (i = 0; i < 8; i++) {
 		glRotatef(45.f, 0.0f, 0.0f, 1.0f);
 		glBegin(GL_POLYGON);
@@ -147,7 +147,7 @@ void do_double_spikes(float x, float y, float z, float center_offset_x, float ce
 		glVertex3f(-2.0f * dx - center_offset_x, -2.0f * dy - center_offset_y, 0.5 - base_offset_z);
 		glEnd();
 	}
-	//return to the world
+	// return to the world
 	glPopMatrix();
 }
 void draw_heal_effect(float x, float y, float z, float age) {
@@ -158,7 +158,7 @@ void draw_heal_effect(float x, float y, float z, float age) {
 	float final_z = 0;
 	float d_y = 0;
 	float ageAsc = 1.0f - age;
-//save the world
+// save the world
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	if (age > 0.5f) {
@@ -192,7 +192,7 @@ void draw_heal_effect(float x, float y, float z, float age) {
 		glVertex3f(0.0f, center_offset_y + d_y, final_z + 0.06f);
 		glEnd();
 	}
-	//return to the world
+	// return to the world
 	glPopMatrix();
 }
 void draw_restoration_effect(float x, float y, float z, float age) {
@@ -202,7 +202,7 @@ void draw_restoration_effect(float x, float y, float z, float age) {
 	float d_y = 0;
 	float ageAsc = 1.0f - age;
 	float alpha = 1.0f;
-	//save the world
+	// save the world
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	if (age > 0.5f) {
@@ -230,7 +230,7 @@ void draw_restoration_effect(float x, float y, float z, float age) {
 		glVertex3f(-0.02f, d_y, final_z);
 		glVertex3f(0.0f, d_y, final_z + 0.06f);
 		glEnd();
-		if (i % 4 == 0) {               // Every n-th
+		if (i % 4 == 0) { // Every n-th
 			final_z = top_z * ((float)rand() / (float)RAND_MAX);
 			// Draw crystall fallout
 			glBegin(GL_TRIANGLE_FAN);
@@ -245,15 +245,15 @@ void draw_restoration_effect(float x, float y, float z, float age) {
 			glEnd();
 		}
 	}
-	//return to the world
+	// return to the world
 	glPopMatrix();
 }
 void draw_teleport_effect(float x, float y, float z, float age) {
-	//adapted from RedBook
+	// adapted from RedBook
 	float theta, phi, theta1, cosTheta, sinTheta, cosTheta1, sinTheta1;
 	float ringDelta, sideDelta, cosPhi, sinPhi, dist, alpha;
 	float TubeRadius, Radius;
-	//could use LOD here
+	// could use LOD here
 	int sides = 6;
 	int rings = 12;
 	int h, i, j;
@@ -264,15 +264,15 @@ void draw_teleport_effect(float x, float y, float z, float age) {
 	theta = 0.0f;
 	cosTheta = 1.0f;
 	sinTheta = 0.0f;
-	z_trans = z - 4 * age + 4; //empirically, about height of actor
+	z_trans = z - 4 * age + 4; // empirically, about height of actor
 	TorusDL = glGenLists(1);
 	glNewList(TorusDL, GL_COMPILE);
 	glPushMatrix();
 	glTranslatef(x, y, z_trans);
 	// Make 3 tubes, would be nice if we could generalize alpha equations to have
-	//  any number of tubes
+	// any number of tubes
 	for (h = -2; h < 1; h++) {
-		if (h == 0) {                                                                   // set to fade each in and out
+		if (h == 0) { // set to fade each in and out
 			if (age >= 0.5f) {
 				alpha = -8 * (age * age) + 12 * age - 4.0f;
 			} else {
@@ -291,11 +291,11 @@ void draw_teleport_effect(float x, float y, float z, float age) {
 				alpha = 0.0f;
 			}
 		} else {
-			alpha = 0.0f;           //should not get here, but make sure nothing would display anyhow
+			alpha = 0.0f; // should not get here, but make sure nothing would display anyhow
 		}
-		TubeRadius = alpha * TILESIZE_X / 16 * 2;               // adjust radii based on quadratic function too
-		Radius = alpha * TILESIZE_X / 1.3f * 2;                 // and according to age
-		//only display tubes if aboveground
+		TubeRadius = alpha * TILESIZE_X / 16 * 2; // adjust radii based on quadratic function too
+		Radius = alpha * TILESIZE_X / 1.3f * 2; // and according to age
+		// only display tubes if aboveground
 		if (z_trans + h >= z) {
 			for (i = 0; i < rings; i++) {
 				theta1 = theta + ringDelta;
@@ -331,21 +331,21 @@ void display_special_effect(special_effect *marker) {
 	const float a = ((float)marker->timeleft) / ((float)marker->lifespan);
 	int i;
 	// x and y are the location for the effect
-	//	center_offset_x&y are for radial distance from actor in ground plane
-	//	base_offset_z is for height off the ground (z)
+	// center_offset_x&y are for radial distance from actor in ground plane
+	// base_offset_z is for height off the ground (z)
 	float x = 0.0f, y = 0.0f /*,center_offset_x, center_offset_y, base_offset_z*/;
 	// height of terrain at the effect's location
 	float z = get_tile_height(marker->x, marker->y);
 	// place x,y in the center of the actor's tile
 	switch (marker->type) {
-	case SPECIAL_EFFECT_SMITE_SUMMONINGS:                           // group "static" tile-based effects
+	case SPECIAL_EFFECT_SMITE_SUMMONINGS: // group "static" tile-based effects
 	case SPECIAL_EFFECT_HEAL_SUMMONED:
 	case SPECIAL_EFFECT_INVASION_BEAMING:
 	case SPECIAL_EFFECT_TELEPORT_TO_RANGE:
-		x = (float)marker->x / 2 + (TILESIZE_X / 2);            // "static" tile based effects
-		y = (float)marker->y / 2 + (TILESIZE_Y / 2);            // "static" tile based effects
+		x = (float)marker->x / 2 + (TILESIZE_X / 2); // static" tile based effects
+		y = (float)marker->y / 2 + (TILESIZE_Y / 2); // static" tile based effects
 		break;
-	default:                                                                                        // all others are movable effects
+	default: // all others are movable effects
 		/* Avoid possible use-after-free if marker->owner is already freed */
 		for (i = 0; i < max_actors; i++) {
 			if (marker->owner == actors_list[i]) {
@@ -358,27 +358,26 @@ void display_special_effect(special_effect *marker) {
 	}
 	switch (marker->type) {
 /*		case SPECIAL_EFFECT_SMITE_SUMMONINGS:
-                        center_offset_x = ((TILESIZE_X / 2) / (a*a));	//fast expanding
+                        center_offset_x = ((TILESIZE_X / 2) / (a*a)); // fast expanding
                         center_offset_y = ((TILESIZE_X / 2) / (a*a));
-                        base_offset_z = z + a*0.3f;						//drop toward ground
+                        base_offset_z = z + a*0.3f; // drop toward ground
                         glColor4f(1.0f, 0.0f, 0.0f, a);
                         do_shape_spikes(x, y, z, center_offset_x, center_offset_y, base_offset_z, a);
                         break;
                 case SPECIAL_EFFECT_HEAL_SUMMONED:
                         center_offset_x = ((TILESIZE_X / 2) / (a*a));
                         center_offset_y = ((TILESIZE_X / 2) / (a*a));
-                        base_offset_z = z + a*0.3f;						//drop toward ground
+                        base_offset_z = z + a*0.3f; // drop toward ground
                         glColor4f(0.0f, 0.0f, 1.0f, a);
                         do_shape_spikes(x, y, z, center_offset_x, center_offset_y, base_offset_z, a);
                         break;
                 case SPECIAL_EFFECT_INVASION_BEAMING:
-
                 case SPECIAL_EFFECT_TELEPORT_TO_RANGE:
                         draw_teleport_effect(x,y,z,a);
                         break;
  */
 	case SPECIAL_EFFECT_HEAL:
-		draw_heal_effect(x, y, z, a);                                                   //Kindar Naar's effect
+		draw_heal_effect(x, y, z, a); // Kindar Naar's effect
 		break;
 	case SPECIAL_EFFECT_RESTORATION:
 		draw_restoration_effect(x, y, z, a);
@@ -386,18 +385,18 @@ void display_special_effect(special_effect *marker) {
 /*		case SPECIAL_EFFECT_REMOTE_HEAL:
                         center_offset_x = ((TILESIZE_X / 2) * (a*a));
                         center_offset_y = ((TILESIZE_X / 2) * (a*a));
-                        if (a > 0) base_offset_z = z + 1.5/(a+.5) - 1;	//beam up effect
+                        if (a > 0) base_offset_z = z + 1.5/(a+.5) - 1; // beam up effect
                         if (marker->caster)
-                                glColor4f(0.0f, 0.0f, 1.0f, a);				//caster
+                                glColor4f(0.0f, 0.0f, 1.0f, a); // caster
                         else
-                                glColor4f(0.0f, 1.0f, 0.0f, a);				//recipient
+                                glColor4f(0.0f, 1.0f, 0.0f, a); // recipient
                         do_shape_spikes(x, y, z, center_offset_x, center_offset_y, base_offset_z, a);
                         break;
                 case SPECIAL_EFFECT_SHIELD:
                         draw_shield_effect(x,y,z,a);
                         break;
  */
-	default:         // for all the spells we have not gotten to yet
+	default: // for all the spells we have not gotten to yet
 		break;
 	}
 }
@@ -412,7 +411,7 @@ void display_special_effects(int do_render) {
 	}
 	for (i = 0; i < NUMBER_OF_SPECIAL_EFFECTS; i++) {
 		if (sfx_markers[i].active) {
-			sfx_markers[i].timeleft -= (cur_time - sfx_markers[i].last_time); //use global cur_time
+			sfx_markers[i].timeleft -= (cur_time - sfx_markers[i].last_time); // use global cur_time
 			if (sfx_markers[i].timeleft > 0) {
 				sfx_markers[i].last_time = cur_time;
 				if (do_render) {
@@ -430,7 +429,7 @@ void display_special_effects(int do_render) {
 		glDisable(GL_BLEND);
 	}
 }
-//send server data packet to appropriate method depending on desired effect
+// send server data packet to appropriate method depending on desired effect
 void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 	int offset = 0;
 	int need_target = 0;
@@ -439,9 +438,8 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 	actor *caster = NULL;
 	actor *target = NULL;
 	float x = 0.0f, y = 0.0f;
-	//float x1, y1, z1, x2, y2, z2;
 	switch (sfx) {
-	//player only
+	// player only
 	case    SPECIAL_EFFECT_SHIELD:
 	case    SPECIAL_EFFECT_HEATSHIELD:
 	case    SPECIAL_EFFECT_COLDSHIELD:
@@ -513,7 +511,7 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 		x = (float)SDL_SwapLE16(*((Uint16 *)(&data[offset + 1])));
 		y = (float)SDL_SwapLE16(*((Uint16 *)(&data[offset + 2])));
 		break;
-	//player to player, var_a is caster, var_b is recipient/target
+	// player to player, var_a is caster, var_b is recipient/target
 	case    SPECIAL_EFFECT_POISON:
 	case    SPECIAL_EFFECT_REMOTE_HEAL:
 	case    SPECIAL_EFFECT_HARM:
@@ -522,11 +520,11 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 		var_b = SDL_SwapLE16(*((Uint16 *)(&data[offset + 1])));
 		need_target = 1;
 		if (use_eye_candy) {
-			add_sfx(sfx, var_a, 1);                 //caster
-			add_sfx(sfx, var_b, 0);                 //target
+			add_sfx(sfx, var_a, 1); // caster
+			add_sfx(sfx, var_b, 0); // target
 		}
 		break;
-	//location (a&b variable are not known until implemented by server)
+	// location (a&b variable are not known until implemented by server)
 	case    SPECIAL_EFFECT_INVASION_BEAMING:
 	case    SPECIAL_EFFECT_TELEPORT_TO_RANGE:
 		var_a = SDL_SwapLE16(*((Uint16 *)(&data[offset])));
@@ -546,9 +544,6 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 	if (sfx_sound >= 0) {
 		add_sound_object(sfx_sound, (caster->x_pos - X_OFFSET) * 2, (caster->y_pos - Y_OFFSET) * 2, caster->actor_id == yourself ? 1 : 0);
 	}
-//	printf("%f,%f,%f | %f,%f | %d,%d\n", x / 2.0, y / 2.0, ec_get_z2((int)x, (int)y), caster->x_pos, caster->y_pos, caster->tmp.x_tile_pos, caster->tmp.y_tile_pos);
-// 	x = caster->x_pos;
-// 	y = caster->y_pos;
 	if (need_target) {
 		target = get_actor_ptr_from_id(var_b);
 		if (target == NULL) {
@@ -606,39 +601,30 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 			break;
 		case    SPECIAL_EFFECT_INVASION_BEAMING:
 		case    SPECIAL_EFFECT_TELEPORT_TO_RANGE:
-			//ec_create_targetmagic_teleport_to_range(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), target->x_pos, target->y_pos, ec_get_z(target), (poor_man ? 6 : 10));
 			ec_create_targetmagic_teleport_to_range2(caster, target, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_RARE_STONE:
-			//ec_create_harvesting_rare_stone(caster->x_pos + 0.4 * sin(caster->z_rot) + X_OFFSET, caster->y_pos + 0.4 * cos(caster->z_rot) + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_rare_stone2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_MN_EXP_BLESSING:
-			//ec_create_harvesting_queen_of_nature(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_queen_of_nature2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_MN_MONEY_BLESSING:
-			//ec_create_harvesting_bag_of_gold(caster->x_pos + X_OFFSET + 0.4 * sin(caster->z_rot), caster->y_pos + Y_OFFSET + 0.4 * cos(caster->z_rot), ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_bag_of_gold2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_WALL_COLLAPSE:
-			//ec_create_harvesting_cavern_wall(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_cavern_wall2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_BEES:
-			//ec_create_harvesting_bees(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_bees2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_RADON:
-			//ec_create_harvesting_radon_pouch(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_radon_pouch2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_TELEPORT_NEXUS:
-			//ec_create_selfmagic_teleport_to_the_portals_room(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_selfmagic_teleport_to_the_portals_room2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_MOTHER_NATURE_PISSED:
-			//ec_create_harvesting_mother_nature(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), (poor_man ? 6 : 10));
 			ec_create_harvesting_mother_nature2(caster, (poor_man ? 6 : 10));
 			break;
 		case    SPECIAL_EFFECT_HARVEST_TOOL_BREAKS:
@@ -758,19 +744,5 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data) {
 		default:
 			break;
 		} /* switch(sfx) */
-//			ec_create_selfmagic_magic_protection(49.0, 70.0, 0.0, (poor_man ? 6 : 10));
-//			ec_create_selfmagic_bones_to_gold(caster, (poor_man ? 6 : 10));
-//			ec_create_selfmagic_magic_immunity(caster, (poor_man ? 6 : 10));
-//			ref = ec_create_generic();
-//			ec_add_target(ref, 52.0, 70.0, 0.5);
-//			ec_add_target(ref, 50.0, 68.0, 0.5);
-//			ec_add_target(ref, 50.0, 72.0, 0.5);
-//			ec_launch_targetmagic_heal_summoned(ref, caster, (poor_man ? 6 : 10));
-//			ref = ec_create_generic();
-//			ec_add_target(ref, 52.0, 70.0, 0.5);
-//			ec_add_target(ref, 50.0, 68.0, 0.5);
-//			ec_add_target(ref, 50.0, 72.0, 0.5);
-//			ec_launch_targetmagic_smite_summoned(ref, caster, (poor_man ? 6 : 10));
-//			ec_create_targetmagic_life_drain(caster, target, (poor_man ? 6 : 10));
 	} /* if (use_eye_candy) */
 }

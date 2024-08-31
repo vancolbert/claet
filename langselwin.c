@@ -1,16 +1,12 @@
 /*
         langselwin.c - Shows a language selection window if no language specified in el.ini
-
         Each available language is displayed from languages/langsel.xml.  The user can click on
         their preferred language and then press save which will save the value in el.ini.
         Beside the save button a note can be displayed explaining a bit about languages in EL.
         If the language "en" is chosen the client will continue to open the login/new
         character/rules screen.   Otherwise, the client will be restarted.  All the text and
         colours are configurable in the langsel.xml file.
-
-        Most user will only see this window once, existing users probably never :(
-
-        23/09/07 bluap/pjbroad
+        Most user will only see this window once, existing users probably never :(23/09/07 bluap/pjbroad
  */
 #include <string.h>
 #include <libxml/parser.h>

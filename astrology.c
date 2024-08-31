@@ -15,18 +15,18 @@ typedef enum {
 	adtTwoProgressBars = 0, adtThreeProgressBars,
 } ASTROLOGY_DISPLAY_TYPES;
 const float positive_bar_colors[12] = {
-	//red    green   blue
+	// red    green   blue
 	0.086f, 0.988f, 0.659f, // topleft
 	0.086f, 0.988f, 0.659f, // topright
 	0.294f, 0.690f, 0.173f, // bottomright
-	0.294f, 0.690f, 0.173f  // bottomleft
+	0.294f, 0.690f, 0.173f // bottomleft
 };
 const float negative_bar_colors[12] = {
-	//red    green   blue
+	// red    green   blue
 	0.988f, 0.659f, 0.086f, // topleft
 	0.988f, 0.659f, 0.086f, // topright
 	0.690f, 0.173f, 0.294f, // bottomright
-	0.690f, 0.173f, 0.294f  // bottomleft
+	0.690f, 0.173f, 0.294f // bottomleft
 };
 #define progress_bar_width 135
 #define progress_bar_height 10
@@ -50,13 +50,13 @@ int display_astrology_handler(window_info *win);
 int is_astrology_message(const char *RawText) {
 	char *tmp1, *tmp2;
 	char str[50];
-//check for predictors
+// check for predictors
 	tmp1 = strstr(RawText, "20 Minutes: ");
 	if (tmp1) {
 		astrology_display_type = adtThreeProgressBars;
 		memset(stone_name, 0, 50);
 		RawText += 1;
-//parse predictors
+// parse predictors
 		tmp2 = strchr(RawText, ',');
 		safe_strncpy2(str, RawText, sizeof(str), tmp2 - RawText);
 		safe_snprintf(stone_name, sizeof(stone_name), "%s predictor", str);
@@ -93,10 +93,10 @@ int is_astrology_message(const char *RawText) {
 		display_astrology_window(RawText);
 		return 1;
 	}
-//check for att/def indicator
+// check for att/def indicator
 	tmp1 = strstr(RawText, "Att: ");
 	if (tmp1) {
-		//parse att/def indicator
+		// parse att/def indicator
 		astrology_display_type = adtTwoProgressBars;
 		astrology_type = atAttDefIndicator;
 		safe_snprintf(stone_name, sizeof(stone_name), "Att/Def indicator");
@@ -112,10 +112,10 @@ int is_astrology_message(const char *RawText) {
 		display_astrology_window(RawText);
 		return 1;
 	}
-//check for criticals indicator
+// check for criticals indicator
 	tmp1 = strstr(RawText, "To hit: ");
 	if (tmp1) {
-		//parse criticals indicator
+		// parse criticals indicator
 		astrology_display_type = adtTwoProgressBars;
 		astrology_type = atCriticalsIndicator;
 		safe_snprintf(stone_name, sizeof(stone_name), "Criticals indicator");
@@ -131,10 +131,10 @@ int is_astrology_message(const char *RawText) {
 		display_astrology_window(RawText);
 		return 1;
 	}
-//check for acc/magic indicator
+// check for acc/magic indicator
 	tmp1 = strstr(RawText, "Acc: ");
 	if (tmp1) {
-		//parse acc/magic indicator
+		// parse acc/magic indicator
 		astrology_display_type = adtTwoProgressBars;
 		astrology_type = atAccMagicIndicator;
 		safe_snprintf(stone_name, sizeof(stone_name), "Acc/magic indicator");
@@ -150,10 +150,10 @@ int is_astrology_message(const char *RawText) {
 		display_astrology_window(RawText);
 		return 1;
 	}
-//check for harv/degrade indicator
+// check for harv/degrade indicator
 	tmp1 = strstr(RawText, "Harvest Events Increase: ");
 	if (tmp1) {
-		//parse harv/degrade indicator
+		// parse harv/degrade indicator
 		astrology_display_type = adtTwoProgressBars;
 		astrology_type = atHarvDegrIndicator;
 		safe_snprintf(stone_name, sizeof(stone_name), "Harvest events inc./degrade indicator");
@@ -169,10 +169,10 @@ int is_astrology_message(const char *RawText) {
 		display_astrology_window(RawText);
 		return 1;
 	}
-//check for rare/failure indicator
+// check for rare/failure indicator
 	tmp1 = strstr(RawText, "Make rare: ");
 	if (tmp1) {
-		//parse rare/failure indicator
+		// parse rare/failure indicator
 		astrology_display_type = adtTwoProgressBars;
 		astrology_type = atRareFailIndicator;
 		safe_snprintf(stone_name, sizeof(stone_name), "Make rare/failure indicator");
@@ -194,7 +194,7 @@ int ok_handler() {
 	hide_window(astrology_win);
 	return 1;
 }
-//adjusts the astrology window size/widgets position, depending on what it displays (predictor or indicator)
+// adjusts the astrology window size/widgets position, depending on what it displays (predictor or indicator)
 void adjust_astrology_window() {
 	switch (astrology_display_type) {
 	case adtTwoProgressBars:
@@ -287,7 +287,7 @@ int display_astrology_handler(window_info *win) {
 	glColor3f(0.77f, 0.57f, 0.39f);
 	switch (astrology_display_type) {
 	case adtTwoProgressBars:
-		//calculate the width coeffitient of the progresses
+		// calculate the width coeffitient of the progresses
 		switch (astrology_type) {
 		case atAttDefIndicator:
 			coefficient1 = calculate_width_coefficient(your_info.attack_skill.base / 20, value1, 0);
@@ -312,20 +312,20 @@ int display_astrology_handler(window_info *win) {
 		default:
 			/* nothing */;
 		}
-		//draw the name of the stone
+		// draw the name of the stone
 		draw_string_small((win->len_x >> 1) - strlen(stone_name) * 4, 5, (const unsigned char *)stone_name, 1);
-		//draw the first indicator item
+		// draw the first indicator item
 		draw_string_small(30, 30, (const unsigned char *)text_item1, 1);
-		//draw the second indicator item
+		// draw the second indicator item
 		draw_string_small(30, 70, (const unsigned char *)text_item2, 1);
-		//draw the plus/minus
+		// draw the plus/minus
 		draw_string_small(15, 47, (const unsigned char *)"-", 1);
 		draw_string_small(15, 87, (const unsigned char *)"-", 1);
 		draw_string_small(305, 47, (const unsigned char *)"+", 1);
 		draw_string_small(305, 87, (const unsigned char *)"+", 1);
 		break;
 	case adtThreeProgressBars:
-		//calculate the width coeffitient of the progresses
+		// calculate the width coeffitient of the progresses
 		switch (astrology_type) {
 		case atAccPredictor:
 		case atAttPredictor:
@@ -376,15 +376,15 @@ int display_astrology_handler(window_info *win) {
 		default:
 			/* nothing */;
 		}
-		//draw the name of the predictor
+		// draw the name of the predictor
 		draw_string_small((win->len_x >> 1) - strlen(stone_name) * 4, 5, (const unsigned char *)stone_name, 1);
-		//draw the prediction for 20 mins
+		// draw the prediction for 20 mins
 		draw_string_small(30, 30, (const unsigned char *)text_item1, 1);
-		//draw the prediction for 40 mins
+		// draw the prediction for 40 mins
 		draw_string_small(30, 70, (const unsigned char *)text_item2, 1);
-		//draw the prediction for 60 mins
+		// draw the prediction for 60 mins
 		draw_string_small(30, 110, (const unsigned char *)text_item3, 1);
-		//draw the plus/minus
+		// draw the plus/minus
 		draw_string_small(15, 47, (const unsigned char *)"-", 1);
 		draw_string_small(15, 87, (const unsigned char *)"-", 1);
 		draw_string_small(15, 127, (const unsigned char *)"-", 1);
@@ -394,11 +394,10 @@ int display_astrology_handler(window_info *win) {
 		break;
 	}
 	glDisable(GL_TEXTURE_2D);
-//	glColor3f(0.77f,0.57f,0.39f);
-	//draw progress borders
+	// draw progress borders
 	glLineWidth(2.0f);
 	glBegin(GL_LINES);
-	//negative progress 1
+	// negative progress 1
 	glVertex3i(30, 50, 0);
 	glVertex3i(30 + progress_bar_width, 50, 0);
 	glVertex3i(30, 50 + progress_bar_height, 0);
@@ -407,7 +406,7 @@ int display_astrology_handler(window_info *win) {
 	glVertex3i(30, 50 + progress_bar_height, 0);
 	glVertex3i(30 + progress_bar_width, 50, 0);
 	glVertex3i(30 + progress_bar_width, 50 + progress_bar_height, 0);
-	//positive progress 1
+	// positive progress 1
 	glVertex3i(30 + progress_bar_width, 50, 0);
 	glVertex3i(30 + (progress_bar_width << 1), 50, 0);
 	glVertex3i(30 + progress_bar_width, 50 + progress_bar_height, 0);
@@ -416,7 +415,7 @@ int display_astrology_handler(window_info *win) {
 	glVertex3i(30 + progress_bar_width, 50 + progress_bar_height, 0);
 	glVertex3i(30 + (progress_bar_width << 1), 50, 0);
 	glVertex3i(30 + (progress_bar_width << 1), 50 + progress_bar_height, 0);
-	//negative progress 2
+	// negative progress 2
 	glVertex3i(30, 90, 0);
 	glVertex3i(30 + progress_bar_width, 90, 0);
 	glVertex3i(30, 90 + progress_bar_height, 0);
@@ -425,7 +424,7 @@ int display_astrology_handler(window_info *win) {
 	glVertex3i(30, 90 + progress_bar_height, 0);
 	glVertex3i(30 + progress_bar_width, 90, 0);
 	glVertex3i(30 + progress_bar_width, 90 + progress_bar_height, 0);
-	//positive progress 2
+	// positive progress 2
 	glVertex3i(30 + progress_bar_width, 90, 0);
 	glVertex3i(30 + (progress_bar_width << 1), 90, 0);
 	glVertex3i(30 + progress_bar_width, 90 + progress_bar_height, 0);
@@ -435,7 +434,7 @@ int display_astrology_handler(window_info *win) {
 	glVertex3i(30 + (progress_bar_width << 1), 90, 0);
 	glVertex3i(30 + (progress_bar_width << 1), 90 + progress_bar_height, 0);
 	if (astrology_display_type == adtThreeProgressBars) {
-		//negative progress 3
+		// negative progress 3
 		glVertex3i(30, 130, 0);
 		glVertex3i(30 + progress_bar_width, 130, 0);
 		glVertex3i(30, 130 + progress_bar_height, 0);
@@ -444,7 +443,7 @@ int display_astrology_handler(window_info *win) {
 		glVertex3i(30, 130 + progress_bar_height, 0);
 		glVertex3i(30 + progress_bar_width, 130, 0);
 		glVertex3i(30 + progress_bar_width, 130 + progress_bar_height, 0);
-		//positive progress 3
+		// positive progress 3
 		glVertex3i(30 + progress_bar_width, 130, 0);
 		glVertex3i(30 + (progress_bar_width << 1), 130, 0);
 		glVertex3i(30 + progress_bar_width, 130 + progress_bar_height, 0);
@@ -457,7 +456,7 @@ int display_astrology_handler(window_info *win) {
 	glEnd();
 	glLineWidth(1.0f);
 	glBegin(GL_QUADS);
-	//progress 1
+	// progress 1
 	if (coefficient1 < 0) {
 		for (i = 0; i < 3; i++) {
 			right_colors[i + 0] = negative_bar_colors[i + 3];
@@ -485,7 +484,7 @@ int display_astrology_handler(window_info *win) {
 		glColor3fv(&positive_bar_colors[9]);
 		glVertex3i(31 + progress_bar_width, 50 + progress_bar_height, 0);
 	}
-	//progress 2
+	// progress 2
 	if (coefficient2 < 0) {
 		for (i = 0; i < 3; i++) {
 			right_colors[i + 0] = negative_bar_colors[i + 3];
@@ -514,7 +513,7 @@ int display_astrology_handler(window_info *win) {
 		glVertex3i(31 + progress_bar_width, 90 + progress_bar_height, 0);
 	}
 	if (astrology_display_type == adtThreeProgressBars) {
-		//progress 3
+		// progress 3
 		if (coefficient3 < 0) {
 			for (i = 0; i < 3; i++) {
 				right_colors[i + 0] = negative_bar_colors[i + 3];

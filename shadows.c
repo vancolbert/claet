@@ -34,7 +34,7 @@ double light_view_mat[16], light_proj_mat[16], shadow_texgen_mat[16];
 int shadows_on = 0;
 int is_day = 1;
 int use_shadow_mapping = 1;
-//TODO: Would like to use TEXTURE_RECTANGLE for cards that support it, but for some reason it doesn't work??
+// TODO: Would like to use TEXTURE_RECTANGLE for cards that support it, but for some reason it doesn't work??
 GLenum depth_texture_target = GL_TEXTURE_2D;
 int shadow_map_size;
 GLuint depth_map_id = 0;
@@ -60,16 +60,15 @@ void change_shadow_framebuffer_size() {
 }
 void calc_light_frustum(float light_xrot) {
 	float window_ratio = (GLfloat)window_width / (GLfloat)window_height;
-	float max_height = 30.0; //TODO: Really calculate this from positions and heights of objects
+	float max_height = 30.0; // TODO: Really calculate this from positions and heights of objects
 	float x, y;
 	float slight, clight;
 	light_xrot = -light_xrot;
 	clight = cos(light_xrot);
 	slight = sin(light_xrot);
-	//TODO: Optimize this function a bit.
-	//Assuming a max zoom_level of 3.75 and near/far distances of 20.0, we'll set the hscale to the radius of a circle that
-	//can just contain the view frustum of the player. To simplify things, we'll assume the view frustum is horizontal.
-	//light_view_hscale=sqrt(window_ratio*window_ratio*3.75f*3.75f+12.0f*12.0f);
+	// TODO: Optimize this function a bit.
+	// Assuming a max zoom_level of 3.75 and near/far distances of 20.0, we'll set the hscale to the radius of a circle that
+	// can just contain the view frustum of the player. To simplify things, we'll assume the view frustum is horizontal.
 	light_view_hscale = sqrt(window_ratio * window_ratio + 30.0f * 30.0f);
 	// For the others, we can just use the parametric ellipse formula to find the value for this angle
 	x = light_view_hscale * slight;
@@ -80,7 +79,7 @@ void calc_light_frustum(float light_xrot) {
 	x = light_view_hscale * clight;
 	y = 3.75f * slight;
 	light_view_bottom = -sqrt(x * x + y * y);
-	x = 100.0f * slight;  // A bit better than the real value (infinity)
+	x = 100.0f * slight; // A bit better than the real value (infinity)
 	y = max_height * clight;
 	light_view_near = -sqrt(x * x + y * y);
 }
@@ -103,7 +102,6 @@ void calc_shadow_matrix() {
 #else
 		xrot = -acosf(light_pos[2]);
 #endif
-		//xrot=-atan2f(light_pos[2],light_pos[0])*180.0f/(float)M_PI;
 #ifdef OSX
 		zrot = -90.0f - atan2(light_pos[1], light_pos[0]) * 180.0f / (float)M_PI;
 #else
@@ -123,10 +121,10 @@ void calc_shadow_matrix() {
 		if (depth_texture_target != GL_TEXTURE_2D) {
 			glScalef(shadow_map_size, shadow_map_size, 0);
 		}
-		glTranslatef(0.5, 0.5, 0.5);         // This...
-		glScalef(0.5, 0.5, 0.5);             // ...and this == S
-		glMultMatrixd(light_proj_mat);             // Plight
-		glMultMatrixd(light_view_mat);             // L^-1
+		glTranslatef(0.5, 0.5, 0.5); // This...
+		glScalef(0.5, 0.5, 0.5); // ...and this == S
+		glMultMatrixd(light_proj_mat); // Plight
+		glMultMatrixd(light_view_mat); // L^-1
 		glGetDoublev(GL_MODELVIEW_MATRIX, shadow_texgen_mat);
 		glPopMatrix();
 	} else {
@@ -175,7 +173,7 @@ void draw_3d_object_shadows(unsigned int object_type) {
 			if (objects_list[l] == NULL) {
 				continue;
 			}
-			//track the usage
+			// track the usage
 			cache_use(objects_list[l]->e3d_data->cache_ptr);
 		}
 		// and all done
@@ -184,11 +182,9 @@ void draw_3d_object_shadows(unsigned int object_type) {
 	// find the modes we need
 	is_transparent = is_alpha_3d_object(object_type);
 	if (is_transparent) {
-		glEnable(GL_ALPHA_TEST);        //enable alpha filtering, so we have some alpha key
+		glEnable(GL_ALPHA_TEST); // enable alpha filtering, so we have some alpha key
 		glAlphaFunc(GL_GREATER, 0.05f);
-//			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
-//	else glDisable(GL_TEXTURE_2D);//we don't need textures for non transparent objects
 	glEnable(GL_TEXTURE_2D);
 	// now loop through each object
 	for (i = start; i < stop; i++) {
@@ -197,10 +193,10 @@ void draw_3d_object_shadows(unsigned int object_type) {
 		if (objects_list[l] == NULL) {
 			continue;
 		}
-		//track the usage
+		// track the usage
 		cache_use(objects_list[l]->e3d_data->cache_ptr);
 		if (!objects_list[l]->display) {
-			continue;                       // not currently on the map, ignore it
+			continue; // not currently on the map, ignore it
 		}
 		draw_3d_object_detail(objects_list[l], get_3dobject_material(j), 0, is_transparent, 0);
 	}
@@ -251,7 +247,7 @@ void display_3d_ground_objects() {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisable(GL_COLOR_MATERIAL);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -263,7 +259,7 @@ void display_3d_ground_objects() {
 	draw_3d_objects(TYPE_3D_NO_BLEND_GROUND_NO_ALPHA_SELF_LIT_OBJECT);
 	draw_3d_objects(TYPE_3D_NO_BLEND_GROUND_NO_ALPHA_NO_SELF_LIT_OBJECT);
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);
@@ -275,14 +271,14 @@ void display_3d_ground_objects() {
 	glDisable(GL_CULL_FACE);
 }
 void display_3d_non_ground_objects() {
-	//we don't want to be affected by 2d objects and shadows
+	// we don't want to be affected by 2d objects and shadows
 	anything_under_the_mouse(0, UNDER_MOUSE_NO_CHANGE);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -294,7 +290,7 @@ void display_3d_non_ground_objects() {
 	draw_3d_objects(TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_SELF_LIT_OBJECT);
 	draw_3d_objects(TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_NO_SELF_LIT_OBJECT);
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);
@@ -327,7 +323,7 @@ void render_light_view() {
 			glTexParameteri(depth_texture_target, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 			glTexParameteri(depth_texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(depth_texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			//TODO: Might want to use CLAMP_TO_BORDER for cards that support it?
+			// TODO: Might want to use CLAMP_TO_BORDER for cards that support it?
 			glTexParameteri(depth_texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(depth_texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			CHECK_GL_ERRORS();
@@ -529,7 +525,7 @@ void draw_sun_shadowed_scene(int any_reflection) {
 		anything_under_the_mouse(0, UNDER_MOUSE_NOTHING);
 		display_objects();
 		display_ground_objects();
-		display_actors(1, SHADOW_RENDER_PASS);          // Affects other textures ????????? (FPS etc., unless there's a particle system...)
+		display_actors(1, SHADOW_RENDER_PASS); // Affects other textures ????????? (FPS etc., unless there's a particle system...)
 		display_alpha_objects();
 		display_blended_objects();
 		if (use_fog) {

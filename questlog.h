@@ -124,4 +124,4 @@ void draw_highlight(int topleftx, int toplefty, int widthx, int widthy, size_t c
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  //__QUESTLOG_H__
+#endif // __QUESTLOG_H__

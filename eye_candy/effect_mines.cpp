@@ -1,11 +1,11 @@
 
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_mines.h"
 #include "orbital_mover.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 MineParticle::MineParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD, const MineEffect::MineType _type) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 _size * (0.5 + randcoord()) * 10 / _LOD) {
@@ -95,9 +95,8 @@ bool MineParticle::idle(const Uint64 delta_t) {
 			return false;
 		}
 		velocity *= 0.5;
-		//		const alpha_t scalar = pow_randfloat(float_time * 2);
 		if (age > 500000) {
-			alpha *= 0.8;                 // scalar
+			alpha *= 0.8; // scalar
 		}
 		break;
 	}
@@ -374,5 +373,4 @@ Uint32 MineParticleSmoke::get_texture() {
 float MineParticleSmoke::get_burn() const {
 	return 0.0f;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

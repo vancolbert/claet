@@ -119,7 +119,6 @@ void open_chat_log() {
 	char chat_log_file[100];
 	time(&c_time);
 	l_time = localtime(&c_time);
-//	safe_snprintf(chat_log_file, sizeof(chat_log_file), "chat_log_%s.txt", username_str);
 	mkdir_config("logs");
 	safe_snprintf(chat_log_file, sizeof(chat_log_file), "logs/chat_log_%s_%04d%02d.txt", username_str, l_time->tm_year + 1900, l_time->tm_mon + 1);
 	chat_log = open_file_config(chat_log_file, "a");
@@ -155,7 +154,7 @@ void timestamp_chat_log() {
 	struct tm *l_time;
 	time_t c_time;
 	if (log_chat == LOG_NONE) {
-		return; //we're not logging anything
+		return; // we're not logging anything
 	}
 	if (chat_log == NULL) {
 		open_chat_log();
@@ -195,7 +194,7 @@ void write_to_log(Uint8 channel, const Uint8 *const data, int len) {
 	j = strftime(str, sizeof(str), show_timestamp ? "%d " : "%d [%H:%M:%S] ", l_time);
 	i = 0;
 	while (i < len) {
-		for ( ; i < len && j < sizeof(str) - 1; i++) {
+		for (; i < len && j < sizeof(str) - 1; i++) {
 			ch = data[i];
 			// remove colorization and soft wrapping characters when
 			// writing to the chat log
@@ -230,28 +229,28 @@ void send_input_text_line(char *line, int line_len) {
 		}
 		break;
 	}
-	if ( caps_filter && line_len > 4 && my_isupper(line, -1)) {
+	if (caps_filter && line_len > 4 && my_isupper(line, -1)) {
 		my_tolower(line);
 	}
 	i = 0;
 	j = 1;
-	if (line[0] != '/' && line[0] != char_slash_str[0]) {   //we don't have a PM
+	if (line[0] != '/' && line[0] != char_slash_str[0]) { // we don't have a PM
 		str[0] = RAW_TEXT;
 	} else {
 		str[0] = SEND_PM;
-		i++;    // skip the leading /
+		i++; // skip the leading /
 	}
-	for ( ; i < line_len && j < sizeof(str) - 1; i++) {     // copy it, but ignore the enter
+	for (; i < line_len && j < sizeof(str) - 1; i++) { // copy it, but ignore the enter
 		ch = line[i];
 		if (ch != '\n' && ch != '\r') {
 			str[j] = ch;
 			j++;
 		}
 	}
-	str[j] = 0;     // always a NULL at the end
+	str[j] = 0; // always a NULL at the end
 	len = strlen(&str[1]);
 	if (my_tcp_send(my_socket, (Uint8 *)str, len + 1) < len + 1) {
-		//we got a nasty error, log it
+		// we got a nasty error, log it
 	}
 	return;
 }
@@ -276,9 +275,9 @@ void check_harvesting_effect(void) {
 int filter_or_ignore_text(char *text_to_add, int len, int size, Uint8 channel) {
 	int l, idx;
 	if (len <= 0) {
-		return 0;       // no point
+		return 0; // no point
 	}
-	//check for auto receiving #help
+	// check for auto receiving #help
 	for (idx = 0; idx < len; idx++) {
 		if (!is_color(text_to_add[idx])) {
 			break;
@@ -385,13 +384,13 @@ int filter_or_ignore_text(char *text_to_add, int len, int size, Uint8 channel) {
 	if ((channel == CHAT_MODPM) && (my_strncompare(text_to_add + 1, "[Mod PM from", 12))) {
 		display_server_popup_win(text_to_add);
 	}
-	//Make sure we don't check our own messages.
-	if ( !(channel == CHAT_PERSONAL && len >= strlen(pm_from_str) && strncasecmp(text_to_add + 1, pm_from_str, strlen(pm_from_str)) != 0) && !(channel == CHAT_MODPM && len >= strlen(mod_pm_from_str) && strncasecmp(text_to_add + 1, mod_pm_from_str, strlen(mod_pm_from_str)) != 0)) {
-		//check if ignored - pre_check_if_ignored() checks for Mod PM's etc to not ignore (or it  would be asking for trouble)
+	// Make sure we don't check our own messages.
+	if (!(channel == CHAT_PERSONAL && len >= strlen(pm_from_str) && strncasecmp(text_to_add + 1, pm_from_str, strlen(pm_from_str)) != 0) && !(channel == CHAT_MODPM && len >= strlen(mod_pm_from_str) && strncasecmp(text_to_add + 1, mod_pm_from_str, strlen(mod_pm_from_str)) != 0)) {
+		// check if ignored - pre_check_if_ignored() checks for Mod PM's etc to not ignore (or it  would be asking for trouble)
 		if (pre_check_if_ignored(text_to_add, len, channel) && channel != CHAT_SERVER) {
 			return 0;
 		}
-		//All right, we do not ignore the person
+		// All right, we do not ignore the person
 		if (afk) {
 			if (channel == CHAT_PERSONAL || channel == CHAT_MODPM) {
 				// player sent us a PM
@@ -425,7 +424,7 @@ int filter_or_ignore_text(char *text_to_add, int len, int size, Uint8 channel) {
 				}
 			}
 		}
-	} else {        //We sent this PM or MODPM. Can we expect a reply?
+	} else { // We sent this PM or MODPM. Can we expect a reply?
 		int len = 0;
 		int type = 0;
 		char name[MAX_USERNAME_LENGTH];
@@ -470,8 +469,8 @@ int filter_or_ignore_text(char *text_to_add, int len, int size, Uint8 channel) {
 		}
 	}
 	if (is_color(text_to_add[0])) {
-		//@tosh couleurs personnalisées pour les différents canaux
-		//(hors canaux "normaux")
+		// @tosh couleurs personnalisées pour les différents canaux
+		// (hors canaux "normaux")
 		if (channel == CHAT_PERSONAL) {
 			text_to_add[0] = to_color_char(couleur_mp);
 		} else if (channel == CHAT_GM) {
@@ -496,13 +495,13 @@ int filter_or_ignore_text(char *text_to_add, int len, int size, Uint8 channel) {
 void put_text_in_buffer(Uint8 channel, const Uint8 *text_to_add, int len) {
 	put_colored_text_in_buffer(c_grey1, channel, text_to_add, len);
 }
-//-- Logan Dugenoux [5/26/2004]
+// -- Logan Dugenoux [5/26/2004]
 // Checks chat string, if it begins with an actor name,
 // and the actor is displayed, put said sentence into an overtext bubble
 #define ALLOWED_CHAR_IN_NAME(_x_)               (isalnum(_x_) || (_x_ == '_'))
 void check_chat_text_to_overtext(const Uint8 *text_to_add, int len, Uint8 channel) {
 	if (!view_chat_text_as_overtext || channel != CHAT_LOCAL) {
-		return;         // disabled
+		return; // disabled
 	}
 	if (from_color_char(text_to_add[0]) == c_grey1) {
 		char playerName[128];
@@ -516,20 +515,20 @@ void check_chat_text_to_overtext(const Uint8 *text_to_add, int len, Uint8 channe
 				playerName[j] = (char)text_to_add[i];
 				j++;
 				if (j >= sizeof(playerName)) {
-					return;//over buffer
+					return; // over buffer
 				}
 			}
 			i++;
 		}
 		if (i < len) {
 			playerName[j] = '\0';
-			while ( j > 0 && !ALLOWED_CHAR_IN_NAME(playerName[j])) {
+			while (j > 0 && !ALLOWED_CHAR_IN_NAME(playerName[j])) {
 				playerName[j--] = '\0';
 			}
 			j = 0;
 			while (i < len) {
-				if ( j >= sizeof(textbuffer)) {
-					return;//over buffer
+				if (j >= sizeof(textbuffer)) {
+					return; // over buffer
 				}
 				textbuffer[j] = (char)text_to_add[i];
 				i++;
@@ -540,10 +539,10 @@ void check_chat_text_to_overtext(const Uint8 *text_to_add, int len, Uint8 channe
 				char actorName[128];
 				j = 0;
 				// Strip clan info
-				while ( ALLOWED_CHAR_IN_NAME(actors_list[i]->actor_name[j])) {
+				while (ALLOWED_CHAR_IN_NAME(actors_list[i]->actor_name[j])) {
 					actorName[j] = actors_list[i]->actor_name[j];
 					j++;
-					if ( j >= sizeof(actorName)) {
+					if (j >= sizeof(actorName)) {
 						return; // over buffer
 					}
 				}
@@ -792,7 +791,7 @@ void put_small_colored_text_in_box(Uint8 color, const Uint8 *text_to_add, int le
 	if (!is_color(text_to_add[0])) {
 		buffer[last_text++] = to_color_char(color);
 	}
-	//see if the text fits on the screen
+	// see if the text fits on the screen
 	x_chars_limit = pixels_limit / 8;
 	if (len <= x_chars_limit) {
 		for (i = 0; i < len; i++) {
@@ -806,18 +805,18 @@ void put_small_colored_text_in_box(Uint8 color, const Uint8 *text_to_add, int le
 			buffer[last_text++] = '\n';
 		}
 		buffer[last_text] = '\0';
-	} else { //we have to add new lines to our text...
+	} else { // we have to add new lines to our text...
 		int k;
 		int new_line_pos = 0;
 		char semaphore = 0;
 		Uint8 current_color = to_color_char(color);
 		// go trought all the text
 		for (i = 0; i < len; i++) {
-			if (!semaphore && new_line_pos + x_chars_limit < len) { //don't go through the last line
-				//find the closest space from the end of this line
-				//if we have one really big word, then parse the string from the
-				//end of the line backwards, untill the beginning of the line +2
-				//the +2 is so we avoid parsing the ": " thing...
+			if (!semaphore && new_line_pos + x_chars_limit < len) { // don't go through the last line
+				// find the closest space from the end of this line
+				// if we have one really big word, then parse the string from the
+				// end of the line backwards, untill the beginning of the line +2
+				// the +2 is so we avoid parsing the ": " thing...
 				for (k = new_line_pos + x_chars_limit - 1; k > new_line_pos + 2; k--) {
 					cur_char = text_to_add[k];
 					if (k > len) {
@@ -855,7 +854,7 @@ void put_small_colored_text_in_box(Uint8 color, const Uint8 *text_to_add, int le
 				}
 				semaphore = 0;
 			}
-			//don't add another new line, if the current char is already a new line...
+			// don't add another new line, if the current char is already a new line...
 			if (cur_char != '\n') {
 				buffer[last_text++] = cur_char;
 			}
@@ -889,7 +888,7 @@ int find_line_nr(int nr_lines, int line, Uint8 filter, int *msg, int *offset, fl
 	int imsg, ichar;
 	char *data;
 	imsg = last_message;
-	if ( imsg < 0 ) {
+	if (imsg < 0) {
 		/* No data in buffer */
 		*msg = *offset = 0;
 		return 1;
@@ -992,7 +991,6 @@ int rewrap_message(text_message *msg, float zoom, int font, int width, int *curs
 	if (msg == NULL || msg->data == NULL || msg->deleted) {
 		return 0;
 	}
-//printf("GFM rewrap... (%i)->(%i) [%s]\n", font, msg->wrap_font, msg->data);
 	if (msg->wrap_width != width || msg->wrap_zoom != zoom || msg->wrap_font != font) {
 		set_font(font);
 		nlines = reset_soft_breaks(msg->data, msg->len, msg->size, zoom, width, cursor, &max_line_width);

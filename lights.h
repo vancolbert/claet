@@ -36,7 +36,7 @@ typedef struct {
 /*! \name Lights limits */
 /*! @{ */
 #define GLOBAL_LIGHTS_NO 60 /*!< The maximum number of global lights to use */
-#define MAX_LIGHTS 1000     /*!< The maximum amount of lights (global and local) */
+#define MAX_LIGHTS 1000 /*!< The maximum amount of lights (global and local) */
 /*! @} */
 /*! \name Sky lights arrays */
 /*! @{ */
@@ -47,8 +47,8 @@ extern GLfloat sky_lights_c4[GLOBAL_LIGHTS_NO * 2][4];
 /*! @} */
 extern GLfloat ambient_light[]; /*!< An array for the ambient lights radiating from the sun */
 extern GLfloat diffuse_light[]; /*!< An array for the diffuse light portion */
-extern int show_lights;         /*! the highest numbered light in the current GL display (0-6) */
-extern int num_lights;      /*! the number of lights currently loaded */
+extern int show_lights; /*! the highest numbered light in the current GL display (0-6) */
+extern int num_lights; /*! the number of lights currently loaded */
 extern light *lights_list[MAX_LIGHTS]; /*!< global lights list */
 extern unsigned char light_level; /*!< the light level */
 extern short game_minute; /*!< the current game minute */

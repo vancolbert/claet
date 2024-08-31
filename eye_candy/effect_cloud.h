@@ -4,10 +4,10 @@
  */
 #ifndef EFFECT_CLOUD_H
 #define EFFECT_CLOUD_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class CloudParticle : public Particle {
 public:
 CloudParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _min_height, const coord_t _max_height, const coord_t _size, const alpha_t _alpha);
@@ -52,6 +52,5 @@ alpha_t alpha;
 coord_t size_scalar;
 int count;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_CLOUD_H
+#endif // defined EFFECT_CLOUD_H

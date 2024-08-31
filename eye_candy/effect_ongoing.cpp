@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_ongoing.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 OngoingParticle::OngoingParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _size, const alpha_t _alpha, color_t hue, color_t saturation, color_t value, TextureEnum _texture, const Uint16 _LOD, const OngoingEffect::OngoingType _type) :
 	Particle(_effect, _mover, _pos, _velocity, _size) {
 	type = _type;
@@ -98,7 +98,6 @@ bool OngoingParticle::idle(const Uint64 delta_t) {
 	}
 	case OngoingEffect::OG_HARVEST: {
 		if (((OngoingEffect *)effect)->recall == false) {
-			//center = ((OngoingEffect*)effect)->effect_center;
 		}
 		const float age_f = (float)(age) / 1000000;
 		pos.x = center.x + cos(angle + M_PI * age_f) * std::max((age_f < 0.75f ? 0.0f : 0.0625f), (float)(age_f * 2.5f / exp(age_f * 4.0f)));
@@ -136,7 +135,6 @@ OngoingEffect::OngoingEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const col
 	hue_adjust = _hue_adjust;
 	saturation_adjust = _saturation_adjust;
 	effect_center = *pos;
-	//effect_center.y += 0.5; // don't! it's linked to a bone position now
 	type = _type;
 	LOD = base->last_forced_LOD;
 	desired_LOD = _LOD;
@@ -227,7 +225,7 @@ bool OngoingEffect::idle(const Uint64 usec) {
 			}
 		}
 		break;
-	case OG_POISON:                 //The odd one out.  ;)
+	case OG_POISON: // The odd one out.  ;)
 		while (pow_randfloat(float_time * 4.0f * LOD * strength) < 0.5) {
 			Vec3 coords = spawner->get_new_coords();
 			Vec3 velocity;
@@ -274,5 +272,4 @@ bool OngoingEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

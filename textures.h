@@ -23,14 +23,14 @@ typedef enum {
  * we use a separate cache structure to cache textures.
  */
 typedef struct {
-	char file_name[128];            /*!< the filename of the texture */
-	cache_item_struct *cache_ptr;   /*!< a pointer to the cached item */
-	GLuint id;                      /*!< the id of the texture */
-	Uint32 hash;                    /*!< hash value of the name */
-	Uint32 size;                    /*!< size of the texture */
-	texture_type type;              /*!< the texture type, needed for loading and unloading */
-	Uint8 load_err;                 /*!< if true, we tried to load this texture before and failed */
-	Uint8 alpha;                    /*!< the texture has an alpha channel */
+	char file_name[128]; /*!< the filename of the texture */
+	cache_item_struct *cache_ptr; /*!< a pointer to the cached item */
+	GLuint id; /*!< the id of the texture */
+	Uint32 hash; /*!< hash value of the name */
+	Uint32 size; /*!< size of the texture */
+	texture_type type; /*!< the texture type, needed for loading and unloading */
+	Uint8 load_err; /*!< if true, we tried to load this texture before and failed */
+	Uint8 alpha; /*!< the texture has an alpha channel */
 } texture_cache_t;
 /*!
  * \ingroup 	textures
@@ -151,16 +151,16 @@ typedef enum {
  * we use a separate cache structure to cache textures.
  */
 typedef struct {
-	enhanced_actor_images_t files;  /*!< the files used for the texture */
-	char name[MAX_ACTOR_NAME];      /*!< used as an uid.... */
-	SDL_mutex *mutex;               /*!< the mutex used for this structure */
-	image_t image;                  /*!< the image for the texture */
-	GLuint id;                      /*!< the id of the texture */
-	GLuint new_id;                  /*!< the id of the new texture */
-	Uint32 hash;                    /*!< hash value of the files */
-	Uint32 used;                    /*!< if this is used at the moment? */
-	Uint32 access_time;             /*!< last time used */
-	texture_state_type state;       /*!< the texture states e.g. loading */
+	enhanced_actor_images_t files; /*!< the files used for the texture */
+	char name[MAX_ACTOR_NAME]; /*!< used as an uid.... */
+	SDL_mutex *mutex; /*!< the mutex used for this structure */
+	image_t image; /*!< the image for the texture */
+	GLuint id; /*!< the id of the texture */
+	GLuint new_id; /*!< the id of the new texture */
+	Uint32 hash; /*!< hash value of the files */
+	Uint32 used; /*!< if this is used at the moment? */
+	Uint32 access_time; /*!< last time used */
+	texture_state_type state; /*!< the texture states e.g. loading */
 } actor_texture_cache_t;
 /*!
  * \ingroup 	textures

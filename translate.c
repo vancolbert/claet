@@ -1017,7 +1017,7 @@ void init_errors() {
 	group_id *snd = &(errors[4]);
 	group_id *video = &(errors[5]);
 	group_id *rules = &(errors[6]);
-	//Actor related errors
+	// Actor related errors
 	add_xml_identifier(actors, "load", cant_load_actor, "Can't load actor", sizeof(cant_load_actor));
 	add_xml_identifier(actors, "frame", cant_find_frame, "Couldn't find frame", sizeof(cant_find_frame));
 	add_xml_identifier(actors, "unk_frame", unknown_frame, "Unknown frame", sizeof(unknown_frame));
@@ -1031,7 +1031,7 @@ void init_errors() {
 	add_xml_identifier(actors, "helmet", error_helmet, "helmet", sizeof(error_helmet));
 	add_xml_identifier(actors, "cape", error_cape, "cape", sizeof(error_cape));
 	add_xml_identifier(actors, "dupnpc", duplicate_npc_actor, "Duplicate actor name", sizeof(duplicate_npc_actor));
-	//Loading errors
+	// Loading errors
 	add_xml_identifier(load, "obj", cant_load_2d_object, "Can't load 2d object", sizeof(cant_load_2d_object));
 	add_xml_identifier(load, "file", cant_open_file, "Can't open file", sizeof(cant_open_file));
 	add_xml_identifier(load, "cursors", cursors_file_str, "Can't open cursors file.", sizeof(cursors_file_str));
@@ -1050,7 +1050,7 @@ void init_errors() {
 	add_xml_identifier(load, "nomorenotetabs", user_no_more_note_tabs, "No room for more note tabs.", sizeof(user_no_more_note_tabs));
 	add_xml_identifier(load, "fataldataerror", fatal_data_error, "Fatal error while loading data files. Either set the data_dir correctly or run from the data directory.", sizeof(fatal_data_error));
 	add_xml_identifier(load, "encyclerror", cant_load_encycl, "Failed to load encyclopedia, check your installation.", sizeof(cant_load_encycl));
-	//Miscellaneous errors
+	// Miscellaneous errors
 	add_xml_identifier(misc, "no_walk_sitlock", no_walk_with_sitlock, "Sitlock is enabled. Disable it or stand before walking.", sizeof(no_walk_with_sitlock));
 	add_xml_identifier(misc, "error", reg_error_str, "Error", sizeof(reg_error_str));
 	add_xml_identifier(load, "file_write_error", file_write_error_str, "Can't write to file", sizeof(file_write_error_str));
@@ -1089,7 +1089,7 @@ void init_errors() {
 	add_xml_identifier(misc, "noanimation", no_animation_err_str, "No animation: %s!\n", sizeof(no_animation_err_str));
 	add_xml_identifier(misc, "invalid_location", invalid_location_str, "Invalid location %d,%d", sizeof(invalid_location_str));
 	add_xml_identifier(misc, "warn_currently_ignoring", warn_currently_ignoring, "Warning: %s is on your #ignore list", sizeof(warn_currently_ignoring));
-	//XML errors. should these have their own group?
+	// XML errors. should these have their own group?
 	add_xml_identifier(misc, "badnode", xml_bad_node, "There is something wrong with one of a node's fields.", sizeof(xml_bad_node));
 	add_xml_identifier(misc, "badroot", xml_bad_root_node, "The root node in %s was incorrect.", sizeof(xml_bad_root_node));
 	add_xml_identifier(misc, "undefnode", xml_undefined_node, "Found an unexpected node type while parsing %s (%s).", sizeof(xml_undefined_node));
@@ -1103,7 +1103,7 @@ void init_errors() {
 	add_xml_identifier(misc, "item_list_cat_format_error", item_list_cat_format_error_str, "Format error reading item categories.", sizeof(item_list_cat_format_error_str));
 	add_xml_identifier(misc, "item_list_version_error", item_list_version_error_str, "Item lists file is not compatible with client version.", sizeof(item_list_version_error_str));
 	add_xml_identifier(misc, "item_list_empty_list", item_list_empty_list_str, "No point saving an empty list.", sizeof(item_list_empty_list_str));
-	//Particle errors
+	// Particle errors
 	add_xml_identifier(particles, "version", particles_filever_wrong, "Particle file %s version (%i) doesn't match file reader version (%i)!", sizeof(particles_filever_wrong));
 	add_xml_identifier(particles, "overrun", particle_system_overrun, "Particle file %s tries to define %i particles, when %i is the maximum!", sizeof(particle_system_overrun));
 	add_xml_identifier(particles, "pos", particle_strange_pos, "Particle file %s contained strange position/constraint values. Tried to fix.", sizeof(particle_strange_pos));
@@ -1114,7 +1114,7 @@ void init_errors() {
 	add_xml_identifier(particles, "defs", definitions_str, "Definitions", sizeof(definitions_str));
 	add_xml_identifier(particles, "system", part_sys_str, "systems", sizeof(part_sys_str));
 	add_xml_identifier(particles, "particles", part_part_str, "particles", sizeof(part_part_str));
-	//Sound errors
+	// Sound errors
 	add_xml_identifier(snd, "loadwav", snd_wav_load_error, "Failed to load wav file %s", sizeof(snd_wav_load_error));
 	add_xml_identifier(snd, "loadfile", snd_ogg_load_error, "Failed to load ogg file", sizeof(snd_ogg_load_error));
 	add_xml_identifier(snd, "loadstream", snd_ogg_stream_error, "Failed to load ogg stream", sizeof(snd_ogg_stream_error));
@@ -1144,7 +1144,7 @@ void init_errors() {
 	add_xml_identifier(snd, "musicstopped", snd_media_music_stopped, "No song is currently playing", sizeof(snd_media_music_stopped));
 	add_xml_identifier(snd, "musicinfo", snd_media_ogg_info, "Currently playing: \"%s\" by %s (%d:%02d/%d:%02d)", sizeof(snd_media_ogg_info));
 	add_xml_identifier(snd, "musicinfonoartist", snd_media_ogg_info_noartist, "Currently playing: \"%s\" (%d:%02d/%d:%02d)", sizeof(snd_media_ogg_info_noartist));
-	//Video errors
+	// Video errors
 	add_xml_identifier(video, "nostencil", no_stencil_str, "Video mode %s with a stencil buffer is not available\nTrying this mode without a stencil buffer...", sizeof(no_stencil_str));
 	add_xml_identifier(video, "safemode", safemode_str, "Video mode %s without a stencil buffer is not available\nTrying the safemode (640x480x32) Full Screen (no stencil)", sizeof(safemode_str));
 	add_xml_identifier(video, "nosdl", no_sdl_str, "Couldn't initialize SDL", sizeof(no_sdl_str));
@@ -1161,7 +1161,7 @@ void init_errors() {
 	add_xml_identifier(video, "noshadowmapping", disabled_shadow_mapping, "Shadowmapping disabled (need newer hardware)", sizeof(disabled_shadow_mapping));
 	add_xml_identifier(video, "toobigshadowmap", shadow_map_size_not_supported_str, "Shadow map size not supported! Shadow map size reduced to %d!", sizeof(shadow_map_size_not_supported_str));
 	add_xml_identifier(video, "noframebuffer", disabled_framebuffer, "Framebuffer disabled (need newer driver)", sizeof(disabled_framebuffer));
-	//Framebuffer errors
+	// Framebuffer errors
 	add_xml_identifier(video, "fboattachmenterror", fbo_attachment_error, "Framebuffer: attachment error", sizeof(fbo_attachment_error));
 	add_xml_identifier(video, "fbomissingattachmenterror", fbo_missing_attachment_error, "Framebuffer: missing attachment", sizeof(fbo_missing_attachment_error));
 	add_xml_identifier(video, "fboformatserror", fbo_formats_error, "Framebuffer: formats error", sizeof(fbo_formats_error));
@@ -1172,7 +1172,7 @@ void init_errors() {
 	add_xml_identifier(video, "fbosupportedfromat", fbo_supported_format, "Frame buffer format: %s, depth bits: %d, stencil bits: %d is supported", sizeof(fbo_supported_format));
 	add_xml_identifier(video, "extnotfoundemulit", gl_ext_not_found_emul_it, "Couldn't find the %s extension, emulating it...", sizeof(gl_ext_not_found_emul_it));
 	add_xml_identifier(video, "invalid", invalid_video_mode, "Stop playing with the configuration file and select valid modes!", sizeof(invalid_video_mode));
-	//Rule errors
+	// Rule errors
 	add_xml_identifier(rules, "proceed", you_can_proceed, "Read the rules and you can play in %d seconds", sizeof(you_can_proceed));
 	add_xml_identifier(rules, "ready", accepted_rules, "Read the rules and click on \"I Accept\" to play!", sizeof(accepted_rules));
 	add_xml_identifier(rules, "accept", accept_label, "I Accept", sizeof(accept_label));
@@ -1186,14 +1186,14 @@ void init_help() {
 	group_id *new = &(help_str[2]);
 	group_id *tooltips = &(help_str[3]);
 	group_id *buddy = &(help_str[4]);
-	//AFK Messages
+	// AFK Messages
 	add_xml_identifier(afk, "going", going_afk, "Going AFK", sizeof(going_afk));
 	add_xml_identifier(afk, "not", not_afk, "Not AFK any more", sizeof(not_afk));
 	add_xml_identifier(afk, "back", new_messages, "You have %d new messages from the following people: ", sizeof(new_messages));
 	add_xml_identifier(afk, "names", afk_names, "Names", sizeof(afk_names));
 	add_xml_identifier(afk, "messages", afk_messages, "Messages", sizeof(afk_messages));
 	add_xml_identifier(afk, "help", afk_print_help, "To print the messages from the different people type #msg <number> or #msg all to view them all", sizeof(afk_print_help));
-	//Miscellaneous
+	// Miscellaneous
 	add_xml_identifier(misc, "values", values_str, "values", sizeof(values_str));
 	add_xml_identifier(misc, "close", close_str, "[close]", sizeof(close_str));
 	add_xml_identifier(misc, "dialog_copy", dialogue_copy_str, "[copy]", sizeof(dialogue_copy_str));
@@ -1310,7 +1310,7 @@ void init_help() {
 	add_xml_identifier(misc, "video_restart", video_restart_str, "Video change will take effect at next restart.", sizeof(video_restart_str));
 	add_xml_identifier(misc, "storage_filter_prompt", storage_filter_prompt_str, "Filter: ", sizeof(storage_filter_prompt_str));
 	add_xml_identifier(misc, "storage_filter_help", storage_filter_help_str, "Type text - filter items.", sizeof(storage_filter_help_str));
-	//New characters
+	// New characters
 	add_xml_identifier(new, "skin", skin_str, "Skin", sizeof(skin_str));
 	add_xml_identifier(new, "hair", hair_str, "Hair", sizeof(hair_str));
 	add_xml_identifier(new, "shirt", shirt_str, "Shirt", sizeof(shirt_str));
@@ -1344,8 +1344,7 @@ void init_help() {
 	add_xml_identifier(new, "char_help", char_help, "To customize your character and select name/password, press the buttons at the bottom.", sizeof(char_help));
 	add_xml_identifier(new, "confirmcreate", error_confirm_create_char, "Click done again to create a character with that name and appearance.", sizeof(error_confirm_create_char));
 	add_xml_identifier(new, "newcharwarning", newchar_warning, "Character creation screen", sizeof(newchar_warning));
-	add_xml_identifier(new, "newcharcusthelp", newchar_cust_help, "Click the eye icon below to customize your character.", sizeof(newchar_cust_help)); // it pains me to spell customize with a z:(
-	add_xml_identifier(new, "newcharcredhelp", newchar_cred_help, "When ready, click \"Done\" to choose your character name and password.", sizeof(newchar_cred_help));
+	add_xml_identifier(new, "newcharcusthelp", newchar_cust_help, "Click the eye icon below to customize your character.", sizeof(newchar_cust_help)); // it pains me to spell customize with a z:(add_xml_identifier(new, "newcharcredhelp", newchar_cred_help, "When ready, click \"Done\" to choose your character name and password.", sizeof(newchar_cred_help));
 	add_xml_identifier(new, "newchardonehelp", newchar_done_help, "When ready, click \"Done\" to create your character and enter the game.", sizeof(newchar_done_help));
 	add_xml_identifier(new, "wrongpass", invalid_pass, "Invalid password!", sizeof(invalid_pass));
 	add_xml_identifier(new, "showpass", show_password, "Show password", sizeof(show_password));
@@ -1362,7 +1361,7 @@ void init_help() {
 	add_xml_identifier(new, "a_draegoni", about_draegoni, "About Draegoni", sizeof(about_draegoni));
 	add_xml_identifier(new, "zoom_in_out", zoom_in_out, "To zoom in/out: Middle mouse wheel or Page Up/Down", sizeof(zoom_in_out));
 	add_xml_identifier(new, "rotate_camera", rotate_camera, "To rotate the camera: Middle mouse button or arrow keys", sizeof(rotate_camera));
-	//Icons
+	// Icons
 	add_xml_identifier(tooltips, "walk", tt_walk, "Walk", sizeof(tt_walk));
 	add_xml_identifier(tooltips, "sit", tt_sit, "Sit down", sizeof(tt_sit));
 	add_xml_identifier(tooltips, "stand", tt_stand, "Stand up", sizeof(tt_stand));
@@ -1389,7 +1388,7 @@ void init_help() {
 	add_xml_identifier(tooltips, "name_pass", tt_name, "Choose name and password", sizeof(tt_name));
 	add_xml_identifier(tooltips, "info", tt_info, "View notepad/URL window", sizeof(tt_info));
 	add_xml_identifier(tooltips, "minimap", tt_minimap, "View Minimap window", sizeof(tt_minimap));
-	//Buddy list
+	// Buddy list
 	add_xml_identifier(buddy, "name", buddy_name_str, "Name:", sizeof(buddy_name_str));
 	add_xml_identifier(buddy, "name_desc", buddy_long_name_str, "The name of your buddy", sizeof(buddy_long_name_str));
 	add_xml_identifier(buddy, "color", buddy_type_str, "Color:", sizeof(buddy_type_str));
@@ -1462,7 +1461,7 @@ void init_help() {
 	add_xml_identifier(misc, "item_list_find_help", item_list_find_help_str, "Find list - type text", sizeof(item_list_find_help_str));
 }
 void init_spell_translatables() {
-	//Sigils
+	// Sigils
 	add_xml_distringid(sigils_str, "change", &sig_change, "Change", "");
 	add_xml_distringid(sigils_str, "restore", &sig_restore, "Restore", "");
 	add_xml_distringid(sigils_str, "space", &sig_space, "Space", "");
@@ -1497,7 +1496,7 @@ void init_stats() {
 	group_stat *misc = &(stats_str[2]);
 	group_stat *nexus = &(stats_str[3]);
 	group_stat *skills = &(stats_str[4]);
-	//Initial strings
+	// Initial strings
 	add_xml_identifier(stats_extra, "base", (char *)attributes.base, "Basic Attributes", sizeof(attributes.base));
 	add_xml_identifier(stats_extra, "cross", (char *)attributes.cross, "Cross Attributes", sizeof(attributes.cross));
 	add_xml_identifier(stats_extra, "nexus", (char *)attributes.nexus, "Nexus", sizeof(attributes.nexus));
@@ -1605,7 +1604,7 @@ void init_titles() {
 void load_translatables() {
 	struct xml_struct file = load_strings("console.xml");
 	if (file.file != NULL) {
-		//Parse file
+		// Parse file
 		parse_console(file.root);
 		xmlFreeDoc(file.file);
 	}
@@ -1640,7 +1639,7 @@ void load_translatables() {
 		xmlFreeDoc(file.file);
 	}
 	save_named_strings(help_str, HELP_STR, "tooltips");
-//There's no need for these variables to be hanging around any more...
+// There's no need for these variables to be hanging around any more...
 	free_xml_parser(GROUP, errors, ERRORS);
 	free_xml_parser(GROUP, console_str, CONSOLE_STR);
 	free_xml_parser(GROUP, help_str, HELP_STR);
@@ -1659,7 +1658,7 @@ struct xml_struct load_strings(char *file) {
 		safe_snprintf(file_name, sizeof(file_name), "languages/en/strings/%s", file);
 		tmp = load_strings_file(file_name);
 		if (tmp.file == NULL) {
-			//Notify about this error - english only
+			// Notify about this error - english only
 			LOG_ERROR("Could not read %s\n", file);
 		}
 	}

@@ -471,4 +471,4 @@ extern GLboolean supports_gl_version(Uint8 major, Uint8 minor);
 #ifdef __cplusplus
 }
 #endif
-#endif  //_LOAD_GL_EXTENSIONS_H_
+#endif // _LOAD_GL_EXTENSIONS_H_

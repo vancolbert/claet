@@ -18,9 +18,9 @@ struct rules_struct {
 	 * inner struct containing the data for a single rule
 	 */
 	struct rule_struct {
-		char *short_desc;  /*!< a short description for this rule */
+		char *short_desc; /*!< a short description for this rule */
 		int short_len; /*!< the length of short_desc */
-		char *long_desc;  /*!< the complete description for this rule */
+		char *long_desc; /*!< the complete description for this rule */
 		int long_len; /*!< the length of long_desc */
 		int type; /*!< the type of the rule */
 	} rule[80];
@@ -32,7 +32,7 @@ typedef struct {
 	int type; /*!< type of the rule */
 	int show_long_desc; /*!< flag whether to show the long description of the rule or not */
 	int mouseover; /*!< mouseover */
-	int highlight;/*!< flag indicating whether the rule should be highlighted or not (Used for moderators) */
+	int highlight; /*!< flag indicating whether the rule should be highlighted or not (Used for moderators) */
 	/*!
 	 * \name coordinates where the rule should appear
 	 */
@@ -42,8 +42,8 @@ typedef struct {
 	int x_end;
 	int y_end;
 	/* \} */
-	char **short_str;  /*!< the short description of the rule */
-	char **long_str;  /*!< the long description of the rule */
+	char **short_str; /*!< the short description of the rule */
+	char **long_str; /*!< the long description of the rule */
 	int y_virt; /*!< virtual window offset of rule start */
 } rule_string;
 extern int have_rules; /*!< *** flag indicating whether the rules.xml file is available of not */

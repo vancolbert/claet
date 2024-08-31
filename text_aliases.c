@@ -49,7 +49,7 @@ static int save_aliases(void) {
 static int internal_bind_alias(int index, char *text, int len) {
 	int seen = 0;
 	char buf[128];
-	if ( len > 128 ) {
+	if (len > 128) {
 		sprintf(buf, "Alias %d trop long (%d dépasse la longueur maximum de %d).", index, len, 128);
 		LOG_TO_CONSOLE(c_red1, buf);
 		return -1;
@@ -204,7 +204,7 @@ while (alias_size) {
 				}
 			}
 			// Ok, see if it is out of bounds.
-			if ( param_index >= argc ) {
+			if (param_index >= argc) {
 				LOG_TO_CONSOLE(c_orange1, "L'alias requiert plus de paramètres que donnés");
 				dbuffer_destroy(return_text);
 				if (NULL != argv) {
@@ -365,17 +365,15 @@ static int generic_numeric_process(char *text, int len, int (*callback) (int ind
 				/* Valid number */
 				if (index < 0 || index > 99) {
 					/* This should never happen, but just to be sure... */
-					//fprintf(stderr,"Out of bounds\n");
 					LOG_ERROR("Index %lu out of bounds\n", index);
 					return -1;
 				}
-				//fprintf(stderr,"Cb index %d\n", index);
 				return callback(index, text, len);
 			}
 			LOG_ERROR("Invalid number '%s'\n", num_to_process);
 			return -1;
 		}
-		return -1;              /* Invalid */
+		return -1; /* Invalid */
 	}
 	return -1;
 }
@@ -389,7 +387,7 @@ int alias_command(char *text, int len) {
 		len--;
 	}
 	generic_numeric_process(text, len, bind_alias);
-	return 1;                       /* Don't pass to server */
+	return 1; /* Don't pass to server */
 }
 int unalias_command(char *text, int len) {
 	while (len > 0 && *text == ' ') {
@@ -397,7 +395,7 @@ int unalias_command(char *text, int len) {
 		len--;
 	}
 	generic_numeric_process(text, len, unbind_alias);
-	return 1;                       /* Don't pass to server */
+	return 1; /* Don't pass to server */
 }
 int aliases_command(char *text, int len) {
 	int i;
@@ -409,7 +407,7 @@ int aliases_command(char *text, int len) {
 			sprintf(alias_temp, "#%d ", i);
 			/* We have 60 -templen -1 chars remaining */
 			templen = strlen(alias_temp);
-			if ( numeric_alias_sizes[i] > ((sizeof(alias_temp) - 1) - templen)) {
+			if (numeric_alias_sizes[i] > ((sizeof(alias_temp) - 1) - templen)) {
 				memcpy(alias_temp + templen, numeric_aliases[i], ((sizeof(alias_temp) - 1) - templen));
 				alias_temp[(sizeof(alias_temp) - 1)] = '\0';
 			} else {
@@ -419,5 +417,5 @@ int aliases_command(char *text, int len) {
 			LOG_TO_CONSOLE(c_orange1, alias_temp);
 		}
 	}
-	return 1;                       /* Don't pass to server */
+	return 1; /* Don't pass to server */
 }

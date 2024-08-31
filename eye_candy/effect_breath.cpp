@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_breath.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 BreathParticle::BreathParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD, const BreathEffect::BreathType _type) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 _size * (0.2 + randcoord()) * 15 / _LOD) {
@@ -12,7 +12,6 @@ BreathParticle::BreathParticle(Effect *_effect, ParticleMover *_mover, const Vec
 	color[1] = green;
 	color[2] = blue;
 	texture = _texture;
-	//  alpha = _alpha;
 	alpha = _alpha * 2 / size;
 	flare_max = 8.0;
 	flare_exp = 0.5;
@@ -177,7 +176,7 @@ BreathSmokeParticle::BreathSmokeParticle(Effect *_effect, ParticleMover *_mover,
 		color[1] = randcolor(0.35);
 		color[2] = randcolor(0.35);
 		break;
-	case BreathEffect::LIGHTNING:                 // Impossible; lightning doesn't use smoke.
+	case BreathEffect::LIGHTNING: // Impossible; lightning doesn't use smoke.
 		break;
 	case BreathEffect::WIND: {
 		const color_t color_scale = randcolor(0.4);
@@ -391,5 +390,4 @@ bool BreathEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

@@ -281,15 +281,15 @@ sky_sphere create_sphere(int slices, int stacks) {
 	return sphere;
 }
 void destroy_dome(sky_dome *dome) {
-	if (dome->vertices  ) {
+	if (dome->vertices) {
 		free(dome->vertices);
 		dome->vertices = NULL;
 	}
-	if (dome->normals   ) {
+	if (dome->normals) {
 		free(dome->normals);
 		dome->normals = NULL;
 	}
-	if (dome->colors    ) {
+	if (dome->colors) {
 		free(dome->colors);
 		dome->colors = NULL;
 	}
@@ -297,13 +297,13 @@ void destroy_dome(sky_dome *dome) {
 		free(dome->tex_coords);
 		dome->tex_coords = NULL;
 	}
-	if (dome->faces     ) {
+	if (dome->faces) {
 		free(dome->faces);
 		dome->faces = NULL;
 	}
 }
 void destroy_sphere(sky_sphere *sphere) {
-	if (sphere->vertices  ) {
+	if (sphere->vertices) {
 		free(sphere->vertices);
 		sphere->vertices = NULL;
 	}
@@ -311,7 +311,7 @@ void destroy_sphere(sky_sphere *sphere) {
 		free(sphere->tex_coords);
 		sphere->tex_coords = NULL;
 	}
-	if (sphere->faces     ) {
+	if (sphere->faces) {
 		free(sphere->faces);
 		sphere->faces = NULL;
 	}
@@ -337,7 +337,6 @@ void skybox_compute_z_position() {
 		float eye_z = cos_rx * zl * camera_distance - camera_z;
 		float water_end = sin_rx * far_plane + (far_plane * cos_rx - eye_z) * cos_rx / sin_rx;
 		skybox_z = eye_z * (water_end - 500.0 + eye_xy) / water_end;
-		//printf("camera_z=%f rx=%f zoom_level=%f camera_distance=%f eye_xy=%f eye_z=%f water_end=%f skybox_z=%f\n", camera_z, rx, zoom_level, camera_distance, eye_xy, eye_z, water_end, skybox_z);
 	} else {
 		skybox_z = 0.0;
 	}
@@ -355,7 +354,6 @@ void skybox_direction_to_ground_coords(float dir[3], float *gx, float *gy) {
 	float gd = t * dome_clouds.conversion_factor;
 	*gx = gd * dir[0] / sd;
 	*gy = gd * dir[1] / sd;
-	//printf("dir=%f,%f,%f t=%f gx=%f gy=%f\n", dir[0], dir[1], dir[2], t, *gx, *gy);
 }
 void skybox_coords_from_ground_coords(float sky_coords[3], float gx, float gy) {
 	float gd = sqrtf(gx * gx + gy * gy);
@@ -494,7 +492,7 @@ void update_cloudy_sky_positions() {
 		skybox_sun_projection[0] = skybox_sun_projection[1] = 0.0;
 	}
 	moon_spin = cur_time % (1296000 * 1000);
-	moon_spin *= 360.0 / (1296000.0 /*seconds in large month*/ * 1000.0 /*millisecond bump*/ );
+	moon_spin *= 360.0 / (1296000.0 /*seconds in large month*/ * 1000.0 /*millisecond bump*/);
 	moon_spin += skybox_time_d;
 	MAT3_ROT_Y(rot1, -((float)game_minute + (float)game_second / 60.0) * M_PI / 180.0);
 	MAT3_ROT_Y(rot2, moon_spin * M_PI / 180.0);
@@ -1377,7 +1375,6 @@ void cloudy_sky() {
 		glRotatef(90.0, 1.0, 0.0, 0.0);
 		glRotatef(moon_spin, 0.0, 0.0, 1.0);
 		glScalef(20.0, 20.0, 20.0);
-		//glCallList(sky_lists+3);
 		draw_sphere(&moon_mesh);
 		glPopMatrix();
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, moon2_color);
@@ -1388,7 +1385,6 @@ void cloudy_sky() {
 		glRotatef(90.0, 1.0, 0.0, 0.0);
 		glRotatef(10.0 * moon_spin, 0.0, 0.0, 1.0);
 		glScalef(12.0, 12.0, 12.0);
-		//glCallList(sky_lists+3);
 		draw_sphere(&moon_mesh);
 		glPopMatrix();
 		glPopMatrix();
@@ -1420,21 +1416,21 @@ void cloudy_sky() {
 		float clouds_step = (cur_time - last_cloud_time) * 2E-6;
 		// we update the tex coords for the first clouds layer
 		if (dome_clouds.tex_coords[0] <= 1.0) {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds.tex_coords[i * 2] += clouds_step;
 			}
 		} else {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds.tex_coords[i * 2] += clouds_step - 1.0;
 			}
 		}
 		// we update the tex coords for the second clouds layer
 		if (dome_clouds_tex_coords_bis[0] <= 1.0) {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds_tex_coords_bis[i * 2] += clouds_step * 2.0;
 			}
 		} else {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds_tex_coords_bis[i * 2] += clouds_step * 2.0 - 1.0;
 			}
 		}
@@ -1469,8 +1465,8 @@ void cloudy_sky() {
 		glScalef(480.0, 480.0, 480.0);
 		glBegin(GL_QUADS);
 		{
-			//two cross products. Dangerous to use these functions. Float type essential.
-			//Better to robustly produce two vectors in perpendicular plane elsewhere.
+			// two cross products. Dangerous to use these functions. Float type essential.
+			// Better to robustly produce two vectors in perpendicular plane elsewhere.
 			VECTOR3 perp1, perp2, someVec = {0.0, 1.0, 0.0};
 			VCross(perp1, someVec, skybox_sun_position);
 			VCross(perp2, perp1, skybox_sun_position);
@@ -1588,21 +1584,21 @@ void underworld_sky() {
 		float clouds_step = (cur_time - last_cloud_time) * 1E-5;
 		// we update the tex coords for the first clouds layer
 		if (dome_clouds.tex_coords[0] <= 1.0) {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds.tex_coords[i * 2] += clouds_step * 2.0;
 			}
 		} else {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds.tex_coords[i * 2] += clouds_step * 2.0 - 1.0;
 			}
 		}
 		// we update the tex coords for the second clouds layer
 		if (dome_clouds_tex_coords_bis[0] <= 1.0) {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds_tex_coords_bis[i * 2] += clouds_step;
 			}
 		} else {
-			for (i = dome_clouds.vertices_count; i--; ) {
+			for (i = dome_clouds.vertices_count; i--;) {
 				dome_clouds_tex_coords_bis[i * 2] += clouds_step - 1.0;
 			}
 		}
@@ -1703,8 +1699,8 @@ int skybox_parse_colors(xmlNode *node, float container[360][4]) {
 	}
 	if (reset) {
 		// we erase the previous color keys
-		for (t = 360; t--; ) {
-			for (i = 3; i--; ) {
+		for (t = 360; t--;) {
+			for (i = 3; i--;) {
 				container[t][i] = 0.0;
 			}
 			container[t][3] = -1.0;
@@ -1857,7 +1853,6 @@ int skybox_parse_defs(xmlNode *node, const char *map_name) {
 			} else if (xmlStrcasecmp(def->name, (xmlChar *)"map") == 0) {
 				const char *name = get_string_property(def, "name");
 				if (!strcasecmp(name, map_name)) {
-					//printf("Found custom sky defs for the current map!\n");
 					ok &= skybox_parse_defs(def, "");
 				}
 			} else {
@@ -1926,8 +1921,8 @@ void skybox_init_defs(const char *map_name) {
 	static char last_map[256] = "\0";
 	int t;
 	int i;
-	for (t = 360; t--; ) {
-		for (i = 3; i--; ) {
+	for (t = 360; t--;) {
+		for (i = 3; i--;) {
 			skybox_clouds[t][i] = 0.0;
 			skybox_clouds_detail[t][i] = 0.0;
 			skybox_clouds_sunny[t][i] = 0.0;
@@ -1994,7 +1989,6 @@ void skybox_init_defs(const char *map_name) {
 		}
 		strcpy(last_map, map_name + pos + 1);
 	}
-	//printf("Loading sky defs for map '%s'\n", last_map);
 	if (!skybox_read_defs("skybox/skybox_defs.xml", last_map)) {
 		LOG_ERROR("Error while loading the skybox definitions.");
 	}
@@ -2152,7 +2146,7 @@ void skybox_init_gl() {
 	dome_clouds_detail_colors_bis = (GLfloat *)malloc(4 * dome_clouds.vertices_count * sizeof(GLfloat));
 	dome_clouds_tex_coords_bis = (GLfloat *)malloc(2 * dome_clouds.vertices_count * sizeof(GLfloat));
 	fog_colors = (GLfloat *)malloc(3 * dome_sky.slices_count * sizeof(GLfloat));
-	for (i = dome_clouds.vertices_count; i--; ) {
+	for (i = dome_clouds.vertices_count; i--;) {
 		int idx = i * 2;
 		dome_clouds_tex_coords_bis[idx] = dome_clouds.tex_coords[idx];
 		dome_clouds_tex_coords_bis[idx + 1] = dome_clouds.tex_coords[idx + 1] + 0.5;

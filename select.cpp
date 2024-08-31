@@ -146,9 +146,9 @@ static inline int old_anything_under_the_mouse(int object_id, int object_type) {
 		}
 		object_under_mouse = object_id;
 		thing_under_the_mouse = object_type;
-		return 1;//there is something
+		return 1; // there is something
 	}
-	return 0;//no collision, sorry
+	return 0; // no collision, sorry
 }
 extern "C" void reset_under_the_mouse() {
 	Uint8 color[4];

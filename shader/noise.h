@@ -12,4 +12,4 @@
  * a 2d dnoise and 3 is a 3d dnoise.
  */
 GLuint build_3d_noise_texture(int size, int frequency, int dimensions);
-#endif  // _NOISE_H_
+#endif // _NOISE_H_

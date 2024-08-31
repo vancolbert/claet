@@ -79,7 +79,7 @@ typedef struct _bp_Book {
 	int width, height, background, fontFace;
 	bp_Layout layout;
 	bp_Direction blockProgression, inlineProgression;
-	struct _bp_Page **pages;  /*< pages index for O(1) access */
+	struct _bp_Page **pages; /*< pages index for O(1) access */
 	int nPages;
 } bp_Book;
 /*! \name "page" element node */

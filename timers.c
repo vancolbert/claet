@@ -42,13 +42,11 @@ Uint32 my_timer(Uint32 interval, void *data) {
 			my_timer_adjust--;
 		}
 		normal_animation_timer = 0;
-		//update_particles();
-		//e.type= SDL_USEREVENT;
 		e.user.code = EVENT_UPDATE_PARTICLES;
 		SDL_PushEvent(&e);
 		water_movement_u += 0.0004f;
 		water_movement_v += 0.0002f;
-		if (!dungeon && 0) {//we do not want clouds movement in dungeons, but we want clouds detail
+		if (!dungeon && 0) { // we do not want clouds movement in dungeons, but we want clouds detail
 			clouds_movement_u += 0.0003f;
 			clouds_movement_v += 0.0006f;
 		}
@@ -57,7 +55,7 @@ Uint32 my_timer(Uint32 interval, void *data) {
 	// find the new interval
 	new_time = TIMER_RATE - (SDL_GetTicks() - my_timer_clock);
 	if (new_time < 10) {
-		new_time = 10;    //put an absoute minimume in
+		new_time = 10; // put an absoute minimume in
 	}
 	/* Temporary code to test a fix for a client freeze due to too many particles:
 	   http://www.eternal-lands.com/forum/index.php?showtopic=47006
@@ -72,10 +70,8 @@ Uint32 my_timer(Uint32 interval, void *data) {
 		extern volatile int in_main_event_loop;
 		if (in_main_event_loop) {
 			normal_animation_loop_count++;
-			//printf("increase new_time=%i loop_count=%i\n", new_time, normal_animation_loop_count);
 		} else if (normal_animation_loop_count > 2) {
 			normal_animation_loop_count--;
-			//printf("decrease new_time=%i loop_count=%i\n", new_time, normal_animation_loop_count);
 		}
 	}
 	return new_time;
@@ -85,7 +81,7 @@ Uint32 my_timer(Uint32 interval, void *data) {
 SDL_TimerID misc_timer = 0;
 Uint32 check_misc(Uint32 interval, void *data) {
 	char str[256];
-	//should we send the heart beat?
+	// should we send the heart beat?
 	if (!disconnected && last_heart_beat + 25 <= time(NULL)) {
 		send_heart_beat();
 	}

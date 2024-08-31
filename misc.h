@@ -49,7 +49,7 @@ void reset_under_the_mouse();
  * \pre If \a object_type equals \ref UNDER_MOUSE_NO_CHANGE, this function will return 0, after storing the pixel values at the current mouse position.
  */
 int anything_under_the_mouse(int object_id, int object_type);
-//some prototypes, that won't fit somewhere else
+// some prototypes, that won't fit somewhere else
 void calculate_reflection_frustum(float water_height);
 void calculate_shadow_frustum();
 void enable_reflection_clip_planes();

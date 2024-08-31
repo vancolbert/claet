@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_GLOW_H
 #define EFFECT_GLOW_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class GlowEffect : public Effect {
 public:
 enum GlowType {
@@ -48,6 +48,5 @@ TextureEnum texture;
 Uint16 LOD;
 GlowEffect::GlowType type;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_GLOW_H
+#endif // defined EFFECT_GLOW_H

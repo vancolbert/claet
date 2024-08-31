@@ -136,7 +136,7 @@ hash_entry *hash_get_next(hash_table *table) {
 	}
 	return table->cur;
 }
-//HASH AND COMPARE FNs
+// HASH AND COMPARE FNs
 unsigned long int hash_fn_int(void *key) {
 	return (unsigned long int)key;
 }

@@ -22,8 +22,8 @@ typedef struct {
 	int is_resource; /*!< does it appear on the manufacturing menu? */
 	int use_with_inventory;
 	int is_stackable;
-	int action;                     /*!< action being done on this item, for playing sounds on server result */
-	int action_time;        /*!< time this action has been active - times out after 2 seconds */
+	int action; /*!< action being done on this item, for playing sounds on server result */
+	int action_time; /*!< time this action has been active - times out after 2 seconds */
 	Uint32 cooldown_time; /*!< time when cooldown shall reach zero */
 	Uint32 cooldown_rate; /*!< time that the item would need to cool down from full heat */
 } item;

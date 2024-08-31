@@ -11,9 +11,9 @@ extern "C" {
 #endif
 /*! \name Array size */
 /*! @{ */
-#define MAX_IGNORES 1000  /*!< defines the max. number of entries in ignore_list */
+#define MAX_IGNORES 1000 /*!< defines the max. number of entries in ignore_list */
 /*! @} */
-//@tosh : types d'ignore
+// @tosh : types d'ignore
 #define IGN_ALL '0'
 #define IGN_MP '1'
 #define IGN_CANAUX '2'
@@ -22,7 +22,7 @@ extern "C" {
  */
 typedef struct {
 	char name[MAX_USERNAME_LENGTH + 1]; /*!< name of the player to ignore */
-	char ignore_type; //'0'=all, '1'=MP,  '2'=canal
+	char ignore_type; // '0'=all, '1'=MP,  '2'=canal
 	char used; /*! flag, indicating whether this ignore_slot is in use or not */
 } ignore_slot;
 extern ignore_slot ignore_list[MAX_IGNORES]; /*!< global array of names to ignore */
@@ -60,7 +60,7 @@ int remove_from_ignore_list(char *name);
  * \param name          The name to check the ignore list for
  * \retval int          true (1) if \a name is ignored, else false (0).
  */
-//type permet d'indiquer le type du message reçu. (1==MP, 2==canal)
+// type permet d'indiquer le type du message reçu. (1==MP, 2==canal)
 int check_if_ignored(const char *name, int type);
 /*!
  * \ingroup actors_utils

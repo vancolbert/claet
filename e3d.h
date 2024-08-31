@@ -18,7 +18,7 @@ extern "C" {
 #define OBJ_3D_ENTRABLE         1
 #define OBJ_3D_HARVESTABLE      1 << 1
 #define OBJ_3D_BAG                      1 << 2
-//#define MAX_E3D_CACHE 1000 /* unused */
+// #define MAX_E3D_CACHE 1000 /* unused */
 /*! @} */
 /*!
  * object3d structure
@@ -54,7 +54,7 @@ typedef struct {
 	short cluster;
 } object3d;
 extern object3d *objects_list[MAX_OBJ_3D]; /*!< global variable containing up to \see max_obj_3d \see object3d objects. */
-//proto
+// proto
 /*!
  * \ingroup load_3d
  * \brief   free_e3d_va

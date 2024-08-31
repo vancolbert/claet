@@ -16,23 +16,23 @@
 #include "translate.h"
 #include "gl_init.h"
 roche roche_list[NUM_ROCHES];
-void put_roche_on_ground(int roche_x, int roche_y, int roche_id) { /// stolen from put_bag_on_ground(int, int, int);
+void put_roche_on_ground(int roche_x, int roche_y, int roche_id) { // stolen from put_bag_on_ground(int, int, int);
 	float x, y, z;
 	int obj_3d_id;
-	//now, get the Z position
+	// now, get the Z position
 	if (roche_y * tile_map_size_x * 6 + roche_x > tile_map_size_x * tile_map_size_y * 6 * 6) {
-		//Warn about this error:
+		// Warn about this error:
 		LOG_ERROR("A roche was placed OUTSIDE the map!\n");
 		return;
 	}
 	z = -2.2f + height_map[roche_y * tile_map_size_x * 6 + roche_x] * 0.2f;
-	//convert from height values to meters
+	// convert from height values to meters
 	x = (float)roche_x / 2;
 	y = (float)roche_y / 2;
-	//center the object (slightly randomized)
+	// center the object (slightly randomized)
 	x = x + 0.25f;
 	y = y + 0.25f;
-	obj_3d_id = add_e3d("./3dobjects/rock_small4.e3d", x, y, z, get_bag_tilt(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 0, /// we use bags funct, should rename function into "3D_tilt & 3D_rotation"
+	obj_3d_id = add_e3d("./3dobjects/rock_small4.e3d", x, y, z, get_bag_tilt(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 0, // we use bags funct, should rename function into "3D_tilt & 3D_rotation"
 			    get_bag_rotation(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 1, 0, 1.0f, 1.0f, 1.0f, 1);
 	roche_list[roche_id].x = roche_x;
 	roche_list[roche_id].y = roche_y;
@@ -46,7 +46,7 @@ void add_roches_from_list(const Uint8 *data) {
 	int obj_3d_id, roche_id;
 	roches_no = data[0];
 	if (roches_no > NUM_ROCHES) {
-		return;//something nasty happened
+		return; // something nasty happened
 	}
 	for (i = 0; i < roches_no; i++) {
 		my_offset = i * 5 + 1;
@@ -56,17 +56,17 @@ void add_roches_from_list(const Uint8 *data) {
 		if (roche_id >= NUM_ROCHES) {
 			continue;
 		}
-		//now, get the Z position
+		// now, get the Z position
 		if (roche_y * tile_map_size_x * 6 + roche_x > tile_map_size_x * tile_map_size_y * 6 * 6) {
-			//Warn about this error!
+			// Warn about this error!
 			LOG_ERROR("A roche was located OUTSIDE the map!\n");
 			continue;
 		}
 		z = -2.2f + height_map[roche_y * tile_map_size_x * 6 + roche_x] * 0.2f;
-		//convert from height values to meters
+		// convert from height values to meters
 		x = (float)roche_x / 2;
 		y = (float)roche_y / 2;
-		//center the object (slightly randomized)
+		// center the object (slightly randomized)
 		x = x + 0.25f;
 		y = y + 0.25f;
 		// Now, find a place into the bags list, so we can destroy the bag properly
@@ -77,7 +77,7 @@ void add_roches_from_list(const Uint8 *data) {
 			LOG_ERROR(buf);
 			return;
 		}
-		obj_3d_id = add_e3d("./3dobjects/rock_small4.e3d", x, y, z, get_bag_tilt(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 0, get_bag_rotation(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), /// see put_roche_on_ground comment about theses functions
+		obj_3d_id = add_e3d("./3dobjects/rock_small4.e3d", x, y, z, get_bag_tilt(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 0, get_bag_rotation(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), // see put_roche_on_ground comment about theses functions
 				    1, 0, 1.0f, 1.0f, 1.0f, 1);
 		roche_list[roche_id].x = roche_x;
 		roche_list[roche_id].y = roche_y;
@@ -98,7 +98,7 @@ void remove_roche(int roche_id) {
 }
 void remove_all_roches(void) {
 	int i;
-	for (i = 0; i < NUM_ROCHES; i++) {   // clear roches list!!!!
+	for (i = 0; i < NUM_ROCHES; i++) { // clear roches list!!!!
 		roche_list[i].obj_3d_id = -1;
 	}
 }

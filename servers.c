@@ -7,16 +7,16 @@
 #include "io/elpathwrapper.h"
 #define MAX_SERVERS 10
 typedef struct {
-	char id[20];                                            // The ID of the server - to be specified on the command line
-	char dir[20];                                           // The dir under $CONF_DIR
+	char id[20]; // The ID of the server - to be specified on the command line
+	char dir[20]; // The dir under $CONF_DIR
 	unsigned char address[60];
 	int port;
-	char desc[100];                                         // Description of the server - to be shown on in the Server Selection screen
+	char desc[100]; // Description of the server - to be shown on in the Server Selection screen
 } server_def;
-server_def servers[MAX_SERVERS];                // The details of all the servers we know about
+server_def servers[MAX_SERVERS]; // The details of all the servers we know about
 int num_servers = 0;
 int cur_server = -1;
-char *check_server_id_on_command_line();        // From main.c
+char *check_server_id_on_command_line(); // From main.c
 const char *get_server_name(void) {
 	if (cur_server >= 0) {
 		return servers[cur_server].id;
@@ -147,7 +147,7 @@ void load_server_list(const char *filename) {
 			len = 0;
 			for (i = istart; i < iend; i++) {
 				if (server_list_mem[i] == '#') {
-					break;  // This is a comment so ignore the rest of the line
+					break; // This is a comment so ignore the rest of the line
 				} else if (section < 4 && (server_list_mem[i] == ' ' || server_list_mem[i] == '\t' || i == iend)) {
 					if (num_servers >= MAX_SERVERS) {
 						const char *errstg = "Fatal error: Too many servers specified in";
@@ -159,16 +159,16 @@ void load_server_list(const char *filename) {
 					// as we include whitespace in the description
 					string[len] = '\0';
 					switch (section) {
-					case 0:                 // Server ID
+					case 0: // Server ID
 						safe_strncpy(servers[num_servers].id, string, sizeof(servers[num_servers].id));
 						break;
-					case 1:                 // Config dir
+					case 1: // Config dir
 						safe_strncpy(servers[num_servers].dir, string, sizeof(servers[num_servers].dir));
 						break;
-					case 2:                 // Server address
+					case 2: // Server address
 						safe_strncpy((char *)servers[num_servers].address, string, sizeof(servers[num_servers].address));
 						break;
-					case 3:                 // Server port
+					case 3: // Server port
 						servers[num_servers].port = atoi(string);
 						break;
 					}
@@ -182,7 +182,7 @@ void load_server_list(const char *filename) {
 						}
 						i++;
 					}
-				} else { //if (server_list_mem[i] == ) // Valid char!!)
+				} else { // if (server_list_mem[i] ==) // Valid char!!)
 					string[len] = server_list_mem[i];
 					len++;
 				}
@@ -194,7 +194,7 @@ void load_server_list(const char *filename) {
 				// Check the line was valid
 				if (!strcmp(servers[num_servers].id, "") || !strcmp(servers[num_servers].dir, "") || !strcmp((char *)servers[num_servers].address, "") || servers[num_servers].port == 0 || !strcmp(servers[num_servers].desc, "")) {
 					LOG_ERROR("%s: Invalid server details specified in %s - (%d) %s", "Servers list error", filename, num_servers, servers[num_servers].id);
-					break;          // Bail, but do the free first
+					break; // Bail, but do the free first
 				}
 				// we added a valid line
 				num_servers++;

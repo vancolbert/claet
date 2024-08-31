@@ -14,4 +14,4 @@ void send_video_info();
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  // _CHECKEXTENTIONS_H_
+#endif // _CHECKEXTENTIONS_H_

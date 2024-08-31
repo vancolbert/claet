@@ -1,11 +1,9 @@
 /*
         Log trades.
-
         If enabled, logs all successful trades.  Any time you fully "Accept", the
         items are recorded.  Only after GET_TRADE_EXIT, followed by either
         STORAGE_ITEMS or HERE_YOUR_INVENTORY is the trade confirmed and the
         log entry written.
-
         Author bluap/pjbroad February 2013
  */
 #include <iostream>
@@ -27,8 +25,7 @@
  * TODO		Write to Trade Log tab in one of the existing windows.
  */
 namespace Trade_Log {
-//	Class to hold trade details for one party
-//
+// Class to hold trade details for one party
 class List {
 public:
 List(const char *name, const trade_item *stuff, size_t max_size);
@@ -40,8 +37,7 @@ trade_item *the_stuff;
 std::string trade_name;
 size_t size;
 };
-//	Copy the trade information to create the object
-//
+// Copy the trade information to create the object
 List::List(const char *name, const trade_item *stuff, size_t max_size)
 	: the_stuff(0), size(0) {
 	size = max_size;
@@ -49,8 +45,7 @@ List::List(const char *name, const trade_item *stuff, size_t max_size)
 	memcpy(the_stuff, stuff, size * sizeof(trade_item));
 	trade_name = name;
 }
-//	Write the trade information to the specified stream
-//
+// Write the trade information to the specified stream
 void List::get_details(std::ostream & out, const char *prefix) const {
 	for (size_t i = 0; i < size; i++) {
 		if (the_stuff[i].quantity > 0) {
@@ -68,8 +63,7 @@ void List::get_details(std::ostream & out, const char *prefix) const {
 		}
 	}
 }
-//	Class to hold the state of current in-progress trade
-//
+// Class to hold the state of current in-progress trade
 class State {
 public:
 State(void) : your_stuff(0), their_stuff(0), the_state(TLS_INIT) {}
@@ -85,8 +79,7 @@ List *their_stuff;
 enum TRADE_LOG_STATE {TLS_INIT, TLS_ACCEPT, TLS_EXIT, } the_state;
 std::string filename;
 };
-//	Make sure we free the memory.
-//
+// Make sure we free the memory.
 State::~State(void) {
 	if (your_stuff) {
 		delete your_stuff;
@@ -95,8 +88,7 @@ State::~State(void) {
 		delete their_stuff;
 	}
 }
-//	Each time we accept for the second time, store the current items in case we complete.
-//
+// Each time we accept for the second time, store the current items in case we complete.
 void State::accepted(const char *name, const trade_item *yours, const trade_item *others, int max_items) {
 	if (your_stuff) {
 		delete your_stuff;
@@ -109,8 +101,7 @@ void State::accepted(const char *name, const trade_item *yours, const trade_item
 	their_stuff = new List(name, others, max_items);
 	the_state = TLS_ACCEPT;
 }
-//	The trade completed so write the log text
-//
+// The trade completed so write the log text
 void State::completed(void) {
 	if ((trade_log_mode == TRADE_LOG_NONE) || (the_state != TLS_EXIT)) {
 		init();
@@ -133,7 +124,7 @@ void State::completed(void) {
 	if ((trade_log_mode == TRADE_LOG_CONSOLE) || (trade_log_mode == TRADE_LOG_BOTH)) {
 		std::string message_str = message.str();
 		message_str.erase(std::find_if(message_str.rbegin(), message_str.rend(), std::not1(std::ptr_fun<int, int>(std::iscntrl))).base(), message_str.end());
-		LOG_TO_CONSOLE(c_green2, message_str.c_str());         // stripped of final newline
+		LOG_TO_CONSOLE(c_green2, message_str.c_str()); // stripped of final newline
 	}
 	// and/or append to a log file
 	if ((trade_log_mode == TRADE_LOG_FILE) || (trade_log_mode == TRADE_LOG_BOTH)) {
@@ -159,7 +150,7 @@ static Trade_Log::State the_log;
 extern "C"
 {
 static int enable_local_debug = 0;
-int trade_log_mode = TRADE_LOG_NONE;         // The config window option to enable the trade log
+int trade_log_mode = TRADE_LOG_NONE; // The config window option to enable the trade log
 void trade_accepted(const char *name, const trade_item *yours, const trade_item *others, int max_items) {
 	if (enable_local_debug) {
 		printf("%s\n", __FUNCTION__);

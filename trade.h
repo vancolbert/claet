@@ -23,7 +23,7 @@ typedef struct {
  * \name windows handlers
  */
 /*! @{ */
-extern int trade_win;   /*!< trade windows handler */
+extern int trade_win; /*!< trade windows handler */
 /*! @} */
 /*!
  * \ingroup 	trade_window
@@ -34,7 +34,6 @@ extern int trade_win;   /*!< trade windows handler */
  * \callgraph
  */
 void display_trade_menu();
-//int check_trade_interface();
 /*!
  * \ingroup 	trade
  * \brief 	Gets the name of the trade partner.

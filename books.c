@@ -25,11 +25,11 @@
  #ifdef OSX
   #include <sys/malloc.h>
  #else
-  #ifndef alloca         // newer versions of SDL have their own alloca!
+  #ifndef alloca // newer versions of SDL have their own alloca!
    #include <malloc.h>
-  #endif   //alloca
- #endif   //OSX
-#endif   //BSD
+  #endif // alloca
+ #endif // OSX
+#endif // BSD
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
  *
@@ -47,27 +47,27 @@ int book_win_x = 0;
 int book_win_y = 40; // ou pourquoi pas HUD_MARGIN_Y
 int page_largeur;
 int page_hauteur;
-int livre_ouvert = -1; //Le numéro du livre actuellement ouvert
+int livre_ouvert = -1; // Le numéro du livre actuellement ouvert
 int fenetre_image = -1;
 char nom_fichier[200];
 static int texture_livre_1_page = -1;
 static int texture_livre_2_pages = -1;
 typedef struct {
-	char **lignes;              // Pointeur vers les differentes lignes
+	char **lignes; // Pointeur vers les differentes lignes
 	couleur_rvb *couleur_texte; // Pointeur vers la couleur du texte
-	int page_numero;            // Numéro de la page
+	int page_numero; // Numéro de la page
 } struct_pages;
 typedef struct _struct_livres {
-	char titre[35];              // Titre du livre
-	int num;                     // Numéro du livre
-	int type;                    // Type de livre (une ou deux pages)
-	int max_largeur;             // Largeur maximum sur une page
-	int max_lignes;              // Maximum de lignes sur une page
-	int nombre_pages;            // Nombre de pages totales
-	int nombre_chapitres;        // Nombre de chapitres
-	int page_active;             // Numéro de la page active
-	int serveur;                 // Livre serveur ou non
-	struct_pages **pages;        // Pointeur vers la liste des pages
+	char titre[35]; // Titre du livre
+	int num; // Numéro du livre
+	int type; // Type de livre (une ou deux pages)
+	int max_largeur; // Largeur maximum sur une page
+	int max_lignes; // Maximum de lignes sur une page
+	int nombre_pages; // Nombre de pages totales
+	int nombre_chapitres; // Nombre de chapitres
+	int page_active; // Numéro de la page active
+	int serveur; // Livre serveur ou non
+	struct_pages **pages; // Pointeur vers la liste des pages
 	struct _struct_livres *suivant; // Pointeur vers le livre suivant
 } struct_livres;
 void ajout_livre(struct_livres *livre_actuel);
@@ -206,8 +206,8 @@ char **formatage_lignes(char *str, int max_width, float zoom, int align) {
 			}
 			// on retient le dernier espace trouvé
 			if (str[idx] == ' ') {
-				//TODO: affiner avec des exceptions (suivi d'une ponctuation par ex)
-				//TODO: compléter en retenant également les tirets et soft hyphens
+				// TODO: affiner avec des exceptions (suivi d'une ponctuation par ex)
+				// TODO: compléter en retenant également les tirets et soft hyphens
 				last_space = idx;
 				last_width = line_width;
 				nb_space++;
@@ -257,7 +257,7 @@ char **formatage_lignes(char *str, int max_width, float zoom, int align) {
 			if ((nb_space > 0) && (idx > 0) && (str[idx]) && (str[idx - 1] != '\n')) {
 				reste = round((max_width - line_width) / space); // nombre d'espaces à insérer
 				indent = reste / nb_space; // nb d'espaces ajoutés à chaque espace existant
-				reste = reste % nb_space;  // nb d'espaces restant à ajouter
+				reste = reste % nb_space; // nb d'espaces restant à ajouter
 				str_lines[num_lines] = (char *)calloc(indent * nb_space + reste + len + 1, sizeof(char));
 				i = 0;
 				while (len-- > 0) {
@@ -287,7 +287,7 @@ char **formatage_lignes(char *str, int max_width, float zoom, int align) {
 		str += idx;
 	}
 	if (str_lines) {
-		str_lines[num_lines] = NULL;        //Used to get the bounds for displaying each line
+		str_lines[num_lines] = NULL; // Used to get the bounds for displaying each line
 	}
 	return str_lines;
 }

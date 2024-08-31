@@ -36,7 +36,7 @@ void draw_2d_object(obj_2d *object_id) {
 	int object_type;
 	obj_2d_def *obj_def_pointer;
 	if (!object_id->display) {
-		return;                 // not currently on the map, ignore it
+		return; // not currently on the map, ignore it
 	}
 	obj_def_pointer = object_id->obj_pointer;
 	u_start = obj_def_pointer->u_start;
@@ -52,7 +52,7 @@ void draw_2d_object(obj_2d *object_id) {
 	} else {
 		render_y_start = 0;
 	}
-	glPushMatrix();//we don't want to affect the rest of the scene
+	glPushMatrix(); // we don't want to affect the rest of the scene
 	x_pos = object_id->x_pos;
 	y_pos = object_id->y_pos;
 	z_pos = object_id->z_pos;
@@ -125,7 +125,7 @@ void draw_2d_object(obj_2d *object_id) {
 		glVertex3f(x, y, z_pos);
 		glEnd();
 	}
-	glPopMatrix();//restore the scene
+	glPopMatrix(); // restore the scene
 }
 static void parse_2d0(const char *desc, Uint32 len, const char *cur_dir, obj_2d_def *def) {
 	char name[256], value[256];
@@ -164,7 +164,7 @@ static void parse_2d0(const char *desc, Uint32 len, const char *cur_dir, obj_2d_
 			break;
 		}
 		if (*cp == '\n') {
-			continue;          // no value
+			continue; // no value
 		}
 		// copy value
 		i = 0;
@@ -246,7 +246,7 @@ static obj_2d_def *load_obj_2d_def(const char *file_name) {
 		return NULL;
 	}
 	f_size = el_get_size(file);
-	//ok, the file is loaded, so parse it
+	// ok, the file is loaded, so parse it
 	cur_object = calloc(1, sizeof(obj_2d_def));
 	my_strncp(cur_object->file_name, file_name, sizeof(cur_object->file_name));
 	parse_2d0(obj_file_mem, f_size, cur_dir, cur_object);
@@ -257,9 +257,9 @@ static int cache_cmp_string(const void *str, const void *dptr) {
 	const obj_2d_def *def = *((const obj_2d_def **)dptr);
 	return strcmp(str, def->file_name);
 }
-//Tests to see if an obj_2d object is already loaded.
-//If it is, return the handle.
-//If not, load it, and return the handle
+// Tests to see if an obj_2d object is already loaded.
+// If it is, return the handle.
+// If not, load it, and return the handle
 static obj_2d_def *load_obj_2d_def_cache(const char *file_name) {
 	obj_2d_def *def, **defp;
 	int i;
@@ -267,7 +267,7 @@ static obj_2d_def *load_obj_2d_def_cache(const char *file_name) {
 	if (defp) {
 		return *defp;
 	}
-	//asc not found in the cache, so load it ...
+	// asc not found in the cache, so load it ...
 	def = load_obj_2d_def(file_name);
 	// no object found, so nothing to store in the cache
 	if (def == NULL) {
@@ -391,7 +391,7 @@ const char *get_2dobject_at_location(float x_pos, float y_pos) {
 }
 void display_2d_objects() {
 	unsigned int i, l, start, stop;
-	//First draw everyone with the same alpha test
+	// First draw everyone with the same alpha test
 	if (fsaa > 1) {
 		glEnable(GL_MULTISAMPLE);
 	}
@@ -399,10 +399,9 @@ void display_2d_objects() {
 	glAlphaFunc(GL_GREATER, 0.18f);
 	if (!dungeon && !(!clouds_shadows && !use_shadow_mapping)) {
 		if (clouds_shadows) {
-			//bind the detail texture
+			// bind the detail texture
 			ELglActiveTextureARB(detail_unit);
 			glEnable(GL_TEXTURE_2D);
-			//glBindTexture(GL_TEXTURE_2D, texture_cache[ground_detail_text].texture_id);
 			bind_texture_unbuffered(ground_detail_text);
 		}
 		ELglActiveTextureARB(base_unit);
@@ -413,7 +412,7 @@ void display_2d_objects() {
 		l = get_intersect_item_ID(main_bbox_tree, i);
 		draw_2d_object(obj_2d_list[l]);
 	}
-	//Then draw all that needs a change
+	// Then draw all that needs a change
 	get_intersect_start_stop(main_bbox_tree, TYPE_2D_ALPHA_OBJECT, &start, &stop);
 	for (i = start; i < stop; i++) {
 		l = get_intersect_item_ID(main_bbox_tree, i);
@@ -421,7 +420,7 @@ void display_2d_objects() {
 		draw_2d_object(obj_2d_list[l]);
 	}
 	if (!dungeon && !(!clouds_shadows && !use_shadow_mapping)) {
-		//disable the multitexturing
+		// disable the multitexturing
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);

@@ -220,9 +220,9 @@ static e3d_object *do_load_e3d_detail(e3d_object *cur_object) {
 		return 0;
 	}
 	memset(cur_dir, 0, sizeof(cur_dir));
-	//get the current directory
+	// get the current directory
 	l = strlen(cur_object->file_name);
-	//parse the string backwards, until we find a /
+	// parse the string backwards, until we find a /
 	while (l > 0) {
 		if ((cur_object->file_name[l] == '/') || (cur_object->file_name[l] == '\\')) {
 			break;
@@ -230,7 +230,7 @@ static e3d_object *do_load_e3d_detail(e3d_object *cur_object) {
 		l--;
 	}
 	i = 0;
-	if (l) {//prevent invalid dir names
+	if (l) { // prevent invalid dir names
 		while (l >= 0) {
 			cur_dir[i] = cur_object->file_name[i];
 			i++;
@@ -408,7 +408,7 @@ static e3d_object *do_load_e3d_detail(e3d_object *cur_object) {
 	el_close(file);
 	LOG_DEBUG("Building vertex buffers (%d) for e3d file '%s'.", use_vertex_buffers, cur_object->file_name);
 	if (use_vertex_buffers) {
-		//Generate the buffers
+		// Generate the buffers
 		ELglGenBuffersARB(1, &cur_object->vertex_vbo);
 		ELglBindBufferARB(GL_ARRAY_BUFFER_ARB, cur_object->vertex_vbo);
 		ELglBufferDataARB(GL_ARRAY_BUFFER_ARB, cur_object->vertex_no * cur_object->vertex_layout->size, cur_object->vertex_data, GL_STATIC_DRAW_ARB);

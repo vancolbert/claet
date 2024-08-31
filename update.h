@@ -20,8 +20,8 @@ struct http_get_struct {
 	int allow_restart;
 	size_t thread_index;
 };
-extern int update_root_win;                     /* Handle for the update window */
-extern int update_countdown;            /* Counter until the client restarts after an update */
+extern int update_root_win; /* Handle for the update window */
+extern int update_countdown; /* Counter until the client restarts after an update */
 /*!
  * \ingroup	update
  * \brief	Initialize the auto update system

@@ -8,7 +8,7 @@
 #define UUID_ebe8ffbc_ae1a_4db5_bdd0_e78938bd6dfc
 #ifndef __cplusplus
 #error  "Including C++ header in C translation unit!"
-#endif  /* __cplusplus */
+#endif /* __cplusplus */
 #include "../platform.h"
 /**
  * @file
@@ -110,4 +110,4 @@ static void *map(const HardwareBufferType type, const HardwareBufferAccessType a
 static bool unmap(const HardwareBufferType type);
 };
 }
-#endif  /* UUID_ebe8ffbc_ae1a_4db5_bdd0_e78938bd6dfc */
+#endif /* UUID_ebe8ffbc_ae1a_4db5_bdd0_e78938bd6dfc */

@@ -21,7 +21,7 @@ typedef struct {
 	char command[64];
 	int (*callback)();
 } command_t;
-extern char auto_open_encyclopedia;     /*!< flag, that indicates whether the encyclopedia window should be opened automatically upon startup of the client */
+extern char auto_open_encyclopedia; /*!< flag, that indicates whether the encyclopedia window should be opened automatically upon startup of the client */
 extern int time_warn_h; /*!< How many minutes before the new hour to give a warning */
 extern int time_warn_s; /*!< How many minutes before sunrise/sunset to give a warning */
 extern int time_warn_d; /*!< How many minutes before the new day to give a warning */

@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_targetmagic.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 TargetMagicParticle::TargetMagicParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD, const TargetMagicEffect::TargetMagicType _type, ParticleSpawner *_spawner2, ParticleMover *_mover2, Vec3 *_target, Uint16 _effect_id, Uint16 _state) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 _size * (0.5 + randcoord())) {
@@ -39,8 +39,6 @@ bool TargetMagicParticle::idle(const Uint64 delta_t) {
 	const interval_t float_time = delta_t / 1000000.0;
 	Vec3 cur_target = *target;
 	cur_target.y += 0.5;
-	//  std::cout << "A) " << this << ", " << state << ": " << pos << ", " << alpha << std::endl;
-	//  std::cout << "A) " << this << ": " << velocity << ", " << pos << std::endl;
 	if ((state == 0) && (age < 500000)) {
 		switch (type) {
 		case TargetMagicEffect::REMOTE_HEAL:
@@ -202,7 +200,6 @@ bool TargetMagicParticle::idle(const Uint64 delta_t) {
 		}
 		pos += ((TargetMagicEffect2 *)effect)->shift;
 	}
-	//  std::cout << "B) " << this << ": " << velocity << ", " << pos << std::endl;
 	if (pos.y < effect->pos->y) {
 		pos.y = effect->pos->y;
 	}
@@ -224,7 +221,6 @@ TargetMagicEffect::TargetMagicEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, V
 	}
 	std::vector<Vec3 *> new_targets;
 	new_targets.push_back(_target);
-	//  std::cout << "Target: " << _target << std::endl;
 	initialize(_base, _dead, _pos, new_targets, _type, _obstructions, _LOD);
 }
 TargetMagicEffect::TargetMagicEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const std::vector<Vec3 *> _targets, const TargetMagicType _type, std::vector<ec::Obstruction *> *_obstructions, const Uint16 _LOD) {
@@ -314,7 +310,6 @@ void TargetMagicEffect::initialize(EyeCandy *_base, bool *_dead, Vec3 *_pos, con
 				break;
 			}
 		}
-		//      const float radius = 0.5 * powf(2, 0.18) / 1.5;
 		const float radius = 0.377628;
 		for (int i = 0; i < LOD * 2; i++) {
 			const percent_t percent = ((percent_t)i + 1) / (LOD * 2);
@@ -339,7 +334,7 @@ void TargetMagicEffect::initialize(EyeCandy *_base, bool *_dead, Vec3 *_pos, con
 		}
 		break;
 	case LIFE_DRAIN: {
-		pos = targets[0];                 //Redoing these variables, since this effect runs backwards.
+		pos = targets[0]; // Redoing these variables, since this effect runs backwards.
 		targets[0] = _pos;
 		target = *targets[0];
 		effect_centers.push_back(*pos);
@@ -409,9 +404,9 @@ void TargetMagicEffect::initialize(EyeCandy *_base, bool *_dead, Vec3 *_pos, con
 			}
 		}
 		break;
-	case DRAIN_MANA:                 //Use crystal particles.
+	case DRAIN_MANA: // Use crystal particles.
 	{
-		pos = targets[0];                 //Redoing these variables, since this effect runs backwards.
+		pos = targets[0]; // Redoing these variables, since this effect runs backwards.
 		targets[0] = _pos;
 		target = *targets[0];
 		effect_centers.push_back(*pos);
@@ -592,7 +587,6 @@ TargetMagicEffect2::TargetMagicEffect2(EyeCandy *_base, TargetMagicEffect *_effe
 	target_alpha = _target_alpha;
 	dead = &dummy_dead;
 	shift = Vec3(0.0, 0.0, 0.0);
-	//  std::cout << "Target center: " << center << std::endl << std::flush;
 	switch (type) {
 	case TargetMagicEffect::REMOTE_HEAL:
 		for (int i = 0; i < 20 * LOD; i++) {
@@ -639,7 +633,6 @@ TargetMagicEffect2::TargetMagicEffect2(EyeCandy *_base, TargetMagicEffect *_effe
 				break;
 			}
 		}
-		//      const float radius = 0.5 * powf(2, 0.18) / 1.5;
 		const float radius = 0.377628;
 		if ((int)effect->capless_cylinders.size() < LOD * 4) {
 			for (int i = 0; i < LOD * 2; i++) {
@@ -758,10 +751,8 @@ bool TargetMagicEffect2::idle(const Uint64 usec) {
 	const Vec3 last_effect_center = center;
 	center.x = pos->x;
 	center.z = pos->z;
-	//  std::cout << "Center: " << center << "; Pos (" << pos << "): " << *pos << std::endl << std::flush;
 	shift = center - last_effect_center;
 	center.y += usec / 1500000.0;
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

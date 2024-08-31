@@ -55,7 +55,7 @@ int display_console_handler(window_info *win) {
 	static int msg = 0, offset = 0;
 	// are we actively drawing things?
 	if (SDL_GetAppState() & SDL_APPACTIVE) {
-		set_font(chat_font);    // switch to the chat font
+		set_font(chat_font); // switch to the chat font
 		if (console_text_changed) {
 			find_line_nr(total_nr_lines, total_nr_lines - nr_console_lines - scroll_up_lines, FILTER_ALL, &msg, &offset, chat_zoom, console_text_width);
 			text_field_set_buf_pos(console_root_win, console_out_id, msg, offset);
@@ -66,18 +66,16 @@ int display_console_handler(window_info *win) {
 		}
 		draw_console_pic(cons_text);
 		// afficher les sépérateurs ("^^...") avec la fonte système
-		set_font(0);    // switch to fixed
+		set_font(0); // switch to fixed
 		if (scroll_up_lines != 0) {
 			const unsigned char *sep_string = (unsigned char *)"^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^ ^^";
 			glColor3f(1.0, 1.0, 1.0);
 			// séparateurs avec zoom=1 (car CONSOLE_SEP_HEIGHT reste une constante à 18 !) et au dessus de l'input (quelque soit le HUD !)
-//			draw_string_width(10, win->len_y - input_widget->len_y - CONSOLE_SEP_HEIGHT - HUD_MARGIN_Y, sep_string, win->len_x - hud_x - 20, 1);
 			draw_string_zoomed_clipped(10, win->len_y - input_widget->len_y - HUD_MARGIN_Y - 10, sep_string, -1, win->len_x - hud_x - 20, DEFAULT_FONT_Y_LEN, 1.0f);
 		}
-		//ttlanhil: disabled, until the scrolling in console is adusted to work with filtering properly
-		//if the users prefer that console not be filtered, the following line can be removed.
-		//if they want it filtered, then more work can be done until it works properly
-		//((text_field*)((widget_find(console_root_win, console_out_id))->widget_info))->chan_nr = current_filter;
+		// ttlanhil: disabled, until the scrolling in console is adusted to work with filtering properly
+		// if the users prefer that console not be filtered, the following line can be removed.
+		// if they want it filtered, then more work can be done until it works properly
 		draw_hud_interface();
 	}
 	if (special_effects) {
@@ -104,7 +102,7 @@ static int keypress_console_handler(window_info *win, int mx, int my, Uint32 key
 		return 1;
 	}
 	// first try the keypress handler for all root windows
-	if ( keypress_root_common(key, unikey)) {
+	if (keypress_root_common(key, unikey)) {
 		return 1;
 	} else if (keysym == SDLK_UP) {
 		if (total_nr_lines > nr_console_lines + scroll_up_lines) {
@@ -156,13 +154,13 @@ static int keypress_console_handler(window_info *win, int mx, int my, Uint32 key
 			hide_window(console_root_win);
 			show_window(game_root_win);
 			// Undo stupid quickbar hack
-			if ( !get_show_window(quickbar_win)) {
+			if (!get_show_window(quickbar_win)) {
 				show_window(quickbar_win);
 			}
-			if ( !get_show_window(quickspell_win)) {
+			if (!get_show_window(quickspell_win)) {
 				show_window(quickspell_win);
 			}
-		} else if ( !text_input_handler(key, unikey)) {
+		} else if (!text_input_handler(key, unikey)) {
 			// nothing we can handle
 			return 0;
 		}
@@ -184,10 +182,10 @@ static int click_console_handler(window_info *win, int mx, int my, Uint32 flags)
 		start_paste_from_primary(NULL);
 	} else
 #endif
-	if ((flags & ELW_WHEEL_UP) && total_nr_lines > nr_console_lines + scroll_up_lines ) {
+	if ((flags & ELW_WHEEL_UP) && total_nr_lines > nr_console_lines + scroll_up_lines) {
 		scroll_up_lines++;
 		console_text_changed = 1;
-	} else if ((flags & ELW_WHEEL_DOWN) && scroll_up_lines > 0 ) {
+	} else if ((flags & ELW_WHEEL_DOWN) && scroll_up_lines > 0) {
 		scroll_up_lines--;
 		console_text_changed = 1;
 	} else {
@@ -275,7 +273,7 @@ int input_field_resize(widget_list *w, Uint32 x, Uint32 y) {
 	int tmp_chan = msg->chan_idx;
 	// set invalid width to force rewrap
 	msg->wrap_width = 0;
-	//Set to CHAT_NONE so rewrap_message doesn't mess with total_nr_lines.
+	// Set to CHAT_NONE so rewrap_message doesn't mess with total_nr_lines.
 	msg->chan_idx = CHAT_NONE;
 	tf->nr_lines = rewrap_message(msg, w->size, tf->font_num, w->len_x - 2 * tf->x_space, &tf->cursor);
 	msg->chan_idx = tmp_chan;

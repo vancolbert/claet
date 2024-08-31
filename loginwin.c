@@ -218,7 +218,7 @@ int click_login_handler(window_info *win, int mx, int my, Uint32 flags) {
 		log_in_error_str[0] = '\0';
 		send_login_info();
 	}
-	//check to see if we clicked on the ACTIVE New Char button
+	// check to see if we clicked on the ACTIVE New Char button
 	else if (new_char_button_selected) {
 		// don't destroy the login window just yet, the user might
 		// click the back button
@@ -242,7 +242,7 @@ int keypress_login_handler(window_info *win, int mx, int my, Uint32 key, Uint32 
 	Uint8 ch = key_to_char(unikey);
 	// First check key presses common to all root windows. Many of these
 	// don't make sense at this point, but it should be harmless.
-	if ( keypress_root_common(key, unikey)) {
+	if (keypress_root_common(key, unikey)) {
 		return 1;
 	} else if (ch == SDLK_RETURN && username_str[0] && password_str[0]) {
 		log_in_error_str[0] = '\0';

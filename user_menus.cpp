@@ -1,6 +1,5 @@
 /*
    Uses the Context Menu system to implement user configured command menus.
-
    Files with a .menu name extension found in the users config directory are
    considered user menu files. Each .menu file defines a new menu displayed
    in a standard EL window container. The window is always on top and can be
@@ -10,7 +9,6 @@
    menu name opens the menu.  The window options and position are saved
    between sessions in the el.cfg file.  The use of user menus is enabled/disabled
    by an option in the config window.
-
    The .menu files are flat text files so they are easy to create and edit outside
    the client. The first line in a .menu file is used as the menu name in the
    container window. Each of the remaining lines are new lines for the menu. Lines
@@ -18,20 +16,16 @@
    that line is selected. Valid commands are anything you can enter at the user
    command prompt; #commands, text for chat channels & PM, %setting etc.  In
    addition, commands can be URLs which will be directly opened in your browser.
-
    Each menu line in a .menu file has two or more fields, the field separator is
    "||". The first field is the text for the menu line, the remaining field or
    fields are the associated commands.
-
    Commands can prompt for user input. If the command contains text inside "<>",
    e.g. "some text <more text> some other text" then the text inside the "<>" will
    be used as a prompt and the "<...>" replaced by the text entered by the user.
    You can include as many input prompts as you wish.
-
-
    Author bluap/pjbroad May 2009
  */
-// 	An example:
+// An example:
 /*
    Example
    Show Server Stats||#stats
@@ -61,7 +55,6 @@
         - use a subtle text fade once the mouse is no longer over
         - parameters should be separate (static ?) class or vars so do not create container usless needed
         - tear off windows - sounds a lot of work.....
-
  */
 #include <iostream>
 #include <fstream>
@@ -86,10 +79,8 @@
 #include "translate.h"
 #include "user_menus.h"
 namespace UserMenus {
-//
-//	A single user menu, constructed from a menu file.  Contains
-//	one or more Line objects.
-//
+// A single user menu, constructed from a menu file.  Contains
+// one or more Line objects.
 class Menu {
 public:
 Menu(const std::string &file_name);
@@ -104,10 +95,8 @@ int menu_name_width;
 std::string menu_name;
 std::vector<CommandQueue::Line *> lines;
 };
-//
-//	A singleton class for the user menu window, contains the
-//	menu objects and implements the window callbacks.
-//
+// A singleton class for the user menu window, contains the
+// menu objects and implements the window callbacks.
 class Container {
 public:
 ~Container(void);
@@ -156,9 +145,7 @@ static int mouseover_handler(window_info *win, int mx, int my) {get_instance()->
 static int click_handler(window_info *win, int mx, int my, Uint32 flags) {return get_instance()->click(win, mx, flags);}
 static int context_handler(window_info *win, int widget_id, int mx, int my, int option) {return get_instance()->context(win, widget_id, mx, my, option);}
 };
-//
-//	Construct the Menu given a filepath and name.
-//
+// Construct the Menu given a filepath and name.
 Menu::Menu(const std::string &file_name)
 	: cm_menu_id(CM_INIT_VALUE), menu_name_width(0) {
 	std::ifstream in(file_name.c_str());
@@ -194,10 +181,8 @@ Menu::Menu(const std::string &file_name)
 	}
 	cm_menu_id = cm_create(menu_text.c_str(), Container::action_handler);
 	cm_set_pre_show_handler(cm_menu_id, Container::pre_show_handler);
-}         // end Menu()
-//
+} // end Menu()
 // destruct a Menu, insuring the lines are deleted
-//
 Menu::~Menu(void) {
 	if (cm_valid(cm_menu_id)) {
 		cm_destroy(cm_menu_id);
@@ -206,19 +191,15 @@ Menu::~Menu(void) {
 		delete lines[i];
 	}
 }
-//	pixels between menu text
+// pixels between menu text
 const int Container::name_sep = 10;
-// 	pixels around the window edge
+// pixels around the window edge
 const int Container::window_pad = 4;
-//
-//	constructor for Container, just initialises attributes
-//
+// constructor for Container, just initialises attributes
 Container::Container(void) : win_id(-1), win_width(0), current_mouseover_menu(0), mouse_over_window(false),
 	reload_menus(false), context_id(CM_INIT_VALUE), window_used(false), title_on(1),
 	border_on(1), use_small_font(0), include_datadir(1), just_echo(0), win_x_pos(100), win_y_pos(100) {}
-//
-//	destroy the window, menus and lines
-//
+// destroy the window, menus and lines
 Container::~Container(void) {
 	delete_menus();
 	if (cm_valid(context_id)) {
@@ -226,9 +207,7 @@ Container::~Container(void) {
 	}
 	destroy_window(win_id);
 }
-//
-//	create the window for the user menus, or display it if already created
-//
+// create the window for the user menus, or display it if already created
 void Container::open_window(void) {
 	if (win_id >= 0) {
 		show_window(win_id);
@@ -259,10 +238,8 @@ void Container::open_window(void) {
 	cm_bool_line(context_id, ELW_CM_MENU_LEN + 3, &use_small_font, NULL);
 	cm_bool_line(context_id, ELW_CM_MENU_LEN + 4, &include_datadir, NULL);
 	cm_bool_line(context_id, ELW_CM_MENU_LEN + 6, &just_echo, NULL);
-}         // Container::open_window()
-//
-//	return current window position and option values, normally for saving in el.cfg
-//
+} // Container::open_window()
+// return current window position and option values, normally for saving in el.cfg
 void Container::get_options(int *win_x, int *win_y, int *options) {
 	if (win_id >= 0) {
 		*win_x = windows_list.window[win_id].cur_x;
@@ -277,9 +254,7 @@ void Container::get_options(int *win_x, int *win_y, int *options) {
 	*options |= use_small_font << 3;
 	*options |= include_datadir << 4;
 }
-//
-//	set window position and option, normally from el.cfg
-//
+// set window position and option, normally from el.cfg
 void Container::set_options(int win_x, int win_y, int options) {
 	if ((window_used = options & 1)) {
 		title_on = (options >> 1) & 1;
@@ -290,9 +265,7 @@ void Container::set_options(int win_x, int win_y, int options) {
 		win_y_pos = win_y;
 	}
 }
-//
 // the window display callback
-//
 int Container::display(window_info *win) {
 	// if the menus need reloading, try it now
 	if (reload_menus) {
@@ -355,10 +328,8 @@ int Container::display(window_info *win) {
 	current_mouseover_menu = menus.size();
 	mouse_over_window = false;
 	return 1;
-}         // end Container::display()
-//
+} // end Container::display()
 // open the menu if the name is clicked
-//
 int Container::click(window_info *win, int mx, Uint32 flags) {
 	if ((flags & ELW_LEFT_MOUSE) && ((current_mouseover_menu = get_mouse_over_menu(mx)) < menus.size()) && cm_valid(menus[current_mouseover_menu]->get_cm_id())) {
 		cm_show_direct(menus[current_mouseover_menu]->get_cm_id(), win_id, current_mouseover_menu);
@@ -366,18 +337,14 @@ int Container::click(window_info *win, int mx, Uint32 flags) {
 	}
 	return 0;
 }
-//
 // common callback fuction for context menu, line selection
-//
 int Container::action(size_t active_menu, int option) {
 	if (active_menu < menus.size()) {
 		menus[active_menu]->action(option, command_queue);
 	}
 	return 1;
 }
-//
-//	adjust the menu window position to be more menu like
-//
+// adjust the menu window position to be more menu like
 void Container::pre_show(window_info *win, int widget_id, int mx, int my, window_info *cm_win) {
 	size_t curr_menu = (size_t)widget_id;
 	if (win == NULL || cm_win == NULL || !(curr_menu < menus.size())) {
@@ -406,9 +373,7 @@ void Container::pre_show(window_info *win, int widget_id, int mx, int my, window
 	}
 	move_window(cm_win->window_id, -1, 0, new_x_pos, new_y_pos);
 }
-//
 // the "evil" singleton mechanism
-//
 Container *Container::get_instance(void) {
 	static Container um;
 	static Uint32 creation_thread = SDL_ThreadID();
@@ -417,9 +382,7 @@ Container *Container::get_instance(void) {
 	}
 	return &um;
 }
-//
 // load, or reload, the menu files
-//
 void Container::reload(void) {
 	// if a context menu is currently showing, do not reload yet
 	if (cm_window_shown() != CM_INIT_VALUE) {
@@ -446,7 +409,7 @@ void Container::reload(void) {
 			} while (_findnext(hFile, &c_file) == 0);
 			_findclose(hFile);
 		}
-#else   // phew! it's a real operating system
+#else // phew! it's a real operating system
 		glob_t glob_res;
 		if (glob(glob_path.c_str(), 0, NULL, &glob_res) == 0) {
 			for (size_t i = 0; i < glob_res.gl_pathc; i++) {
@@ -467,10 +430,8 @@ void Container::reload(void) {
 	}
 	current_mouseover_menu = menus.size();
 	recalc_win_width();
-}         // end Container::reload()
-//
-//	Calculates the window width, which changes with the zoom
-//
+} // end Container::reload()
+// Calculates the window width, which changes with the zoom
 void Container::recalc_win_width() {
 	// if there are no menus, use the size of the message for the window width
 	if (menus.empty()) {
@@ -483,14 +444,11 @@ void Container::recalc_win_width() {
 		win_width += calc_actual_width(menus[i]->get_name_width());
 	}
 }
-//
-//	If the mouse is over a menu name and there are no context windows
-//	open then return the menu index, otherwise return the number of menus.
-//
-//	Side effects:
-//	If one of the menus is open and the mouse is over a different menu name,
-//	the current menu is closed and the one with the mouse over, opened.
-//
+// If the mouse is over a menu name and there are no context windows
+// open then return the menu index, otherwise return the number of menus.
+// Side effects:
+// If one of the menus is open and the mouse is over a different menu name,
+// the current menu is closed and the one with the mouse over, opened.
 size_t Container::get_mouse_over_menu(int mx) {
 	// if the mouse is over a menu name, get the menus[] index
 	size_t mouse_over = menus.size();
@@ -524,18 +482,14 @@ size_t Container::get_mouse_over_menu(int mx) {
 	}
 	return menus.size();
 }
-//
-//  prepare for a menu reload or exit
-//
+// prepare for a menu reload or exit
 void Container::delete_menus(void) {
 	for (size_t i = 0; i < menus.size(); i++) {
 		delete menus[i];
 	}
 	menus.clear();
 }
-//
-//	change a window property bit flag
-//
+// change a window property bit flag
 void Container::set_win_flag(Uint32 *flags, Uint32 flag, int state) {
 	if (state) {
 		*flags |= flag;
@@ -543,9 +497,7 @@ void Container::set_win_flag(Uint32 *flags, Uint32 flag, int state) {
 		*flags &= ~flag;
 	}
 }
-//
-//	handler window content menu options
-//
+// handler window content menu options
 int Container::context(window_info *win, int widget_id, int mx, int my, int option) {
 	if (option < ELW_CM_MENU_LEN) {
 		return cm_title_handler(win, widget_id, mx, my, option);
@@ -576,9 +528,7 @@ int Container::context(window_info *win, int widget_id, int mx, int my, int opti
 	return 1;
 }
 } // end UserMenus namespace
-//
-//	External Interface functions
-//
+// External Interface functions
 extern "C"
 {
 int enable_user_menus = 0;

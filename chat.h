@@ -12,8 +12,8 @@
 extern "C" {
 #endif
 #define MAX_TEXT_MESSAGE_LENGTH 160 /*!< The server will disconnect us when we send longer messages */
-#define MAX_CHAT_TABS           12      /*!< Size of the \see channels array */
-#define MAX_ACTIVE_CHANNELS     12      /*!< Maximum number of channels in use */
+#define MAX_CHAT_TABS           12 /*!< Size of the \see channels array */
+#define MAX_ACTIVE_CHANNELS     12 /*!< Maximum number of channels in use */
 extern Uint32 active_channels[MAX_ACTIVE_CHANNELS];
 extern Uint8 current_channel;
 #define INPUT_MARGIN 4
@@ -28,7 +28,6 @@ extern queue_t *chan_name_queue;
  *
  * \callgraph
  *
-
    widget_list *get_input_widget(void);*/
 /*!
  * \brief   Moves the chat input widget to a different window
@@ -194,7 +193,6 @@ void display_chat(void);
  * \callgraph
  */
 void chat_win_update_zoom(void);
-///////////////////////////////////////////////////////////////////////
 typedef struct {
 	Uint8 channel;
 	int button;
@@ -209,13 +207,13 @@ typedef struct {
 } chan_name;
 extern chat_tab tabs_1[MAX_CHAT_TABS]; /*!< info about chat tabs */
 extern chat_tab tabs_2[MAX_CHAT_TABS]; /*!< info about chat tabs */
-extern int local_chat_separate;         /*!< if non-zero, show local chat in a separate tab */
-extern int personal_chat_separate;      /*!< if non-zero, show PMs in a different tab */
-extern int guild_chat_separate;         /*!< if non-zero, show GMs in a different tab */
-extern int server_chat_separate;        /*!< if non-zero, show game messages in a different tab */
-extern int mod_chat_separate;           /*!< for moderators and newbie helpers only: if non-zero, show mod chat in a different tab */
-extern int dev_chat_separate;           /*!< for staff members only: if non-zero, show dev chat in a different tab */
-extern int coord_chat_separate;         /*!< for coord members only: if non-zero, show staff chat in a different tab */
+extern int local_chat_separate; /*!< if non-zero, show local chat in a separate tab */
+extern int personal_chat_separate; /*!< if non-zero, show PMs in a different tab */
+extern int guild_chat_separate; /*!< if non-zero, show GMs in a different tab */
+extern int server_chat_separate; /*!< if non-zero, show game messages in a different tab */
+extern int mod_chat_separate; /*!< for moderators and newbie helpers only: if non-zero, show mod chat in a different tab */
+extern int dev_chat_separate; /*!< for staff members only: if non-zero, show dev chat in a different tab */
+extern int coord_chat_separate; /*!< for coord members only: if non-zero, show staff chat in a different tab */
 extern int tabs_in_use;
 extern int current_tab;
 extern int tab_bar_win_1;

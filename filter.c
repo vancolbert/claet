@@ -24,14 +24,14 @@ int use_global_filters = 1;
 int caps_filter = 1;
 char storage_filter[128];
 unsigned char cached_storage_list[8192] = {0};
-//returns -1 if the name is already filtered, 1 on sucess, -2 if no more filter slots
+// returns -1 if the name is already filtered, 1 on sucess, -2 if no more filter slots
 int add_to_filter_list(const char *name, char local, char save_name) {
 	int i, j;
 	char left[256];
 	char right[256];
 	int t, tp;
 	int l = 0;
-	//ok, find a free spot
+	// ok, find a free spot
 	for (i = 0; i < MAX_FILTERS; i++) {
 		if (filter_list[i].len <= 0) {
 			// excellent, a free spot
@@ -85,21 +85,21 @@ int add_to_filter_list(const char *name, char local, char save_name) {
 			}
 			my_strcp(filter_list[i].name, left);
 			my_strcp(filter_list[i].replacement, right);
-			filter_list[i].len = strlen(filter_list[i].name);//memorize the length
-			filter_list[i].rlen = strlen(filter_list[i].replacement);//memorize the length
+			filter_list[i].len = strlen(filter_list[i].name); // memorize the length
+			filter_list[i].rlen = strlen(filter_list[i].replacement); // memorize the length
 			filter_list[i].local = local;
 			filtered_so_far++;
 			return 1;
 		}
 	}
-	return -2;//if we are here, it means the filters list is full
+	return -2; // if we are here, it means the filters list is full
 }
-//returns -1 if the name is not filtered, 1 on sucess
+// returns -1 if the name is not filtered, 1 on sucess
 int remove_from_filter_list(const char *name) {
 	int i;
 	int local = 0;
 	FILE *f = NULL;
-	//see if this name is on the list
+	// see if this name is on the list
 	for (i = 0; i < MAX_FILTERS; i++) {
 		if (filter_list[i].len > 0) {
 			if (my_strcompare(filter_list[i].name, name)) {
@@ -126,7 +126,7 @@ int remove_from_filter_list(const char *name) {
 	}
 	return -1;
 }
-//returns length to be filtered, 0 if not filtered
+// returns length to be filtered, 0 if not filtered
 int check_if_filtered(const char *name) {
 	int t, i, l;
 	char caractere[5];
@@ -145,7 +145,7 @@ int check_if_filtered(const char *name) {
 				/* *word                       */
 				for (t = 0; ; t++) {
 					if (!isalpha(name[t])) {
-						break;                 /* t points now at the end of the word */
+						break; /* t points now at the end of the word */
 					}
 				}
 				l = filter_list[i].len;
@@ -166,13 +166,13 @@ int check_if_filtered(const char *name) {
 						break;
 					}
 					if (my_strncompare(&(filter_list[i].name[1]), &name[t], filter_list[i].len - 2)) {
-						return i;//yep, filtered
+						return i; // yep, filtered
 					}
 				}
 			}
 		}
 	}
-	return -1;//nope
+	return -1; // nope
 }
 // Filter the lines that contain the desired string from the inventory listing
 int filter_storage_text(char *input_text, int len, int size) {
@@ -208,22 +208,22 @@ int filter_storage_text(char *input_text, int len, int size) {
 	storage_filter[0] = '\0';
 	return len;
 }
-//returns the new length of the text
+// returns the new length of the text
 int filter_text(char *buff, int len, int size) {
 	int i, t, bad_len, rep_len, new_len, idx;
 	if (len > 31 && my_strncompare(buff + 1, "Items you have in your storage:", 31)) {
-		//First up, attempt to save the storage list for re-reading later
+		// First up, attempt to save the storage list for re-reading later
 		if (size <= sizeof(cached_storage_list)) {
 			memcpy(cached_storage_list, buff, size);
 			have_storage_list = 1;
 		}
 		// See if a search term has been added to the #storage command, and if so,
-		//only list those items with that term
+		// only list those items with that term
 		if (storage_filter[0] != '\0') {
 			len = 33 + filter_storage_text(buff + 33, len - 33, size - 33);
 		}
 	}
-	//do we need to do CAPS filtering?
+	// do we need to do CAPS filtering?
 	if (caps_filter) {
 		int idx, clen = len;
 		// skip any coloring
@@ -262,7 +262,7 @@ int filter_text(char *buff, int len, int size) {
 			}
 		}
 	}
-	//do we need to do any content filtering?
+	// do we need to do any content filtering?
 	if (filtered_so_far == 0) {
 		return len;
 	}
@@ -331,7 +331,7 @@ void load_filters_list(const char *file_name, char local) {
 		fclose(f);
 		return;
 	}
-	//ok, allocate memory for it
+	// ok, allocate memory for it
 	filter_list_mem = (char *)calloc(f_size, 1);
 	fseek(f, 0, SEEK_SET);
 	ret = fread(filter_list_mem, 1, f_size, f);
@@ -352,7 +352,7 @@ void load_filters_list(const char *file_name, char local) {
 		// copy the line and process it
 		if (iend > istart) {
 			safe_strncpy2(name, filter_list_mem + istart, sizeof(name), iend - istart);
-			if (add_to_filter_list(name, local, 0) == -2) {         // -1 == already exists, -2 == list full
+			if (add_to_filter_list(name, local, 0) == -2) { // -1 == already exists, -2 == list full
 				free(filter_list_mem);
 				return; // filter list full
 			}
@@ -364,7 +364,7 @@ void load_filters_list(const char *file_name, char local) {
 }
 void clear_filter_list() {
 	int i;
-	//see if this name is already on the list
+	// see if this name is already on the list
 	for (i = 0; i < MAX_FILTERS; i++) {
 		filter_list[i].len = 0;
 	}

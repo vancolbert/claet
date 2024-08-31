@@ -1,11 +1,11 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_wind.h"
 #include "../textures.h"
 namespace ec {
 const float range_scalar = 1.0;
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 WindParticle::WindParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t scalar, const coord_t _min_height, const coord_t _max_height, const WindEffect::WindType _type) :
 	Particle(_effect, _mover, _pos, _velocity) {
 	state = 0;
@@ -24,9 +24,9 @@ WindParticle::WindParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _p
 		value = 0.35 + randcolor(0.20);
 		size = 0.08 * scalar;
 		alpha = 1.0;
-		subtype = rand() % 3;                 // Store it in case we need it later -- say, for a texture.
+		subtype = rand() % 3; // Store it in case we need it later -- say, for a texture.
 		switch (subtype) {
-		case 0:                         // Maple
+		case 0: // Maple
 			angle = randangle(30 * (PI / 180)) + (240 * (PI / 180));
 			rise = randangle(30 * (PI / 180)) + (-10 * (PI / 180));
 			rotation_axes[0] = Vec3(sin(angle) * cos(rise), sin(rise), cos(angle) * cos(rise));
@@ -40,7 +40,7 @@ WindParticle::WindParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _p
 			rotation_axes[2] = Vec3(sin(angle) * cos(rise), sin(rise), cos(angle) * cos(rise));
 			axis_weights[2] = (sin(rise) + 0.2) * (randangle(0.3) + 1.0);
 			break;
-		case 1:                         // Oak
+		case 1: // Oak
 			angle = randangle(30 * (PI / 180)) + (220 * (PI / 180));
 			rise = randangle(40 * (PI / 180)) + (-12 * (PI / 180));
 			rotation_axes[0] = Vec3(sin(angle) * cos(rise), sin(rise), cos(angle) * cos(rise));
@@ -54,7 +54,7 @@ WindParticle::WindParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _p
 			rotation_axes[2] = Vec3(sin(angle) * cos(rise), sin(rise), cos(angle) * cos(rise));
 			axis_weights[2] = (sin(rise) + 0.2) * (randangle(0.3) + 1.0);
 			break;
-		case 2:                         // Ash
+		case 2: // Ash
 			angle = randangle(30 * (PI / 180)) + (200 * (PI / 180));
 			rise = randangle(40 * (PI / 180)) + (-12 * (PI / 180));
 			rotation_axes[0] = Vec3(sin(angle) * cos(rise), sin(rise), cos(angle) * cos(rise));
@@ -106,8 +106,7 @@ WindParticle::WindParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _p
 		axis_weights[2] = randangle(0.1) + 0.5;
 		break;
 	}
-	//  std::cout << this << ", " << pos << ": " << "Leaf created." <<
-	//  std::endl;
+	// std::cout << this << ", " << pos << ": " << "Leaf created." <<
 	/*
 	   // Normalize axis weights
 	   percent_t sum = 0;
@@ -132,7 +131,6 @@ bool WindParticle::idle(const Uint64 delta_t) {
 	const Uint64 age = get_time() - born;
 	const interval_t usec = delta_t / 1000000.0;
 	const Vec3 cur_wind = get_wind_vec();
-	//  std::cout << "Wind vec: " << cur_wind.magnitude() << ", " << cur_wind << std::endl;
 	float divisor;
 	switch (type) {
 	case WindEffect::LEAVES:
@@ -144,7 +142,7 @@ bool WindParticle::idle(const Uint64 delta_t) {
 	case WindEffect::SNOW:
 		divisor = 300000;
 		break;
-	default:                 // Should never reach.
+	default: // Should never reach.
 		divisor = 0;
 		break;
 	}
@@ -162,15 +160,11 @@ bool WindParticle::idle(const Uint64 delta_t) {
 			pos.y = min_height;
 		}
 	}
-	//  std::cout << "Pos: " << pos << std::endl;
-	//  std::cout << "Velocity: " << velocity.magnitude() << ", " << velocity << std::endl;
 	if (!state) {
 		if (age > 50000000) {
-			//      std::cout << this << ": Too old." << std::endl;
 			state = 1;
 		}
 		if ((pos - base->center).planar_magnitude_squared() > MAX_DRAW_DISTANCE_SQUARED * 2) {
-			//      std::cout << this << ": " << pos << " too far from " << base->center << std::endl;
 			state = 1;
 		}
 	}
@@ -207,7 +201,6 @@ bool WindParticle::idle(const Uint64 delta_t) {
 	} else {
 		pos.y += delta_t / 800000.0;
 		if (pos.y > max_height * 2) {
-			//      std::cout << this << ": " << pos << " too high." << std::endl;
 			return false;
 		}
 	}
@@ -223,7 +216,7 @@ bool WindParticle::idle(const Uint64 delta_t) {
 	case WindEffect::SNOW:
 		rot_scalar = 30.0;
 		break;
-	default:                 // Should never reach.
+	default: // Should never reach.
 		rot_scalar = 0;
 		break;
 	}
@@ -237,27 +230,27 @@ bool WindParticle::idle(const Uint64 delta_t) {
 	}
 	return true;
 }
-Uint32 WindParticle::get_texture() {       // Shouldn't be needed.  But just in case...
+Uint32 WindParticle::get_texture() { // Shouldn't be needed.  But just in case...
 	switch (type) {
 	case WindEffect::LEAVES:
 		switch (subtype) {
-		case 0:                         // Maple
+		case 0: // Maple
 			return base->get_texture(EC_LEAF_MAPLE);
-		case 1:                         // Oak
+		case 1: // Oak
 			return base->get_texture(EC_LEAF_OAK);
-		case 2:                         // Ash
+		case 2: // Ash
 			return base->get_texture(EC_LEAF_ASH);
-		default:                         // Should never reach.
+		default: // Should never reach.
 			return 0;
 		}
 	case WindEffect::FLOWER_PETALS:
 		return base->get_texture(EC_PETAL);
 	case WindEffect::SNOW:
 		return base->get_texture(EC_SNOWFLAKE);
-	default:                 // Should never reach.
+	default: // Should never reach.
 		return 0;
 	}
-	return 0;         // Control should never reach here.
+	return 0; // Control should never reach here.
 }
 float WindParticle::get_burn() const {
 	return 0.0f;
@@ -271,12 +264,7 @@ Vec3 WindParticle::get_wind_vec() const {
 	const coord_t x = 1.0 * sin(offset + pos.x * 0.5283 + pos.z * 0.7111 + time_offset * 0.6817) * sin(offset + pos.x * 1.2019 + pos.z * 0.5985 + time_offset * 1.5927) * e->max_adjust / (fabs(pos.y - e->center.y) + 1);
 	const coord_t y = 1.0 * sin(offset + pos.x * 0.4177 + pos.z * 1.3127 + time_offset * 1.1817) * sin(offset + pos.x * 0.5828 + pos.z * 0.6888 + time_offset * 2.1927) * e->max_adjust * 2.0;
 	const coord_t z = 1.0 * sin(offset + pos.x * 1.1944 + pos.z * 0.9960 + time_offset * 1.6817) * sin(offset + pos.x * 0.6015 + pos.z * 1.4809 + time_offset * 1.4927) * e->max_adjust / (fabs(pos.y - e->center.y) + 1);
-	//  Vec3 random_component;
-	//  random_component.randomize(max_adjust / 4);
-	//  std::cout << this << ",\t" << pos << ",\t" << velocity << ":\t" << Vec3(x, y, z) << ",\t" << (e->overall_wind + Vec3(x, y, z)) << std::endl;
-	//  std::cout << "  **\t" << offset << ",\t" << (pos.x * 1.9283) << ",\t" << (pos.z * 2.4111) << ",\t" << (time_offset * 2.2817) << " =>\t" << sin(offset + pos.x * 1.9283 + pos.z * 2.4111 + time_offset * 2.2817) << std::endl;
-	//  std::cout << "  **\t" << offset << ",\t" << (pos.x * 3.4019) << ",\t" << (pos.z * 2.0985) << ",\t" << (time_offset * 4.1927) << " =>\t" << sin(offset + pos.x * 3.4019 + pos.z * 2.0985 + time_offset * 4.1927) << std::endl;
-	return e->overall_wind + Vec3(x, y, z);        // + random_component;
+	return e->overall_wind + Vec3(x, y, z); // + random_component;
 }
 WindEffect::WindEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, std::vector<ec::Obstruction *> *_obstructions, const color_t _hue_adjust, const color_t _saturation_adjust, const coord_t _scalar, const float _density, BoundingRange *_bounding_range, const WindType _type, const Vec3 _prevailing_wind) {
 	if (EC_DEBUG) {
@@ -299,8 +287,6 @@ WindEffect::WindEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, std::vector<ec:
 	bounds = bounding_range;
 	mover = new GradientMover(this);
 	spawner = new FilledBoundingSpawner(_bounding_range, pos, &(base->center), range_scalar);
-	//  max_LOD1_count = (int)(spawner->get_area() * _density * 1.0) / 10;
-	//  std::cout << "2: " <<  hue_adjust << " / " << saturation_adjust << " / " << scalar << " / " << _density << std::endl;
 	max_LOD1_count = (int)(MAX_DRAW_DISTANCE_SQUARED * PI * _density * range_scalar * 2.0) / 25;
 	LOD = base->last_forced_LOD;
 	count = LOD * max_LOD1_count;
@@ -399,7 +385,7 @@ void WindEffect::set_pass_off(std::vector<WindEffect *> pass_off_to) {
 				}
 				previous->end_angle = average;
 				current->start_angle = average;
-			} else {  // Insert a null
+			} else { // Insert a null
 				WindNeighbor n;
 				n.neighbor = NULL;
 				n.start_angle = previous->end_angle;
@@ -442,10 +428,8 @@ bool WindEffect::idle(const Uint64 usec) {
 	overall_wind_adjust += velocity_shift;
 	const coord_t magnitude = overall_wind_adjust.magnitude();
 	if (magnitude > max_adjust * 3.5) {
-		//    std::cout << "Adjusting down." << std::endl;
 		overall_wind_adjust /= (magnitude / (max_adjust * 3.5));
 	}
-	//  std::cout << "Wind adjust: " << overall_wind_adjust.magnitude() << ", " << overall_wind_adjust << std::endl;
 	if (fabs(overall_wind_adjust.y) > 0.15) {
 		overall_wind_adjust.y *= std::pow(0.5f, usec / 300000.0f);
 	}
@@ -467,9 +451,7 @@ bool WindEffect::idle(const Uint64 usec) {
 		if (coords.x == -32768.0) {
 			continue;
 		}
-		//    std::cout << coords << ", ";
 		coords += base->center + Vec3(0.0, 0.05, 0.0);
-		//    std::cout << coords << std::endl;
 		Vec3 velocity;
 		velocity.randomize(max_adjust / 2);
 		velocity.y /= 2;
@@ -481,5 +463,4 @@ bool WindEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

@@ -36,9 +36,6 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay) {
 	actor *pActor = actors_list[id];
 	struct CalMixer *mixer;
 	int i;
-	//char str[255];
-	//sprintf(str, "actor:%d anim:%d type:%d delay:%f\0",id,anim.anim_index,anim.kind,delay);
-	//LOG_TO_CONSOLE(c_green2,str);
 	if (pActor == NULL) {
 		return;
 	}
@@ -48,12 +45,12 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay) {
 	if (pActor->cur_anim.anim_index == anim.anim_index) {
 		return;
 	}
-	//this shouldnt happend but its happends if actor doesnt have
-	//animation so we add this workaround to prevent "freezing"
+	// this shouldnt happend but its happends if actor doesnt have
+	// animation so we add this workaround to prevent "freezing"
 	if (anim.anim_index == -1) {
 		attachment_props *att_props;
-		if (     pActor->sitting == 1 ) {
-			//we dont have sitting anim so cancel it
+		if (pActor->sitting == 1) {
+			// we dont have sitting anim so cancel it
 			pActor->sitting = 0;
 		}
 		pActor->stop_animation = 0;
@@ -70,16 +67,16 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay) {
 		anim.kind = cycle;
 	}
 	mixer = CalModel_GetMixer(pActor->calmodel);
-	//Stop previous animation if needed
+	// Stop previous animation if needed
 	if (pActor->IsOnIdle != 1 && (pActor->cur_anim.anim_index != -1)) {
 		if (pActor->cur_anim.kind == cycle) {
-			//little more smooth
+			// little more smooth
 			delay += cal_cycle_blending_delay;
 			CalMixer_ClearCycle(mixer, pActor->cur_anim.anim_index, delay);
 		}
 		if (pActor->cur_anim.kind == action) {
 			CalMixer_RemoveAction(mixer, pActor->cur_anim.anim_index);
-			//change from action to new action or cycle should be smooth
+			// change from action to new action or cycle should be smooth
 			if (anim.duration > 0.0f) {
 				delay = anim.duration;
 			} else {
@@ -87,15 +84,15 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay) {
 			}
 		}
 	} else {
-		//we starting from unkown state (prev anim == -1)
-		//so we add some delay to blend into new state
+		// we starting from unkown state (prev anim == -1)
+		// so we add some delay to blend into new state
 		if (anim.duration > 0.0f) {
 			delay = anim.duration;
 		} else {
 			delay += cal_action_blending_delay;
 		}
 	}
-	//seems to be unusable - groups are always empty???
+	// seems to be unusable - groups are always empty???
 	if (pActor->IsOnIdle == 1) {
 		for (i = 0; i < actors_defs[pActor->actor_type].group_count; ++i) {
 			CalMixer_ClearCycle(mixer, pActor->cur_idle_anims[i].anim_index, delay);
@@ -103,7 +100,7 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay) {
 	}
 	if (anim.kind == cycle) {
 		CalMixer_BlendCycle(mixer, anim.anim_index, 1.0f, delay);
-		CalMixer_SetAnimationTime(mixer, 0.0f); //always start at the beginning of a cycling animation
+		CalMixer_SetAnimationTime(mixer, 0.0f); // always start at the beginning of a cycling animation
 	} else {
 		CalMixer_ExecuteAction_Stop(mixer, anim.anim_index, delay, 0.0);
 	}
@@ -111,7 +108,7 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay) {
 	pActor->anim_time = 0.0;
 	pActor->last_anim_update = cur_time;
 	pActor->stop_animation = anim.kind;
-	CalModel_Update(pActor->calmodel, 0.0001);//Make changes take effect now
+	CalModel_Update(pActor->calmodel, 0.0001); // Make changes take effect now
 	build_actor_bounding_box(pActor);
 	if (pActor->cur_anim.anim_index == -1) {
 		pActor->busy = 0;
@@ -265,11 +262,9 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 	struct CalCoreMesh *_coremesh;
 	struct CalCoreMesh *_weaponmesh;
 	struct CalCoreMesh *_shieldmesh;
-	//int boneid=-1;
 	float reverse_scale;
-	//int glow=-1;
 	if (act->calmodel == NULL) {
-		return;//Wtf!?
+		return; // Wtf!?
 	}
 	skel = CalModel_GetSkeleton(act->calmodel);
 	glPushMatrix();
@@ -291,7 +286,6 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 			glAlphaFunc(GL_GREATER, 0.06f);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			//glDisable(GL_CULL_FACE);
 		}
 		// will use vertex arrays, so enable them
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -318,16 +312,16 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 		for (meshId = 0; meshId < meshCount; meshId++) {
 			// get the number of submeshes
 			submeshCount = CalRenderer_GetSubmeshCount(pCalRenderer, meshId);
-			_mesh = CalModel_GetAttachedMesh(act->calmodel, meshId);     //Get current rendered mesh
-			_coremesh = CalMesh_GetCoreMesh(_mesh);      //Get the coremesh
+			_mesh = CalModel_GetAttachedMesh(act->calmodel, meshId); // Get current rendered mesh
+			_coremesh = CalMesh_GetCoreMesh(_mesh); // Get the coremesh
 			if (act->is_enhanced_model && (_weaponmesh || _shieldmesh)) {
-				//Special treatment for weapons and shields only for enhanced models
+				// Special treatment for weapons and shields only for enhanced models
 				int glow = -1;
 				int boneid = -1;
 				if (_coremesh == _weaponmesh) {
-					boneid = 26;                          //If it's a weapon snap to WeaponR bone
+					boneid = 26; // If it's a weapon snap to WeaponR bone
 				} else if (_coremesh == _shieldmesh) {
-					boneid = 21;                               //If it's a shield snap to WeaponL bone
+					boneid = 21; // If it's a shield snap to WeaponL bone
 				}
 				if (boneid != -1) {
 					glPushMatrix();
@@ -393,7 +387,7 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 					render_submesh(meshId, submeshCount, pCalRenderer, meshVertices, meshNormals, meshTextureCoordinates, meshFaces, use_lightning, use_textures);
 				}
 				if (boneid >= 0) {
-					//if this was a weapon or shield, restore the transformation matrix
+					// if this was a weapon or shield, restore the transformation matrix
 					glPopMatrix();
 				}
 			} else {
@@ -407,7 +401,6 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		if (!act->ghost && act->has_alpha) {
 			glDisable(GL_ALPHA_TEST);
-			//glEnable(GL_CULL_FACE);
 			glDisable(GL_BLEND);
 		}
 		// end the rendering

@@ -5,7 +5,7 @@
  */
 #ifndef __FILTER_H__
 #define __FILTER_H__
-#include        "ignore.h"      /* just in case it hasn't been included */
+#include        "ignore.h" /* just in case it hasn't been included */
 #ifdef __cplusplus
 extern "C" {
 #endif

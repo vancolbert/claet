@@ -14,23 +14,23 @@ ignore_slot ignore_list[MAX_IGNORES];
 int ignored_so_far = 0;
 int save_ignores = 1;
 int use_global_ignores = 1;
-//returns -1 if the name is already ignored, 1 on sucess, -2 if no more ignore slots
+// returns -1 if the name is already ignored, 1 on sucess, -2 if no more ignore slots
 int add_to_ignore_list(char *name, char save_name, char ignore_type) {
 	int i;
-	//see if this name is already on the list
+	// see if this name is already on the list
 	for (i = 0; i < MAX_IGNORES; i++) {
 		if (ignore_list[i].used) {
 			if (my_strcompare(ignore_list[i].name, name)) {
-				return -1;                                           //already in the list
+				return -1; // already in the list
 			}
 		}
 	}
-	//ok, find a free spot
+	// ok, find a free spot
 	for (i = 0; i < MAX_IGNORES; i++) {
 		if (!ignore_list[i].used) {
-			//excellent, a free spot
+			// excellent, a free spot
 			my_strcp(ignore_list[i].name, name);
-			//add to the global ignore file, if the case
+			// add to the global ignore file, if the case
 			if (save_name) {
 				FILE *f = open_file_config("local_ignores.txt", "a");
 				if (f == NULL) {
@@ -43,20 +43,20 @@ int add_to_ignore_list(char *name, char save_name, char ignore_type) {
 					fclose(f);
 				}
 			}
-			ignore_list[i].used = 1;              //mark as used
+			ignore_list[i].used = 1; // mark as used
 			ignore_list[i].ignore_type = ignore_type;
 			ignored_so_far++;
 			return 1;
 		}
 	}
-	return -2;//if we are here, it means the ignores list is full
+	return -2; // if we are here, it means the ignores list is full
 }
-//returns -1 if the name is already ignored, 1 on sucess
+// returns -1 if the name is already ignored, 1 on sucess
 int remove_from_ignore_list(char *name) {
 	int i;
 	int found = 0;
 	FILE *f = NULL;
-	//see if this name is on the list
+	// see if this name is on the list
 	for (i = 0; i < MAX_IGNORES; i++) {
 		if (!found && ignore_list[i].used) {
 			if (my_strcompare(ignore_list[i].name, name)) {
@@ -86,31 +86,31 @@ int remove_from_ignore_list(char *name) {
 		return -1;
 	}
 }
-//returns 1 if ignored, 0 if not ignored
-//type : '1' : MP, '2' : canal
+// returns 1 if ignored, 0 if not ignored
+// type : '1' : MP, '2' : canal
 int check_if_ignored(const char *name, int type) {
 	int i;
 	for (i = 0; i < MAX_IGNORES; i++) {
-		//ALL
+		// ALL
 		if (ignore_list[i].ignore_type == IGN_ALL) {
 			if (ignore_list[i].used && my_strcompare(ignore_list[i].name, name)) {
 				return 1;
 			}
 		}
-		//MP
+		// MP
 		else if (type == IGN_MP && ignore_list[i].ignore_type == IGN_MP) {
 			if (ignore_list[i].used && my_strcompare(ignore_list[i].name, name)) {
 				return 1;
 			}
 		}
-		//canal
+		// canal
 		else if (type == IGN_CANAUX && ignore_list[i].ignore_type == IGN_CANAUX) {
 			if (ignore_list[i].used && my_strcompare(ignore_list[i].name, name)) {
 				return 1;
 			}
 		}
 	}
-	return 0;       // nope
+	return 0; // nope
 }
 int name_is_valid(const char *name) {
 	int i, len;
@@ -126,7 +126,7 @@ int get_name_from_text(const char *input_text, int len, int type, int offset, ch
 	int i, do_break;
 	Uint8 ch;
 	for (i = 0; i < MAX_USERNAME_LENGTH - 1 && (i + offset) < len; i++) {
-		ch = input_text[i + offset];      //skip over the prefix
+		ch = input_text[i + offset]; // skip over the prefix
 		do_break = 0;
 		switch (type) {
 		case 0:
@@ -169,30 +169,30 @@ int pre_check_if_ignored(const char *input_text, int len, Uint8 channel) {
 	char name[MAX_USERNAME_LENGTH] = {0};
 	int type = IGN_ALL;
 	if (channel == CHAT_MODPM) {
-		return 0;               // Don't ever ignore MOD PM's
+		return 0; // Don't ever ignore MOD PM's
 	}
 	switch (channel) {
 	case CHAT_PERSONAL:
 		offset = strlen(pm_from_str) + 2;
-		get_name_from_text(input_text, len, 0, offset, name);                   // Type 0 = ":" or " "
+		get_name_from_text(input_text, len, 0, offset, name); // Type 0 = ":" or " "
 		break;
 	case CHAT_LOCAL:
 		offset = 0;
 		while (is_color(input_text[offset])) {
 			offset++;
 		}
-		offset += get_name_from_text(input_text, len, 1, offset, name);                 // Type 1 = ":", " " or is_color
+		offset += get_name_from_text(input_text, len, 1, offset, name); // Type 1 = ":", " " or is_color
 		if (!name_is_valid(name)) {
-			//This can be a lot. Let's separate them based on the color for now.
+			// This can be a lot. Let's separate them based on the color for now.
 			switch (from_color_char(*input_text)) {
 			case c_grey1:
-				//Check for summoning messages
-				//(*) NAME summoned a %s
+				// Check for summoning messages
+				// (*) NAME summoned a %s
 				if (strcmp(name, "(*)") == 0) {
 					while (offset < len && isspace(input_text[offset])) {
 						offset++;
 					}
-					get_name_from_text(input_text, len, 2, offset, name);                           // Type 2 = isspace
+					get_name_from_text(input_text, len, 2, offset, name); // Type 2 = isspace
 				}
 				break;
 			}
@@ -203,44 +203,44 @@ int pre_check_if_ignored(const char *input_text, int len, Uint8 channel) {
 	case CHAT_CHANNEL3:
 	case CHAT_CHANNEL4:
 	case CHAT_CHANNEL5:
-		for (offset = 0; is_color(input_text[offset]); offset++) {                      // Ignore colours
+		for (offset = 0; is_color(input_text[offset]); offset++) { // Ignore colours
 		}
 		if (input_text[offset] == '[') {
 			offset++;
 		}
-		get_name_from_text(input_text, len, 3, offset, name);                   // Type 3 = ":", " " or "]"
+		get_name_from_text(input_text, len, 3, offset, name); // Type 3 = ":", " " or "]"
 		break;
 	case CHAT_GM:
-		for (offset = 0; is_color(input_text[offset]); offset++) {                      // Ignore colours
+		for (offset = 0; is_color(input_text[offset]); offset++) { // Ignore colours
 		}
 		if (strncasecmp(input_text + offset, gm_from_str, strlen(gm_from_str)) == 0) {
 			offset = strlen(gm_from_str) + 2;
-			get_name_from_text(input_text, len, 0, offset, name);                   // Type 0 = ":" or " "
+			get_name_from_text(input_text, len, 0, offset, name); // Type 0 = ":" or " "
 		} else if (strncasecmp(input_text + offset, ig_from_str, strlen(ig_from_str)) == 0) {
 			offset = strlen(ig_from_str) + 1;
-			get_name_from_text(input_text, len, 4, offset, name);                   // Type 4 = ":", "-" or " "
+			get_name_from_text(input_text, len, 4, offset, name); // Type 4 = ":", "-" or " "
 		}
 		break;
 	case CHAT_MOD:
-		for (offset = 0; is_color(input_text[offset]); offset++) {                      // Ignore colours
+		for (offset = 0; is_color(input_text[offset]); offset++) { // Ignore colours
 		}
 		if (strncasecmp(input_text + offset, mc_from_str, strlen(mc_from_str)) == 0) {
 			offset = strlen(mc_from_str) + 2;
-			get_name_from_text(input_text, len, 0, offset, name);                   // Type 0 = ":" or " "
+			get_name_from_text(input_text, len, 0, offset, name); // Type 0 = ":" or " "
 		}
 		break;
 	}
 	if (*name && name_is_valid(name)) {
 		add_name_to_tablist(name);
 	} else {
-		for (offset = 0; is_color(input_text[offset]); offset++) {              // Ignore colours
+		for (offset = 0; is_color(input_text[offset]); offset++) { // Ignore colours
 		}
-		get_name_from_text(input_text, len, 1, offset, name);   // Type 1 = ":", " " or is_color
+		get_name_from_text(input_text, len, 1, offset, name); // Type 1 = ":", " " or is_color
 	}
 	type = (channel == CHAT_PERSONAL) ? IGN_MP : IGN_CANAUX;
 	if (!check_if_ignored(name, type)) {
 		if (channel == CHAT_PERSONAL || channel == CHAT_MODPM) {
-			//memorise the name
+			// memorise the name
 			my_strcp(last_pm_from, name);
 		}
 		return 0;
@@ -267,7 +267,7 @@ void load_ignores_list(char *file_name) {
 		fclose(f);
 		return;
 	}
-	//ok, allocate memory for it
+	// ok, allocate memory for it
 	ignore_list_mem = (char *)calloc(f_size, 1);
 	fseek(f, 0, SEEK_SET);
 	ret = fread(ignore_list_mem, 1, f_size, f);
@@ -283,7 +283,7 @@ void load_ignores_list(char *file_name) {
 		ch = ignore_list_mem[i];
 		if (ch == '\n' || ch == '\r') {
 			if (j && add_to_ignore_list(name, 0, ignore_type) == -1) {
-				return;                //ignore list full
+				return; // ignore list full
 			}
 			j = 0;
 			i++;
@@ -306,7 +306,7 @@ void load_ignores_list(char *file_name) {
 }
 void clear_ignore_list() {
 	int i;
-	//see if this name is already on the list
+	// see if this name is already on the list
 	for (i = 0; i < MAX_IGNORES; i++) {
 		ignore_list[i].used = 0;
 	}
@@ -335,7 +335,7 @@ int list_ignores() {
 			safe_strcat(str, ", ", sizeof(str));
 		}
 	}
-	str[strlen(str) - 2] = 0;//get rid of the last ", " thingy
+	str[strlen(str) - 2] = 0; // get rid of the last ", " thingy
 	LOG_TO_CONSOLE(c_grey1, str);
 	return 1;
 }

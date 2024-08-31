@@ -13,7 +13,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern Uint32 map_flags;/**< The map flags - basically this will be obsolete with the next map format, but untill then it's good to have*/
+extern Uint32 map_flags; /**< The map flags - basically this will be obsolete with the next map format, but untill then it's good to have*/
 extern char dungeon; /**< inidicates whether we are in a dungeon (no sun) or not */
 /** @name ambient color values
  * @{ */
@@ -129,8 +129,8 @@ void load_server_markings(void);
 void save_server_markings(void);
 void animate_map_markers(void);
 void add_server_markers(void);
-void display_map_markers(void); //draw text
-void display_map_marks(void); //draw cross
+void display_map_markers(void); // draw text
+void display_map_marks(void); // draw cross
 void change_3d_marks(int *rel);
 extern hash_table *server_marks;
 extern float mark_z_rot;
@@ -140,4 +140,4 @@ extern int marks_3d;
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  // _MAP_H_
+#endif // _MAP_H_

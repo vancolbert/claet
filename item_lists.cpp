@@ -20,7 +20,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-//needed for notepad.h
+// needed for notepad.h
 #include <SDL.h>
 #include "text.h"
 #include "notepad.h"
@@ -54,10 +54,8 @@ static void rename_list_handler(const char *input_text, void *data);
 static int cm_selected_item_handler(window_info *win, int widget_id, int mx, int my, int option);
 static int cm_names_handler(window_info *win, int widget_id, int mx, int my, int option);
 static void cm_names_pre_show_handler(window_info *win, int widget_id, int mx, int my, window_info *cm_win);
-//
-//	Read a line from a file with any training "\r" removed.
-//	Perhaps some evil windows interaction put it there.....
-//
+// Read a line from a file with any training "\r" removed.
+// Perhaps some evil windows interaction put it there.....
 std::istream& getline_nocr(std::istream& is, std::string& str) {
 	std::istream &res = std::getline(is, str);
 	if (!str.empty() && str[str.size() - 1] == '\r') {
@@ -65,8 +63,7 @@ std::istream& getline_nocr(std::istream& is, std::string& str) {
 	}
 	return res;
 }
-//	A class for an individual item list.
-//
+// A class for an individual item list.
 class List {
 public:
 List(void) : format_error(false) {}
@@ -90,8 +87,7 @@ std::vector<int> quantities;
 std::vector<Uint16> item_ids;
 bool format_error;
 };
-//	Class to contain a collection of item lists.
-//
+// Class to contain a collection of item lists.
 class List_Container {
 public:
 List_Container(void) : active_list(0), initial_active_list(0), last_mod_time(0), loaded(false) {}
@@ -132,8 +128,7 @@ bool loaded;
 static const char *filename;
 static bool sort_compare(const List &a, const List &b);
 };
-//	Simple wrapper around the quantity input dialogue
-//
+// Simple wrapper around the quantity input dialogue
 class Quantity_Input {
 public:
 Quantity_Input(void) {init_ipu(&ipu, -1, 200, -1, 10, 1, NULL, quantity_input_handler);}
@@ -147,8 +142,7 @@ INPUT_POPUP ipu;
 size_t list;
 size_t item;
 };
-//	Store and lookup categories for objects.
-//
+// Store and lookup categories for objects.
 class Category_Maps {
 public:
 Category_Maps(void) : must_save(false), loaded(false) {}
@@ -169,7 +163,6 @@ bool loaded;
 struct IDS {public: std::vector<int> images; std::vector<Uint16> items;};
 };
 // Class for the list window
-//
 class List_Window {
 public:
 List_Window(void) :
@@ -236,8 +229,8 @@ int last_items_list_on_left;
 const char *desc_str;
 Uint32 pickup_fail_time;
 };
-//	Class for static objects to avoid destructor issues
-//  Will be created after and destructed before global statics
+// Class for static objects to avoid destructor issues
+// Will be created after and destructed before global statics
 class Vars {
 public:
 static Quantity_Input *quantity_input(void)
@@ -252,7 +245,6 @@ static List_Window *win(void)
 // Set the name, ids and quantities for a new list.
 // If there is nothing in the inventory, then return
 // value is false, the caller should delete the object.
-//
 bool List::set(std::string save_name) {
 	name = save_name;
 	for (size_t i = 0; i < ITEM_NUM_ITEMS - ITEM_NUM_WEAR; i++) {
@@ -279,9 +271,8 @@ bool List::set(std::string save_name) {
 	}
 	return true;
 }
-//	Write the list to the specified stream.
-//  The name, ids and quantities are on separate lines.
-//
+// Write the list to the specified stream.
+// The name, ids and quantities are on separate lines.
 void List::write(std::ostream & out) const {
 	out << name << std::endl;
 	for (size_t i = 0; out && i < image_ids.size(); i++) {
@@ -297,10 +288,8 @@ void List::write(std::ostream & out) const {
 	}
 	out << std::endl;
 }
-//	Read an itemlist from the specified input stream
-//	If an error occurs the function will return false;
-//	the caller should delete the object.
-//
+// Read an itemlist from the specified input stream
+// the caller should delete the object.
 bool List::read(std::istream & in) {
 	std::string name_line, image_id_line, cnt_line, item_uid_line;
 	// each part is on a separate line, but allow empty lines
@@ -349,14 +338,13 @@ bool List::read(std::istream & in) {
 	return true;
 }
 // Delete the specified item from the list
-//
 void List::del(size_t item_index) {
 	assert(item_index < quantities.size());
 	image_ids.erase(image_ids.begin() + item_index);
 	quantities.erase(quantities.begin() + item_index);
 	item_ids.erase(item_ids.begin() + item_index);
 }
-//	Add a new item to a list or increase quantity if already in the list
+// Add a new item to a list or increase quantity if already in the list
 void List::add(size_t over_item_number, int image_id, Uint16 id, int quantity) {
 	do_drop_item_sound();
 	// Add to quanity if already in list
@@ -398,39 +386,32 @@ void List::add(size_t over_item_number, int image_id, Uint16 id, int quantity) {
 	}
 }
 const char *Category_Maps::filename = "item_categories.txt";
-//	If we don't already have the objects category, store it now.
-//
+// If we don't already have the objects category, store it now.
 void Category_Maps::update(int image_id, Uint16 item_id, int cat_id) {
 	if (!loaded) {
 		load();
 	}
 	if ((item_id != unset_item_uid) && !have_item_id(item_id)) {
-		//std::cout << "Storing item id " << item_id << " cat " << cat_id << std::endl;
 		cat_by_item_id[item_id] = cat_id;
 		must_save = true;
 	}
 	if (!have_image_id(image_id)) {
-		//std::cout << "Storing image id " << image_id << " cat " << cat_id << std::endl;
 		cat_by_image_id[image_id] = cat_id;
 		must_save = true;
 	}
 }
-//	Return the category for an item/image id, or -1 for not found.
-//
+// Return the category for an item/image id, or -1 for not found.
 int Category_Maps::get_cat(int image_id, Uint16 item_id) {
 	if ((item_id != unset_item_uid) && have_item_id(item_id)) {
-		//std::cout << "Retrieving by item id " << item_id << std::endl;
 		return cat_by_item_id[item_id];
 	} else if (have_image_id(image_id)) {
-		//std::cout << "Retrieving by image id " << image_id << std::endl;
 		return cat_by_image_id[image_id];
 	} else {
 		return -1;
 	}
 }
-//	Save the object/category mappings.
-//	Grouped for each category to save space and allow easy image/item id mixing
-//
+// Save the object/category mappings.
+// Grouped for each category to save space and allow easy image/item id mixing
 void Category_Maps::save(void) {
 	if (!must_save) {
 		return;
@@ -469,8 +450,7 @@ void Category_Maps::save(void) {
 	}
 	must_save = false;
 }
-//	Load the object/category mappings.
-//
+// Load the object/category mappings.
 void Category_Maps::load(void) {
 	loaded = true;
 	cat_by_image_id.clear();
@@ -524,8 +504,7 @@ void Category_Maps::load(void) {
 	}
 	must_save = false;
 }
-//	Open the input quantity window
-//
+// Open the input quantity window
 void Quantity_Input::open(int parent_id, int mx, int my, size_t list, size_t item) {
 	this->list = list;
 	this->item = item;
@@ -535,8 +514,7 @@ void Quantity_Input::open(int parent_id, int mx, int my, size_t list, size_t ite
 	ipu.data = static_cast<void *>(this);
 	display_popup_win(&ipu, item_list_quantity_str);
 }
-//	Once a new quantity has been entered, set the value in the list
-//
+// Once a new quantity has been entered, set the value in the list
 static void quantity_input_handler(const char *input_text, void *data) {
 	assert(data != NULL);
 	Quantity_Input *input = static_cast<Quantity_Input *>(data);
@@ -552,8 +530,7 @@ static void quantity_input_handler(const char *input_text, void *data) {
 }
 int List_Container::FILE_REVISION = 2;
 const char *List_Container::filename = "item_lists.txt";
-//  Save the item lists to a file in players config directory
-//
+// Save the item lists to a file in players config directory
 void List_Container::save(void) {
 	if (!loaded || saved_item_lists.empty()) {
 		return;
@@ -573,8 +550,7 @@ void List_Container::save(void) {
 	out.close();
 	last_mod_time = 0;
 }
-//  Load the item lists from the file in players config directory
-//
+// Load the item lists from the file in players config directory
 void List_Container::load(void) {
 	loaded = true;
 	saved_item_lists.clear();
@@ -605,8 +581,7 @@ void List_Container::load(void) {
 	sort_list();
 	set_active(initial_active_list);
 }
-//	Add a new list
-//
+// Add a new list
 bool List_Container::add(const char *name) {
 	saved_item_lists.push_back(List());
 	if (saved_item_lists.back().set(name)) {
@@ -618,8 +593,7 @@ bool List_Container::add(const char *name) {
 	saved_item_lists.pop_back();
 	return false;
 }
-//	Find the first list with the specified name - best we can simply do
-//
+// Find the first list with the specified name - best we can simply do
 void List_Container::select_by_name(const char *name) {
 	for (size_t i = 0; i < saved_item_lists.size(); ++i) {
 		if (saved_item_lists[i].get_name() == std::string(name)) {
@@ -628,9 +602,8 @@ void List_Container::select_by_name(const char *name) {
 		}
 	}
 }
-//	Find the next list after the current active who's name contains the
-//	filter string - then make it the active_list.
-//
+// Find the next list after the current active who's name contains the
+// filter string - then make it the active_list.
 void List_Container::find_next_matching(const char *filter) {
 	for (size_t i = active_list + 1; i < active_list + size(); ++i) {
 		size_t check = i % size();
@@ -642,8 +615,7 @@ void List_Container::find_next_matching(const char *filter) {
 		}
 	}
 }
-//	Delete the specified list
-//
+// Delete the specified list
 void List_Container::del(size_t list_index) {
 	assert(list_index < size());
 	saved_item_lists.erase(saved_item_lists.begin() + list_index);
@@ -652,8 +624,7 @@ void List_Container::del(size_t list_index) {
 		active_list = size() - 1;
 	}
 }
-//	Rename the active list
-//
+// Rename the active list
 void List_Container::rename_active(const char *name) {
 	if (active_list >= size()) {
 		return;
@@ -664,7 +635,6 @@ void List_Container::rename_active(const char *name) {
 	save();
 }
 // Used by the sort algorithm to alphabetically compare two list names, case insensitive
-//
 bool List_Container::sort_compare(const List &a, const List &b) {
 	std::string alower(a.get_name());
 	std::transform(alower.begin(), alower.end(), alower.begin(), tolower);
@@ -673,7 +643,6 @@ bool List_Container::sort_compare(const List &a, const List &b) {
 	return alower < blower;
 }
 // Check if we need to do a delayed save, then do if required
-//
 void List_Container::check_and_timed_save(bool force) {
 	if (!last_mod_time) {
 		return;
@@ -682,9 +651,8 @@ void List_Container::check_and_timed_save(bool force) {
 		save();
 	}
 }
-//	Calculate the number of item list names show - depends on window height
-//	and number of grid rows shown
-//
+// Calculate the number of item list names show - depends on window height
+// and number of grid rows shown
 void List_Window::calc_num_show_names(int win_len_y = -1) {
 	// get the actual window height if not specfified
 	if (win_len_y < 0) {
@@ -699,8 +667,7 @@ void List_Window::calc_num_show_names(int win_len_y = -1) {
 	num_show_names_list = static_cast<int>
 			      ((win_len_y - get_grid_size() * num_grid_rows) / (get_list_gap() + names_list_height));
 }
-//	The size available to the names list has changed so resize/move elements.
-//
+// The size available to the names list has changed so resize/move elements.
 void List_Window::resized_name_panel(window_info *win) {
 	calc_num_show_names();
 	cm_remove_regions(win_id);
@@ -710,10 +677,9 @@ void List_Window::resized_name_panel(window_info *win) {
 	make_active_visable();
 	update_scroll_len();
 }
-//	Create the window or just toggle its open/closed state.
-//
+// Create the window or just toggle its open/closed state.
 void List_Window::show(window_info *win) {
-	if (win_id < 0 ) {
+	if (win_id < 0) {
 		ItemLists::Vars::lists()->load();
 		ItemLists::Vars::cat_maps()->load();
 		filter[0] = '\0';
@@ -743,7 +709,6 @@ void List_Window::show(window_info *win) {
 	}
 }
 // Draw the item list window
-//
 int List_Window::draw(window_info *win) {
 	Vars::lists()->check_and_timed_save(false);
 	// if resizing wait until we stop
@@ -892,7 +857,7 @@ int List_Window::draw(window_info *win) {
 	if (clicked && mouse_over_get_button && Vars::lists()->valid_active_list()) {
 		do_click_sound();
 		if (Vars::lists()->get_list().get_num_items() > 0 && withdraw_list_item.get_num_items() <= 0) {
-			//on copie la liste active dans une liste qui nous servira de buffer
+			// on copie la liste active dans une liste qui nous servira de buffer
 			for (size_t i = 0; i < Vars::lists()->get_list().get_num_items(); i++) {
 				withdraw_list_item.add(i, Vars::lists()->get_list().get_image_id(i), Vars::lists()->get_list().get_item_id(i), Vars::lists()->get_list().get_quantity(i));
 			}
@@ -909,12 +874,9 @@ int List_Window::draw(window_info *win) {
 }
 // Sequences pour tranférer la liste d'objet dans l'inventaire
 // si la liste ne contient plus qu'un item last_item=1
-//
 void List_Window::process_withdraw_list(int last_item) {
 	Uint32 current_time = SDL_GetTicks();
-	//int min_time_between_withdraw;
 	int qte_item = withdraw_list_item.get_quantity(0);
-	//min_time_between_withdraw = 100;
 	if (min_time_between_withdraw < 50) {
 		min_time_between_withdraw = 50;
 	}
@@ -937,8 +899,7 @@ void List_Window::process_withdraw_list(int last_item) {
 		}
 	}
 }
-//	Prompt for the new list name, starting the process of adding a new list
-//
+// Prompt for the new list name, starting the process of adding a new list
 void List_Window::new_or_rename_list(bool is_new) {
 	if ((win_id < 0) || (win_id >= windows_list.num_windows)) {
 		return;
@@ -950,8 +911,7 @@ void List_Window::new_or_rename_list(bool is_new) {
 	ipu_item_list_name.y = (get_grid_size() * num_grid_rows - ipu_item_list_name.popup_y_len) / 2;
 	display_popup_win(&ipu_item_list_name, (is_new) ?item_list_name_str : item_list_rename_str);
 }
-//	The mouse is over the window
-//
+// The mouse is over the window
 int List_Window::mouseover(window_info *win, int mx, int my) {
 	if ((my < 0) || (cm_window_shown() != CM_INIT_VALUE)) {
 		return 0;
@@ -981,7 +941,6 @@ int List_Window::mouseover(window_info *win, int mx, int my) {
 	}
 	// check if over the get list button
 	if (my > add_button_y + 17 && my < (add_button_y + 17 + 2 * DEFAULT_FONT_Y_LEN) && mx > add_button_x && mx < win->len_x) {
-		//help_str.push_back(item_list_create_help_str);
 		mouse_over_get_button = true;
 	}
 	// check if over the list names and get which name
@@ -998,8 +957,7 @@ int List_Window::mouseover(window_info *win, int mx, int my) {
 	}
 	return 0;
 }
-//	Get the item number of the object under the mouse
-//
+// Get the item number of the object under the mouse
 size_t List_Window::get_item_number(int mx, int my) {
 	if (!Vars::lists()->valid_active_list()) {
 		return 0;
@@ -1014,10 +972,9 @@ size_t List_Window::get_item_number(int mx, int my) {
 	}
 	return num_items;
 }
-//	Handle mouse clicks in the window
-//
+// Handle mouse clicks in the window
 int List_Window::click(window_info *win, int mx, int my, Uint32 flags) {
-	if (my < 0) {       // don't respond here to title bar being clicked
+	if (my < 0) { // don't respond here to title bar being clicked
 		return 0;
 	}
 	if (flags & ELW_LEFT_MOUSE) {
@@ -1102,8 +1059,7 @@ int List_Window::click(window_info *win, int mx, int my, Uint32 flags) {
 	}
 	return 1;
 }
-//	Switch back to a previous item quantity on the main window.
-//
+// Switch back to a previous item quantity on the main window.
 void List_Window::restore_inventory_quantity(void) {
 	if (quantities.selected == ITEM_EDIT_QUANT) {
 		quantities.selected = last_quantity_selected;
@@ -1111,8 +1067,7 @@ void List_Window::restore_inventory_quantity(void) {
 	}
 	selected_item_number = static_cast<size_t>(-1);
 }
-//	Move the names list to make the select list visible
-//
+// Move the names list to make the select list visible
 void List_Window::make_active_visable(void) {
 	const size_t top_entry = vscrollbar_get_pos(win_id, names_scroll_id);
 	int new_pos = top_entry;
@@ -1125,15 +1080,13 @@ void List_Window::make_active_visable(void) {
 	}
 	vscrollbar_set_pos(win_id, names_scroll_id, new_pos);
 }
-//	Recalculate the scroll bar length
-//
+// Recalculate the scroll bar length
 void List_Window::update_scroll_len(void) {
 	if (win_id >= 0) {
 		vscrollbar_set_bar_len(win_id, names_scroll_id, Vars::lists()->size() - num_show_names_list);
 	}
 }
-//	Place to the preferred side.
-//
+// Place to the preferred side.
 int List_Window::get_window_pos_x(window_info *parent_win) const {
 	if (!parent_win) {
 		return 0;
@@ -1143,8 +1096,7 @@ int List_Window::get_window_pos_x(window_info *parent_win) const {
 	}
 	return parent_win->len_x + 5;
 }
-//	Move the window back to the default poistion
-//
+// Move the window back to the default poistion
 void List_Window::reset_position(void) {
 	if ((win_id >= 0) && (win_id < windows_list.num_windows)) {
 		window_info *list_win = &windows_list.window[win_id];
@@ -1157,8 +1109,7 @@ void List_Window::reset_position(void) {
 		}
 	}
 }
-//	Key presses in the window used for a search string
-//
+// Key presses in the window used for a search string
 int List_Window::keypress(char the_key) {
 	last_key_time = SDL_GetTicks();
 	if (the_key == SDLK_ESCAPE) {
@@ -1175,20 +1126,17 @@ int List_Window::keypress(char the_key) {
 	}
 	return 0;
 }
-//	Enable/disable names conext menu options
-//
+// Enable/disable names conext menu options
 void List_Window::cm_names_pre_show(void) {
 	int no_active = (Vars::lists()->valid_active_list()) ?0 :1;
 	cm_grey_line(cm_names_menu, 1, no_active);
 	cm_grey_line(cm_names_menu, 3, no_active);
 }
-//	Call the names context menu pre show handler
-//
+// Call the names context menu pre show handler
 static void cm_names_pre_show_handler(window_info *win, int widget_id, int mx, int my, window_info *cm_win) {
 	Vars::win()->cm_names_pre_show();
 }
-//	Item list names context menu option handler
-//
+// Item list names context menu option handler
 static int cm_names_handler(window_info *win, int widget_id, int mx, int my, int option) {
 	switch (option) {
 	case 0:
@@ -1215,8 +1163,7 @@ static int cm_names_handler(window_info *win, int widget_id, int mx, int my, int
 	}
 	return 1;
 }
-//	Selected item context menu option handler
-//
+// Selected item context menu option handler
 static int cm_selected_item_handler(window_info *win, int widget_id, int mx, int my, int option) {
 	size_t item_under_mouse = Vars::win()->get_item_number(mx, my);
 	if (!Vars::lists()->valid_active_list() || (item_under_mouse >= Vars::lists()->get_list().get_num_items())) {
@@ -1238,8 +1185,7 @@ static int cm_selected_item_handler(window_info *win, int widget_id, int mx, int
 	}
 	return 0;
 }
-//	Enter name input callback - when OK selected
-//
+// Enter name input callback - when OK selected
 static void new_list_handler(const char *input_text, void *data) {
 	// if sucessful update the displayed list else tell user it failed
 	if (Vars::lists()->add(input_text)) {
@@ -1249,29 +1195,24 @@ static void new_list_handler(const char *input_text, void *data) {
 		LOG_TO_CONSOLE(c_red1, item_list_empty_list_str);
 	}
 }
-//	Enter new name input callback - when OK selected
-//
+// Enter new name input callback - when OK selected
 static void rename_list_handler(const char *input_text, void *data) {
 	Vars::lists()->rename_active(input_text);
 	Vars::win()->make_active_visable();
 }
-//  Draw the window
-//
+// Draw the window
 static int display_itemlist_handler(window_info *win) {
 	return Vars::win()->draw(win);
 }
-//	Handle mouse clicks in the window
-//
+// Handle mouse clicks in the window
 static int click_itemlist_handler(window_info *win, int mx, int my, Uint32 flags) {
 	return Vars::win()->click(win, mx, my, flags);
 }
-//	Record mouse over the window so the draw handler can show help text
-//
+// Record mouse over the window so the draw handler can show help text
 static int mouseover_itemlist_handler(window_info *win, int mx, int my) {
 	return Vars::win()->mouseover(win, mx, my);
 }
-//  Called when the window is hidden, undo any quantity setting, do pending save.
-//
+// Called when the window is hidden, undo any quantity setting, do pending save.
 static int hide_itemlist_handler(window_info *win) {
 	Vars::win()->restore_inventory_quantity();
 	Vars::lists()->check_and_timed_save(true);
@@ -1289,8 +1230,7 @@ static int resize_itemlist_handler(window_info *win, int new_width, int new_heig
 	return 0;
 }
 } // end ItemLists namespace
-//	Interface for the outside world
-//
+// Interface for the outside world
 extern "C"
 {
 void toggle_items_list_window(window_info *win) {

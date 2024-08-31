@@ -22,7 +22,7 @@ extern "C" {
  * obj_2d_def is loaded from a .2do-file and is shared amongst all objects of that type in the obj_2d_def_cache array
  */
 typedef struct {
-	char file_name[128];    /*!< name of the file that contains the definition of the 2d object */
+	char file_name[128]; /*!< name of the file that contains the definition of the 2d object */
 	/*! \name start and end coordinates of the texture @{ */
 	float u_start; /*!< start position of the u coordinate */
 	float u_end; /*!< end position of the u coordinate */
@@ -39,7 +39,7 @@ typedef struct {
 	                  * plant: put in an upwards rotation (x_rot+=90) and set z_rot=-rz
 	                  * fence: put in an upwards rotation (x_rot+=90)
 	                  */
-	int texture_id;  /*!< The location in the texture cache. */
+	int texture_id; /*!< The location in the texture cache. */
 } obj_2d_def;
 /*!
  * The obj_2d determines the position and rotation of the given 2d object. Furthermore it determines the type
@@ -56,7 +56,7 @@ typedef struct {
 	float z_rot;
 	/*! @} */
 	MATRIX4x4 matrix; /*!< translation and rotaion matrix */
-	char display;/*!< flag determining whether the object is to be shown on screen. */
+	char display; /*!< flag determining whether the object is to be shown on screen. */
 	char state; /*!< state flag for future expansion & data alignment. */
 	obj_2d_def *obj_pointer; /**< Points to the 2d object type in the obj_2d_def list */
 	short cluster;

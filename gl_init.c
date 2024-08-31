@@ -47,8 +47,8 @@ int disable_gamma_adjust = 0;
 float gamma_var = 1.00f;
 float perspective = 0.15f;
 float near_plane = 0.1f; // don't cut off anything
-float far_plane = 100.0;   // LOD helper. Cull distant objects. Lower value == higher framerates.
-float far_reflection_plane = 100.0;   // LOD helper. Cull distant reflected objects. Lower value == higher framerates.
+float far_plane = 100.0; // LOD helper. Cull distant objects. Lower value == higher framerates.
+float far_reflection_plane = 100.0; // LOD helper. Cull distant reflected objects. Lower value == higher framerates.
 int gl_extensions_loaded = 0;
 struct list {
 	int i;
@@ -152,7 +152,7 @@ void setup_video_mode(int fs, int mode) {
 		bpp = 0; // autodetect
 	}
 #ifndef WINDOWS
-	bpp = 0;//under X, we can't change the desktop BPP
+	bpp = 0; // under X, we can't change the desktop BPP
 #endif
 }
 void check_gl_mode() {
@@ -172,7 +172,7 @@ void check_gl_mode() {
 			fsaa = 0;
 		}
 	}
-	//now, test if the video mode is OK...
+	// now, test if the video mode is OK...
 	if (!SDL_VideoModeOK(window_width, window_height, bpp, flags)) {
 		char vid_mode_str[25];
 		safe_snprintf(vid_mode_str, sizeof(vid_mode_str), "%ix%ix%i", window_width, window_height, bpp);
@@ -181,7 +181,7 @@ void check_gl_mode() {
 		LOG_ERROR("%s\n", str);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 		have_stencil = 0;
-		//now, test if the video mode is OK...
+		// now, test if the video mode is OK...
 		if (!SDL_VideoModeOK(window_width, window_height, bpp, flags)) {
 			int old_width;
 			int old_height;
@@ -209,17 +209,17 @@ void init_video() {
 	setup_video_mode(full_screen, video_mode);
 	/* Detect the display depth */
 	if (!bpp) {
-		if ( SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 8 ) {
+		if (SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 8) {
 			bpp = 8;
-		} else if ( SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 16 ) {
-			bpp = 16;                          /* More doesn't seem to work */
+		} else if (SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 16) {
+			bpp = 16; /* More doesn't seem to work */
 		} else {
 			bpp = 32;
 		}
 	}
-	//adjust the video mode accordingly
+	// adjust the video mode accordingly
 	if (video_mode == 0) {
-		//do nothing
+		// do nothing
 	} else if (bpp == 16) {
 		if (!(video_mode % 2)) {
 			video_mode -= 1;
@@ -248,7 +248,7 @@ void init_video() {
 		rgb_size[2] = 8;
 		break;
 	}
-	//    Mac OS X will always use 8-8-8-8 ARGB for 32-bit screens and 5-5-5 RGB for 16-bit screens
+	// Mac OS X will always use 8-8-8-8 ARGB for 32-bit screens and 5-5-5 RGB for 16-bit screens
 #ifndef OSX
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, rgb_size[0]);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, rgb_size[1]);
@@ -280,7 +280,7 @@ void init_video() {
 			fsaa = 0;
 		}
 	}
-	//try to find a stencil buffer (it doesn't always work on Linux)
+	// try to find a stencil buffer (it doesn't always work on Linux)
 	if (!SDL_SetVideoMode(window_width, window_height, bpp, flags)) {
 		LOG_TO_CONSOLE(c_red1, no_hardware_stencil_str);
 		LOG_ERROR("%s\n", no_hardware_stencil_str);
@@ -298,7 +298,7 @@ void init_video() {
 		have_stencil = 0;
 	}
 #ifdef WINDOWS
-	//try to see if we get hardware acceleration, or the windows generic shit
+	// try to see if we get hardware acceleration, or the windows generic shit
 	{
 		int len;
 		const char *my_string;
@@ -314,10 +314,10 @@ void init_video() {
 			have_hardware = get_string_occurance("gdi generic", my_string, len, 0);
 		}
 		if (have_hardware != -1) {
-			//let the user know there is a problem
+			// let the user know there is a problem
 			LOG_TO_CONSOLE(c_red1, stencil_falls_back_on_software_accel);
 			LOG_ERROR("%s\n", stencil_falls_back_on_software_accel);
-			//first, shut down this mode we have now.
+			// first, shut down this mode we have now.
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, rgb_size[0]);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, rgb_size[1]);
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, rgb_size[2]);
@@ -341,8 +341,8 @@ void init_video() {
 				have_hardware = get_string_occurance("gdi generic", my_string, len, 0);
 			}
 			if (have_hardware != -1) {
-				//wtf, this really shouldn't happen....
-				//let's try a default mode, maybe Quake 2's mode, and pray it works
+				// wtf, this really shouldn't happen....
+				// let's try a default mode, maybe Quake 2's mode, and pray it works
 				LOG_TO_CONSOLE(c_red1, last_chance_str);
 				LOG_ERROR("%s\n", last_chance_str);
 				SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -359,7 +359,7 @@ void init_video() {
 				window_height = 480;
 				bpp = 32;
 				SDL_SetVideoMode(window_width, window_height, bpp, flags);
-				//see if it worked...
+				// see if it worked...
 				my_string = (const char *)glGetString(GL_RENDERER);
 				if (my_string == NULL) {
 					len = 0;
@@ -371,8 +371,8 @@ void init_video() {
 					have_hardware = get_string_occurance("gdi generic", my_string, len, 0);
 				}
 				if (have_hardware != -1) {
-					//wtf, this really shouldn't happen....
-					//let's try a default mode, maybe Quake 2's mode, and pray it works
+					// wtf, this really shouldn't happen....
+					// let's try a default mode, maybe Quake 2's mode, and pray it works
 					LOG_TO_CONSOLE(c_red1, software_mode_str);
 					LOG_ERROR("%s\n", software_mode_str);
 				}
@@ -382,7 +382,6 @@ void init_video() {
 #endif
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	//glDepthFunc(GL_LEQUAL);
 	glEnable(GL_TEXTURE_2D);
 	glShadeModel(GL_SMOOTH);
 	glFrontFace(GL_CCW);
@@ -393,7 +392,7 @@ void init_video() {
 	SDL_EnableUNICODE(1);
 	build_video_mode_array();
 	SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &have_stencil);
-	last_texture = -1;        //no active texture
+	last_texture = -1; // no active texture
 	change_minimap();
 	check_options();
 }
@@ -672,24 +671,18 @@ void init_gl_extensions() {
 }
 void resize_root_window() {
 	float window_ratio;
-	//float hud_x_adjust=0;
-	//float hud_y_adjust=0;
 	if (window_height == 0) {
-		window_height = 1;                              // Prevent A Divide By Zero
+		window_height = 1; // Prevent A Divide By Zero
 	}
-	//glViewport(0, hud_y, window_width-hud_x, window_height);	// Reset The Current Viewport
-	//glViewport(0, 0, window_width-hud_x, -(window_height-hud_y));	// Reset The Current Viewport
-	glMatrixMode(GL_PROJECTION);                                    // Select The Projection Matrix
-	glLoadIdentity();                                                       // Reset The Projection Matrix
+	glMatrixMode(GL_PROJECTION); // Select The Projection Matrix
+	glLoadIdentity(); // Reset The Projection Matrix
 	window_ratio = (GLfloat)(window_width - hud_x) / (GLfloat)(window_height - hud_y);
-	//hud_y_adjust=(2.0/window_height)*hud_y;
-	//hud_x_adjust=(2.0/window_width)*hud_x;
-	//Setup matrix for the sky. If we don't do this the sky looks unhinged when perspective changes.
+	// Setup matrix for the sky. If we don't do this the sky looks unhinged when perspective changes.
 	glLoadIdentity();
 	glFrustum(-perspective * window_ratio * near_plane, perspective * window_ratio * near_plane, -perspective * near_plane, perspective * near_plane, near_plane, 1000.0);
 	glGetDoublev(GL_PROJECTION_MATRIX, skybox_view);
 	glLoadIdentity(); // Reset The Projection Matrix
-	//new zoom
+	// new zoom
 	if (isometric) {
 		glOrtho(-1.0 * zoom_level * window_ratio, 1.0 * zoom_level * window_ratio, -1.0 * zoom_level, 1.0 * zoom_level, -near_plane * zoom_level, 60.0);
 	} else {
@@ -699,15 +692,15 @@ void resize_root_window() {
 			glTranslatef(0.0, 0.0, -zoom_level / perspective);
 		}
 	}
-	glMatrixMode(GL_MODELVIEW);                                     // Select The Modelview Matrix
-	glLoadIdentity();                                                       // Reset The Modelview Matrix
-	last_texture = -1;        //no active texture
+	glMatrixMode(GL_MODELVIEW); // Select The Modelview Matrix
+	glLoadIdentity(); // Reset The Modelview Matrix
+	last_texture = -1; // no active texture
 }
 void set_new_video_mode(int fs, int mode) {
 	int i;
 	full_screen = fs;
 	video_mode = mode;
-	//now, clear all the textures...
+	// now, clear all the textures...
 	unload_texture_cache();
 	if (use_vertex_buffers) {
 		e3d_object *obj;
@@ -720,7 +713,7 @@ void set_new_video_mode(int fs, int mode) {
 		}
 		CHECK_GL_ERRORS();
 	}
-	//destroy the current context
+	// destroy the current context
 	init_video();
 #ifndef WINDOWS
 	// Re-enable window manager events, since the killing of the video
@@ -731,13 +724,13 @@ void set_new_video_mode(int fs, int mode) {
 	init_lights();
 	disable_local_lights();
 	reset_material();
-	//reload the cursors
+	// reload the cursors
 	load_cursors();
 	build_cursors();
 	change_cursor(current_cursor);
 	ec_load_textures();
-	//now, reload the textures
-	//it is dependent on the window height...
+	// now, reload the textures
+	// it is dependent on the window height...
 	init_hud_interface(HUD_INTERFACE_LAST);
 	new_minute();
 	set_all_intersect_update_needed(main_bbox_tree);
@@ -777,7 +770,7 @@ void toggle_full_screen() {
 }
 int print_gl_errors(const char *file, int line) {
 	int glErr, anyErr = GL_NO_ERROR;
-	while ((glErr = glGetError()) != GL_NO_ERROR ) {
+	while ((glErr = glGetError()) != GL_NO_ERROR) {
 		anyErr = glErr;
 		log_error(file, line, "OpenGL %s", gluErrorString(glErr));
 	}

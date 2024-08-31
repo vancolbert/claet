@@ -113,7 +113,7 @@ static void flowing_text_zeroe(flowing_text_t *text) {
 popup_node_t *popup_node_find_by_window(window_info *win) {
 	popup_node_t *popup_list_entry;
 	list_for_each_node(popup_list_entry, popup_list) {
-		if ( POPUP_NODE(popup_list_entry)->win == win->window_id ) {
+		if (POPUP_NODE(popup_list_entry)->win == win->window_id) {
 			return popup_list_entry;
 		}
 	}
@@ -127,7 +127,7 @@ popup_node_t *popup_node_find_by_window(window_info *win) {
 static popup_node_t *popup_node_find_by_popup(popup_t *popup) {
 	popup_node_t *popup_list_entry;
 	list_for_each_node(popup_list_entry, popup_list) {
-		if ( POPUP_NODE(popup_list_entry) == popup ) {
+		if (POPUP_NODE(popup_list_entry) == popup) {
 			return popup_list_entry;
 		}
 	}
@@ -141,7 +141,7 @@ static popup_node_t *popup_node_find_by_popup(popup_t *popup) {
 static popup_node_t *popup_node_find_by_id(popup_id_t id) {
 	popup_node_t *popup_list_entry;
 	list_for_each_node(popup_list_entry, popup_list) {
-		if ( POPUP_NODE(popup_list_entry)->id == id ) {
+		if (POPUP_NODE(popup_list_entry)->id == id) {
 			return popup_list_entry;
 		}
 	}
@@ -175,7 +175,7 @@ popup_t *popup_allocate() {
  * \returns nothing
  */
 static void flowing_text_free(flowing_text_t *text) {
-	if ( text->str ) {
+	if (text->str) {
 		free(text->str);
 	}
 }
@@ -199,8 +199,8 @@ static void popup_set_sizehint(popup_t *this_popup, unsigned int size) {
  */
 static void popup_option_free(popup_option_t *this_option) {
 	flowing_text_free(&this_option->text);
-	if ( this_option->type == OPTION_TYPE_TEXTENTRY ) {
-		if ( this_option->value.str ) {
+	if (this_option->type == OPTION_TYPE_TEXTENTRY) {
+		if (this_option->value.str) {
 			free(this_option->value.str);
 		}
 	}
@@ -223,7 +223,7 @@ static void popup_grouped_option_free(popup_grouped_option_t *this_option_group)
  */
 static void popup_free(popup_t *popup) {
 	if (popup) {
-		if ( popup->grouped_options ) {
+		if (popup->grouped_options) {
 			list_destroy_with_func(popup->grouped_options, (list_free_func_t)popup_grouped_option_free);
 		}
 		if (popup->title) {
@@ -239,7 +239,7 @@ static void popup_free(popup_t *popup) {
  */
 static popup_option_t *popup_option_allocate() {
 	popup_option_t *new_popup_option = calloc(1, sizeof(popup_option_t));
-	if ( new_popup_option ) {
+	if (new_popup_option) {
 		flowing_text_zeroe(&new_popup_option->text);
 	}
 	return new_popup_option;
@@ -311,7 +311,7 @@ popup_grouped_option_t *popup_find_or_create_group(popup_t *this_popup, popup_op
 	popup_grouped_option_t *this_group;
 	list_for_each_node(this_option_group_node, this_popup->grouped_options) {
 		this_group = POPUP_GROUP_NODE(this_option_group_node);
-		if ( this_group->group_id == id ) {
+		if (this_group->group_id == id) {
 			return this_group;
 		}
 	}
@@ -425,52 +425,52 @@ static void draw_circle_pure(float x, float y, float radius, int interval, int a
 static int popup_display_object(popup_t *this_popup, window_info *win) {
 	float half_text_height = 5;
 	POPUP_FUNC_ENTER;
-	if ( this_popup->text.str ) {
+	if (this_popup->text.str) {
 		glColor3f(0.3, 0.6, 1.0);
 		draw_string_zoomed(POPUP_TOP_TEXT_LEFT_MARGIN, POPUP_TOP_TEXT_TOP_MARGIN, (unsigned char *)this_popup->text.str, 100, /* Max lines */
 				   popup_font_zoom);
 	}
 	/* Draw options, if present */
 	/* Iterate over the groups */
-	if ( this_popup->grouped_options ) {
+	if (this_popup->grouped_options) {
 		list_node_t *this_group_node;
 		list_for_each_node(this_group_node, this_popup->grouped_options) {
 			popup_grouped_option_t *this_group = POPUP_GROUP_NODE(this_group_node);
-			if ( this_group->options ) {
+			if (this_group->options) {
 				list_node_t *this_option_node;
 				list_for_each_node(this_option_node, this_group->options) {
 					popup_option_t *this_option = POPUP_OPTION_NODE(this_option_node);
 					int offset_for_radio = 0;
 					/* hack - if we have a send button, demote text options to radio options */
-					if (this_popup->has_send_button && this_option->type == OPTION_TYPE_TEXTOPTION ) {
+					if (this_popup->has_send_button && this_option->type == OPTION_TYPE_TEXTOPTION) {
 						this_group->type = OPTION_TYPE_RADIOOPTION;
 						this_option->type = OPTION_TYPE_RADIOOPTION;
 					}
-					if ( this_group->type == OPTION_TYPE_RADIOOPTION ) {
+					if (this_group->type == OPTION_TYPE_RADIOOPTION) {
 						offset_for_radio += RADIO_OFFSET;
 					}
-					if ( this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY ) {
+					if (this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY) {
 						glColor3f(0.3, 0.6, 1.0);
 					} else {
-						if ( is_mouse_over(win, POPUP_OPTION_TEXT_LEFT_MARGIN - offset_for_radio, this_option->computed_y_pos, this_option->text.width + POPUP_OPTION_TEXT_LEFT_MARGIN, this_option->text.height)) {
+						if (is_mouse_over(win, POPUP_OPTION_TEXT_LEFT_MARGIN - offset_for_radio, this_option->computed_y_pos, this_option->text.width + POPUP_OPTION_TEXT_LEFT_MARGIN, this_option->text.height)) {
 							glColor3f(1.0, 1.0, 1.0);
 						} else {
 							glColor3f(0.6, 0.3, 1.0);
 						}
 					}
-					if ( this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY ) {
+					if (this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY) {
 						draw_string_zoomed(POPUP_TOP_TEXT_LEFT_MARGIN, this_option->computed_y_pos, (unsigned char *)this_option->text.str, 100, popup_font_zoom);
 					} else {
 						draw_string_zoomed(POPUP_OPTION_TEXT_LEFT_MARGIN, this_option->computed_y_pos, (unsigned char *)this_option->text.str, 100, popup_font_zoom);
 					}
-					switch ( this_group->type ) {
+					switch (this_group->type) {
 					case OPTION_TYPE_RADIOOPTION:
 						glDisable(GL_TEXTURE_2D);
 						glBegin(GL_LINE_LOOP);
 						draw_circle_pure(10.0f, (float)this_option->computed_y_pos + half_text_height + 1.0, half_text_height, 8, 0, 360);
 						glEnd();
 						/* If selected, draw the inner cicle */
-						if ( this_option->selected ) {
+						if (this_option->selected) {
 							glBegin(GL_POLYGON);
 							draw_circle_pure(10.0f, (float)this_option->computed_y_pos + half_text_height + 1.0, half_text_height - 2.0f, 8, 0, 360);
 							glEnd();
@@ -503,7 +503,7 @@ static void popup_recompute_sizes(popup_t *this_popup) {
 	popup_option_node_t *this_option_node;
 	list_node_t *this_option_group_node;
 	POPUP_FUNC_ENTER;
-	if ( this_popup->text.str ) {
+	if (this_popup->text.str) {
 		flowing_text_perform_flow(&this_popup->text, this_popup->width - (POPUP_TOP_TEXT_LEFT_MARGIN + POPUP_TOP_TEXT_RIGHT_MARGIN));
 		current_y += this_popup->text.height;
 	}
@@ -513,13 +513,13 @@ static void popup_recompute_sizes(popup_t *this_popup) {
 		list_for_each_node(this_option_node, POPUP_GROUP_NODE(this_option_group_node)->options) {
 			popup_option_t *this_option = POPUP_OPTION_NODE(this_option_node);
 			this_option->computed_y_pos = current_y;
-			if ( this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY ) {
+			if (this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY) {
 				flowing_text_perform_flow(&this_option->text, this_popup->width - (POPUP_TOP_TEXT_LEFT_MARGIN + POPUP_TOP_TEXT_RIGHT_MARGIN));
 			} else {
 				flowing_text_perform_flow(&this_option->text, this_popup->width - (POPUP_OPTION_TEXT_LEFT_MARGIN + POPUP_OPTION_TEXT_RIGHT_MARGIN));
 			}
 			current_y += this_option->text.height + POPUP_OPTION_TEXT_TOP_MARGIN;
-			if ( this_option->type == OPTION_TYPE_TEXTENTRY ) {
+			if (this_option->type == OPTION_TYPE_TEXTENTRY) {
 				current_y += POPUP_TEXTENTRY_HEIGHT;
 			}
 		}
@@ -542,7 +542,7 @@ static int popup_close_object(popup_node_t *this_popup_node) {
 }
 static void popup_node_destroy(popup_node_t *this_popup_node) {
 	popup_t *this_popup = POPUP_NODE(this_popup_node);
-	if ( this_popup->button_widget_id > 0 ) {
+	if (this_popup->button_widget_id > 0) {
 		widget_destroy(this_popup->win, this_popup->button_widget_id);
 	}
 	destroy_window(this_popup->win);
@@ -554,11 +554,11 @@ static int popup_are_all_options_chosen(popup_t *this_popup) {
 	popup_grouped_option_t *this_group;
 	list_for_each_node(this_group_node, this_popup->grouped_options) {
 		this_group = POPUP_GROUP_NODE(this_group_node);
-		if ( this_group->type == OPTION_TYPE_RADIOOPTION ) {
+		if (this_group->type == OPTION_TYPE_RADIOOPTION) {
 			/* Ensure we have selected at least one option */
 			int saw_selected = 0;
 			list_for_each_node(this_option_node, this_group->options) {
-				if ( POPUP_OPTION_NODE(this_option_node)->selected ) {
+				if (POPUP_OPTION_NODE(this_option_node)->selected) {
 					saw_selected = 1;
 					break;
 				}
@@ -578,10 +578,10 @@ int popup_send_button_clicked(widget_list *w, int mx, int my, Uint32 flags) {
 	/* Look up widget */
 	list_for_each_node(popup_node, popup_list) {
 		popup_t *popup = POPUP_NODE(popup_node);
-		if ( popup->has_send_button && popup->button_widget_id == w->id ) {
+		if (popup->has_send_button && popup->button_widget_id == w->id) {
 			/* Found */
 			/* Ensure all options were set */
-			if ( popup_are_all_options_chosen(popup)) {
+			if (popup_are_all_options_chosen(popup)) {
 				popup_send_to_server(popup);
 				popup_node_destroy(popup_node);
 			}
@@ -603,7 +603,7 @@ static void popup_create_window(popup_t *this_popup) {
 	}
 	/* Place text entries */
 	list_for_each_node(group, this_popup->grouped_options) {
-		if ( POPUP_GROUP_NODE(group)->type == OPTION_TYPE_TEXTENTRY ) {
+		if (POPUP_GROUP_NODE(group)->type == OPTION_TYPE_TEXTENTRY) {
 			/* We must only have one entry in this group */
 			popup_option_t *option = POPUP_OPTION_NODE(POPUP_GROUP_NODE(group)->options);
 			if (option) { /* Just not to crash */
@@ -636,20 +636,20 @@ int popup_click_object(popup_t *this_popup, window_info *win, int mx, int my, Ui
 	popup_option_node_t *this_option_node;
 	list_node_t *this_option_group_node;
 	int offset;
-	if ( NULL == this_popup->grouped_options ) {
+	if (NULL == this_popup->grouped_options) {
 		return 1;
 	}
 	list_for_each_node(this_option_group_node, this_popup->grouped_options) {
 		list_for_each_node(this_option_node, POPUP_GROUP_NODE(this_option_group_node)->options) {
 			popup_option_t *this_option = POPUP_OPTION_NODE(this_option_node);
-			if ( this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY ) {
+			if (this_option->type == OPTION_TYPE_DISPLAYTEXT || this_option->type == OPTION_TYPE_TEXTENTRY) {
 				continue;
 			}
 			offset = POPUP_OPTION_TEXT_LEFT_MARGIN;
-			if ( this_option->type == OPTION_TYPE_RADIOOPTION ) {
+			if (this_option->type == OPTION_TYPE_RADIOOPTION) {
 				offset -= RADIO_OFFSET;
 			}
-			if ( mx > offset && mx < (int)this_option->text.width + POPUP_OPTION_TEXT_LEFT_MARGIN && my > this_option->computed_y_pos && my < this_option->computed_y_pos + this_option->text.height ) {
+			if (mx > offset && mx < (int)this_option->text.width + POPUP_OPTION_TEXT_LEFT_MARGIN && my > this_option->computed_y_pos && my < this_option->computed_y_pos + this_option->text.height) {
 				if (this_popup->option_click_callback) {
 					this_popup->option_click_callback(this_popup, this_option);
 					return 1; /* Don't process any more. */
@@ -756,7 +756,7 @@ void popup_set_callback(popup_t *popup, popup_callback_t callback) {
  * \returns Nothing
  */
 static void popup_click_callback(popup_t *popup, popup_option_t *opt) {
-	if (opt->type == OPTION_TYPE_RADIOOPTION || opt->type == OPTION_TYPE_TEXTOPTION ) {
+	if (opt->type == OPTION_TYPE_RADIOOPTION || opt->type == OPTION_TYPE_TEXTOPTION) {
 		/* Reset all entries in the group */
 		popup_grouped_option_t *this_group = popup_find_or_create_group(popup, opt->group, opt->type);
 		list_node_t *this_option_node;
@@ -764,7 +764,7 @@ static void popup_click_callback(popup_t *popup, popup_option_t *opt) {
 			POPUP_OPTION_NODE(this_option_node)->selected = 0;
 		}
 		opt->selected = 1;
-		if ( !popup->has_send_button) {
+		if (!popup->has_send_button) {
 			popup_send_to_server(popup);
 			popup_node_destroy(popup_node_find_by_popup(popup));
 		}
@@ -780,7 +780,7 @@ static void popup_click_callback(popup_t *popup, popup_option_t *opt) {
 static popup_option_t *popup_group_get_selected(popup_grouped_option_t *group) {
 	list_node_t *option_node;
 	list_for_each_node(option_node, group->options) {
-		if ( POPUP_OPTION_NODE(option_node)->selected ) {
+		if (POPUP_OPTION_NODE(option_node)->selected) {
 			return POPUP_OPTION_NODE(option_node);
 		}
 	}
@@ -804,7 +804,7 @@ static void popup_send_to_server(popup_t *popup) {
 	*((Uint16 *)bptr) = SDL_SwapLE16(popup->id);
 	bptr += 2;
 	list_for_each_node(group_node, popup->grouped_options) {
-		switch ( POPUP_GROUP_NODE(group_node)->type ) {
+		switch (POPUP_GROUP_NODE(group_node)->type) {
 		case OPTION_TYPE_DISPLAYTEXT:
 			break; /* No option to be sent back */
 		case OPTION_TYPE_RADIOOPTION:
@@ -861,7 +861,7 @@ void popup_create_from_network(const unsigned char *payload, size_t size) {
 		LOG_ERROR("%s: flags=%d set but not yet supported\n", __FUNCTION__, flags);
 	}
 	/* Ensure there is no popup with this ID */
-	if ( popup_node_find_by_id(popup_id) != NULL ) {
+	if (popup_node_find_by_id(popup_id) != NULL) {
 		return;
 	}
 	new_popup = popup_create(title, popup_id, 0);
@@ -872,7 +872,7 @@ void popup_create_from_network(const unsigned char *payload, size_t size) {
 	while (size > 0) {
 		FETCH_U8(option_type);
 		FETCH_U8(option_group);
-		switch ( option_type ) {
+		switch (option_type) {
 		case OPTION_TYPE_TEXTENTRY:
 			FETCH_SIZESTRING(title);
 			popup_add_option_textentry(new_popup, option_group, title);

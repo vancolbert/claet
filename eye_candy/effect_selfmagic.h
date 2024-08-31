@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_SELFMAGIC_H
 #define EFFECT_SELFMAGIC_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class SelfMagicEffect : public Effect {
 public:
 enum SelfMagicType {
@@ -52,6 +52,5 @@ TextureEnum texture;
 Uint16 LOD;
 SelfMagicEffect::SelfMagicType type;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_SELFMAGIC_H
+#endif // defined EFFECT_SELFMAGIC_H

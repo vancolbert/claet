@@ -16,4 +16,4 @@ char *get_fsaa_mode_str(const unsigned int index);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  /* __FSAA_H__ */
+#endif /* __FSAA_H__ */

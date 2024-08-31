@@ -16,7 +16,7 @@
  #include "../eye_candy_wrapper.h"
 #include "../cluster.h"
 #ifndef SHOW_FLICKERING
-const float offset_2d_increment = (1.0f / 32768.0f);    // (1.0f / 8388608.0f) is the minimum for 32-bit floating point.
+const float offset_2d_increment = (1.0f / 32768.0f); // (1.0f / 8388608.0f) is the minimum for 32-bit floating point.
 float offset_2d = (1.0f / 32768.0f);
 const float offset_2d_max = 0.01f;
 #endif
@@ -88,7 +88,7 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 	cur_map_header.particles_offset = SDL_SwapLE32(cur_map_header.particles_offset);
 	cur_map_header.clusters_offset = SDL_SwapLE32(cur_map_header.clusters_offset);
 	LOG_DEBUG("Checking map '%s' file signature.", file_name);
-	//verify if we have a valid file
+	// verify if we have a valid file
 	if (cur_map_header.file_sig[0] != 'e' || cur_map_header.file_sig[1] != 'l' || cur_map_header.file_sig[2] != 'm' || cur_map_header.file_sig[3] != 'f') {
 		LOG_ERROR(invalid_map, map_file_name);
 		exit_now = 1; // We might as well quit...
@@ -106,7 +106,7 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 		return 0;
 	}
 	update_function(load_map_str, 0);
-	//get the map size
+	// get the map size
 	tile_map_size_x = cur_map_header.tile_map_x_len;
 	tile_map_size_y = cur_map_header.tile_map_y_len;
 	LOG_DEBUG("Map '%s' size <%d, %d>.", file_name, tile_map_size_x, tile_map_size_y);
@@ -132,7 +132,7 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 		update_occupied_with_height_map(occupied, height_map);
 	}
 	LOG_DEBUG("Map '%s' is dungeon %d and ambient <%f, %f, %f>.", file_name, cur_map_header.dungeon, cur_map_header.ambient_r, cur_map_header.ambient_g, cur_map_header.ambient_b);
-	//get the type of map, and the ambient light
+	// get the type of map, and the ambient light
 	dungeon = cur_map_header.dungeon;
 	ambient_r = cur_map_header.ambient_r;
 	ambient_g = cur_map_header.ambient_g;
@@ -144,13 +144,13 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 /* 	else */
 /* 		water_tiles_extension = 0.0; */
 	LOG_DEBUG("Loading tiles");
-	//load the tiles in this map, if not already loaded
+	// load the tiles in this map, if not already loaded
 	load_map_tiles();
 	LOG_DEBUG("Initializing buffers");
 	init_buffers();
 	update_function(load_3d_object_str, 20.0f);
 	LOG_DEBUG("Loading %d 3d objects.", cur_map_header.obj_3d_no);
-	//read the 3d objects
+	// read the 3d objects
 	objs_3d = (object3d_io *)(file_mem + cur_map_header.obj_3d_offset);
 	ENTER_DEBUG_MARK("load 3d objects");
 	for (i = 0; i < cur_map_header.obj_3d_no; i++) {
@@ -183,7 +183,7 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 	LEAVE_DEBUG_MARK("load 3d objects");
 	update_function(load_2d_object_str, 20.0f);
 	LOG_DEBUG("Loading %d 2d objects.", cur_map_header.obj_2d_no);
-	//read the 2d objects
+	// read the 2d objects
 	objs_2d = (obj_2d_io *)(file_mem + cur_map_header.obj_2d_offset);
 	ENTER_DEBUG_MARK("load 2d objects");
 	for (i = 0; i < cur_map_header.obj_2d_no; i++) {
@@ -275,7 +275,7 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 	}
 	update_function(load_lights_str, 20.0f);
 	LOG_DEBUG("Loading %d lights.", cur_map_header.lights_no);
-	//read the lights
+	// read the lights
 	lights = (light_io *)(file_mem + cur_map_header.lights_offset);
 	ENTER_DEBUG_MARK("load lights");
 	for (i = 0; i < cur_map_header.lights_no; i++) {
@@ -301,7 +301,7 @@ static int do_load_map(const char *file_name, update_func *update_function) {
 	LEAVE_DEBUG_MARK("load lights");
 	update_function(load_particles_str, 20.0f);
 	LOG_DEBUG("Loading %d particles.", cur_map_header.particles_no);
-	//read particle systems
+	// read particle systems
 	particles = (particles_io *)(file_mem + cur_map_header.particles_offset);
 	ENTER_DEBUG_MARK("load particles");
 	for (i = 0; i < cur_map_header.particles_no; i++) {

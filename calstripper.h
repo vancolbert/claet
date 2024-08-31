@@ -1,12 +1,12 @@
 #ifndef __CALSTRIPPER__
 #define __CALSTRIPPER__
 #include <stdint.h>
-//too lazy to dinamically alloc :P
+// too lazy to dinamically alloc :P
 #define MAX_TRACKS 100
 #define MAX_FRAMES 500
-//CAF
+// CAF
 typedef struct _cafheader {
-	int8_t magic[4]; //CAF\0
+	int8_t magic[4]; // CAF\0
 	int32_t version;
 	float duration;
 	int32_t tracks;
@@ -25,10 +25,10 @@ typedef struct _caffile {
 	cafheader header;
 	caftrack tracks[MAX_TRACKS];
 } cafanim;
-//CSF
+// CSF
 #define MAX_BONES 300
 typedef struct _csfheader {
-	int8_t magic[4]; //CAF\0
+	int8_t magic[4]; // CAF\0
 	int32_t version;
 	int32_t bones;
 } csfheader;
@@ -53,15 +53,12 @@ typedef struct _csffile {
 /*
    CSF FILE
    Stored in this file is the hierarchy of bones that composes the skeleton.
-
-
    description                length  type      comments
    -------------------------  ------  --------  -----------------------------------
    [header]
    magic token              4       const     "CSF\0"
    file version             4       integer   700
    number of bones          4       integer
-
    [first bone]
    length of bone name      4       integer
    bone name                var     string
@@ -81,25 +78,18 @@ typedef struct _csffile {
    local rotation w         4       float
    parent bone id           4       integer   index to parent bone
    number of children       4       integer
-
    [first child]
     child bone id          4       integer   index to child bone
-
    [all other children]
     ...
-
    [all other bones]
    ...
-
  */
 /*
    CAF FILE
-
    All the keyframes of an animation are stored in this file. They are grouped by
    tracks (one track per animated bone) and contain the time, the relative position
    and the relative rotation to the parent bone.
-
-
    description                length  type      comments
    -------------------------  ------  --------  -----------------------------------
    [header]
@@ -107,11 +97,9 @@ typedef struct _csffile {
    file version             4       integer   700
    duration                 4       float     length of animation in seconds
    number of tracks         4       integer
-
    [first track]
    bone id                  4       integer   index to bone
    number of keyframes      4       integer
-
    [first keyframe]
     time                   4       float     time of keyframe in seconds
     translation x          4       float     relative translation to parent bone
@@ -121,12 +109,9 @@ typedef struct _csffile {
     rotation y             4       float     stored as a quaternion
     rotation z             4       float
     rotation w             4       float
-
    [all other keyframes]
     ...
-
    [all other tracks]
    ...
-
  */
 #endif

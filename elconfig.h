@@ -25,18 +25,18 @@ extern int gy_adjust;
  * The different kinds of options
  */
 typedef enum {
-	OPT_BOOL = 1,      // Change variable                   func(int*)
-	OPT_STRING,        // Change string                     func(char*,char*)
-	OPT_FLOAT,         // Change float                      func(float*,float*)
-	OPT_INT,           // Change int                        func(int*,int)
+	OPT_BOOL = 1, // Change variable                   func(int*)
+	OPT_STRING, // Change string                     func(char*,char*)
+	OPT_FLOAT, // Change float                      func(float*,float*)
+	OPT_INT, // Change int                        func(int*,int)
 	OPT_SPECINT = OPT_INT, // Multiple ints, non-default func   func(int*,int)
-	OPT_MULTI,         // INT with multiselect widget
-	OPT_MULTI_H,       // INT with multiselect widget, horizontal
-	OPT_PASSWORD, OPT_FLOAT_F,       // Change float with functions that returns max and min values  func(float*,float*), max/min float func()
-	OPT_INT_F,         // Change int with functions that returns max and min values    func(int*,int), max/min int func()
-	OPT_BOOL_INI,      // Boolean value that is only read from and written to the ini file
-	OPT_INT_INI,       // Int value that is only read from the ini file
-	OPT_STRING_INI,     // String value that is only read from the ini file
+	OPT_MULTI, // INT with multiselect widget
+	OPT_MULTI_H, // INT with multiselect widget, horizontal
+	OPT_PASSWORD, OPT_FLOAT_F, // Change float with functions that returns max and min values  func(float*,float*), max/min float func()
+	OPT_INT_F, // Change int with functions that returns max and min values    func(int*,int), max/min int func()
+	OPT_BOOL_INI, // Boolean value that is only read from and written to the ini file
+	OPT_INT_INI, // Int value that is only read from the ini file
+	OPT_STRING_INI, // String value that is only read from the ini file
 	OPT_FLOAT_INI,
 } option_type;
 /*!
@@ -44,15 +44,14 @@ typedef enum {
  */
 typedef struct {
 	option_type type; /*!< type of the variable */
-	char *name;    /*!< name of the variable */
-	int nlen;     /*!< length of the \a name */
-	char *shortname;    /*!< shortname of the variable */
-	int snlen;     /*!< length of the \a shortname */
-	void (*func)();    /*!< routine to execute when this variable is selected. */
-	void *var;    /*!< data for this variable */
-	int len;     /*!< length of the variable */
+	char *name; /*!< name of the variable */
+	int nlen; /*!< length of the \a name */
+	char *shortname; /*!< shortname of the variable */
+	int snlen; /*!< length of the \a shortname */
+	void (*func)(); /*!< routine to execute when this variable is selected. */
+	void *var; /*!< data for this variable */
+	int len; /*!< length of the variable */
 	int saved;
-//	char 	*message; /*!< In case you want a message to be written when a setting is changed */
 	dichar display;
 	struct {
 		int tab_id; /*!< The tab ID in which we find this option */
@@ -66,20 +65,20 @@ typedef struct {
  */
 struct variables {
 	int no; /*!< current number of allocated \see var_struct in \a var */
-	var_struct *var[200];  /*!< fixed array of \a no \see var_struct structures */
+	var_struct *var[200]; /*!< fixed array of \a no \see var_struct structures */
 };
 /*!
  * The type of variable name.
  */
 typedef enum {
 	COMMAND_LINE_SHORT_VAR, /*!< for abbreviated variable names from the command line */
-	COMMAND_LINE_LONG_VAR,  /*!< for full variable names from the command line */
-	INI_FILE_VAR,           /*!< for variables names from el.ini */
-	IN_GAME_VAR,            /*!< for names of variables changed in the games */
+	COMMAND_LINE_LONG_VAR, /*!< for full variable names from the command line */
+	INI_FILE_VAR, /*!< for variables names from el.ini */
+	IN_GAME_VAR, /*!< for names of variables changed in the games */
 } var_name_type;
 extern struct variables our_vars; /*!< global variable containing all defined variables */
-extern int delai_sauve_min;     /*!< Délai en minutes entre 2 sauvegardes */
-extern int delai_sauve_ms;      /*!< Délai en millisecondes entre 2 sauvegardes */
+extern int delai_sauve_min; /*!< Délai en minutes entre 2 sauvegardes */
+extern int delai_sauve_ms; /*!< Délai en millisecondes entre 2 sauvegardes */
 extern int derniere_sauvegarde; /*!< Temps a laquelle a été faite le derniere sauvegarde */
 void display_elconfig_win(void);
 void change_language(const char *new_lang);
@@ -151,7 +150,7 @@ int write_el_ini();
  * \ingroup other
  * \brief   Checkes the option-vars.
  *
- *      Checks the global option vars ( \see our_vars variable).
+ *      Checks the global option vars (\see our_vars variable).
  *
  * \callgraph
  */

@@ -28,7 +28,7 @@
  * void* get_window_handler(int, int);
  */
 #define ELW_WIN_MAX 128
-windows_info windows_list;      // the master list of windows
+windows_info windows_list; // the master list of windows
 static window_info *cur_drag_window = NULL;
 static widget_list *cur_drag_widget = NULL;
 int top_SWITCHABLE_OPAQUE_window_drawn = -1;
@@ -36,8 +36,8 @@ int opaque_window_backgrounds = 0;
 static int last_opaque_window_backgrounds = 0;
 int display_window(int win_id);
 int     drag_in_window(int win_id, int x, int y, Uint32 flags, int dx, int dy);
-int     mouseover_window(int win_id, int x, int y);     // do mouseover processing for a window
-int     keypress_in_window(int win_id, int x, int y, Uint32 key, Uint32 unikey);        // keypress in the window
+int     mouseover_window(int win_id, int x, int y); // do mouseover processing for a window
+int     keypress_in_window(int win_id, int x, int y, Uint32 key, Uint32 unikey); // keypress in the window
 /*
  * The intent of the windows system is to create the window once
  * and then hide the window when you don't wantto use it.
@@ -133,7 +133,7 @@ int     click_in_windows(int mx, int my, Uint32 flags) {
 						done = click_in_window(i, mx, my, flags);
 						if (done > 0) {
 							if (windows_list.window[i].displayed > 0) {
-								select_window(i);                                               // select this window to the front
+								select_window(i); // select this window to the front
 							}
 							cm_post_show_check(0);
 							return i;
@@ -168,7 +168,6 @@ int     click_in_windows(int mx, int my, Uint32 flags) {
 					}
 					done = click_in_window(i, mx, my, flags);
 					if (done > 0) {
-						//select_window(i);	// these never get selected
 						cm_post_show_check(0);
 						return i;
 					}
@@ -190,7 +189,7 @@ int     click_in_windows(int mx, int my, Uint32 flags) {
 		select_window(first_win);
 		return first_win;
 	}
-	return -1;      // no click in a window
+	return -1; // no click in a window
 }
 int     drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy) {
 	int done = 0;
@@ -232,7 +231,7 @@ int     drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy) {
 						done = drag_in_window(i, mx, my, flags, dx, dy);
 						if (done > 0) {
 							if (win->displayed) {
-								select_window(i);       // select this window to the front
+								select_window(i); // select this window to the front
 							}
 							cur_drag_window = win;
 							return i;
@@ -265,7 +264,6 @@ int     drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy) {
 				if (win->order == id) {
 					done = drag_in_window(i, mx, my, flags, dx, dy);
 					if (done > 0) {
-						//select_window(i);	// these never get selected
 						cur_drag_window = win;
 						return i;
 					} else if (mouse_in_window(i, mx, my)) {
@@ -284,7 +282,7 @@ int     drag_in_windows(int mx, int my, Uint32 flags, int dx, int dy) {
 			id = next_id;
 		}
 	}
-	return -1;      // no drag in a window
+	return -1; // no drag in a window
 }
 int drag_windows(int mx, int my, int dx, int dy) {
 	int next_id;
@@ -393,7 +391,7 @@ int drag_windows(int mx, int my, int dx, int dy) {
 	}
 	// dragged window is always on top
 	select_window(drag_id);
-	if (left_click > 1 && (dx != 0 || dy != 0)) {      // TODO: avoid globals?
+	if (left_click > 1 && (dx != 0 || dy != 0)) { // TODO: avoid globals?
 		win = &(windows_list.window[drag_id]);
 		if (win->dragged) {
 			// move to new location
@@ -423,7 +421,7 @@ int     keypress_in_windows(int x, int y, Uint32 key, Uint32 unikey) {
 						done = keypress_in_window(i, x, y, key, unikey);
 						if (done > 0) {
 							if (windows_list.window[i].displayed > 0) {
-								select_window(i);       // select this window to the front
+								select_window(i); // select this window to the front
 							}
 							return i;
 						}
@@ -451,7 +449,6 @@ int     keypress_in_windows(int x, int y, Uint32 key, Uint32 unikey) {
 				if (windows_list.window[i].order == id) {
 					done = keypress_in_window(i, x, y, key, unikey);
 					if (done > 0) {
-						//select_window(i);	// these never get selected
 						return i;
 					}
 				} else if (windows_list.window[i].order > id && windows_list.window[i].order < next_id) {
@@ -466,7 +463,7 @@ int     keypress_in_windows(int x, int y, Uint32 key, Uint32 unikey) {
 			id = next_id;
 		}
 	}
-	return -1;      // no keypress in a window
+	return -1; // no keypress in a window
 }
 void    end_drag_windows() {
 	int i;
@@ -524,7 +521,7 @@ int cm_title_handler(window_info *win, int widget_id, int mx, int my, int option
 		hide_all_windows();
 		break;
 	case 1:
-		break;         // make sure the sound is sucess.
+		break; // make sure the sound is sucess.
 	}
 	return 1;
 }
@@ -540,8 +537,6 @@ int     create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, i
 		windows_list.num_windows = 0;
 		windows_list.max_windows = ELW_WIN_MAX;
 		windows_list.window = (window_info *)calloc(ELW_WIN_MAX, sizeof(window_info));
-		//windows_list.window[0].window_id = -1;	// force a rebuild of this
-		//windows_list.num_windows = 1;
 	}
 	// find an empty slot
 	for (i = 1; i < windows_list.num_windows; i++) {
@@ -562,7 +557,6 @@ int     create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, i
 		win = &windows_list.window[win_id];
 		win->window_id = win_id;
 		win->flags = property_flags;
-		//win->collapsed = 0;
 		win->dragged = 0;
 		win->resized = 0;
 		win->drag_in = 0;
@@ -687,14 +681,14 @@ int     init_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y
 	}
 	// parent window position. The new window is placed relative to these
 	// coordinates. If pos_id < 0, the values are taken to be absolute
-	// (i.e. relative to (0, 0) )
+	// (i.e. relative to (0, 0))
 	pwin_x = pos_id >= 0 ? windows_list.window[pos_id].cur_x : 0;
 	pwin_y = pos_id >= 0 ? windows_list.window[pos_id].cur_y : 0;
 	// memorize the size
 	windows_list.window[win_id].len_x = size_x;
 	windows_list.window[win_id].len_y = size_y;
-	windows_list.window[win_id].orig_len_x = size_x; //for self-resizing windows
-	windows_list.window[win_id].orig_len_y = size_y; //for self-resizing windows
+	windows_list.window[win_id].orig_len_x = size_x; // for self-resizing windows
+	windows_list.window[win_id].orig_len_y = size_y; // for self-resizing windows
 	// initialize min_len_x and min_len_y to zero.
 	windows_list.window[win_id].min_len_x = 0;
 	windows_list.window[win_id].min_len_y = 0;
@@ -738,8 +732,8 @@ int     move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y
 	dx = -win->cur_x;
 	dy = -win->cur_y;
 	win->pos_id = pos_id;
-	win->pos_loc = pos_loc;  //NOT SUPPORTED YET
-	//TODO: calc win->cur_[xy] based on pos_id & pos_loc
+	win->pos_loc = pos_loc; // NOT SUPPORTED YET
+	// TODO: calc win->cur_[xy] based on pos_id & pos_loc
 	if (win->flags & ELW_TITLE_BAR || win->owner_drawn_title_bar) {
 		int xbound = (win->len_x < 50) ? win->len_x : 50;
 		int ybound = (win->len_y < 50) ? win->len_y : 50;
@@ -760,7 +754,7 @@ int     move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y
 			win->cur_y = (win->flags & ELW_TITLE_BAR)?ELW_TITLE_HEIGHT:0;
 		}
 		if (win->cur_y >= window_height) {
-			win->cur_y = window_height;      // had -32, but do we want that?
+			win->cur_y = window_height; // had -32, but do we want that?
 		}
 		if (win->cur_x + win->len_x < ELW_BOX_SIZE) {
 			win->cur_x = 0 - win->len_x + ELW_BOX_SIZE;
@@ -800,7 +794,7 @@ int     draw_window_title(window_info *win) {
 		show_help(cm_title_help_str, 0, win->len_y + 10);
 	}
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//ok, now draw that shit...
+	// ok, now draw that shit...
 	bind_texture(icons_text);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.03f);
@@ -906,7 +900,7 @@ int     draw_window_border(window_info *win) {
 		}
 	}
 	if (win->flags & ELW_USE_BORDER) {
-		if ( use_alpha_border && (win->flags & ELW_ALPHA_BORDER)) {
+		if (use_alpha_border && (win->flags & ELW_ALPHA_BORDER)) {
 			draw_window_alphaborder(win);
 		} else {
 			glColor3f(win->border_color[0], win->border_color[1], win->border_color[2]);
@@ -933,7 +927,7 @@ int     draw_window_border(window_info *win) {
 		glEnd();
 	}
 	if (win->flags & ELW_CLOSE_BOX) {
-		//draw the corner, with the X in
+		// draw the corner, with the X in
 		glColor3f(win->border_color[0], win->border_color[1], win->border_color[2]);
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth(1.0f);
@@ -965,7 +959,7 @@ int     draw_window(window_info *win) {
 		 * with tab collections, etc. Windows without title bars
 		 * can't be moved anyways.
 		 */
-		//if it's too far out of bounds, put it back. you do the bottom bounds first incase the window in question is larger than the game window
+		// if it's too far out of bounds, put it back. you do the bottom bounds first incase the window in question is larger than the game window
 		if (win->cur_x + 20 > window_width) {
 			move_window(win->window_id, win->pos_id, win->pos_loc, window_width - 20, win->pos_y);
 		}
@@ -999,7 +993,7 @@ int     draw_window(window_info *win) {
 	}
 	if (win->display_handler) {
 		ret_val = (*win->display_handler)(win);
-//the window's own display handler can cause OpenGL errors
+// the window's own display handler can cause OpenGL errors
 	} else {
 		ret_val = 1;
 	}
@@ -1099,7 +1093,6 @@ void    toggle_window(int win_id) {
 	if (!windows_list.window[win_id].displayed) {
 		select_window(win_id);
 	}
-	//windows_list.window[win_id].displayed=!windows_list.window[win_id].displayed;
 	// if we hide a window, we have to hide it's children too, so we cannot
 	// simply toggle the displayed flag.
 	if (windows_list.window[win_id].displayed || windows_list.window[win_id].reinstate) {
@@ -1221,7 +1214,7 @@ int     click_in_window(int win_id, int x, int y, Uint32 flags) {
 		}
 		mx = x - win->cur_x;
 		my = y - win->cur_y;
-		//check the X for close - but hide it
+		// check the X for close - but hide it
 		if (win->flags & ELW_CLOSE_BOX) {
 			if (my > 0 && my <= ELW_BOX_SIZE && mx > (win->len_x - ELW_BOX_SIZE) && mx <= win->len_x) {
 				// the X was hit, hide this window
@@ -1256,7 +1249,7 @@ int     click_in_window(int win_id, int x, int y, Uint32 flags) {
 		glTranslatef((float)win->cur_x, (float)win->cur_y - scroll_pos, 0.0f);
 		while (W != NULL) {
 			if (!(W->Flags & WIDGET_DISABLED) && !(W->Flags & WIDGET_CLICK_TRANSPARENT) && !(W->Flags & WIDGET_INVISIBLE) && mx > W->pos_x && mx <= W->pos_x + W->len_x && my > W->pos_y && my <= W->pos_y + W->len_y) {
-				if ( widget_handle_click(W, mx - W->pos_x, my - W->pos_y, flags)) {
+				if (widget_handle_click(W, mx - W->pos_x, my - W->pos_y, flags)) {
 					// widget handled it
 					glPopMatrix();
 					return 1;
@@ -1279,10 +1272,10 @@ int     click_in_window(int win_id, int x, int y, Uint32 flags) {
 			} else if (flags & ELW_WHEEL_DOWN) {
 				vscrollbar_scroll_down(win->window_id, win->scroll_id);
 			}
-		} else if ( !ret_val && (win->flags & ELW_CLICK_TRANSPARENT) && my >= 0 ) {
-			return 0;       // click is not handled, and the window is transparent
+		} else if (!ret_val && (win->flags & ELW_CLICK_TRANSPARENT) && my >= 0) {
+			return 0; // click is not handled, and the window is transparent
 		}
-		return 1;       // click is handled
+		return 1; // click is handled
 	}
 	return 0;
 }
@@ -1333,7 +1326,7 @@ int     drag_in_window(int win_id, int x, int y, Uint32 flags, int dx, int dy) {
 		while (W != NULL) {
 			if (mx > W->pos_x && mx <= W->pos_x + W->len_x && my > W->pos_y && my <= W->pos_y + W->len_y) {
 				if (!(W->Flags & WIDGET_DISABLED)) {
-					if ( widget_handle_drag(W, mx - W->pos_x, my - W->pos_y, flags, dx, dy)) {
+					if (widget_handle_drag(W, mx - W->pos_x, my - W->pos_y, flags, dx, dy)) {
 						// widget handled it
 						glPopMatrix();
 						cur_drag_widget = W;
@@ -1350,7 +1343,7 @@ int     drag_in_window(int win_id, int x, int y, Uint32 flags, int dx, int dy) {
 			glTranslatef((float)win->cur_x, (float)win->cur_y - scroll_pos, 0.0f);
 			glPopMatrix();
 		}
-		return 1;       // drag has been processed
+		return 1; // drag has been processed
 	}
 	return 0;
 }
@@ -1432,7 +1425,7 @@ int     keypress_in_window(int win_id, int x, int y, Uint32 key, Uint32 unikey) 
 		while (W != NULL) {
 			if (mx > W->pos_x && mx <= W->pos_x + W->len_x && my > W->pos_y && my <= W->pos_y + W->len_y) {
 				if (!(W->Flags & WIDGET_DISABLED)) {
-					if ( widget_handle_keypress(W, mx - W->pos_x, my - W->pos_y, key, unikey)) {
+					if (widget_handle_keypress(W, mx - W->pos_x, my - W->pos_y, key, unikey)) {
 						// widget handled it
 						glPopMatrix();
 						return 1;
@@ -1633,7 +1626,6 @@ int get_window_scroll_pos(int win_id) {
    {
         int	win_id= -1;
         int	i;
-
         for(i=0; i<windows_list.num_windows; i++)
                 {
                         if(!strcmp(windows_list.window[win_id].window_name, name))
@@ -1642,14 +1634,11 @@ int get_window_scroll_pos(int win_id) {
                                         break;
                                 }
                 }
-
         return win_id;
    }
-
    void	*get_window_handler(int win_id, int handler_id)
    {
         void	*old_handler;
-
         // get the information
         switch(handler_id){
                 case	ELW_HANDLER_INIT:
@@ -1679,7 +1668,6 @@ int get_window_scroll_pos(int win_id) {
                 default:
                         old_handler=NULL;
         }
-
         return old_handler;
    }
  */

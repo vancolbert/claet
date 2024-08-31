@@ -18,18 +18,18 @@ typedef union {
  * \name symbol table entry
  */
 typedef struct {
-	const char *symbol;  /*< symbol */
-	st_data data;        /*< data associated with \a symbol */
+	const char *symbol; /*< symbol */
+	st_data data; /*< data associated with \a symbol */
 } st_entry;
 /*!
  * symbol table structure
  */
 typedef struct {
-	int added,         /*!< the number of uncommitted entries */
-	    capacity,                  /*!< the total capacity of the table */
-	    committed;                 /*!< the number of committed entries */
+	int added, /*!< the number of uncommitted entries */
+	    capacity, /*!< the total capacity of the table */
+	    committed; /*!< the number of committed entries */
 	st_entry *entries, /*!< the array with the entries */
-		 *shadow;              /*!< shadow array used for commits */
+		 *shadow; /*!< shadow array used for commits */
 } symbol_table;
 /*!
  * \ingroup misc

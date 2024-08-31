@@ -32,4 +32,4 @@ void free_aligned(void *memory);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  /* UUID_b98dd9af_3f58_462d_9b5c_30d5ace6b0b9 */
+#endif /* UUID_b98dd9af_3f58_462d_9b5c_30d5ace6b0b9 */

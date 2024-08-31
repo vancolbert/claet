@@ -41,7 +41,7 @@ float zoom_level = 3.0f;
 float name_zoom = 1.0f;
 float titre_zoom = 1.0f;
 #define MAX(a, b) (((a) > (b)) ? (a):(b))
-//First Person Camera mode state
+// First Person Camera mode state
 int first_person = 0;
 float old_rx = -60;
 float old_rz = 45;
@@ -68,20 +68,20 @@ int camera_zoom_speed = 1;
 float new_zoom_level = 3.0f;
 float camera_distance = 2.5f;
 int reset_camera_at_next_update = 1;
-//Follow camera state stuff
-int fol_cam = 1;               // follow camera state (on/off)
-int fol_cam_behind = 0;    // keep the camera behind the char
+// Follow camera state stuff
+int fol_cam = 1; // follow camera state (on/off)
+int fol_cam_behind = 0; // keep the camera behind the char
 float camera_kludge = 0.0; // the direction player is facing
-float last_kludge = 0.0;   // how far the camera deviated from camera_kludge
-float fol_strn = 0.1;      // follow camera response strength
-float fol_con = 7.0;       // follow camera constant speed
-float fol_lin = 1.0;       // follow camera linear deceleration
-float fol_quad = 1.0;      // follow camera quadratic deceleration
-int ext_cam = 1;               // extended camera state (on/off)
+float last_kludge = 0.0; // how far the camera deviated from camera_kludge
+float fol_strn = 0.1; // follow camera response strength
+float fol_con = 7.0; // follow camera constant speed
+float fol_lin = 1.0; // follow camera linear deceleration
+float fol_quad = 1.0; // follow camera quadratic deceleration
+int ext_cam = 1; // extended camera state (on/off)
 int ext_cam_auto_zoom = 0; // auto zooming state for extended camera (on/off)
 float min_tilt_angle = 30.0; // minimum tilt angle for the extended camera
 float max_tilt_angle = 90.0; // maximum tilt angle for the extended camera
-float hold_camera = 0.0;   // backup of the rz value before kludge is applied
+float hold_camera = 0.0; // backup of the rz value before kludge is applied
 int last_texture = -2;
 int cons_text;
 int icons_text;
@@ -100,7 +100,7 @@ void draw_scene() {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 	if (!have_display) {
-		new_zoom_level = zoom_level;    // No scrolling when switching modes...
+		new_zoom_level = zoom_level; // No scrolling when switching modes...
 		if (!quickbar_on_top && !quickbar_draggable && (quickbar_win >= 0)) {
 			if (quickbar_dir == VERTICAL) {
 				if (quickbar_x - quickbar_x_len > HUD_MARGIN_X) {
@@ -124,7 +124,7 @@ void draw_scene() {
 			}
 		}
 	}
-	glLoadIdentity();       // Reset The Matrix
+	glLoadIdentity(); // Reset The Matrix
 	Enter2DMode();
 	display_windows(1);
 	// Have to draw the dragged item *after* all windows
@@ -174,7 +174,6 @@ void draw_scene() {
 }
 void move_camera() {
 	float x, y, z;
-	// float head_pos[3];
 	float follow_speed;
 	actor *me = get_our_actor();
 	if (!me) {
@@ -182,7 +181,6 @@ void move_camera() {
 	}
 	x = (float)me->x_pos + 0.25f;
 	y = (float)me->y_pos + 0.25f;
-	// cal_get_actor_bone_local_position(me, get_actor_bone_id(me, head_bone), NULL, head_pos);
 	/* Schmurk: I've commented this out because I don't see why the position of
 	 * the camera should be different from the head position in ext cam and fpv */
 /* 	if (first_person){ */
@@ -192,9 +190,6 @@ void move_camera() {
 	if (first_person || ext_cam) {
 		// the camera position corresponds to the head position
 		z = get_tile_height(me->x_tile_pos, me->y_tile_pos);
-		// z += (head_pos[2]+0.1)*get_actor_scale(me);
-		//attachment_props *att_props = get_attachment_props_if_held(me);
-		//z += (me->sitting ? 0.7 : 1.5) * get_actor_scale(me);
 		if (me->attached_actor >= 0) {
 			z += me->z_pos + me->attachment_shift[Z] + 2.0 * get_actor_scale(me);
 		} else {
@@ -218,7 +213,7 @@ void move_camera() {
 		reset_camera_at_next_update = 0;
 		set_all_intersect_update_needed(main_bbox_tree);
 	} else {
-		//move near the actor, but smoothly
+		// move near the actor, but smoothly
 		camera_x_speed = (x + camera_x) / follow_speed;
 		camera_x_duration = follow_speed;
 		camera_y_speed = (y + camera_y) / follow_speed;
@@ -227,7 +222,6 @@ void move_camera() {
 		camera_z_duration = follow_speed;
 	}
 	if (first_person) {
-		// glTranslatef(head_pos[0], head_pos[1], 0.0);
 	} else {
 		glTranslatef(0.0f, 0.0f, -zoom_level * camera_distance);
 	}
@@ -299,7 +293,6 @@ void update_camera() {
 	old_rx = rx;
 	old_rz = rz;
 	new_zoom_level = old_zoom_level = zoom_level;
-	//printf("kludge: %f, hold: %f, rx: %f, rz %f, zoom: %f\n",camera_kludge, hold_camera,rx,rz,zoom_level);
 	if (fol_cam && !fol_cam_behind) {
 		rz = hold_camera;
 	}
@@ -470,8 +463,8 @@ void update_camera() {
 		if (last_kludge != camera_kludge && !fol_cam_stop) {
 			set_all_intersect_update_needed(main_bbox_tree);
 			adjust = (camera_kludge - last_kludge);
-			//without this the camera will zip the wrong way when camera_kludge
-			//flips from 180 <-> -180
+			// without this the camera will zip the wrong way when camera_kludge
+			// flips from 180 <-> -180
 			if (adjust >= 180) {
 				adjust -= 360.0;
 			} else if (adjust <= -180) {
@@ -480,8 +473,7 @@ void update_camera() {
 			if (fabs(adjust) < fol_strn) {
 				last_kludge = camera_kludge;
 			} else {
-				last_kludge += fol_strn * (
-					adjust * (fol_quad * fol_strn + fol_lin) + fol_con * (adjust > 0?1:-1)) / (fol_quad + fol_lin + fol_con + .000001f);//cheap no/0
+				last_kludge += fol_strn * (adjust * (fol_quad * fol_strn + fol_lin) + fol_con * (adjust > 0?1:-1)) / (fol_quad + fol_lin + fol_con + .000001f); // cheap no/0
 			}
 		}
 		if (fol_cam_behind) {
@@ -494,11 +486,11 @@ void update_camera() {
 			rz -= last_kludge;
 		}
 	}
-	//Make Character Turn with Camera
+	// Make Character Turn with Camera
 	if (have_mouse && !on_the_move(get_our_actor())) {
 		adjust = rz;
-		//without this the character will turn the wrong way when camera_kludge
-		//and character are in certain positions
+		// without this the character will turn the wrong way when camera_kludge
+		// and character are in certain positions
 		if (adjust >= 180) {
 			adjust -= 360.0;
 		} else if (adjust <= -180) {

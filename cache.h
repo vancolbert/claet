@@ -14,26 +14,26 @@ extern "C" {
  * a single item storable in the cache
  */
 typedef struct {
-	void *cache_item;       /*!< pointer to the item we are caching */
-	Uint32 size;                    /*!< size of item */
-	Uint32 access_time;     /*!< last time used */
-	Uint32 access_count;    /*!< number of usages since last checkpoint */
-	const char *name;       /*!< original source or name, NOTE: this is NOT free()'d and allows dups! */
+	void *cache_item; /*!< pointer to the item we are caching */
+	Uint32 size; /*!< size of item */
+	Uint32 access_time; /*!< last time used */
+	Uint32 access_count; /*!< number of usages since last checkpoint */
+	const char *name; /*!< original source or name, NOTE: this is NOT free()'d and allows dups! */
 } cache_item_struct;
 /*!
  * structure of the cache used
  */
 typedef struct {
-	cache_item_struct **cached_items;       /*!< list of cached items */
-	cache_item_struct *recent_item;       /*!< pointer to the last used item */
-	Sint32 num_items;               /*!< the number of active items in the list */
-	Sint32 num_allocated;   /*!< the allocated space for the list */
-	Uint32 LRU_time;                /*!< last time LRU processing done */
-	Uint32 total_size;              /*!< total size currently allocated */
-	Uint32 time_limit;              /*!< limit on LRU time before forcing a scan */
-	Uint32 size_limit;              /*!< limit on size before forcing a scan */
-	void (*free_item)();    /*!< routine to call to free an item */
-	Uint32 (*compact_item)();       /*!< routine to call to reduce memory usage without freeing */
+	cache_item_struct **cached_items; /*!< list of cached items */
+	cache_item_struct *recent_item; /*!< pointer to the last used item */
+	Sint32 num_items; /*!< the number of active items in the list */
+	Sint32 num_allocated; /*!< the allocated space for the list */
+	Uint32 LRU_time; /*!< last time LRU processing done */
+	Uint32 total_size; /*!< total size currently allocated */
+	Uint32 time_limit; /*!< limit on LRU time before forcing a scan */
+	Uint32 size_limit; /*!< limit on size before forcing a scan */
+	void (*free_item)(); /*!< routine to call to free an item */
+	Uint32 (*compact_item)(); /*!< routine to call to reduce memory usage without freeing */
 } cache_struct;
 /*!
  * \name Cache constants
@@ -41,9 +41,9 @@ typedef struct {
 /*! @{ */
 #define MAX_CACHE_SYSTEM        32 /*!< max. number of cached items in \see cache_system */
 /*! @} */
-extern cache_struct *cache_system;     /*!< system cache */
-extern cache_struct *cache_e3d;     /*!< e3d cache */
-//proto
+extern cache_struct *cache_system; /*!< system cache */
+extern cache_struct *cache_e3d; /*!< e3d cache */
+// proto
 /*!
  * \ingroup cache
  * \brief   initializes the cache system with the given number of items to max. use

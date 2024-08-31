@@ -29,7 +29,7 @@ GLfloat sky_lights_c2[GLOBAL_LIGHTS_NO * 2][4];
 GLfloat sky_lights_c3[GLOBAL_LIGHTS_NO * 2][4];
 GLfloat sky_lights_c4[GLOBAL_LIGHTS_NO * 2][4];
 int show_lights;
-int num_lights;         // the highest light number loaded
+int num_lights; // the highest light number loaded
 light *lights_list[MAX_LIGHTS];
 unsigned char light_level = 58;
 sun sun_pos[360];
@@ -134,7 +134,7 @@ int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, 
 	int i;
 	light *new_light;
 	AABBOX bbox;
-	//find a free spot, in the lights list
+	// find a free spot, in the lights list
 	for (i = 0; i < MAX_LIGHTS; i++) {
 		if (lights_list[i] == NULL) {
 			break;
@@ -174,8 +174,8 @@ void cleanup_lights(void) {
 		}
 	}
 }
-//get the lights visible in the scene
-//should be called only when we change the camera pos
+// get the lights visible in the scene
+// should be called only when we change the camera pos
 void update_scene_lights() {
 	unsigned int start, stop;
 	get_intersect_start_stop(main_bbox_tree, TYPE_LIGHT, &start, &stop);
@@ -186,8 +186,8 @@ void init_lights() {
 	GLfloat no_light[] = {0.0, 0.0, 0.0, 0.0};
 	float linear_att = 1.41f;
 	float cut_off = 180;
-	//most of the things in here are redundant, since we kind of set the light sources
-	//to their default values. However, better safe than sorry.
+	// most of the things in here are redundant, since we kind of set the light sources
+	// to their default values. However, better safe than sorry.
 	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, cut_off);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, no_light);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -243,7 +243,7 @@ GLfloat diffuse_light[] = {0.0, 0.0, 0.0, 0.0};
 void draw_global_light() {
 	int i;
 	GLfloat global_light_position[] = {400.0, 400.0, 500.0, 0.0};
-	//add the thunder light to the ambient/diffuse light
+	// add the thunder light to the ambient/diffuse light
 	memcpy(ambient_light, skybox_light_ambient_color, 3 * sizeof(float));
 	memcpy(diffuse_light, skybox_light_diffuse_color, 3 * sizeof(float));
 	// the thunder is handled elsewhere for the new weather
@@ -272,7 +272,7 @@ void draw_dungeon_light() {
 	GLfloat diffuse_light[] = {0.0, 0.0, 0.0, 0.0};
 	GLfloat ambient_light[4];
 	int i;
-	//the ambient light should be half of the diffuse light
+	// the ambient light should be half of the diffuse light
 	ambient_light[0] = ambient_r;
 	ambient_light[1] = ambient_g;
 	ambient_light[2] = ambient_b;
@@ -304,12 +304,12 @@ void make_gradient_light(int start, int steps, float *light_table, float r_start
 		j++;
 	}
 }
-//build the light table for smooth transition between night and day
+// build the light table for smooth transition between night and day
 void build_global_light_table() {
-	//the sun light
+	// the sun light
 	make_gradient_light(0, 30, (float *)global_diffuse_light, 0.85f, 0.85f, 0.85f, 0.32f, 0.25f, 0.25f);
 	make_gradient_light(30, 30, (float *)global_diffuse_light, 0.318f, 0.248f, 0.248f, 0.05f, 0.05f, 0.08f);
-	//lake light
+	// lake light
 	make_gradient_light(0, 30, (float *)sky_lights_c1, 0.3f, 0.7f, 0.9f, 0.6f, 0.0f, 0.0f);
 	make_gradient_light(30, 30, (float *)sky_lights_c1, 0.6f, 0.0f, 0.0f, 0.0f, 0.05f, 0.1f);
 	make_gradient_light(60, 30, (float *)sky_lights_c1, 0.0f, 0.05f, 0.1f, 0.6f, 0.0f, 0.2f);
@@ -375,25 +375,24 @@ void new_minute() {
 	if (!freeze_time) {
 		game_second = real_game_second;
 	}
-	//morning starts at 0
-	//game_minute=90;
-	//is it morning?
+	// morning starts at 0
+	// is it morning?
 	if (game_minute < 60) {
 		light_level = game_minute + 60;
 	}
-	//check to see if it is full day
+	// check to see if it is full day
 	if (game_minute >= 60 && game_minute < 60 * 3) {
 		light_level = 0;
 	}
-	//is it evening?
+	// is it evening?
 	if (game_minute >= 60 * 3 && game_minute < 60 * 4) {
 		light_level = game_minute - 60 * 3;
 	}
-	//full night?
+	// full night?
 	if (game_minute >= 60 * 4) {
 		light_level = 59;
 	}
-	//is it day?
+	// is it day?
 	if (game_minute >= 30 && game_minute < 210 && !dungeon) {
 		skybox_sun_position[0] = sun_show[game_minute - 30].x;
 		skybox_sun_position[1] = sun_show[game_minute - 30].y;
@@ -406,7 +405,7 @@ void new_minute() {
 		sun_position[2] = sun_pos[game_minute - 30].z;
 		sun_position[3] = sun_pos[game_minute - 30].w;
 		calc_shadow_matrix();
-	} else {    //it's too dark, or we are in a dungeon
+	} else { // it's too dark, or we are in a dungeon
 		int shift_time = (game_minute + 330) % 360;
 		sun_position[0] = sun_pos[shift_time].x;
 		sun_position[1] = sun_pos[shift_time].y;
@@ -459,10 +458,8 @@ void new_second() {
         GLfloat light_position[] = { 15.0, 15.0, 3.0, 1.0 };
         GLfloat light_position_2[] = { 5.0, 5.0, -3.0, 1.0 };
         GLfloat spot_direction[] = { 0.0, 0.0, -1.0f };
-
         glLightfv(GL_LIGHT0, GL_POSITION, light_position);
         glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
-
         glLightfv(GL_LIGHT1, GL_POSITION, light_position_2);
         glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
    }

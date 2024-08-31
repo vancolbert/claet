@@ -1,14 +1,10 @@
 /* zip.c -- IO on .zip files using zlib
    Version 1.1, February 14h, 2010
-   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-
+   part of the MiniZip project - (http://www.winimage.com/zLibDll/minizip.html)
+         Copyright (C) 1998-2010 Gilles Vollant (minizip) (http://www.winimage.com/zLibDll/minizip.html)
          Modifications for Zip64 support
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
-
+         Copyright (C) 2009-2010 Mathias Svensson (http://result42.com)
          For more info read MiniZip_info.txt
-
          Changes
    Oct-2009 - Mathias Svensson - Remove old C style function prototypes
    Oct-2009 - Mathias Svensson - Added Zip64 Support when creating new file archives
@@ -18,7 +14,6 @@
                                  ZIP64 data is automaticly added to items that needs it, and existing ZIP64 data need to be removed.
    Oct-2009 - Mathias Svensson - Added support for BZIP2 as compression mode (bzip2 lib is required)
    Jan-2010 - back to unzip and minizip 1.0 name scheme, with compatibility layer
-
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +39,7 @@ extern int errno;
 # define VERSIONMADEBY   (0x0) /* platform depedent */
 #endif
 #ifndef Z_BUFSIZE
-#define Z_BUFSIZE (64 * 1024) //(16384)
+#define Z_BUFSIZE (64 * 1024) // (16384)
 #endif
 #ifndef Z_MAXFILENAMEINZIP
 #define Z_MAXFILENAMEINZIP (256)
@@ -100,26 +95,26 @@ typedef struct linkedlist_data_s {
 	linkedlist_datablock_internal *last_block;
 } linkedlist_data;
 typedef struct {
-	z_stream stream;        /* zLib stream structure for inflate */
+	z_stream stream; /* zLib stream structure for inflate */
 #ifdef HAVE_BZIP2
-	bz_stream bstream;      /* bzLib stream structure for bziped */
+	bz_stream bstream; /* bzLib stream structure for bziped */
 #endif
 	int stream_initialised; /* 1 is stream is initialised */
 	uInt pos_in_buffered_data; /* last written byte in buffered_data */
 	ZPOS64_T pos_local_header; /* offset of the local header of the file
 	                              currenty writing */
-	char *central_header;   /* central header data for the current file */
+	char *central_header; /* central header data for the current file */
 	uLong size_centralExtra;
 	uLong size_centralheader; /* size of the central header for cur file */
 	uLong size_centralExtraFree; /* Extra bytes allocated to the centralheader but that are not used */
-	uLong flag;             /* flag of the file currently writing */
-	int method;             /* compression method of file currenty wr.*/
-	int raw;                /* 1 for directly writing raw data */
-	Byte buffered_data[Z_BUFSIZE];/* buffer contain compressed data to be writ*/
+	uLong flag; /* flag of the file currently writing */
+	int method; /* compression method of file currenty wr.*/
+	int raw; /* 1 for directly writing raw data */
+	Byte buffered_data[Z_BUFSIZE]; /* buffer contain compressed data to be writ*/
 	uLong dosDate;
 	uLong crc32;
 	int encrypt;
-	int zip64;            /* Add ZIP64 extened information in the extra field */
+	int zip64; /* Add ZIP64 extened information in the extra field */
 	ZPOS64_T pos_zip64extrainfo;
 	ZPOS64_T totalCompressedData;
 	ZPOS64_T totalUncompressedData;
@@ -135,11 +130,11 @@ typedef struct {
 } curfile64_info;
 typedef struct {
 	zlib_filefunc64_32_def z_filefunc;
-	voidpf filestream;    /* io structore of the zipfile */
-	linkedlist_data central_dir;/* datablock with central dir in construction*/
+	voidpf filestream; /* io structore of the zipfile */
+	linkedlist_data central_dir; /* datablock with central dir in construction*/
 	int in_opened_file_inzip; /* 1 if a file in the zip is currently writ.*/
-	curfile64_info ci;        /* info on the file curretly writing */
-	ZPOS64_T begin_pos;        /* position of the beginning of the zipfile */
+	curfile64_info ci; /* info on the file curretly writing */
+	ZPOS64_T begin_pos; /* position of the beginning of the zipfile */
 	ZPOS64_T add_position_when_writting_offset;
 	ZPOS64_T number_entry;
 #ifndef NO_ADDFILEINEXISTINGZIP
@@ -525,12 +520,12 @@ local ZPOS64_T zip64local_SearchCentralDir64(const zlib_filefunc64_32_def *pzlib
 }
 int LoadCentralDirectoryRecord(zip64_internal *pziinit) {
 	int err = ZIP_OK;
-	ZPOS64_T byte_before_the_zipfile;/* byte before the zipfile, (>0 for sfx)*/
+	ZPOS64_T byte_before_the_zipfile; /* byte before the zipfile, (>0 for sfx)*/
 	ZPOS64_T size_central_dir; /* size of the central directory  */
 	ZPOS64_T offset_central_dir; /* offset of start of central directory */
 	ZPOS64_T central_pos;
 	uLong uL;
-	uLong number_disk;    /* number of the current dist, used for
+	uLong number_disk; /* number of the current dist, used for
 	                         spaning ZIP, unsupported, always 0*/
 	uLong number_disk_with_CD; /* number the the disk with central dir, used
 	                              for spaning ZIP, unsupported, always 0*/
@@ -790,9 +785,9 @@ int Write_LocalFileHeader(zip64_internal *zi, const char *filename, uInt size_ex
 	err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)LOCALHEADERMAGIC, 4);
 	if (err == ZIP_OK) {
 		if (zi->ci.zip64) {
-			err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)45, 2);/* version needed to extract */
+			err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)45, 2); /* version needed to extract */
 		} else {
-			err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)20, 2);/* version needed to extract */
+			err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)20, 2); /* version needed to extract */
 		}
 	}
 	if (err == ZIP_OK) {
@@ -860,7 +855,6 @@ int Write_LocalFileHeader(zip64_internal *zi, const char *filename, uInt size_ex
    NOTE.
    When writing RAW the ZIP64 extended information in extrafield_local and extrafield_global needs to be stripped
    before calling this function it can be done with zipRemoveExtraInfoBlock
-
    It is not done here because then we need to realloc a new buffer since parameters are 'const' and I want to minimize
    unnecessary allocations.
  */
@@ -1126,7 +1120,6 @@ extern int ZEXPORT zipWriteInFileInZip(zipFile file, const void *buf, unsigned i
 			}
 			if ((zi->ci.method == Z_BZIP2ED) && (!zi->ci.raw)) {
 				uLong uTotalOutBefore_lo = zi->ci.bstream.total_out_lo32;
-//          uLong uTotalOutBefore_hi = zi->ci.bstream.total_out_hi32;
 				err = BZ2_bzCompress(&zi->ci.bstream, BZ_RUN);
 				zi->ci.pos_in_buffered_data += (uInt)(zi->ci.bstream.total_out_lo32 - uTotalOutBefore_lo);
 			}
@@ -1178,7 +1171,7 @@ extern int ZEXPORT zipWriteInFileInZip(zipFile file, const void *buf, unsigned i
 					zi->ci.pos_in_buffered_data += copy_this;
 				}
 			}
-		}// while(...)
+		} // while(...)
 	}
 	return err;
 }
@@ -1329,7 +1322,7 @@ extern int ZEXPORT zipCloseFileInZipRaw64(zipFile file, ZPOS64_T uncompressed_si
 		}
 		// Update how much extra free space we got in the memory buffer
 		// and increase the centralheader size so the new ZIP64 fields are included
-		// ( 4 below is the size of HeaderID and DataSize field )
+		// (4 below is the size of HeaderID and DataSize field)
 		zi->ci.size_centralExtraFree -= datasize + 4;
 		zi->ci.size_centralheader += datasize + 4;
 		// Update the extra info size field
@@ -1557,7 +1550,7 @@ extern int ZEXPORT zipRemoveExtraInfoBlock(char *pData, int *dataLen, short sHea
 	while (p < (pData + *dataLen)) {
 		header = *(short *)p;
 		dataSize = *(((short *)p) + 1);
-		if ( header == sHeader ) { // Header found.
+		if (header == sHeader) { // Header found.
 			p += dataSize + 4; // skip it. do not copy to temp buffer
 		} else {
 			// Extra Info block should not be removed, So copy it to the temp buffer.

@@ -5,10 +5,8 @@
 #include <queue>
 #include "notepad.h"
 namespace CommandQueue {
-//
-//	A single command created from one of the command fields in
-//	a command line.
-//
+// A single command created from one of the command fields in
+// a command line.
 class Command {
 public:
 Command(const std::string &command_text);
@@ -20,10 +18,8 @@ bool invalid_command;
 std::vector<std::string> text_segments;
 std::vector<std::string> param_prompts;
 };
-//
-//	Manages a queue of commands to be executed, provides input when
-//	required and introduces a delay between commands to avoid spamming.
-//
+// Manages a queue of commands to be executed, provides input when
+// required and introduces a delay between commands to avoid spamming.
 class Queue {
 public:
 Queue(void);
@@ -44,10 +40,8 @@ INPUT_POPUP ipu;
 static Uint32 wait_time_ms;
 static const Uint32 min_wait_time_ms;
 };
-//
-//	A single command line, command name and assiociated commands extracted
-//	from the string passed the to the constructor.
-//
+// A single command line, command name and assiociated commands extracted
+// from the string passed the to the constructor.
 class Line {
 public:
 Line(const std::string &line_text);

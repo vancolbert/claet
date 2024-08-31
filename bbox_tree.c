@@ -5,15 +5,15 @@
 #include <sys/malloc.h>
 #else
 #ifndef BSD
-#ifndef alloca         // newer versions of SDL have their own alloca!
+#ifndef alloca // newer versions of SDL have their own alloca!
 #include <malloc.h>
-#endif   //alloca
-#endif   //BSD
-#endif   //OSX
+#endif // alloca
+#endif // BSD
+#endif // OSX
 #include "cluster.h"
 BBOX_TREE *main_bbox_tree = NULL;
 BBOX_ITEMS *main_bbox_tree_items = NULL;
-#define BBOX_TREE_LOG_INFO(item)        /*!< NOP */
+#define BBOX_TREE_LOG_INFO(item) /*!< NOP */
 #define NO_INDEX        0xFFFFFFFF
 static __inline__ Uint32 is_extra_first_sub_node(Uint32 extra) {
 	return (extra & EXTRA_FIRST_SUB_NODE) != 0;
@@ -497,8 +497,6 @@ static __inline__ void find_axis_and_bbox(const BBOX_TREE *bbox_tree, Uint32 fir
 	d = bmax[a1] - bmin[a1];
 	e = bmax[a3] - bmin[a3];
 	if (d < e) {
-//		i = a2;
-//		a2 = a1;
 		i = a3;
 		a3 = a1;
 		a1 = i;

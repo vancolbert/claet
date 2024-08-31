@@ -9,4 +9,4 @@ extern int info_combat_float_msg;
  * @PARAM data : données relatives au type.
  */
 void combat_info_type(Uint8 type, Uint16 target_id, Uint16 actor_id, Sint32 data);
-#endif //__INFO_COMBAT_H__
+#endif // __INFO_COMBAT_H__

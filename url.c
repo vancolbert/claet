@@ -13,7 +13,7 @@
 #include <string.h>
 #ifndef _MSC_VER
 #include <unistd.h>
-#endif //MSVC
+#endif // MSVC
 #include <ctype.h>
 #include <SDL.h>
 #include <SDL_thread.h>
@@ -65,9 +65,9 @@ static list_node_t *active_url = NULL;
 static list_node_t *cm_url = NULL;
 /* define the structure stored for each URL */
 typedef struct {
-	int seen_count;         /* incremented each time a link is seen in chat */
-	int visited;            /* true when link has been opened in the browser */
-	char *text;                     /* the actual url text */
+	int seen_count; /* incremented each time a link is seen in chat */
+	int visited; /* true when link has been opened in the browser */
+	char *text; /* the actual url text */
 } URLDATA;
 /* store the current url count, used in num_new_url() */
 void save_url_count(void) {
@@ -276,13 +276,13 @@ void find_all_url(const char *source_string, const int len) {
 		}
 	}
 } /* end find_all_url() */
-#ifdef  WINDOWS
+#ifdef WINDOWS
 static int only_call_from_open_web_link__go_to_url(void *url) {
 	char browser_command[400];
 	init_thread_log("web_link");
 	// build the command line and execute it
 	safe_snprintf(browser_command, sizeof(browser_command), "%s \"%s\"", browser_name, url),
-	system(browser_command);        // Do not use this command on UNIX.
+	system(browser_command); // Do not use this command on UNIX.
 	// free the memory allocated in open_web_link()
 	free(url);
 	return 0;
@@ -321,8 +321,8 @@ void open_web_link(const char *url) {
 		// windows needs to spawn it in its own thread
 		SDL_CreateThread(only_call_from_open_web_link__go_to_url, cp_url);
 	} else {
-		ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNOACTIVATE); //this returns an int we could check for errors, but that's mainly when you use shellexecute for local files
-#endif  //_WIN32
+		ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNOACTIVATE); // this returns an int we could check for errors, but that's mainly when you use shellexecute for local files
+#endif // _WIN32
 	}
 #endif // OSX
 }
@@ -390,8 +390,7 @@ static int display_url_handler(window_info *win) {
 			}
 			/* otherwise, draw a truncated version with "..." at the end */
 			else {
-				//float toobig_width = (get_char_width('-') + get_char_width('>'))
-				//	* url_win_text_zoom * DEFAULT_FONT_X_LEN / 12.0;
+				// float toobig_width = (get_char_width('-') + get_char_width('>'))
 				float toobig_width = (3 * get_char_width('.')) * url_win_text_zoom * DEFAULT_FONT_X_LEN / 12.0;
 				draw_string_zoomed_width(url_win_sep, currenty, (unsigned char *)((URLDATA *)local_head->data)->text, url_win_sep + url_win_max_string_width - toobig_width, 1, url_win_text_zoom);
 				draw_string_zoomed(url_win_sep + url_win_max_string_width - toobig_width, currenty, (unsigned char *)"...", 1, url_win_text_zoom);

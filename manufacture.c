@@ -314,8 +314,7 @@ void build_manufacture_list() {
 	for (i = 0; i < ITEM_WEAR_START; i++) {
 		manufacture_list[i].quantity = -1;
 	}
-//	for (i=0; i<6; i++) manufacture_list[ITEM_WEAR_START+i].quantity = 0;
-	//ok, now see which items are resources
+	// ok, now see which items are resources
 	j = 0;
 	for (i = 0; i < ITEM_WEAR_START; i++) {
 		if (item_list[i].quantity && item_list[i].is_resource) {
@@ -326,7 +325,7 @@ void build_manufacture_list() {
 			j++;
 		}
 	}
-	//now check for all items in all recipes
+	// now check for all items in all recipes
 	for (k = 0; k < MAX_RECIPE; k++) {
 		l = -1; // -1 nous indiquera que la recette est totalement vide
 		for (i = 0; i < 6 && l; i++) {
@@ -344,16 +343,16 @@ void build_manufacture_list() {
 						continue;
 					}
 					if (recipes[k][i].quantity > manufacture_list[j].quantity) {
-						l = 0;                                             // can't make
+						l = 0; // can't make
 					}
 					break;
 				}
 				if (j >= ITEM_WEAR_START) {
-					l = 0;            // watch for the item missing
+					l = 0; // watch for the item missing
 				}
 			}
 		}
-		//updates recipe_status
+		// updates recipe_status
 		recipe_status[k] = l;
 	}
 	for (i = ITEM_WEAR_START; i < ITEM_WEAR_START + 6; i++) {
@@ -399,7 +398,7 @@ void build_manufacture_list() {
 		}
 	}
 }
-//DRAWING FUNCTIONS
+// DRAWING FUNCTIONS
 static void draw_recipe_controls() {
 	int wpx = 33 * 6 + 2;
 	int wpy = manufacture_menu_y_len - 37;
@@ -408,30 +407,30 @@ static void draw_recipe_controls() {
 	if (recipes_shown) {
 		/* Up arrow */
 		glBegin(GL_QUADS);
-		glVertex3i(wpx + lpx / 2, wpy + lpy - 10, 0); //top
-		glVertex3i(wpx + 5, wpy + lpy, 0);     //left
-		glVertex3i(wpx + lpx - 5, wpy + lpy, 0);   //right
-		glVertex3i(wpx + lpx / 2, wpy + lpy - 10, 0); //top
+		glVertex3i(wpx + lpx / 2, wpy + lpy - 10, 0); // top
+		glVertex3i(wpx + 5, wpy + lpy, 0); // left
+		glVertex3i(wpx + lpx - 5, wpy + lpy, 0); // right
+		glVertex3i(wpx + lpx / 2, wpy + lpy - 10, 0); // top
 		glEnd();
 	} else {
 		/* Dn arrow */
 		glBegin(GL_QUADS);
-		glVertex3i(wpx + lpx / 2, wpy + lpy, 0);   //top
-		glVertex3i(wpx + 5, wpy + lpy - 10, 0);   //left
-		glVertex3i(wpx + lpx - 5, wpy + lpy - 10, 0); //right
-		glVertex3i(wpx + lpx / 2, wpy + lpy, 0);   //top
+		glVertex3i(wpx + lpx / 2, wpy + lpy, 0); // top
+		glVertex3i(wpx + 5, wpy + lpy - 10, 0); // left
+		glVertex3i(wpx + lpx - 5, wpy + lpy - 10, 0); // right
+		glVertex3i(wpx + lpx / 2, wpy + lpy, 0); // top
 		glEnd();
 	}
 	/* Add btn */
 	glEnable(GL_TEXTURE_2D);
 	draw_string_zoomed(wpx + 3, wpy - 2, (unsigned char *)"+", 1, 1);
 }
-//draws a 6x1 grid of items+grid
+// draws a 6x1 grid of items+grid
 static int draw_production_pipe(int x, int y, int recipe_num) {
 	int i, ofs, valid;
 	Uint8 str[80];
 	item *the_list;
-	//if recipe_num is negative we draw the current manufacture_list, else a recipe
+	// if recipe_num is negative we draw the current manufacture_list, else a recipe
 	if (recipe_num < 0) {
 		the_list = manufacture_list;
 		ofs = 36;
@@ -446,13 +445,13 @@ static int draw_production_pipe(int x, int y, int recipe_num) {
 		valid = recipe_status[recipe_num];
 	}
 	glEnable(GL_TEXTURE_2D);
-	//ok, now let's draw the mixed objects
+	// ok, now let's draw the mixed objects
 	if (valid >= 0) { // on peut ajouter ce test puisqu'on sait avec -1 que la recette est vide
 		for (i = ofs; i < 6 + ofs; i++) {
 			glColor3f(1.0f, 1.0f, 1.0f);
 			if (the_list[i].quantity > 0) {
 				int x_start, y_start;
-				//get the x and y
+				// get the x and y
 				x_start = x + 33 * (i % 6) + 1;
 				y_start = y;
 				draw_item(the_list[i].image_id, x_start, y_start, 33);
@@ -471,7 +470,7 @@ static int draw_production_pipe(int x, int y, int recipe_num) {
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
-	//draw the grid, in red if selected
+	// draw the grid, in red if selected
 	if (recipe_num >= 0 && recipe_num == cur_recipe) {
 		glColor3f(1.0f, 0.0f, 0.0f);
 	} else {
@@ -496,12 +495,12 @@ static int      display_manufacture_handler(window_info *win) {
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//ok, now let's draw the objects...
+	// ok, now let's draw the objects...
 	for (i = 35; i >= 0; i--) {
 		// on affiche aussi les case dont la quantité est réduite à 0 par la recette courante
 		if (manufacture_list[i].quantity >= 0) {
 			int x_start, y_start;
-			//get the x and y
+			// get the x and y
 			x_start = 33 * (i % 12) + 1;
 			y_start = 33 * (i / 12);
 			draw_item(manufacture_list[i].image_id, x_start, y_start, 33);
@@ -524,9 +523,9 @@ static int      display_manufacture_handler(window_info *win) {
 			draw_string_small_shadowed(x_start, (i & 1)?(y_start + 17):(y_start + 7), (unsigned char *)str, 1, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 		}
 	}
-	//ok, now let's draw the mixed objects
+	// ok, now let's draw the mixed objects
 	draw_production_pipe(2, manufacture_menu_y_len - 37, -1);
-	//now, draw the inventory text, if any.
+	// now, draw the inventory text, if any.
 	if (last_items_string_id != inventory_item_string_id) {
 		put_small_text_in_box((unsigned char *)inventory_item_string, strlen(inventory_item_string), win->len_x - 8, items_string);
 		last_items_string_id = inventory_item_string_id;
@@ -541,11 +540,10 @@ static int      display_manufacture_handler(window_info *win) {
 	// cards
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f, 0.57f, 0.39f);
-	//draw the grid
+	// draw the grid
 	rendergrid(12, 3, 0, 0, 33, 33);
-	//Draw the bottom grid - NOT NEEDED, DONE IN draw_production_pipe
-	//rendergrid(NUM_MIX_SLOTS,1,0, manufacture_menu_y_len-37, SLOT_SIZE, SLOT_SIZE);
-	//Draw recipe control buttons
+	// Draw the bottom grid - NOT NEEDED, DONE IN draw_production_pipe
+	// Draw recipe control buttons
 	draw_recipe_controls();
 	glEnable(GL_TEXTURE_2D);
 	/* Affichage des noms (et messages d'aide) sur la liste des recettes.
@@ -629,7 +627,7 @@ int recipe_dropdown_scroll_selection(Uint32 flags) {
 	}
 	// si le changement de recette sélectionnée à la molette entraine son affectation
 	if (cm_manurecipe_wheelaffect) {
-//		if (recipe_status[cur_recipe] >= 0)
+// if (recipe_status[cur_recipe] >= 0)
 		{
 			int i;
 			for (i = 0; i < 6; i++) {
@@ -643,7 +641,7 @@ int recipe_dropdown_scroll_selection(Uint32 flags) {
 	do_click_sound();
 	return 1;
 }
-//CLICK HANDLERS
+// CLICK HANDLERS
 static int recipe_dropdown_click_handler(window_info *win, int mx, int my, Uint32 flags) {
 	static int last_clicked = 0;
 	static int last_recipe = 0;
@@ -692,7 +690,7 @@ static int recipe_controls_click_handler(int mx, int my, Uint32 flags) {
 		return 0;
 	}
 	if (mx > wpx && mx < wpx + lpx && my > wpy + lpy - 10 && my < wpy + lpy) {
-		//arrow
+		// arrow
 		// est-ce un changement de la recette sélectionnée à la molette ?
 		if (recipe_dropdown_scroll_selection(flags)) {
 			return 1;
@@ -706,7 +704,7 @@ static int recipe_controls_click_handler(int mx, int my, Uint32 flags) {
 		}
 		do_click_sound();
 	} else if (mx > wpx + 3 && mx < wpx + lpx - 3 && my > wpy && my < wpy + 15) {
-		//+ button
+		// + button
 		// est-ce un changement de la recette sélectionnée à la molette ?
 		if (recipe_dropdown_scroll_selection(flags)) {
 			return 1;
@@ -765,7 +763,7 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 	 * laissant uniquement le clic droit pour avoir la description de l'objet,
 	 * et sans aller modifier l'action du curseur principal !
 	 */
-	//see if we clicked on any item in the main category
+	// see if we clicked on any item in the main category
 	pos = get_mouse_pos_in_grid(mx, my, 12, 3, 0, 0, 33, 33);
 	/* on traite aussi les quantités réduites à 0 par la recette courante
 	   pour permettre l'action de la molette et réaugmenter la quantité dispo */
@@ -825,7 +823,6 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 							manufacture_list[j].quantity += quantitytomove;
 						}
 					}
-//					manufacture_list[j].pos=manufacture_list[pos].pos;  // inutile (cf test)
 					manufacture_list[j].image_id = manufacture_list[pos].image_id;
 					manufacture_list[j].id = manufacture_list[pos].id;
 					cur_valids[j - ITEM_WEAR_START] = (manufacture_list[j].quantity > item_list[manufacture_list[j].pos].quantity) ? 0 : 1;
@@ -835,7 +832,7 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 				}
 			}
 			if (flags & ELW_WHEEL_UP) {
-				return 1;                   //quantity already 0 in production pipeline
+				return 1; // quantity already 0 in production pipeline
 			}
 			for (j = ITEM_WEAR_START; j < ITEM_WEAR_START + 6; j++) {
 				if (manufacture_list[j].quantity == 0) {
@@ -864,7 +861,7 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 	if (pos >= 0) {
 		return 0;
 	}
-	//see if we clicked on any item from the "production pipe"
+	// see if we clicked on any item from the "production pipe"
 	pos = get_mouse_pos_in_grid(mx, my, 6, 1, 5, manufacture_menu_y_len - 37, 33, 33);
 	if (pos >= 0 && manufacture_list[36 + pos].quantity > 0) {
 		/* peu importe l'état du curseur principal (qu'on ne voit même pas !)
@@ -916,8 +913,6 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 							manufacture_list[j].quantity = item_list[manufacture_list[j].pos].quantity - manufacture_list[ITEM_WEAR_START + pos].quantity;
 						}
 					}
-//					manufacture_list[j].pos=manufacture_list[36+pos].pos;  // inutile (cf test)
-//					manufacture_list[ITEM_WEAR_START+pos].image_id=manufacture_list[36+pos].image_id;  // bof, pourquoi dans ce sens et pas l'autre ?
 					if (manufacture_list[ITEM_WEAR_START + pos].pos < 0) {
 						cur_valids[pos] = 0;
 					} else {
@@ -951,11 +946,11 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 			return 1;
 		}
 	} else if (pos >= 0) {
-		//click on an empty slot
-		//handle the mouse wheel
+		// click on an empty slot
+		// handle the mouse wheel
 		if (recipes_loaded && (pos != last_changed_slot)) {
 			if ((flags & ELW_WHEEL_UP) || (flags & ELW_WHEEL_DOWN)) {
-				//simulate a click on the dropdown
+				// simulate a click on the dropdown
 				last_changed_slot = -1;
 				recipe_dropdown_scroll_selection(flags);
 				do_click_sound();
@@ -969,7 +964,7 @@ static int click_manufacture_handler(window_info *win, int mx, int my, Uint32 fl
 	if (pos >= 0) {
 		return 0;
 	}
-	//see if we clicked on the recipe handler
+	// see if we clicked on the recipe handler
 	recipe_controls_click_handler(mx, my, flags);
 	// clear the message area if double-clicked
 	if ((my > manufacture_menu_y_len - 85) && my < (manufacture_menu_y_len - 37)) {
@@ -1005,7 +1000,7 @@ int mix_handler(Uint8 quantity, const char *empty_error_str) {
 	}
 	str[1] = items_no;
 	if (items_no) {
-		//don't send an empty string
+		// don't send an empty string
 		current_recipe_changed = 0;
 		save_last_mix();
 		str[items_no * 3 + 2] = quantity;
@@ -1046,7 +1041,7 @@ int recipe_dropdown_mouseover_handler(window_info *win, int mx, int my) {
 	}
 	return 0;
 }
-//MOUSEOVER HANDLERS
+// MOUSEOVER HANDLERS
 static int recipe_controls_mouseover_handler(int mx, int my) {
 	int wpx = 33 * 6 + 2;
 	int wpy = manufacture_menu_y_len - 37;
@@ -1056,10 +1051,10 @@ static int recipe_controls_mouseover_handler(int mx, int my) {
 		return 0;
 	}
 	if (mx > wpx && mx < wpx + lpx && my > wpy + lpy - 10 && my < wpy + lpy) {
-		//on arrow
+		// on arrow
 		show_help(recipe_show_hide_str, manufacture_menu_x_len - strlen(recipe_show_hide_str) * SMALL_FONT_X_LEN, manufacture_menu_y_len + 10);
 	} else if (mx > wpx + 3 && mx < wpx + lpx - 3 && my > wpy && my < wpy + 15) {
-		//on + button
+		// on + button
 		show_help(recipe_save_str, manufacture_menu_x_len - strlen(recipe_save_str) * SMALL_FONT_X_LEN, manufacture_menu_y_len + 10);
 	}
 	return 0;
@@ -1145,7 +1140,7 @@ static int context_listrecipe_handler(window_info *win, int widget_id, int mx, i
 	item tmp_ingr;
 	char *tmp_name;
 	switch (option) {
-	case 0:         // affectation de la recette sélectionnée vers la recette courante
+	case 0: // affectation de la recette sélectionnée vers la recette courante
 		if (cur_recipe < 0) {
 			return 1;
 		}
@@ -1155,7 +1150,7 @@ static int context_listrecipe_handler(window_info *win, int widget_id, int mx, i
 		change_current_name(recipe_name[cur_recipe]);
 		set_shown_string(c_green2, "Recette chargée depuis la liste");
 		break;
-	case 2:         // enregistrement de la recette courante à l'emplacement sélectionné
+	case 2: // enregistrement de la recette courante à l'emplacement sélectionné
 		if (cur_recipe < 0) {
 			return 1;
 		}
@@ -1168,7 +1163,7 @@ static int context_listrecipe_handler(window_info *win, int widget_id, int mx, i
 		}
 		set_shown_string(c_green2, "Recette mémorisée dans la liste");
 		break;
-	case 3:         // suppression de la recette mémorisée à l'emplacement sélectionné
+	case 3: // suppression de la recette mémorisée à l'emplacement sélectionné
 		if (cur_recipe < 0) {
 			return 1;
 		}
@@ -1178,10 +1173,10 @@ static int context_listrecipe_handler(window_info *win, int widget_id, int mx, i
 		clear_recipe_name(cur_recipe);
 		set_shown_string(c_green2, "Recette supprimée dans la liste");
 		break;
-	case 4:         // désélection de l'emplacement sélectionné
+	case 4: // désélection de l'emplacement sélectionné
 		cur_recipe = -1;
 		break;
-	case 6:         // monter d'un cran la recette mémorisée dans la liste
+	case 6: // monter d'un cran la recette mémorisée dans la liste
 		if (cur_recipe < 0) {
 			return 1;
 		}
@@ -1196,7 +1191,7 @@ static int context_listrecipe_handler(window_info *win, int widget_id, int mx, i
 		recipe_name[cur_recipe] = tmp_name;
 		cur_recipe = p;
 		break;
-	case 7:         // descendre d'un cran la recette mémorisée dans la liste
+	case 7: // descendre d'un cran la recette mémorisée dans la liste
 		if (cur_recipe < 0) {
 			return 1;
 		}
@@ -1256,19 +1251,19 @@ void display_manufacture_menu() {
 		cm_bool_line(windows_list.window[manufacture_win].cm_id, ELW_CM_MENU_LEN + 2, &cm_manurecipe_addnolimit, NULL);
 		cm_bool_line(windows_list.window[manufacture_win].cm_id, ELW_CM_MENU_LEN + 3, &cm_manurecipe_wheelaffect, NULL);
 		cm_bool_line(windows_list.window[manufacture_win].cm_id, ELW_CM_MENU_LEN + 4, &cm_listrecipe_enabled, NULL);
-		//Create a child window to show recipes in a dropdown panel
+		// Create a child window to show recipes in a dropdown panel
 		recipe_win = create_window("w_recipe", manufacture_win, 0, 2, manufacture_menu_y_len - 2, 33 * 6 + 22, 33 * 6, ELW_SCROLLABLE | ELW_RESIZEABLE | ELW_TITLE_NONE | ELW_SHOW | ELW_USE_BACKGROUND | ELW_ALPHA_BORDER | ELW_SWITCHABLE_OPAQUE | ELW_USE_BORDER);
 		set_window_handler(recipe_win, ELW_HANDLER_DISPLAY, &recipe_dropdown_draw);
 		set_window_handler(recipe_win, ELW_HANDLER_CLICK, &recipe_dropdown_click_handler);
 		set_window_handler(recipe_win, ELW_HANDLER_MOUSEOVER, &recipe_dropdown_mouseover_handler);
 		set_window_handler(recipe_win, ELW_HANDLER_RESIZE, &recipe_dropdown_resize_handler);
-		set_window_min_size(recipe_win, 33 * 6 + 22, 33 * 2);        // mini 6 cases + bar et 2 lignes
-		set_window_scroll_yoffset(recipe_win, 0);                // scrollbar partant du haut
-		set_window_scroll_inc(recipe_win, 33);                   // scroll ligne par ligne
+		set_window_min_size(recipe_win, 33 * 6 + 22, 33 * 2); // mini 6 cases + bar et 2 lignes
+		set_window_scroll_yoffset(recipe_win, 0); // scrollbar partant du haut
+		set_window_scroll_inc(recipe_win, 33); // scroll ligne par ligne
 		set_window_scroll_len(recipe_win, 33 * MAX_RECIPE); // hauteur totale des lignes
 		cm_listrecipe_id = cm_create(cm_listrecipe_menu_str, context_listrecipe_handler);
 		cm_bool_line(cm_listrecipe_id, 9, &cm_listrecipe_enabled, NULL);
-		hide_window(recipe_win); //start hidden
+		hide_window(recipe_win); // start hidden
 	} else {
 		show_window(manufacture_win);
 		if (!recipes_shown) {

@@ -45,7 +45,7 @@ static const float score_table[33] =
 	2.0f / sqrt(29.0f), 2.0f / sqrt(30.0f), 2.0f / sqrt(31.0f), 2.0f / sqrt(32.0f)
 };
 static inline float calc_new_score(const Uint32 count) {
-	return 12.0f;//score_table[std::min(count, 32u)];
+	return 12.0f; // score_table[std::min(count, 32u)];
 }
 bool optimize_vertex_cache_order(Uint32 *tri_indices, const Uint32 offset, const Uint32 count, const Uint32 cache_size) {
 	std::vector<float> cache_score(cache_size + 3, 0.75);

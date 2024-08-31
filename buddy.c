@@ -35,15 +35,15 @@ int buddy_change_x_len = 290;
 int buddy_change_y_len = 255;
 int buddy_type_input_id = -1;
 int buddy_change_button_id = -1;
-int buddy_delete = 0; //For the checkbox
+int buddy_delete = 0; // For the checkbox
 char *buddy_to_change = NULL;
-//BUDDY-FIXME: once server-side offline buddies are supported, this variable will be unneeded
-time_t c_time;//used to prevent buddylist flood when changing colours, etc
+// BUDDY-FIXME: once server-side offline buddies are supported, this variable will be unneeded
+time_t c_time; // used to prevent buddylist flood when changing colours, etc
 struct accept_window {
-	int window_id; //Window ID
-	char name[32]; //Name of the buddy to accept
-	char *text; //Buffer for the text to display
-	int checkbox; //Checkbox widget id
+	int window_id; // Window ID
+	char name[32]; // Name of the buddy to accept
+	char *text; // Buffer for the text to display
+	int checkbox; // Checkbox widget id
 } accept_windows[MAX_ACCEPT_BUDDY_WINDOWS];
 int buddy_accept_x_len = 400;
 int buddy_accept_y_len = 130;
@@ -51,7 +51,7 @@ queue_t *buddy_request_queue;
 unsigned char buddy_name_buffer[16] = {0};
 char description_buffer[255] = {0};
 _buddy buddy_list[MAX_BUDDY];
-int buddy_nb = 0;     // nombre d'éléments présents dans la liste
+int buddy_nb = 0; // nombre d'éléments présents dans la liste
 int buddy_lines = 19; // nombre d'éléments affichables dans la fenêtre
 int create_buddy_interface_win(const char *title, void *argument);
 int buddy_list_name_cmp(const void *arg1, const void *arg2) {
@@ -91,16 +91,15 @@ int display_buddy_handler(window_info *win) {
 				glColor3f(0.5, 0.55, 0.60);
 				break;
 			default:
-				glColor3f(1.0, 1.0, 1.0);      //invalid number? make it white
+				glColor3f(1.0, 1.0, 1.0); // invalid number? make it white
 			}
 			draw_string_zoomed(x, y, (unsigned char *)buddy_list[i].name, 1, 0.7);
 			y += 10;
 		}
 	}
-	//Draw a button for the requests
+	// Draw a button for the requests
 	if (!queue_isempty(buddy_request_queue)) {
 		glDisable(GL_TEXTURE_2D);
-		//glColor3f(0.77f, 0.59f, 0.39f);
 		glColor3f(0.3, 1, 0.3);
 		glBegin(GL_LINE_LOOP);
 		glVertex2i(win->len_x / 3, 0);
@@ -130,10 +129,10 @@ int click_buddy_handler(window_info *win, int mx, int my, Uint32 flags) {
 		return 0;
 	}
 	if (x > win->len_x - 20) {
-		//Clicked on the scrollbar. Let it fall through.
+		// Clicked on the scrollbar. Let it fall through.
 		return 0;
 	} else if (!queue_isempty(buddy_request_queue) && mx > win->len_x / 3 && y < 16) {
-		//Clicked on the requests button
+		// Clicked on the requests button
 		while (!queue_isempty(buddy_request_queue)) {
 			char *name = queue_pop(buddy_request_queue);
 			select_window(create_buddy_interface_win(buddy_accept_str, name));
@@ -145,26 +144,25 @@ int click_buddy_handler(window_info *win, int mx, int my, Uint32 flags) {
 	y /= 10;
 	y += vscrollbar_get_pos(buddy_win, buddy_scroll_id);
 	if ((strlen(buddy_list[y].name) == 0) || (buddy_list[y].type >= 0xFE)) {
-		//There's no name, or buddy is offline. Fall through.
+		// There's no name, or buddy is offline. Fall through.
 		return 0;
 	}
 	if (flags & ELW_RIGHT_MOUSE) {
 		if (flags & ELW_CTRL) {
-			//CTRL + right click, delete buddy.
+			// CTRL + right click, delete buddy.
 			safe_snprintf(str, sizeof(str), "%c#del_buddy %s", RAW_TEXT, buddy_list[y].name);
 			my_tcp_send(my_socket, (Uint8 *)str, strlen(str + 1) + 1);
 		} else {
-			//Right click, open edit window
+			// Right click, open edit window
 			create_buddy_interface_win(buddy_change_str, &buddy_list[y]);
 		}
 	} else if (buddy_list[y].type < 0xFE) {
-		//start a pm to them
+		// start a pm to them
 		// clear the buffer
 		clear_input_line();
 		// insert the person's name
 		safe_snprintf(str, sizeof(str), "/%s ", buddy_list[y].name);
-		//put_string_in_buffer (&input_text_line, str, 0);
-		//We'll just reuse the paste function here
+		// We'll just reuse the paste function here
 		paste_in_input_field((unsigned char *)str);
 	}
 	return 1;
@@ -182,8 +180,8 @@ void init_buddy() {
 		memset(accept_windows[i].name, 0, sizeof(accept_windows[i].name));
 	}
 	queue_initialise(&buddy_request_queue);
-	//BUDDY-FIXME: once server-side offline buddies are supported, the next 2 lines can go
-	time(&c_time);//note the current time
+	// BUDDY-FIXME: once server-side offline buddies are supported, the next 2 lines can go
+	time(&c_time); // note the current time
 	c_time += 10;
 }
 /*
@@ -220,7 +218,7 @@ int click_change_buddy_handler(widget_list *w, int mx, int my, Uint32 flags) {
 		safe_snprintf(string, sizeof(string), "%c#change_buddy %s %i", RAW_TEXT, buddy_to_change, multiselect_get_selected(buddy_change_win, buddy_type_input_id));
 	}
 	my_tcp_send(my_socket, (Uint8 *)string, strlen(string + 1) + 1);
-	//BUDDY-FIXME: once server-side offline buddies are supported, the next line can go
+	// BUDDY-FIXME: once server-side offline buddies are supported, the next line can go
 	time(&c_time);
 	destroy_window(buddy_change_win);
 	buddy_change_win = -1;
@@ -277,7 +275,7 @@ int click_accept_yes(widget_list *w, int mx, int my, Uint32 flags) {
 	char string[255];
 	int window_id = w->window_id;
 	int i;
-	//TODO: get rid of this when the widget handlers can take custom arguments
+	// TODO: get rid of this when the widget handlers can take custom arguments
 	/* Find the position of the window clicked in the accept_windows array */
 	for (i = 0; i < MAX_ACCEPT_BUDDY_WINDOWS; i++) {
 		if (accept_windows[i].window_id == window_id) {
@@ -305,7 +303,7 @@ int click_accept_yes(widget_list *w, int mx, int my, Uint32 flags) {
 int click_accept_no(widget_list *w, int mx, int my, Uint32 flags) {
 	int i;
 	int window_id = w->window_id;
-	//TODO: get rid of this too
+	// TODO: get rid of this too
 	/* Find the position of the window clicked in the accept_windows array */
 	for (i = 0; i < MAX_ACCEPT_BUDDY_WINDOWS; i++) {
 		if (accept_windows[i].window_id == window_id) {
@@ -329,7 +327,7 @@ int click_delete_checkbox_label(widget_list *w, int mx, int my, Uint32 flags) {
 	return 1;
 }
 int create_buddy_interface_win(const char *title, void *argument) {
-	int label_id = 10; //temporary variable
+	int label_id = 10; // temporary variable
 	int string_width;
 	int extra_space;
 	int x = 5;
@@ -394,7 +392,7 @@ int create_buddy_interface_win(const char *title, void *argument) {
 		label_id++;
 		y += 5 + multiselect_get_height(buddy_change_win, buddy_type_input_id);
 		/* Delete buddy checkbox and label */
-		//Center the checkbox+label
+		// Center the checkbox+label
 		extra_space = 2 + ceilf((buddy_change_x_len - string_width * 2 - (20 + get_string_width((unsigned char *)buddy_delete_str) * 0.9f)) / 2.0);
 		checkbox_add(buddy_change_win, NULL, x + extra_space, y, 15, 15, &buddy_delete);
 		x += 20;
@@ -435,7 +433,6 @@ int create_buddy_interface_win(const char *title, void *argument) {
 		set_window_handler(accept_windows[current_window].window_id, ELW_HANDLER_DISPLAY, &display_accept_buddy_handler);
 		/* Add text */
 		safe_snprintf(string, sizeof(string), buddy_wants_to_add_str, accept_windows[current_window].name);
-		//label_add_extended(buddy_accept_win, label_id++, NULL, x, y, 0, 0, 0, 0.8, -1, -1, -1, string);
 		accept_windows[current_window].text = malloc((strlen(string) + 5) * sizeof(*accept_windows[current_window].text));
 		put_small_colored_text_in_box(c_blue1, (unsigned char *)string, strlen(string), buddy_accept_x_len - 10, accept_windows[current_window].text);
 		y += 40;
@@ -510,25 +507,25 @@ void display_buddy() {
 }
 void add_buddy(const char *name, int type, int len) {
 	int i, found = 0;
-	//@tosh : Le message est sinon coupé
+	// @tosh : Le message est sinon coupé
 	char message[41];
 	add_name_to_tablist(name);
 	// Check if the buddy already exists
 	for (i = 0; i < MAX_BUDDY; i++) {
 		if (strncasecmp(buddy_list[i].name, name, len) == 0) {
-			//this name is already in our list
+			// this name is already in our list
 			if (buddy_list[i].type != type) {
-				//colour change, not a new entry
+				// colour change, not a new entry
 				if (buddy_log_notice == 1) {
-					if (buddy_list[i].type == 0xFE) {//logging on
+					if (buddy_list[i].type == 0xFE) { // logging on
 						safe_snprintf(message, sizeof(message), buddy_logon_str, len, name);
 						LOG_TO_CONSOLE(c_green1, message);
 						flash_icon(tt_buddy, 5);
-					} else if (type == 0xFE) {//logging off
+					} else if (type == 0xFE) { // logging off
 						safe_snprintf(message, sizeof(message), buddy_logoff_str, len, name);
 						LOG_TO_CONSOLE(c_green1, message);
 						flash_icon(tt_buddy, 5);
-					}//else it's just a normal colour change
+					} // else it's just a normal colour change
 				}
 				buddy_list[i].type = type;
 			}
@@ -550,7 +547,7 @@ void add_buddy(const char *name, int type, int len) {
 				vscrollbar_set_bar_len(buddy_win, buddy_scroll_id, buddy_nb);
 				// on tri la liste une fois ici plutot que dans le display handler
 				qsort(buddy_list, MAX_BUDDY, sizeof(_buddy), buddy_list_name_cmp);
-				//BUDDY-FIXME: once server-side offline buddies are supported, this if-block will be removed (as del_buddy will only happen when the buddy really is deleted)
+				// BUDDY-FIXME: once server-side offline buddies are supported, this if-block will be removed (as del_buddy will only happen when the buddy really is deleted)
 				if (buddy_log_notice == 1) {
 					// if less than 5sec since the timer was
 					// updated, then we don't notify. in cases of
@@ -573,7 +570,7 @@ void add_buddy(const char *name, int type, int len) {
 }
 void del_buddy(const char *name, int len) {
 	int i;
-	//@tosh : passage de [36] à [41] pour éviter que le message soit coupé
+	// @tosh : passage de [36] à [41] pour éviter que le message soit coupé
 	char message[41];
 	// find buddy
 	for (i = 0; i < MAX_BUDDY; i++) {
@@ -585,7 +582,7 @@ void del_buddy(const char *name, int len) {
 				buddy_nb = 0;
 			}
 			vscrollbar_set_bar_len(buddy_win, buddy_scroll_id, buddy_nb);
-			//BUDDY-FIXME: once server-side offline buddies are supported, this if-block will be removed (as del_buddy will only happen when the buddy really is deleted)
+			// BUDDY-FIXME: once server-side offline buddies are supported, this if-block will be removed (as del_buddy will only happen when the buddy really is deleted)
 			if (buddy_log_notice == 1) {
 				// if less than 5sec since the timer was
 				// updated, then we don't notify. in cases of

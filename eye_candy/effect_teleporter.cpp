@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_teleporter.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 TeleporterParticle::TeleporterParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t size_scalar) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 size_scalar * (0.5 + 1.5 * randcoord())) {
@@ -65,7 +65,6 @@ TeleporterEffect::TeleporterEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, con
 	   break;
 	   }
 	 */
-	//  const float radius = 0.5 * pow(2, 0.18) / 1.5;
 	radius = 0.377628 * scale;
 	color_t hue, saturation, value;
 	hue = 0.67;
@@ -160,5 +159,4 @@ void TeleporterEffect::request_LOD(const float _LOD) {
 void TeleporterEffect::add_actor_alpha_pointer(float *ptr) {
 	targets.push_back(std::pair<float *, Uint64>(ptr, get_time()));
 }
-///////////////////////////////////////////////////////////////////////////////
 }

@@ -118,7 +118,6 @@ int click_map_handler(window_info *win, int mx, int my, Uint32 flags) {
 							my_strcp(inspect_map_name, continent_maps[i].name);
 						}
 						// marques de la carte inspectée chargées dans le buffer courant pour leur édition
-//						load_marks_to_buffer(continent_maps[i].name, marks, &max_mark);
 						// PS: traitement déporté directement dans la fonction générale load_map_marks()
 						load_map_marks();
 						get_tile_map_sizes(continent_maps[i].name, &temp_tile_map_size_x, &temp_tile_map_size_y);
@@ -141,7 +140,7 @@ int display_map_handler(window_info *win) {
 		draw_hud_interface();
 		Leave2DMode();
 		if (reload_tab_map && map_root_win >= 0 && windows_list.window[map_root_win].displayed) {
-			//need to reload the BMP
+			// need to reload the BMP
 			switch_from_game_map();
 			switch_to_game_map();
 		}
@@ -201,7 +200,7 @@ int keypress_map_handler(window_info *win, int mx, int my, Uint32 key, Uint32 un
 		memset(mark_filter_text, 0, sizeof(char) * MARK_FILTER_MAX_LEN);
 	}
 	// now try the keypress handler for all root windows
-	else if ( keypress_root_common(key, unikey)) {
+	else if (keypress_root_common(key, unikey)) {
 		return 1;
 	} else if (key == K_MAP) {
 		if (keep_grabbing_mouse) {
@@ -212,7 +211,7 @@ int keypress_map_handler(window_info *win, int mx, int my, Uint32 key, Uint32 un
 		hide_window(map_root_win);
 		show_window(game_root_win);
 		// Undo stupid quickbar hack
-		if ( !get_show_window(quickbar_win)) {
+		if (!get_show_window(quickbar_win)) {
 			show_window(quickbar_win);
 		}
 	} else if (mark_filter_active && !adding_mark) {
@@ -223,7 +222,7 @@ int keypress_map_handler(window_info *win, int mx, int my, Uint32 key, Uint32 un
 			switch_from_game_map();
 			hide_window(map_root_win);
 			show_window(console_root_win);
-		} else if ( !text_input_handler(key, unikey)) {
+		} else if (!text_input_handler(key, unikey)) {
 			// nothing we can handle
 			return 0;
 		}

@@ -27,7 +27,7 @@
 int nom_change = 0;
 float sitting = 1.0f;
 glow_color glow_colors[10];
-//build the glow color table
+// build the glow color table
 void build_glow_color_table() {
 	glow_colors[GLOW_NONE].r = 0;
 	glow_colors[GLOW_NONE].g = 0;
@@ -45,7 +45,7 @@ void build_glow_color_table() {
 	glow_colors[GLOW_MAGIC].g = 0.3f;
 	glow_colors[GLOW_MAGIC].b = 0.0f;
 }
-//return the ID (number in the actors_list[]) of the new allocated actor
+// return the ID (number in the actors_list[]) of the new allocated actor
 int add_enhanced_actor(enhanced_actor *this_actor, float x_pos, float y_pos, float z_pos, float z_rot, float scale, int actor_id, const char *name) {
 	int texture_id;
 	int i;
@@ -53,7 +53,7 @@ int add_enhanced_actor(enhanced_actor *this_actor, float x_pos, float y_pos, flo
 	actor *our_actor;
 	int x, y;
 	no_bounding_box = 1;
-	//get the skin
+	// get the skin
 	texture_id = load_enhanced_actor(this_actor, name);
 	our_actor = calloc(1, sizeof(actor));
 	memset(our_actor->current_displayed_text, 0, MAX_CURRENT_DISPLAYED_TEXT_LEN);
@@ -74,7 +74,7 @@ int add_enhanced_actor(enhanced_actor *this_actor, float x_pos, float y_pos, flo
 	our_actor->y_rot = 0;
 	our_actor->z_rot = z_rot;
 	our_actor->last_range_attacker_id = -1;
-	//reset the script related things
+	// reset the script related things
 	our_actor->move_x_speed = 0;
 	our_actor->move_y_speed = 0;
 	our_actor->move_z_speed = 0;
@@ -86,11 +86,10 @@ int add_enhanced_actor(enhanced_actor *this_actor, float x_pos, float y_pos, flo
 	our_actor->rotating = 0;
 	our_actor->busy = 0;
 	our_actor->last_command = nothing;
-	//clear the que
+	// clear the que
 	for (k = 0; k < MAX_CMD_QUEUE; k++) {
 		our_actor->que[k] = nothing;
 	}
-//	our_actor->model_data=0;
 	our_actor->stand_idle = 0;
 	our_actor->sit_idle = 0;
 	our_actor->body_parts = this_actor;
@@ -99,8 +98,8 @@ int add_enhanced_actor(enhanced_actor *this_actor, float x_pos, float y_pos, flo
 	x = (int)(our_actor->x_pos / 0.5f);
 	y = (int)(our_actor->y_pos / 0.5f);
 	our_actor->cluster = get_cluster(x, y);
-	//find a free spot, in the actors_list
-	LOCK_ACTORS_LISTS();    //lock it to avoid timing issues
+	// find a free spot, in the actors_list
+	LOCK_ACTORS_LISTS(); // lock it to avoid timing issues
 	for (i = 0; i < max_actors; i++) {
 		if (!actors_list[i]) {
 			break;
@@ -119,7 +118,7 @@ int add_enhanced_actor(enhanced_actor *this_actor, float x_pos, float y_pos, flo
 		max_actors = i + 1;
 	}
 	no_bounding_box = 0;
-	//Actors list will be unlocked later
+	// Actors list will be unlocked later
 	return i;
 }
 Uint32 delay_texture_item_change(actor *a, const int which_part, const int which_id) {
@@ -252,7 +251,7 @@ void actor_wear_item(int actor_id, Uint8 which_part, Uint8 which_id) {
 					case SWORD_JAGGED_SABER:
 						ec_create_sword_jagged_saber(actors_list[i], (poor_man ? 6 : 10));
 						break;
-					case STAFF_4:                                 // staff of the mage
+					case STAFF_4: // staff of the mage
 					case BATON_MAGE_DIAMANT:
 						ec_create_staff_of_the_mage(actors_list[i], (poor_man ? 6 : 10));
 						break;
@@ -472,7 +471,7 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 		char str[256];
 		safe_snprintf(str, sizeof(str), "Illegal/missing enhanced actor definition %d", actor_type);
 		LOG_ERROR(str);
-		return;         // We cannot load an actor without a def (seg fault) so bail here.
+		return; // We cannot load an actor without a def (seg fault) so bail here.
 	}
 	frame = *(in_data + 22);
 	max_health = SDL_SwapLE16(*((short *)(in_data + 23)));
@@ -486,14 +485,14 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 		// Le serveur ne gère pas les acteurs liés
 		attachment_type = -1;
 	}
-	//the last byte of the packet even if scale+attachment is not sent
+	// the last byte of the packet even if scale+attachment is not sent
 	neck = *(in_data + len - 1);
-	//the last bytes of the packet even if scale+attachment is not sent
-	//translate from tile to world
+	// the last bytes of the packet even if scale+attachment is not sent
+	// translate from tile to world
 	f_x_pos = x_pos * 0.5;
 	f_y_pos = y_pos * 0.5;
 	f_z_rot = z_rot;
-	//get the current frame
+	// get the current frame
 	switch (frame) {
 	case frame_walk:
 	case frame_run:
@@ -538,18 +537,18 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 	default:
 		LOG_ERROR("%s %d - %s\n", unknown_frame, frame, &in_data[28]);
 	}
-	//find out if there is another actor with that ID
-	//ideally this shouldn't happen, but just in case
+	// find out if there is another actor with that ID
+	// ideally this shouldn't happen, but just in case
 	for (i = 0; i < max_actors; i++) {
 		if (actors_list[i]) {
 			if (actors_list[i]->actor_id == actor_id) {
 				LOG_ERROR("%s %d = %s => %s\n", duplicate_actors_str, actor_id, actors_list[i]->actor_name, &in_data[28]);
-				destroy_actor(actors_list[i]->actor_id);                        //we don't want two actors with the same ID
-				i--;                        // last actor was put here, he needs to be checked too
+				destroy_actor(actors_list[i]->actor_id); // we don't want two actors with the same ID
+				i--; // last actor was put here, he needs to be checked too
 			} else if (kind_of_actor == COMPUTER_CONTROLLED_HUMAN && (actors_list[i]->kind_of_actor == COMPUTER_CONTROLLED_HUMAN || actors_list[i]->kind_of_actor == PKABLE_COMPUTER_CONTROLLED) && !my_strcompare(&in_data[28], actors_list[i]->actor_name)) {
 				LOG_ERROR("%s(%d) = %s => %s\n", duplicate_npc_actor, actor_id, actors_list[i]->actor_name, &in_data[28]);
-				destroy_actor(actors_list[i]->actor_id);                        //we don't want two actors with the same ID
-				i--;                        // last actor was put here, he needs to be checked too
+				destroy_actor(actors_list[i]->actor_id); // we don't want two actors with the same ID
+				i--; // last actor was put here, he needs to be checked too
 			}
 		}
 	}
@@ -573,7 +572,7 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 		/* perform case insensitive comparison/hashing */
 		my_tolower(name);
 		my_tolower(onlyname);
-		//perfect hashing of guildtag
+		// perfect hashing of guildtag
 		switch (strlen(guild)) {
 		case 0:
 			guild_id = 0;
@@ -595,18 +594,18 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 	/* store the ids */
 	this_actor->uniq_id = uniq_id;
 	this_actor->guild_id = guild_id;
-	//get the torso
+	// get the torso
 	my_strncp(this_actor->arms_tex, actors_defs[actor_type].shirt[shirt].arms_name, sizeof(this_actor->arms_tex));
 	my_strncp(this_actor->torso_tex, actors_defs[actor_type].shirt[shirt].torso_name, sizeof(this_actor->torso_tex));
 	my_strncp(this_actor->arms_mask, actors_defs[actor_type].shirt[shirt].arms_mask, sizeof(this_actor->arms_mask));
 	my_strncp(this_actor->torso_mask, actors_defs[actor_type].shirt[shirt].torso_mask, sizeof(this_actor->torso_mask));
-	//skin
+	// skin
 	my_strncp(this_actor->hands_tex, actors_defs[actor_type].skin[skin].hands_name, sizeof(this_actor->hands_tex));
 	my_strncp(this_actor->hands_tex_save, actors_defs[actor_type].skin[skin].hands_name, sizeof(this_actor->hands_tex_save));
-	my_strncp(this_actor->hands_mask, "", sizeof(this_actor->hands_mask));    // by default, nothing
+	my_strncp(this_actor->hands_mask, "", sizeof(this_actor->hands_mask)); // by default, nothing
 	my_strncp(this_actor->head_tex, actors_defs[actor_type].skin[skin].head_name, sizeof(this_actor->head_tex));
 	my_strncp(this_actor->head_base, actors_defs[actor_type].skin[skin].head_name, sizeof(this_actor->head_base));
-	my_strncp(this_actor->head_mask, "", sizeof(this_actor->head_mask));      // by default, nothing
+	my_strncp(this_actor->head_mask, "", sizeof(this_actor->head_mask)); // by default, nothing
 	if (*actors_defs[actor_type].head[head].skin_name) {
 		my_strncp(this_actor->head_tex, actors_defs[actor_type].head[head].skin_name, sizeof(this_actor->head_tex));
 	}
@@ -617,21 +616,21 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 	my_strncp(this_actor->arms_base, actors_defs[actor_type].skin[skin].arms_name, sizeof(this_actor->arms_base));
 	my_strncp(this_actor->legs_base, actors_defs[actor_type].skin[skin].legs_name, sizeof(this_actor->legs_base));
 	my_strncp(this_actor->boots_base, actors_defs[actor_type].skin[skin].feet_name, sizeof(this_actor->boots_base));
-	//hair
+	// hair
 	my_strncp(this_actor->hair_tex, actors_defs[actor_type].hair[hair].hair_name, sizeof(this_actor->hair_tex));
-	//boots
+	// boots
 	my_strncp(this_actor->boots_tex, actors_defs[actor_type].boots[boots].boots_name, sizeof(this_actor->boots_tex));
 	my_strncp(this_actor->boots_mask, actors_defs[actor_type].boots[boots].boots_mask, sizeof(this_actor->boots_mask));
-	//legs
+	// legs
 	my_strncp(this_actor->pants_tex, actors_defs[actor_type].legs[pants].legs_name, sizeof(this_actor->pants_tex));
 	my_strncp(this_actor->pants_mask, actors_defs[actor_type].legs[pants].legs_mask, sizeof(this_actor->pants_mask));
-	//cape
+	// cape
 	if (cape != CAPE_NONE) {
 		my_strncp(this_actor->cape_tex, actors_defs[actor_type].cape[cape].skin_name, sizeof(this_actor->cape_tex));
 	} else {
 		my_strncp(this_actor->cape_tex, "", sizeof(this_actor->cape_tex));
 	}
-	//shield
+	// shield
 	if (shield != SHIELD_NONE) {
 		my_strncp(this_actor->shield_tex, actors_defs[actor_type].shield[shield].skin_name, sizeof(this_actor->shield_tex));
 	} else {
@@ -646,13 +645,13 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 	if (weapon == GLOVE_FUR || weapon == GLOVE_LEATHER || weapon == GANTS_CUIR_NOIR || weapon == GLOVE_FUR_LEO || weapon == GLOVE_LEATHER_3) {
 		my_strncp(this_actor->hands_tex, actors_defs[actor_type].weapon[weapon].skin_name, sizeof(this_actor->hands_tex));
 	}
-	//helmet
+	// helmet
 	if (helmet != HELMET_NONE) {
 		my_strncp(this_actor->helmet_tex, actors_defs[actor_type].helmet[helmet].skin_name, sizeof(this_actor->helmet_tex));
 	} else {
 		my_strncp(this_actor->helmet_tex, "", sizeof(this_actor->helmet_tex));
 	}
-	//neck
+	// neck
 	if (neck != MEDAILLON_NONE) {
 		assert(!"Using old client data" || actors_defs[actor_type].neck != NULL);
 		my_strncp(this_actor->neck_tex, actors_defs[actor_type].neck[neck].skin_name, sizeof(this_actor->neck_tex));
@@ -660,7 +659,7 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 		my_strncp(this_actor->neck_tex, "", sizeof(this_actor->neck_tex));
 	}
 	i = add_enhanced_actor(this_actor, f_x_pos, f_y_pos, 0.0, f_z_rot, scale, actor_id, onlyname);
-	//The actors list is already locked here
+	// The actors list is already locked here
 	actors_list[i]->async_fighting = 0;
 	actors_list[i]->async_x_tile_pos = x_pos;
 	actors_list[i]->async_y_tile_pos = y_pos;
@@ -673,7 +672,7 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 	actors_list[i]->damage_ms = 0;
 	actors_list[i]->sitting = 0;
 	actors_list[i]->fighting = 0;
-	//test only
+	// test only
 	actors_list[i]->max_health = max_health;
 	actors_list[i]->cur_health = cur_health;
 	actors_list[i]->z_pos = get_actor_z(actors_list[i]);
@@ -690,10 +689,10 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 			actors_list[i]->fighting = 1;
 		}
 	}
-	//ghost or not?
+	// ghost or not?
 	actors_list[i]->ghost = actors_defs[actor_type].ghost;
 	actors_list[i]->dead = dead;
-	actors_list[i]->stop_animation = 1;//helps when the actor is dead...
+	actors_list[i]->stop_animation = 1; // helps when the actor is dead...
 	actors_list[i]->cur_weapon = weapon;
 	actors_list[i]->cur_shield = shield;
 	actors_list[i]->kind_of_actor = kind_of_actor;
@@ -719,15 +718,14 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 			my_tolower(actors_list[i]->actor_name);
 		}
 	}
-	if (attachment_type >= 0 && attachment_type < 255) { //255 is not necessary, but it suppresses a warning in errorlog
+	if (attachment_type >= 0 && attachment_type < 255) { // 255 is not necessary, but it suppresses a warning in errorlog
 		add_actor_attachment(actor_id, attachment_type);
 	}
 	if (actors_defs[actor_type].coremodel != NULL) {
 		actors_list[i]->calmodel = model_new(actors_defs[actor_type].coremodel);
 		if (actors_list[i]->calmodel != NULL) {
-			//Setup cal3d model
-			//actors_list[i]->calmodel=CalModel_New(actors_defs[actor_type].coremodel);
-			//Attach meshes
+			// Setup cal3d model
+			// Attach meshes
 			model_attach_mesh(actors_list[i], actors_defs[actor_type].head[head].mesh_index);
 			model_attach_mesh(actors_list[i], actors_defs[actor_type].shirt[shirt].mesh_index);
 			model_attach_mesh(actors_list[i], actors_defs[actor_type].legs[pants].mesh_index);
@@ -819,7 +817,7 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 			case SWORD_JAGGED_SABER:
 				ec_create_sword_jagged_saber(actors_list[i], (poor_man ? 6 : 10));
 				break;
-			case STAFF_4:         // staff of the mage
+			case STAFF_4: // staff of the mage
 				ec_create_staff_of_the_mage(actors_list[i], (poor_man ? 6 : 10));
 				break;
 			case SWORD_EMERALD_CLAYMORE_F:
@@ -851,18 +849,14 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 	} else {
 		actors_list[i]->calmodel = NULL;
 	}
-	/* //DEBUG
+	/* // DEBUG
 	   if (actors_list[i]->actor_id==yourself) {
-	        //actor_wear_item(actors_list[i]->actor_id,KIND_OF_WEAPON,SWORD_1);
-	        //unwear_item_from_actor(actors_list[i]->actor_id,KIND_OF_WEAPON);
-	        //actor_wear_item(actors_list[i]->actor_id,KIND_OF_WEAPON,SWORD_2);
-	        //actor_wear_item(actors_list[i]->actor_id,KIND_OF_HELMET,HELMET_IRON);
 	   }*/
 	if (actor_id == yourself) {
 		reset_camera_at_next_update = 1;
 	}
 	update_actor_buffs(actor_id, buffs);
-	UNLOCK_ACTORS_LISTS();  //unlock it
+	UNLOCK_ACTORS_LISTS(); // unlock it
 	if (actor_id == yourself) {
 		if (strcasecmp(onlyname, username_str) != 0) {
 			nom_change = 1;
@@ -874,7 +868,7 @@ void add_enhanced_actor_from_server(const char *in_data, int len) {
 actor *add_actor_interface(float x, float y, float z_rot, float scale, int actor_type, short skin, short hair, short shirt, short pants, short boots, short head) {
 	enhanced_actor *this_actor = calloc(1, sizeof(enhanced_actor));
 	actor *a;
-	//get the torso
+	// get the torso
 	my_strncp(this_actor->arms_tex, actors_defs[actor_type].shirt[shirt].arms_name, sizeof(this_actor->arms_tex));
 	my_strncp(this_actor->arms_mask, actors_defs[actor_type].shirt[shirt].arms_mask, sizeof(this_actor->arms_mask));
 	my_strncp(this_actor->torso_tex, actors_defs[actor_type].shirt[shirt].torso_name, sizeof(this_actor->torso_tex));
@@ -890,18 +884,17 @@ actor *add_actor_interface(float x, float y, float z_rot, float scale, int actor
 	a->x_tile_pos = x;
 	a->y_tile_pos = y;
 	a->actor_type = actor_type;
-	//test only
+	// test only
 	a->max_health = 20;
 	a->cur_health = 20;
-	a->stop_animation = 1;//helps when the actor is dead...
+	a->stop_animation = 1; // helps when the actor is dead...
 	a->kind_of_actor = HUMAN;
 	safe_snprintf(a->actor_name, sizeof(a->actor_name), "Nouveau Personnage");
 	if (actors_defs[actor_type].coremodel != NULL) {
 		a->calmodel = model_new(actors_defs[actor_type].coremodel);
 		if (a->calmodel != NULL) {
-			//Setup cal3d model
-			//a->calmodel=CalModel_New(actors_defs[actor_type].coremodel);
-			//Attach meshes
+			// Setup cal3d model
+			// Attach meshes
 			model_attach_mesh(a, actors_defs[actor_type].head[head].mesh_index);
 			model_attach_mesh(a, actors_defs[actor_type].shirt[shirt].mesh_index);
 			model_attach_mesh(a, actors_defs[actor_type].legs[pants].mesh_index);
@@ -924,6 +917,6 @@ actor *add_actor_interface(float x, float y, float z_rot, float scale, int actor
 	} else {
 		a->calmodel = NULL;
 	}
-	UNLOCK_ACTORS_LISTS();  //unlock it
+	UNLOCK_ACTORS_LISTS(); // unlock it
 	return a;
 }

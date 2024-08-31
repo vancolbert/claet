@@ -182,7 +182,7 @@ void set_active_channels(Uint8 active, const Uint32 *channels, int nchan) {
 	for (i = 0; i < nchan; i++) {
 		active_channels[i] = SDL_SwapLE32(channels[i]);
 	}
-	for ( ; i < MAX_ACTIVE_CHANNELS; i++) {
+	for (; i < MAX_ACTIVE_CHANNELS; i++) {
 		active_channels[i] = 0;
 	}
 	set_channel_tabs(tmp);
@@ -224,7 +224,6 @@ int coord_chat_separate = 0;
  */
 int use_windowed_chat = 1;
 int highlight_tab_on_nick = 1;
-////////////////////////////////////////////////////////////////////////
 // Chat window variables
 int chat_scroll_id = 15;
 int chat_tabcollection_id = 20;
@@ -238,7 +237,7 @@ int text_changed = 1;
 int nr_displayed_lines;
 chat_channel channels[MAX_CHAT_TABS];
 int active_tab = -1;
-chan_name *tab_label(Uint8 chan); //Forward declaration
+chan_name *tab_label(Uint8 chan); // Forward declaration
 void clear_chat_wins(void) {
 	int i = 0;
 	if (use_windowed_chat != 2) {
@@ -345,7 +344,7 @@ int add_chat_tab(int nlines, Uint8 channel) {
 			return ichan;
 		}
 	}
-	//no empty slot found
+	// no empty slot found
 	return -1;
 }
 void update_chat_tab_idx(Uint8 old_idx, Uint8 new_idx) {
@@ -446,11 +445,11 @@ void update_chat_window(text_message *msg, char highlight) {
 				vscrollbar_set_pos(chat_win, chat_scroll_id, channels[ichan].nr_lines);
 				current_line = channels[ichan].nr_lines;
 				text_changed = 1;
-			} else if (highlight && !channels[ichan].highlighted && channels[active_tab].chan_nr != CHAT_ALL && channels[ichan].chan_nr != CHAT_ALL && !get_show_window(console_root_win)) { //Make sure we don't change the color of a highlighted tab
+			} else if (highlight && !channels[ichan].highlighted && channels[active_tab].chan_nr != CHAT_ALL && channels[ichan].chan_nr != CHAT_ALL && !get_show_window(console_root_win)) { // Make sure we don't change the color of a highlighted tab
 				tab_set_label_color_by_id(chat_win, chat_tabcollection_id, channels[ichan].tab_id, 1.0, 1.0, 0.0);
 			}
 			if (found) {
-				return;    // we found the respective tab and the "all" tab now
+				return; // we found the respective tab and the "all" tab now
 			}
 			found++;
 		}
@@ -470,7 +469,7 @@ void update_chat_window(text_message *msg, char highlight) {
 			vscrollbar_set_pos(chat_win, chat_scroll_id, channels[0].nr_lines);
 			current_line = channels[active_tab].nr_lines;
 			text_changed = 1;
-		} else if (highlight && !channels[0].highlighted) { //Make sure we don't change the color of a highlighted tab
+		} else if (highlight && !channels[0].highlighted) { // Make sure we don't change the color of a highlighted tab
 			tab_set_label_color_by_id(chat_win, chat_tabcollection_id, channels[0].tab_id, 1.0, 1.0, 0.0);
 		}
 	}
@@ -491,7 +490,7 @@ int display_chat_handler(window_info *win) {
 void switch_to_chat_tab(int id, char click) {
 	if (!click) {
 		int itab;
-		//Do what a mouse click would do
+		// Do what a mouse click would do
 		widget_list *widget = widget_find(chat_win, chat_tabcollection_id);
 		tab_collection *collection = widget->widget_info;
 		for (itab = 0; itab < collection->nr_tabs; itab++) {
@@ -502,7 +501,7 @@ void switch_to_chat_tab(int id, char click) {
 		tab_collection_select_tab(chat_win, chat_tabcollection_id, itab);
 	}
 	tab_set_label_color_by_id(chat_win, chat_tabcollection_id, id, -1.0, -1.0, -1.0);
-	//set active_tab
+	// set active_tab
 	for (active_tab = 0; active_tab < MAX_CHAT_TABS; active_tab++) {
 		if (channels[active_tab].tab_id == id && channels[active_tab].open) {
 			break;
@@ -546,7 +545,7 @@ void change_to_current_chat_tab(const char *input) {
 	} else if (input[0] == '/' || input[0] == char_slash_str[0]) {
 		channel = CHAT_PERSONAL;
 	} else if (input[0] == '#' || input[0] == char_cmd_str[0]) {
-		//We don't want to switch tab on commands.
+		// We don't want to switch tab on commands.
 		channel = CHAT_ALL;
 	} else {
 		channel = CHAT_LOCAL;
@@ -555,16 +554,16 @@ void change_to_current_chat_tab(const char *input) {
 	if (channel != CHAT_ALL) {
 		for (ichan = 0; ichan < MAX_CHAT_TABS; ichan++) {
 			if (channels[ichan].chan_nr == channel && channels[ichan].open) {
-				if (ichan != active_tab) { //We don't want to switch to the tab we're already in
+				if (ichan != active_tab) { // We don't want to switch to the tab we're already in
 					switch_to_chat_tab(channels[ichan].tab_id, 0);
 				}
 				return;
 			}
 		}
-		//We didn't find any tab to switch to, create new
+		// We didn't find any tab to switch to, create new
 		itab = add_chat_tab(0, channel);
 		if (itab == -1) {
-			//Eek, it failed, switch to general
+			// Eek, it failed, switch to general
 			switch_to_chat_tab(channels[0].tab_id, 0);
 		} else {
 			switch_to_chat_tab(channels[itab].tab_id, 0);
@@ -584,7 +583,7 @@ int chat_tabs_click(widget_list *widget, int mx, int my, Uint32 flags) {
 		}
 	} else {
 		if (id != channels[active_tab].tab_id) {
-			//We're not looking at the tab we clicked
+			// We're not looking at the tab we clicked
 			switch_to_chat_tab(id, 1);
 			return 1;
 		}
@@ -617,7 +616,7 @@ int chat_input_key(widget_list *widget, int mx, int my, Uint32 key, Uint32 unike
 	tf = (text_field *)widget->widget_info;
 	msg = tf->buffer;
 	if ((!(key & ELW_CTRL) && ((keysym == SDLK_UP) || (keysym == SDLK_DOWN))) || (keysym == SDLK_LEFT) || (keysym == SDLK_RIGHT) || (keysym == SDLK_HOME) || (keysym == SDLK_END) || (keysym == SDLK_DELETE && tf->cursor < msg->len)) {
-		//pass it along. the defaults are good enough
+		// pass it along. the defaults are good enough
 		widget->Flags &= ~TEXT_FIELD_NO_KEYPRESS;
 		text_field_keypress(widget, mx, my, key, unikey);
 		widget->Flags |= TEXT_FIELD_NO_KEYPRESS;
@@ -700,10 +699,9 @@ void parse_input(char *data, int len) {
 		if ((check_var((char *)&(data[1]), IN_GAME_VAR)) < 0) {
 			send_input_text_line((char *)data, len);
 		}
-	} else if ( data[0] == '#' || data[0] == char_cmd_str[0] ) {
+	} else if (data[0] == '#' || data[0] == char_cmd_str[0]) {
 		test_for_console_command((char *)data, len);
 	} else if (data[0] == '/' && len > 1) {
-		// Forum #58898: Please the server when sending player messages;
 		// remove all but one space between name and message start.
 		// do not assume data is null terminated
 		size_t dx = 0;
@@ -748,7 +746,7 @@ int root_key_to_input_field(Uint32 key, Uint32 unikey) {
 		add_line_to_history((char *)msg->data, msg->len);
 		clear_input_line();
 	} else if (tf->cursor == 1 && (ch == '/' || ch == char_slash_str[0]) && (msg->data[0] == '/' || msg->data[0] == char_slash_str[0]) && last_pm_from[0]) {
-		// watch for the '//' shortcut
+		// watch for the ' // ' shortcut
 		tf->cursor += put_string_in_buffer(msg, (unsigned char *)last_pm_from, 1);
 		tf->cursor += put_char_in_buffer(msg, ' ', tf->cursor);
 		// set invalid width to force rewrap
@@ -756,7 +754,7 @@ int root_key_to_input_field(Uint32 key, Uint32 unikey) {
 		tf->nr_lines = rewrap_message(msg, input_widget->size, tf->font_num, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
 	} else if (ch == SDLK_BACKSPACE || ch == SDLK_DELETE || is_osx_del(ch) || (!alt_on && !ctrl_on && is_printable(ch) && ch != '`')) {
 		if (is_printable(ch) && !get_show_window(map_root_win)) {
-			//Make sure the widget is visible.
+			// Make sure the widget is visible.
 			widget_unset_flags(input_widget->window_id, input_widget->id, WIDGET_DISABLED);
 			widget_unset_flags(input_widget->window_id, input_widget->id, WIDGET_INVISIBLE);
 		}
@@ -886,7 +884,6 @@ void chat_win_update_zoom(void) {
 	}
 	text_changed = 1;
 }
-////////////////////////////////////////////////////////////////////////
 #define CS_MAX_DISPLAY_CHANS 10
 int tab_bar_win_1 = -1;
 int chan_sel_win = -1;
@@ -933,8 +930,8 @@ void add_spec_chan_name(int no, char *name, char *desc) {
 	safe_strncpy(entry->description, desc, strlen(desc) + 1);
 	pseudo_chans[no] = entry;
 }
-void generic_chans(void) { //the channel list file is missing. We'll use hard-coded values
-	                   //remake the queue, just in case we got half way through the file
+void generic_chans(void) { // the channel list file is missing. We'll use hard-coded values
+	                   // remake the queue, just in case we got half way through the file
 	queue_destroy(chan_name_queue);
 	queue_initialise(&chan_name_queue);
 	add_spec_chan_name(0, "Channel %d", "Channel %d");
@@ -973,14 +970,14 @@ void init_channel_names(void) {
 	// Then parse it. If that fails, fallback onto the english one. If that fails, use builtins.
 	safe_snprintf(file, sizeof(file), "languages/%s/strings/channels.xml", lang);
 	doc = xmlParseFile(file);
-	if (doc == NULL ) {
+	if (doc == NULL) {
 		doc = xmlParseFile("languages/en/strings/channels.xml");
-		if (doc == NULL) { //darn, don't have that either?
+		if (doc == NULL) { // darn, don't have that either?
 			LOG_ERROR(using_builtin_chanlist);
 			generic_chans();
 			return;
 		}
-		//well the localised version didn't load, but the 'en' version did
+		// well the localised version didn't load, but the 'en' version did
 		LOG_ERROR(using_eng_chanlist, lang);
 	}
 	// Get the root element, if it exists.
@@ -1107,16 +1104,16 @@ void init_channel_names(void) {
 		} else {
 			LOG_ERROR(xml_undefined_node, file, (cur->name != NULL && strlen((char *)cur->name) < 100) ? cur->name  : (const xmlChar *)"not a string");
 		}
-		cur = cur->next;         // Advance to the next node.
+		cur = cur->next; // Advance to the next node.
 	}
 	if (queue_isempty(chan_name_queue)) {
-		//how did we not get any channels from it?
+		// how did we not get any channels from it?
 		LOG_ERROR(using_builtin_chanlist);
 		generic_chans();
 	}
 }
 void cleanup_chan_names(void) {
-	//don't call this command unless the client is closing
+	// don't call this command unless the client is closing
 	int i = 0;
 	node_t *temp_node, *step = queue_front_node(chan_name_queue);
 	chan_name *temp_cn;
@@ -1165,7 +1162,7 @@ int test_channel_race(int no_channel) {
 	}
 }
 void cleanup_chan_race_names() {
-	//don't call this command unless the client is closing
+	// don't call this command unless the client is closing
 	node_t *temp_node, *step = queue_front_node(chan_name_queue);
 	chan_name *temp_cn;
 	do {
@@ -1190,13 +1187,13 @@ void cleanup_chan_race_names() {
 int highlight_tab(const Uint8 channel) {
 	int i;
 	if (!highlight_tab_on_nick || channel == CHAT_ALL) {
-		//We don't want to highlight
+		// We don't want to highlight
 		return 0;
 	}
 	switch (use_windowed_chat) {
 	case 1:
 		if (tab_bar_win_1 < 0) {
-			//it doesn't exist
+			// it doesn't exist
 			return 0;
 		}
 		if (tabs_1[current_tab].channel != CHAT_ALL) {
@@ -1226,7 +1223,7 @@ int highlight_tab(const Uint8 channel) {
 		break;
 	case 2:
 		if (chat_win < 0) {
-			//it doesn't exist
+			// it doesn't exist
 			return 0;
 		}
 		if (channels[active_tab].chan_nr != CHAT_ALL) {
@@ -1340,7 +1337,7 @@ int tab_bar_button_click(widget_list *w, int mx, int my, Uint32 flags, int ligne
 		return 1;
 	} else {
 		// NOTE: This is an optimization, instead of redefining a "Tab/Button" type.
-		//		 Further use of this would be best served be a new definition.
+		// Further use of this would be best served be a new definition.
 		// Detect clicking on 'x'
 		if (ligne == 1) {
 			if (tabs_1[itab].channel == CHAT_CHANNEL1 || tabs_1[itab].channel == CHAT_CHANNEL2 || tabs_1[itab].channel == CHAT_CHANNEL3 || tabs_1[itab].channel == CHAT_CHANNEL4 || tabs_1[itab].channel == CHAT_CHANNEL5) {
@@ -1356,7 +1353,7 @@ int tab_bar_button_click(widget_list *w, int mx, int my, Uint32 flags, int ligne
 					remove_tab(tabs_1[itab].channel, 1);
 					if (current_tab == itab) {
 						int i;
-						//We're closing the current tab, switch to the all-tab
+						// We're closing the current tab, switch to the all-tab
 						for (i = 0; i < tabs_in_use; i++) {
 							if (tabs_1[i].channel == CHAT_ALL) {
 								switch_to_tab(i, 1);
@@ -1364,7 +1361,7 @@ int tab_bar_button_click(widget_list *w, int mx, int my, Uint32 flags, int ligne
 							}
 						}
 					}
-					return 1; //The click was handled, no need to continue
+					return 1; // The click was handled, no need to continue
 				}
 			}
 			if (current_tab != itab) {
@@ -1384,7 +1381,7 @@ int tab_bar_button_click(widget_list *w, int mx, int my, Uint32 flags, int ligne
 					remove_tab(tabs_2[itab].channel, 2);
 					if (current_tab == itab) {
 						int i;
-						//We're closing the current tab, switch to the all-tab
+						// We're closing the current tab, switch to the all-tab
 						for (i = 0; i < nb_tab_button_1; i++) {
 							if (tabs_1[i].channel == CHAT_ALL) {
 								switch_to_tab(i, 1);
@@ -1392,7 +1389,7 @@ int tab_bar_button_click(widget_list *w, int mx, int my, Uint32 flags, int ligne
 							}
 						}
 					}
-					return 1; //The click was handled, no need to continue
+					return 1; // The click was handled, no need to continue
 				}
 			}
 			if (current_tab != itab) {
@@ -1411,7 +1408,7 @@ int tab_bar_button_click_2(widget_list *w, int mx, int my, Uint32 flags) {
 }
 char tmp_tab_label[20];
 chan_name *tab_label(Uint8 chan) {
-	//return pointer after stepping through chan_name_queue
+	// return pointer after stepping through chan_name_queue
 	int cnr, steps = 0;
 	node_t *step = queue_front_node(chan_name_queue);
 	char name[255];
@@ -1442,16 +1439,16 @@ chan_name *tab_label(Uint8 chan) {
 	case CHAT_COMBAT:
 		return pseudo_chans[13];
 	}
-	if (chan < CHAT_CHANNEL1 || chan > CHAT_CHANNEL5 ) {
+	if (chan < CHAT_CHANNEL1 || chan > CHAT_CHANNEL5) {
 		// shouldn't get here...
 		return NULL;
 	}
 	cnr = active_channels[chan - CHAT_CHANNEL1];
-	if (cnr >= 1000000000) {//ooh, guild channel!
+	if (cnr >= 1000000000) { // ooh, guild channel!
 		return pseudo_chans[1];
 	}
 	if (step == NULL) {
-		//say what? we don't know _any_ channels? something is very wrong...
+		// say what? we don't know _any_ channels? something is very wrong...
 		return NULL;
 	}
 	for (; step != NULL && step->data != NULL; step = step->next, steps++) {
@@ -1462,7 +1459,7 @@ chan_name *tab_label(Uint8 chan) {
 			break;
 		}
 	}
-	//we didn't find it, so we use the generic version
+	// we didn't find it, so we use the generic version
 	safe_snprintf(name, sizeof(name), pseudo_chans[0]->name, cnr);
 	safe_snprintf(desc, sizeof(desc), pseudo_chans[0]->description, cnr);
 	add_chan_name(cnr, name, desc);
@@ -1472,8 +1469,8 @@ chan_name *tab_label(Uint8 chan) {
 unsigned int chan_int_from_name(char *name, int *return_length) {
 	node_t *step = queue_front_node(chan_name_queue);
 	char *cname = name;
-	while (*cname && isspace(*cname)) {      //should there be a space at the front,
-		cname++;                                                //we can handle that.
+	while (*cname && isspace(*cname)) { // should there be a space at the front,
+		cname++; // we can handle that.
 	}
 	while (step->next != NULL) {
 		step = step->next;
@@ -1545,7 +1542,7 @@ int display_chan_sel_handler(window_info *win) {
 	}
 	if (mouse_x >= win->pos_x + win->len_x || mouse_y >= win->pos_y + win->len_y) {
 		win->displayed = 0;
-		return 0;//auto close when you mouseout
+		return 0; // auto close when you mouseout
 	}
 	t = vscrollbar_get_pos(chan_sel_win, chan_sel_scroll_id);
 	if (t > 0) {
@@ -1556,7 +1553,7 @@ int display_chan_sel_handler(window_info *win) {
 			step = step->next;
 		}
 	}
-	for (i = 0; i < CS_MAX_DISPLAY_CHANS; ++i) {//loathe not having auto-moving widgets...
+	for (i = 0; i < CS_MAX_DISPLAY_CHANS; ++i) { // loathe not having auto-moving widgets...
 		glColor3f(0.5f, 0.75f, 1.0f);
 		draw_string_zoomed(x, y, (unsigned char *)((chan_name *)(step->data))->name, 1, local_zoom);
 		if (mouse_y > win->pos_y + y && mouse_y < win->pos_y + y + 20 && mouse_x >= win->pos_x + 5 && mouse_x - 5 <= win->pos_x + 8 * ((signed)strlen(((chan_name *)(step->data))->name))) {
@@ -1635,7 +1632,7 @@ int tab_special_click(widget_list *w, int mx, int my, Uint32 flags) {
 				do_click_sound();
 				break;
 			default:
-				return tab_bar_button_click(w, mx, my, flags, 1);               //grumble. this shouldn't happen
+				return tab_bar_button_click(w, mx, my, flags, 1); // grumble. this shouldn't happen
 			}
 			return 1;
 		}
@@ -1784,11 +1781,11 @@ int add_tab_button(Uint8 channel) {
 		tabs_1[nb_tab_button_1].button = button_add_extended(tab_bar_win_1, cur_button_id_1++, NULL, tab_bar_width_1, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
 	}
 	if (channel == CHAT_HIST || channel == CHAT_LIST) {
-		//a couple of special cases
+		// a couple of special cases
 		widget_set_OnClick(tab_bar_win_1, tabs_1[itab_1].button, tab_special_click);
 		widget_set_color(tab_bar_win_1, tabs_1[itab_1].button, 0.5f, 0.75f, 1.0f);
 	} else {
-		//general case
+		// general case
 		if (nb_ligne_tabs == 1 || changement_barre == 1) {
 			widget_set_OnClick(tab_bar_win_1, tabs_1[itab_1].button, tab_bar_button_click_1);
 		} else if (nb_ligne_tabs == 2 && changement_barre == 0) {
@@ -1854,7 +1851,7 @@ void remove_tab_button(Uint8 channel, int ligne) {
 		tab_bar_width_1 -= w;
 		resize_window(tab_bar_win_1, tab_bar_width_1, tab_bar_height);
 		// Il y a assez de place pour passer le premier canal de la deuxieme ligne sur la premiere
-		//TODO (TonyFlow): tester aussi si les onglets suivants de la ligne 2 peuvent aller en ligne 1
+		// TODO (TonyFlow): tester aussi si les onglets suivants de la ligne 2 peuvent aller en ligne 1
 		if (nb_ligne_tabs == 2 && (window_width - hud_x > tab_bar_width_1 + widget_get_width(tab_bar_win_2, tabs_2[0].button) + 1)) {
 			Uint8 temp_channel;
 			changement_barre = 1;
@@ -1874,7 +1871,7 @@ void remove_tab_button(Uint8 channel, int ligne) {
 		tab_bar_width_2 -= w;
 		resize_window(tab_bar_win_2, tab_bar_width_2, tab_bar_height);
 		// Il n'y a plus rien sur la 2eme barre, on la supprime donc
-		//TODO (TonyFlow): tester si maintenant le (ou les) premier(s) onglet(s) peuvent aller en ligne 1
+		// TODO (TonyFlow): tester si maintenant le (ou les) premier(s) onglet(s) peuvent aller en ligne 1
 		if (tabs_in_use == nb_tab_button_1) {
 			window_info *console_win = &windows_list.window[console_root_win];
 			widget_list *console_out_w = widget_find(console_root_win, console_out_id);
@@ -1962,7 +1959,6 @@ void create_tab_bar(void) {
 		add_tab_button(CHAT_LIST);
 		add_tab_button(CHAT_HIST);
 		add_tab_button(CHAT_ALL);
-		//add_tab_button (CHAT_NONE);
 		current_tab = 2;
 		current_bar = 1;
 		widget_set_color(tab_bar_win_1, tabs_1[current_tab].button, 0.57f, 1.0f, 0.59f);
@@ -2010,7 +2006,7 @@ void change_to_current_tab(const char *input) {
 	} else if (input[0] == '/' || input[0] == char_slash_str[0]) {
 		channel = CHAT_PERSONAL;
 	} else if (input[0] == '#' || input[0] == char_cmd_str[0]) {
-		//We don't want to switch tab on commands.
+		// We don't want to switch tab on commands.
 		channel = CHAT_ALL;
 	} else {
 		channel = CHAT_LOCAL;
@@ -2057,7 +2053,7 @@ void change_to_current_tab(const char *input) {
 	if (channel != CHAT_ALL) {
 		for (itab = 0; itab < nb_tab_button_1; itab++) {
 			if (tabs_1[itab].channel == channel) {
-				if (itab != current_tab) { //We don't want to switch to the tab we're already in
+				if (itab != current_tab) { // We don't want to switch to the tab we're already in
 					switch_to_tab(itab, 1);
 				}
 				return;
@@ -2065,13 +2061,13 @@ void change_to_current_tab(const char *input) {
 		}
 		for (itab = 0; itab < tabs_in_use - nb_tab_button_1; itab++) {
 			if (tabs_2[itab].channel == channel) {
-				if (itab != current_tab) { //We don't want to switch to the tab we're already in
+				if (itab != current_tab) { // We don't want to switch to the tab we're already in
 					switch_to_tab(itab, 2);
 				}
 				return;
 			}
 		}
-		//We didn't find any tab to switch to, create new
+		// We didn't find any tab to switch to, create new
 		itab = add_tab_button(channel);
 		if (itab >= 0) {
 			switch_to_tab(itab, 1);
@@ -2148,16 +2144,15 @@ int command_jlc(char *text, int len) {
 	char number[12];
 	num = chan_int_from_name(text, NULL);
 	if (num <= 0) {
-		return 0;//Don't know this name
+		return 0; // Don't know this name
 	}
 	safe_snprintf(number, sizeof(number), " %d", num);
-	if (strlen(number) <= strlen(text)) { //it is entirely possible that the number
-		safe_strncpy(text, number, strlen(text));       //could be longer than the name, and hence we may
-	}                                                       //not have enough storage space to replace the name
-	return 0; //note: this change could also put us over the 160-char limit if not checked
+	if (strlen(number) <= strlen(text)) { // it is entirely possible that the number
+		safe_strncpy(text, number, strlen(text)); // could be longer than the name, and hence we may
+	} // not have enough storage space to replace the name
+	return 0; // note: this change could also put us over the 160-char limit if not checked
 }
-////////////////////////////////////////////////////////////////////////
-//  channel color stuff
+// channel color stuff
 channelcolor channel_colors[MAX_CHANNEL_COLORS];
 char channel_number_buffer[10] = {0};
 Uint32 channel_to_change = 0;

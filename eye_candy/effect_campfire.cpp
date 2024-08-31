@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_campfire.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 CampfireParticle::CampfireParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const float _scale, const float _sqrt_scale, const int _state, const Uint16 _LOD) :
 	Particle(_effect, _mover, _pos, _velocity) {
 	state = _state;
@@ -174,7 +174,7 @@ bool CampfireEffect::idle(const Uint64 usec) {
 		int state = 0;
 		if (rand() & 1) {
 			state = 1;
-		} else if (randfloat() < 0.15) {     // Smoke
+		} else if (randfloat() < 0.15) { // Smoke
 			state = 2;
 		}
 		Vec3 coords;
@@ -201,5 +201,4 @@ bool CampfireEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

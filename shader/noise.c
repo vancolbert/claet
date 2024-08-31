@@ -1,7 +1,6 @@
-//
+
 // Coherent noise function over 1, 2 or 3 dimensions
 // (copyright Ken Perlin)
-//
 #include "noise.h"
 #include "../errors.h"
 #include "../load_gl_extensions.h"

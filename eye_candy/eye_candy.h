@@ -1,13 +1,10 @@
 /*!
    \brief Eye Candy extension for Eternal Lands
-
    Introduction:
-
    The Eye Candy object files were designed with the intent of adding a
    new suite of realistic special effects to Eternal Lands.  Developed in
    C++, they are connected to the game (written in C) through a wrapper,
    eye_candy_wrapper (.cpp and .h).
-
    Eye Candy effects are largely based on textured point sprites, although
    certain effects use polygons as well.  The point sprites can have multiple
    frames, although none are currently setup as frame-by-frame animations (the
@@ -18,7 +15,6 @@
    billboarded quads, and accurate billboarded quads (not wrapped).  There is
    not that much difference between "fast" and "accurate" billboarded quads in
    terms of visual accuracy and speed, so only one of those is wrapped.
-
    The advantage to using point sprite-based effects is that you can cram a
    great deal of detail into a particle without using many polygons.  Even the
    most basic approximation of a sphere (a tetrahedron) takes four polygons,
@@ -27,20 +23,17 @@
    effects.  Additionally, they lend themselves naturally to looking as though
    they are filled when tranlucency is used; translucent polygons look like
    shells.
-
    The primary disadvantage to point sprites is that they are, quite simply,
    sprites.  Thus, they tend to work better for objects that don't vary much
    depending on which angle you look at them from, and appear most realistic
    when there are many on the screen at once, all behaving according to some
    realistic movement rules.
-
    Actual polygons are used in a few locations in the Eye Candy package, in
    places where point sprites are not suitable.  These include teleporation
    effects (for a translucent column of light) and blowing leaves/flower
    petals.  Fireflies, however, are point sprites, as they are expected to only
    be used in the dark when you wouldn't expect to see the insect body in
    detail.
-
    Translucency is done in the package using two blend methods.  The default,
    and more common, is "glowing" particles.  These blend accumulatively.  A
    glowing particle will never make its background darker.  Infinite
@@ -50,7 +43,6 @@
    glowing, weighted proportional to transparency).  Infinite accumulation of
    non-glowing particles results purely in the color of the particle itself.
    They work well for things like dust, debris, and smoke.
-
    All effects (except fireflies and leaves/petals, which don't need it) have a
    level of detail flag.  This is the maximum level of detail to use.  The
    number of particles that the effect will use is roughly proportional to its
@@ -64,7 +56,6 @@
    kill off particles.  Effects that are far enough away that they become
    "inactive" will eventually have their particle counts pruned away to
    nothing.
-
    The main, controlling object is EyeCandy.  There is only ever one EyeCandy
    object (in our case, it is defined in eye_candy_wrapper.cpp).  It acts as
    the control mechanism for all of the effects and particles, and it is how
@@ -79,12 +70,10 @@
    based on an object that inherits from Effect (and typically uses particles
    that inherit from Particle).  An additional object used by the system is
    math_cache.cpp, which speeds up certain mathematics functions.
-
    Note that the Eye Candy system uses a different coordinate system
    than Eternal Lands (Y is up/down in Eye Candy, while in Eternal Lands, Z is
    up/down).  The wrapper takes care of hiding this from the user -- and even
    from Eye Candy itself.
-
    Lastly, one guiding principle when editing this code: independence.  Eye
    Candy is a completely indepenent piece of code.  It's *only* interface with
    the rest of Eternal Lands is eye_candy_wrapper.  This is by design.  Please
@@ -95,7 +84,7 @@
  */
 #ifndef EYE_CANDY_H
 #define EYE_CANDY_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #if defined(_WIN32) || defined(_WIN64)
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -123,13 +112,13 @@
 #include "../engine/hardwarebuffer.hpp"
 namespace el = eternal_lands;
 namespace ec {
-// P R O T O T Y P E S ////////////////////////////////////////////////////////
-#define randdouble MathCache::randdouble        // Aliases to static functions to make things easier to type.
+// P R O T O T Y P E S
+#define randdouble MathCache::randdouble // Aliases to static functions to make things easier to type.
 #define randfloat MathCache::randfloat
 #define randdouble MathCache::randdouble
 #define randfloat MathCache::randfloat
 #define randint MathCache::randint
-#define rand8 Uint8 rand8();    //Functions to ensure a minimum entropy range for the rand function.
+#define rand8 Uint8 rand8(); // Functions to ensure a minimum entropy range for the rand function.
 #define rand16 MathCache::rand16
 #define rand32 MathCache::rand32
 #define rand64 MathCache::rand64
@@ -186,7 +175,7 @@ inline void usleep(const unsigned long a) {
 #endif
 Uint64 get_time();
 void hsv_to_rgb(const color_t h, const color_t s, const color_t v, color_t& r, color_t& g, color_t& b);
-// M E M B E R S //////////////////////////////////////////////////////////////
+// M E M B E R S
 #ifndef EC_DEBUG
 const int EC_DEBUG = 0;
 #endif // EC_DEBUG
@@ -195,11 +184,11 @@ const energy_t G = 6.673e-11;
 const int MaxMotionBlurPoints = 5;
 const coord_t MAX_DRAW_DISTANCE = 24.0;
 const coord_t MAX_DRAW_DISTANCE_SQUARED = MAX_DRAW_DISTANCE * MAX_DRAW_DISTANCE;
-// E X T E R N S //////////////////////////////////////////////////////////////
+// E X T E R N S
 extern MathCache math_cache;
 class Obstruction;
-extern std::vector<Obstruction *> null_obstructions;        // Used where we don't want to have to pass a list.
-// E N U M S //////////////////////////////////////////////////////////////////
+extern std::vector<Obstruction *> null_obstructions; // Used where we don't want to have to pass a list.
+// E N U M S
 // Keep in sync with eye_candy_wrapper.h!
 enum EffectEnum {
 	EC_LAMP = 0, EC_CAMPFIRE = 1, EC_FOUNTAIN = 2, EC_TELEPORTER = 3, EC_FIREFLY = 4, EC_SWORD = 5, EC_SUMMON = 6, EC_SELFMAGIC = 7, EC_TARGETMAGIC = 8, EC_ONGOING = 9, EC_IMPACT = 10, EC_SMOKE = 11, EC_BAG = 12, EC_CLOUD = 13, EC_HARVESTING = 14, EC_WIND = 15, EC_BREATH = 16, EC_CANDLE = 17, EC_MINES = 18, EC_GLOW = 19, EC_MISSILE = 20, EC_STAFF,
@@ -207,15 +196,13 @@ enum EffectEnum {
 enum TextureEnum {
 	EC_CRYSTAL, EC_FLARE, EC_INVERSE, EC_SHIMMER, EC_SIMPLE, EC_TWINFLARE, EC_VOID, EC_WATER, EC_LEAF_ASH, EC_LEAF_MAPLE, EC_LEAF_OAK, EC_PETAL, EC_SNOWFLAKE,
 };
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 /*!
    \brief Vec3: A three-coordinate vector
-
    Vec3 contains an x, y, and z coordinate and nothing else.  Unlike
    std::vectors, which are for data storage, these are a fixed-size, fixed-type
    structure used for mathematics vector operations -- namely, for particle
    coordinates and velocities.
-
    Possible speed improvement: use SSE like in the math cache's invsqrt to
    group the variables together into a single 128-bit structure for collective
    math ops.
@@ -373,7 +360,6 @@ inline std::ostream& operator<<(std::ostream& lhs, const Vec3 rhs) {
    enough.  The standard method of storing an x rotation, y rotation, and z
    rotation us subject to a phenominon called "Gimbal locking" and doesn't
    accumulate well.
-
    Like with Vec3s, this class could potentially be sped up by grouping its
    x, y, and z into a single 128-bit element for aggregate SSE ops.
  */
@@ -480,7 +466,6 @@ inline std::ostream& operator<<(std::ostream& lhs, const Quaternion rhs) {
 }
 /*!
    \brief The base class for drawing untextured geometric primitives
-
    A variety of geometric primitives inherit from Shape.  They all make use
    of its draw routine, but set their vertex data on their own.  Shapes are
    used for things like columns of light.
@@ -606,7 +591,6 @@ class ParticleMover;
 class Effect;
 /*!
    \brief An ultra-simplified particle element
-
    Used for a cheap kind of motion blur, if desired.  Contains only the most
    elementary drawing information.
  */
@@ -639,7 +623,6 @@ Vec3 pos;
 };
 /*!
    \brief That which adds the term "particle" to the term "particle effect"
-
    Apart from the occasional Shape, Particles are what you see when an effect
    is going off.  Particles are created in Effects, and are referenced both in
    the effect and the base EyeCandy object.  A particle can order itself to be
@@ -674,9 +657,9 @@ alpha_t alpha;
 coord_t size;
 Uint64 born;
 energy_t energy;
-coord_t flare_max;                         // Bigger values mean bigger flares.  1.0 to max particle size.
-coord_t flare_exp;                         // Lower values mean rarer flares.  0.0 to 1.0.
-coord_t flare_frequency;                         // Geographic scalar between flares.
+coord_t flare_max; // Bigger values mean bigger flares.  1.0 to max particle size.
+coord_t flare_exp; // Lower values mean rarer flares.  0.0 to 1.0.
+coord_t flare_frequency; // Geographic scalar between flares.
 Uint16 state;
 Effect *effect;
 EyeCandy *base;
@@ -685,7 +668,6 @@ int cur_motion_blur_point;
 };
 /*!
    \brief A base class for classes that can move particles around
-
    Movers take in a particle and a length of time, and put the particle in its
    new position.  The most basic particle mover simply follows your typical
    "position += velocity * time" algorithm.
@@ -735,13 +717,11 @@ SmokeMover(Effect *_effect, const coord_t _strength) :
 	strength = _strength;
 }
 virtual ~SmokeMover() {}
-//  virtual void move(Particle& p, Uint64 usec);
 virtual Vec3 get_force_gradient(Particle& p) const;
 coord_t strength;
 };
 /*!
    \brief A gradient mover which whirls/pinches particles.
-
    If spiral speed is equal to -pinch_rate, particles will follow a rough
    circle.  A greater magnitude pinch and they'll go inwards.  A lesser
    magnitude pinch and they'll spiral outwards.
@@ -793,7 +773,6 @@ std::vector<SmoothPolygonElement> elements;
 };
 /*!
    \brief A gradient mover that confines particles to a bounding range
-
    This is a base class for specific bounding movers.
  */
 class BoundingMover : public GradientMover {
@@ -809,7 +788,7 @@ BoundingRange *bounding_range;
    \brief A simple gradient mover that implements downward-only gravitational
    acceleration.
  */
-class SimpleGravityMover : public GradientMover         // Your basic downward acceleration.
+class SimpleGravityMover : public GradientMover // Your basic downward acceleration.
 {
 public:
 SimpleGravityMover(Effect *_effect) :
@@ -819,7 +798,6 @@ virtual Vec3 get_force_gradient(Particle& p) const;
 };
 /*!
    \brief A true gravity mover
-
    This mover implements a near physics-sim-quality gravitational attraction
    mechanism (single source gravity only, though).  This includes things like
    tracking how much potential/kinetic energy a particle has in order to
@@ -831,7 +809,7 @@ virtual Vec3 get_force_gradient(Particle& p) const;
    our energy-tracking mechanism would be to actually integrate across the path,
    and there's no way we'd have the CPU time for that.
  */
-class GravityMover : public GradientMover         // A full-featured gravity simulator.
+class GravityMover : public GradientMover // A full-featured gravity simulator.
 {
 public:
 GravityMover(Effect *_effect, Vec3 *_center);
@@ -851,7 +829,6 @@ energy_t max_gravity;
 };
 /*!
    \brief The base class for particle spawners
-
    Particle spawners are effort-saving objects that can be called to determine
    coordinates for placement of new particles.
  */
@@ -996,7 +973,7 @@ Vec3 pos;
 /*!
    \brief A sample IFS spawner: spawns particles in a Sierpinski tetrahedron.
  */
-class SierpinskiIFSParticleSpawner : public IFSParticleSpawner         // Just a sample.
+class SierpinskiIFSParticleSpawner : public IFSParticleSpawner // Just a sample.
 {
 public:
 SierpinskiIFSParticleSpawner() {
@@ -1144,7 +1121,7 @@ coord_t force;
 /*!
    \brief An obstruction shaped like a vertical cylinder of infinite length (fast)
  */
-class SimpleCylinderObstruction : public Obstruction         // Vertical and infinite.  Speeds up the math if you don't need the extra detail.
+class SimpleCylinderObstruction : public Obstruction // Vertical and infinite.  Speeds up the math if you don't need the extra detail.
 {
 public:
 SimpleCylinderObstruction(Vec3 *_pos, const coord_t _max_distance, const coord_t _force) :
@@ -1175,7 +1152,7 @@ coord_t top;
 /*!
    \brief An obstruction shaped like a cylinder of finite length at any angle (slow)
  */
-class CylinderObstruction : public Obstruction         // Note: assumes that (*end - *start) doesn't change.
+class CylinderObstruction : public Obstruction // Note: assumes that (*end - *start) doesn't change.
 {
 public:
 CylinderObstruction(Vec3 *_start, Vec3 *_end, const coord_t _max_distance, const coord_t _force);
@@ -1229,10 +1206,10 @@ virtual ~BoxObstruction() {}
 virtual Vec3 get_force_gradient(Particle& p);
 Vec3 start;
 Vec3 end;
-Vec3 midpoint;                         // Local coordinates
+Vec3 midpoint; // Local coordinates
 Vec3 size;
-Vec3 *center;                         // World coordinates
-float max_distance_squared;                         // The squared radius of a verticle cylinder that describes the maximum area of effect of this bounded object.
+Vec3 *center; // World coordinates
+float max_distance_squared; // The squared radius of a verticle cylinder that describes the maximum area of effect of this bounded object.
 float *sin_rot_x;
 float *cos_rot_x;
 float *sin_rot_y;
@@ -1248,7 +1225,6 @@ float *cos_rot_z2;
 };
 /*!
    \brief The base element for every kind of eye candy effect
-
    An eye candy effect is a single visual phenominon composed of many particles.
    Example effects would include things like a "fountain" or a "fire".  Effects
    can run their course and then expire (simply by returning false in their
@@ -1266,7 +1242,7 @@ Effect() {
 	motion_blur_points = 0;
 	motion_blur_fade_rate = 0.001;
 	born = get_time();
-	recall = false;                         //NOTE: All effects *must* respect recall!  If this is flagged, all of its particles should disappear ASAP, and the effect should then return false.
+	recall = false; // NOTE: All effects *must* respect recall!  If this is flagged, all of its particles should disappear ASAP, and the effect should then return false.
 	desired_LOD = 10;
 	LOD = desired_LOD;
 	active = true;
@@ -1325,10 +1301,10 @@ bool belongsToCluster(short cluster) const {
 }
 EyeCandy *base;
 int motion_blur_points;
-percent_t motion_blur_fade_rate;                         //0 to 1; higher means less fade.
+percent_t motion_blur_fade_rate; // 0 to 1; higher means less fade.
 Uint16 state;
 Uint64 born;
-bool *dead;                         //Provided by the effect caller; set when this effect is going away.
+bool *dead; // Provided by the effect caller; set when this effect is going away.
 Vec3 *pos;
 std::vector<Obstruction *> *obstructions;
 std::map<Particle *, bool> particles;
@@ -1345,12 +1321,10 @@ float *buffer;
 };
 /*!
    \brief The core object of all eye candy
-
    The EyeCandy object (there should only ever be one) encapsulates all of the
    effects and particles that will occur in a program.  There are numerous
    options, flags, and settings that can be set for the eye candy object.
    A few critical notes:
-
    1) When initializing the object, be sure to load_textures().
    2) Optimially, give it a few lights (the add_light() function).
    3) Between idle calls, set how much time has passed (time_diff) and the
@@ -1359,7 +1333,6 @@ float *buffer;
    5) When not drawing, don't call ec_draw().  If you wish to save CPU time,
    you can skip calling ec_idle() most of the time, but if you ever delete
    effects, you'll want to let it run once to help clear out the system.
-
  */
 class EyeCandy {
 public:
@@ -1488,6 +1461,5 @@ std::vector<std::string> fetch()
 {const std::vector<std::string> ret(((LoggerBuf *)rdbuf())->logs); ((LoggerBuf *)rdbuf())->logs.clear(); return ret;}
 };
 extern Logger logger;
-///////////////////////////////////////////////////////////////////////////////
-}         // End namespace ec
-#endif  // defined EYE_CANDY_H
+} // End namespace ec
+#endif // defined EYE_CANDY_H

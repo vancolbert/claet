@@ -11,4 +11,4 @@
  * Registers callback functions so libxml use el file functions.
  */
 void xml_register_el_input_callbacks();
-#endif  // _XMLCALLBACKS_H_
+#endif // _XMLCALLBACKS_H_

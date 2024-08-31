@@ -17,13 +17,13 @@ highlight_marker markers[NUMBER_OF_HIGHLIGHT_MARKERS];
 int highlighting_enabled = 1;
 highlight_marker *get_free_highlight_marker(short x, short y) {
 	int i;
-	//first try to find one that already occupies this tile
+	// first try to find one that already occupies this tile
 	for (i = 0; i < NUMBER_OF_HIGHLIGHT_MARKERS; i++) {
 		if (markers[i].active && markers[i].x == x && markers[i].y == y) {
 			return &markers[i];
 		}
 	}
-	//otherwise, find the first free slot
+	// otherwise, find the first free slot
 	for (i = 0; i < NUMBER_OF_HIGHLIGHT_MARKERS; i++) {
 		if (!markers[i].active) {
 			return &markers[i];
@@ -51,28 +51,26 @@ void display_highlight_marker(const highlight_marker *marker) {
 	/*
 	   The highlighting marker is four polygons like the one below rotated with C
 	   as center.
-
 	   A---B---+
 	 |   |   |
 	   D---+---+
 	 |   |   |
 	 +---+---C
 	   (polygon is A->B->C->D->A)
-
 	   where C is supposed to be the center of the highlighted tile (offset by
 	   center_offset_x, center_offset_y though).
 	   Distance A->B is (dx), distance A->D is (dy)
 	 */
 	const float dx = (TILESIZE_X / 6);
 	const float dy = (TILESIZE_Y / 6);
-	//Move the offset of the C point closer to the actual center of the tile depending
+	// Move the offset of the C point closer to the actual center of the tile depending
 	// on how "old" this marker is. We want the highlighting marker to shrink close to
 	// the center as the marker gets older, and we also want the shrinking to be faster
 	// when the marker is large, and slower as it gets to the center, hence the (a*a)
 	// instead of just (a).
 	const float center_offset_x = ((TILESIZE_X / 2) * (a * a));
 	const float center_offset_y = ((TILESIZE_X / 2) * (a * a));
-	//we want the marker to start a bit above ground and move itself closer to the
+	// we want the marker to start a bit above ground and move itself closer to the
 	// ground as it gets older.
 	z += a * 0.3f;
 	// place x,y in the center of the highlighting tile

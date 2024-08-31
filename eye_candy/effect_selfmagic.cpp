@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_selfmagic.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 SelfMagicParticle::SelfMagicParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD, const SelfMagicEffect::SelfMagicType _type) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 _size * (0.5 + randcoord()) * 13 / (_LOD + 3)) {
@@ -187,7 +187,6 @@ SelfMagicEffect::SelfMagicEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const
 	capless_cylinders = 0;
 	switch (type) {
 	case HEAL:
-		//spawner = new SierpinskiIFSParticleSpawner(1.05);
 		spawner = new SierpinskiIFSParticleSpawner(1.5);
 		mover = new GravityMover(this, &effect_center, 1e10);
 		while ((int)particles.size() < LOD * 96) {
@@ -511,5 +510,4 @@ void SelfMagicEffect::draw(const Uint64 usec) {
 		capless_cylinders->draw(alpha_scale);
 	}
 }
-///////////////////////////////////////////////////////////////////////////////
 }

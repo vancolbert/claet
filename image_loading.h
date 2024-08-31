@@ -28,14 +28,14 @@ typedef enum {
  * struct for image data.
  */
 typedef struct {
-	Uint32 offsets[MAX_IMAGE_MIPMAPS];      /*!< the offsets of the mipmaps relativ to the image pointer */
-	Uint32 sizes[MAX_IMAGE_MIPMAPS];        /*!< the sizes of the mipmaps */
-	Uint8 *image;                           /*!< a pointer to the image */
-	Uint32 width;                           /*!< the width of the image in pixels */
-	Uint32 height;                          /*!< the height of the image in pixels */
-	Uint32 mipmaps;                         /*!< the number of mipmaps of the image */
-	image_format_type format;               /*!< the format of the image */
-	Uint8 alpha;                            /*!< the image has an alpha channel */
+	Uint32 offsets[MAX_IMAGE_MIPMAPS]; /*!< the offsets of the mipmaps relativ to the image pointer */
+	Uint32 sizes[MAX_IMAGE_MIPMAPS]; /*!< the sizes of the mipmaps */
+	Uint8 *image; /*!< a pointer to the image */
+	Uint32 width; /*!< the width of the image in pixels */
+	Uint32 height; /*!< the height of the image in pixels */
+	Uint32 mipmaps; /*!< the number of mipmaps of the image */
+	image_format_type format; /*!< the format of the image */
+	Uint8 alpha; /*!< the image has an alpha channel */
 } image_t;
 /**
  * @ingroup textures

@@ -78,7 +78,7 @@
 #include "image_loading.h"
 #include "io/fileutil.h"
 #include "fr_quickitems.h"
-#define CFG_VERSION 7   // change this when critical changes to el.cfg are made that will break it
+#define CFG_VERSION 7 // change this when critical changes to el.cfg are made that will break it
 int divers_text = 0;
 int ini_file_size = 0;
 int disconnected = 1;
@@ -102,7 +102,7 @@ int video_mode_set = 0;
 #ifdef OSX
 int emulate3buttonmouse = 0;
 #endif
-void read_command_line(); //from main.c
+void read_command_line(); // from main.c
 void load_knowledge_list() {
 	FILE *f = NULL;
 	char strLine[255];
@@ -128,7 +128,7 @@ void read_config() {
 	// Set our configdir
 	const char *tcfg = get_path_config();
 	my_strncp(configdir, tcfg, sizeof(configdir));
-	if ( !read_el_ini()) {
+	if (!read_el_ini()) {
 		// oops, the file doesn't exist, give up
 		const char *err_stg = "Failure reading el.ini";
 		fprintf(stderr, "%s\n", err_stg);
@@ -146,14 +146,14 @@ void read_config() {
 	if (chdir(datadir) != 0) {
 		LOG_ERROR("%s() chdir(\"%s\") failed: %s\n", __FUNCTION__, datadir, strerror(errno));
 	}
-#endif //!WINDOWS
-	if (password_str[0]) {//We have a password
+#endif // !WINDOWS
+	if (password_str[0]) { // We have a password
 		size_t k;
 		for (k = 0; k < strlen(password_str); k++) {
 			display_password_str[k] = '*';
 		}
 		display_password_str[k] = 0;
-	} else if (username_str[0]) { //We have a username but not a password...
+	} else if (username_str[0]) { // We have a username but not a password...
 		username_box_selected = 0;
 		password_box_selected = 1;
 	}
@@ -166,20 +166,20 @@ void read_bin_cfg() {
 	size_t ret;
 	f = open_file_config_no_local(fname, "rb");
 	if (f == NULL) {
-		return;     //no config file, use defaults
+		return; // no config file, use defaults
 	}
-	memset(&cfg_mem, 0, sizeof(cfg_mem));   // make sure its clean
+	memset(&cfg_mem, 0, sizeof(cfg_mem)); // make sure its clean
 	ret = fread(&cfg_mem, 1, sizeof(cfg_mem), f);
 	fclose(f);
 	if (ret != sizeof(cfg_mem)) {
 		LOG_ERROR("%s() failed to read %s\n", __FUNCTION__, fname);
 		return;
 	}
-	//verify the version number
+	// verify the version number
 	if (cfg_mem.cfg_version_num != CFG_VERSION) {
-		return;                                    //oops! ignore the file
+		return; // oops! ignore the file
 	}
-	//good, retrive the data
+	// good, retrive the data
 	// TODO: move window save/restore into the window handler
 	items_menu_x = cfg_mem.items_menu_x;
 	items_menu_y = cfg_mem.items_menu_y;
@@ -236,7 +236,6 @@ void read_bin_cfg() {
 		buddy_menu_y -= 16000;
 	}
 	if ((cfg_mem.buddy_menu_x >> 16) && (cfg_mem.buddy_menu_y >> 16)) {
-//		buddy_menu_x_len=cfg_mem.buddy_menu_x >> 16;
 		buddy_menu_y_len = cfg_mem.buddy_menu_y >> 16;
 	}
 	questlog_menu_x = cfg_mem.questlog_win_x;
@@ -256,7 +255,6 @@ void read_bin_cfg() {
 	if ((quickspells_dir = cfg_mem.quickspell_flags & 3) != HORIZONTAL) {
 		quickspells_dir = VERTICAL;
 	}
-//	quickspells_dir       =  cfg_mem.quickspell_flags       & 1;
 	quickspells_draggable = (cfg_mem.quickspell_flags >> 2) & 1;
 	quickspells_on_top = (cfg_mem.quickspell_flags >> 3) & 1;
 	if ((quickbar_x = cfg_mem.quickbar_x) > window_width || quickbar_x < 10) {
@@ -268,7 +266,6 @@ void read_bin_cfg() {
 	if ((quickbar_dir = cfg_mem.quickbar_flags & 3) != HORIZONTAL) {
 		quickbar_dir = VERTICAL;
 	}
-//	quickbar_dir       =  cfg_mem.quickbar_flags       & 1;
 	quickbar_draggable = (cfg_mem.quickbar_flags >> 2) & 1;
 	quickbar_on_top = (cfg_mem.quickbar_flags >> 3) & 1;
 #if MAX_WATCH_STATS != 5
@@ -353,43 +350,33 @@ void save_bin_cfg() {
 	f = open_file_config("le.cfg", "wb");
 	if (f == NULL) {
 		LOG_ERROR("%s: %s \"el.cfg\": %s\n", reg_error_str, cant_open_file, strerror(errno));
-		return;//blah, whatever
+		return; // blah, whatever
 	}
-	memset(&cfg_mem, 0, sizeof(cfg_mem));   // make sure its clean
-	cfg_mem.cfg_version_num = CFG_VERSION;    // set the version number
-	//good, retrive the data
+	memset(&cfg_mem, 0, sizeof(cfg_mem)); // make sure its clean
+	cfg_mem.cfg_version_num = CFG_VERSION; // set the version number
+	// good, retrive the data
 	/*
 	   // TODO: move window save/restore into the window handler
 	   cfg_mem.items_menu_x=items_menu_x;
 	   cfg_mem.items_menu_y=items_menu_y;
-
 	   cfg_mem.ground_items_menu_x=ground_items_menu_x;
 	   cfg_mem.ground_items_menu_y=ground_items_menu_y;
-
 	   cfg_mem.trade_menu_x=trade_menu_x;
 	   cfg_mem.trade_menu_y=trade_menu_y;
-
 	   cfg_mem.sigil_menu_x=sigil_menu_x;
 	   cfg_mem.sigil_menu_y=sigil_menu_y;
-
 	   cfg_mem.dialogue_menu_x=dialogue_menu_x;
 	   cfg_mem.dialogue_menu_y=dialogue_menu_y;
-
 	   cfg_mem.manufacture_menu_x=manufacture_menu_x;
 	   cfg_mem.manufacture_menu_y=manufacture_menu_y;
-
 	   cfg_mem.attrib_menu_x=attrib_menu_x;
 	   cfg_mem.attrib_menu_y=attrib_menu_y;
-
 	   cfg_mem.elconfig_menu_x=elconfig_menu_x;
 	   cfg_mem.elconfig_menu_y=elconfig_menu_y;
-
 	   cfg_mem.knowledge_menu_x=knowledge_menu_x;
 	   cfg_mem.knowledge_menu_y=knowledge_menu_y;
-
 	   cfg_mem.encyclopedia_menu_x=encyclopedia_menu_x;
 	   cfg_mem.encyclopedia_menu_y=encyclopedia_menu_y;
-
 	   cfg_mem.questlog_menu_x=questlog_menu_x;
 	   cfg_mem.questlog_menu_y=questlog_menu_y;
 	 */
@@ -625,9 +612,8 @@ void save_bin_cfg() {
 	fclose(f);
 }
 void init_e3d_cache() {
-	//cache_e3d= cache_init(1000, &destroy_e3d);	//TODO: autofree the name as well
-	cache_e3d = cache_init("E3d cache", 1500, NULL);        //no aut- free permitted
-	cache_set_compact(cache_e3d, &free_e3d_va);     // to compact, free VA arrays
+	cache_e3d = cache_init("E3d cache", 1500, NULL); // no aut- free permitted
+	cache_set_compact(cache_e3d, &free_e3d_va); // to compact, free VA arrays
 	cache_set_time_limit(cache_e3d, 5 * 60 * 1000);
 	cache_set_size_limit(cache_e3d, 8 * 1024 * 1024);
 }
@@ -658,7 +644,6 @@ void init_stuff() {
 	// Check if our datadir is valid and if not failover to ./
 	file_check_datadir();
 	// Here you can add zip files, like
-	// add_zip_archive(datadir + "data.zip");
 	xml_register_el_input_callbacks();
 	// XXX FIXME (Grum): actually this should only be done when windowed
 	// chat is not used (which we don't know yet at this point), but let's
@@ -671,13 +656,13 @@ void init_stuff() {
 	// initialize the fonts, but don't load the textures yet. Do that here
 	// because the messages need the font widths.
 	init_fonts();
-	//OK, we have the video mode settings...
+	// OK, we have the video mode settings...
 	setup_video_mode(full_screen, video_mode);
-	//now you may set the video mode using the %<foo> in-game
+	// now you may set the video mode using the %<foo> in-game
 	video_mode_set = 1;
-	//Good, we should be in the right working directory - load all translatables from their files
+	// Good, we should be in the right working directory - load all translatables from their files
 	load_translatables();
-	//if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE | SDL_INIT_EVENTTHREAD) == -1)	// experimental
+	// if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE | SDL_INIT_EVENTTHREAD) == -1) // experimental
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1) {
 		LOG_ERROR("%s: %s\n", no_sdl_str, SDL_GetError());
 		fprintf(stderr, "%s: %s\n", no_sdl_str, SDL_GetError());
@@ -694,11 +679,11 @@ void init_stuff() {
 #endif
 	// affichage automatique du glinfo au lancement du client
 	command_glinfo(str, strlen((char *)str));
-	//Init the caches here, as the loading window needs them
+	// Init the caches here, as the loading window needs them
 	cache_system_init(MAX_CACHE_SYSTEM);
 	init_texture_cache();
 	init_e3d_cache();
-	//now load the font textures
+	// now load the font textures
 	if (load_font_textures() != 1) {
 		LOG_ERROR("%s\n", fatal_data_error);
 		fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, fatal_data_error);
@@ -717,7 +702,7 @@ void init_stuff() {
 	create_console_root_window(window_width, window_height);
 	create_map_root_window(window_width, window_height);
 	create_login_root_window(window_width, window_height);
-	//create the loading window
+	// create the loading window
 	create_loading_win(window_width, window_height, 0);
 	show_window(loading_win);
 	update_loading_win(init_opengl_str, 5);
@@ -764,7 +749,7 @@ void init_stuff() {
 	update_loading_win(load_map_tiles_str, 4);
 	load_map_tiles();
 	update_loading_win(init_lights_str, 4);
-	//lights setup
+	// lights setup
 	build_global_light_table();
 	build_sun_pos_table();
 	reset_material();
@@ -777,9 +762,9 @@ void init_stuff() {
 	read_bin_cfg();
 	update_loading_win(init_weather_str, 3);
 	weather_init();
-	build_levels_table();//for some HUD stuff
+	build_levels_table(); // for some HUD stuff
 	update_loading_win(load_icons_str, 4);
-	//load the necesary textures
+	// load the necesary textures
 	divers_text = load_texture_cached("./textures/divers.dds", 0);
 	icons_text = load_texture_cached("textures/gamebuttons.dds", tt_gui);
 	hud_text = load_texture_cached("textures/gamebuttons2.dds", tt_gui);
@@ -802,7 +787,7 @@ void init_stuff() {
 		}
 	}
 	update_loading_win("init textures", 5);
-	//Load the map legend and continent map
+	// Load the map legend and continent map
 	legend_text = load_texture_cached("maps/legend.dds", tt_gui);
 	ground_detail_text = load_texture_cached("textures/ground_detail.dds", tt_gui);
 	CHECK_GL_ERRORS();
@@ -839,7 +824,7 @@ void init_stuff() {
 		SDL_Quit();
 		exit(3);
 	}
-	//initiate function pointers
+	// initiate function pointers
 	init_statsinfo_array();
 	init_livres();
 	update_loading_win(init_display_str, 5);
@@ -852,7 +837,7 @@ void init_stuff() {
 	LOG_TO_CONSOLE(c_green4, config_location);
 	cfgdir = get_path_config();
 	if (cfgdir != NULL) {
-		//Realistically, if this failed, then there's not much point in continuing, but oh well...
+		// Realistically, if this failed, then there's not much point in continuing, but oh well...
 		safe_snprintf(config_location, sizeof(config_location), config_location_str, cfgdir);
 		LOG_TO_CONSOLE(c_green4, config_location);
 	}

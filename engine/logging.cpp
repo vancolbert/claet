@@ -211,11 +211,11 @@ void init_logging(const std::string &dir) {
 	log_mutex = SDL_CreateMutex();
 	log_dir = dir + "/";
 	clear_dir(dir);
-#ifdef  WINDOWS
+#ifdef WINDOWS
 	mkdir(dir.c_str());
-#else   /* WINDOWS */
+#else /* WINDOWS */
 	mkdir(dir.c_str(), S_IRWXU | S_IRWXG);
-#endif  /* WINDOWS */
+#endif /* WINDOWS */
 	init_thread_log("main");
 }
 void exit_logging() {

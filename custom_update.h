@@ -42,4 +42,4 @@ int command_update_status(char *text, int len);
 #ifdef __cplusplus
 }
 #endif
-#endif  /* UUID_3d88ab37_44ba_4e1a_9b92_8caaedef1ca0 */
+#endif /* UUID_3d88ab37_44ba_4e1a_9b92_8caaedef1ca0 */

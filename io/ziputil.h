@@ -75,4 +75,4 @@ Uint32 check_md5_from_zip(unzFile source, const char *file_name, const MD5_DIGES
 #ifdef __cplusplus
 }
 #endif
-#endif  /* UUID_f4a0d8d6_2b52_4b9a_ab7d_7eba5a3ae015 */
+#endif /* UUID_f4a0d8d6_2b52_4b9a_ab7d_7eba5a3ae015 */

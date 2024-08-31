@@ -144,8 +144,7 @@ static inline ExtendedException create(ExceptionCodeType<ExtendedException::ec_n
 }
 };
 #define EXTENDED_EXCEPTION(num, description) \
-	do \
-	{ \
+	do { \
 		std::stringstream str; \
  \
 		str << description; \
@@ -154,14 +153,12 @@ static inline ExtendedException create(ExceptionCodeType<ExtendedException::ec_n
 	} \
 	while (false)
 #define CHECK_GL_EXCEPTION() \
-	do \
-	{ \
+	do { \
 		GLint gl_error; \
  \
 		gl_error = glGetError(); \
  \
-		if (gl_error != GL_NO_ERROR) \
-		{ \
+		if (gl_error != GL_NO_ERROR) { \
 			std::stringstream str; \
  \
 			str << gluErrorString(gl_error); \
@@ -172,14 +169,12 @@ static inline ExtendedException create(ExceptionCodeType<ExtendedException::ec_n
 	while (false)
 }
 #define CATCH_AND_LOG_EXCEPTIONS \
-	catch (std::exception &e) \
-	{ \
+	catch (std::exception &e) { \
 		LOG_ERROR("%s(): %s", __func__, e.what()); \
 	}
 #define CATCH_AND_LOG_EXCEPTIONS_WITH_RETURN(return_value) \
-	catch (std::exception &e) \
-	{ \
+	catch (std::exception &e) { \
 		LOG_ERROR("%s(): %s", __func__, e.what()); \
 		return return_value; \
 	}
-#endif  // _EXTENDEDEXCEPTION_HPP_
+#endif // _EXTENDEDEXCEPTION_HPP_

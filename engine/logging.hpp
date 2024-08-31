@@ -8,7 +8,7 @@
 #define UUID_043a52e6_d0d2_4327_9877_06d299f16726
 #ifndef __cplusplus
 #error  "Including C++ header in C translation unit!"
-#endif  /* __cplusplus */
+#endif /* __cplusplus */
 #include "../platform.h"
 #include <string>
 /**
@@ -27,4 +27,4 @@ void init_thread_log(const std::string &name);
 void enter_debug_mark(const std::string &name, const std::string &file, const Uint32 line);
 void leave_debug_mark(const std::string &name, const std::string &file, const Uint32 line);
 }
-#endif  /* UUID_043a52e6_d0d2_4327_9877_06d299f16726 */
+#endif /* UUID_043a52e6_d0d2_4327_9877_06d299f16726 */

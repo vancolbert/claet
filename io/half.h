@@ -9,4 +9,4 @@
 #include <SDL_types.h>
 float half_to_float(const Uint16 value);
 Uint16 float_to_half(const float value);
-#endif  /* _HALF_H_ */
+#endif /* _HALF_H_ */

@@ -58,4 +58,4 @@ Uint32 get_dds_information(el_file_ptr file, image_t *image);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  /* UUID_69a52b29_73df_40f9_b176_7bb53e97d035 */
+#endif /* UUID_69a52b29_73df_40f9_b176_7bb53e97d035 */

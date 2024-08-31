@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_CANDLE_H
 #define EFFECT_CANDLE_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class CandleEffect : public Effect {
 public:
 CandleEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const color_t _hue_adjust, const color_t _saturation_adjust, const float scale, const Uint16 _LOD);
@@ -39,6 +39,5 @@ virtual light_t get_light_level() {
 // Same.
 Uint16 LOD;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_CANDLE_H
+#endif // defined EFFECT_CANDLE_H

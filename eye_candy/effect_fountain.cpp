@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_fountain.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 FountainParticle::FountainParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _base_height, const bool _backlight, const float _sqrt_scale, const coord_t _max_size, const coord_t size_scalar) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 size_scalar * (0.5 + 5 * randcoord())) {
@@ -141,5 +141,4 @@ bool FountainEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

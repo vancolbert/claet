@@ -1,4 +1,4 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include <SDL.h>
 #include <SDL_image.h>
 #include <errno.h>
@@ -63,12 +63,12 @@ float get_texture_coordinate(const float burn) {
 	return 0.25f + burn * 0.5f;
 }
 }
-// G L O B A L S //////////////////////////////////////////////////////////////
+// G L O B A L S
 MathCache math_cache;
 std::vector<Obstruction *> null_obstructions;
 bool ec_error_status = false;
 Logger logger;
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 void Effect::draw_particle(const coord_t size, const Uint32 texture, const color_t r, const color_t g, const color_t b, const alpha_t alpha, const Vec3 pos, const alpha_t burn) {
 	Vec3 corner[4];
 	Uint32 i, index;
@@ -263,7 +263,7 @@ Cylinder::Cylinder(EyeCandy *_base, const Vec3 _start, const Vec3 _end, const Ve
 	Vec3 normalized = start;
 	normalized.normalize();
 	const int subdivisions = ((polys - 1) / 4) + 1;
-	vertex_count = subdivisions * 4 + 2;         //+2 is for the centerpoints of the caps.
+	vertex_count = subdivisions * 4 + 2; // +2 is for the centerpoints of the caps.
 	if (vertex_count == 0) {
 		return;
 	}
@@ -587,7 +587,7 @@ Obstruction::Obstruction(const coord_t _max_distance, const coord_t _force) {
 	max_distance_squared = square(max_distance);
 	force = _force;
 }
-Vec3 SimpleCylinderObstruction::get_force_gradient(Particle& p) { //Vertical cylinder, infinite height.
+Vec3 SimpleCylinderObstruction::get_force_gradient(Particle& p) { // Vertical cylinder, infinite height.
 	const Vec3 translated_pos = p.pos - *(pos);
 	const coord_t distsquared = square(translated_pos.x) + square(translated_pos.z);
 	if (distsquared < max_distance_squared) {
@@ -597,7 +597,7 @@ Vec3 SimpleCylinderObstruction::get_force_gradient(Particle& p) { //Vertical cyl
 		return Vec3(0.0, 0.0, 0.0);
 	}
 }
-Vec3 CappedSimpleCylinderObstruction::get_force_gradient(Particle& p) { //Vertical cylinder, infinite height.
+Vec3 CappedSimpleCylinderObstruction::get_force_gradient(Particle& p) { // Vertical cylinder, infinite height.
 	const Vec3 translated_pos = p.pos - *(pos);
 	if ((p.pos.y < bottom) || (p.pos.y > top)) {
 		return Vec3(0.0, 0.0, 0.0);
@@ -614,7 +614,7 @@ CylinderObstruction::CylinderObstruction(Vec3 *_start, Vec3 *_end, const coord_t
 	Obstruction(_max_distance, _force) {
 	start = _start;
 	end = _end;
-	length_vec = *end - *start;         // Assume that this doesn't change.
+	length_vec = *end - *start; // Assume that this doesn't change.
 	length_vec_mag = length_vec.magnitude();
 }
 Vec3 CylinderObstruction::get_force_gradient(Particle& p) {
@@ -652,7 +652,7 @@ Vec3 BoxObstruction::get_force_gradient(Particle& p) { // Arbitrary-rotation box
 	// Is it anywhere close?
 	const coord_t distsquared = translated_pos.planar_magnitude_squared();
 	if (distsquared >= max_distance_squared) {
-		return Vec3(0.0, 0.0, 0.0);         // Nope.
+		return Vec3(0.0, 0.0, 0.0); // Nope.
 	}
 	// So, it's close.  Is it actually bounded?
 	const float s_rx = *sin_rot_x;
@@ -673,14 +673,12 @@ Vec3 BoxObstruction::get_force_gradient(Particle& p) { // Arbitrary-rotation box
 	rotz_position.x = rotx_position.x * c_rz - rotx_position.y * s_rz;
 	rotz_position.y = rotx_position.x * s_rz + rotx_position.y * c_rz;
 	rotz_position.z = rotx_position.z;
-	//  std::cout << position << " | " << translated_pos << " | " << rotz_position << std::endl;
 	if ((rotz_position.x < start.x) || (rotz_position.y < start.y) || (rotz_position.z < start.z) || (rotz_position.x > end.x) || (rotz_position.y > end.y) || (rotz_position.z > end.z)) {
-		//    if ((start - end).magnitude_squared() > 60.0)
-		//    {
-		//      if (translated_pos.magnitude_squared() < 150.0)
-		//    if ((center->x > 41.74) && (center->x < 41.75))
-		//        std::cout << "B1: " << p.pos << ", " << translated_pos << ", " << rotz_position << ": " << start << ", " << end << ": " << Vec3(0.0, 0.0, 0.0) << std::endl;
-		//    }
+		// if ((start - end).magnitude_squared() > 60.0)
+		// {
+		// if (translated_pos.magnitude_squared() < 150.0)
+		// if ((center->x > 41.74) && (center->x < 41.75))
+		// }
 		/*
 		   glColor4f(0.0, 1.0, 0.0, 1.0);
 		   glBegin(GL_TRIANGLES);
@@ -688,7 +686,6 @@ Vec3 BoxObstruction::get_force_gradient(Particle& p) { // Arbitrary-rotation box
 		   glVertex3f(center->x, 0, center->z);
 		   glVertex3f(p.pos.x, p.pos.y, p.pos.z);
 		   glEnd();
-
 		   glColor4f(0.0, 0.0, 1.0, 0.2);
 		   glBegin(GL_QUADS);
 		   glVertex3f(start.x, start.y, start.z);
@@ -716,7 +713,6 @@ Vec3 BoxObstruction::get_force_gradient(Particle& p) { // Arbitrary-rotation box
 		   glVertex3f(end.x, end.y, start.z);
 		   glVertex3f(end.x, start.y, start.z);
 		   glEnd();
-
 		   if (distsquared < 0.1)
 		   std::cout << p.pos << ", " << translated_pos << ", " << rotz_position << " : " << *center << " / " << start << ", " << end << std::endl;
 		 */
@@ -745,8 +741,7 @@ Vec3 BoxObstruction::get_force_gradient(Particle& p) { // Arbitrary-rotation box
 		roty_ret.x = rotx_ret.z * s_ry2 + rotx_ret.x * c_ry2;
 		roty_ret.y = rotx_ret.y;
 		roty_ret.z = rotx_ret.z * c_ry2 - rotx_ret.x * s_ry2;
-		//    if ((center->x > 41.74) && (center->x < 41.75))
-		//      std::cout << "B2: " << p.pos << ", " << translated_pos << ", " << rotz_position << ": " << (*center) << ": " << start << ", " << end << ": " << ret << ", " << roty_ret << std::endl;
+		// if ((center->x > 41.74) && (center->x < 41.75))
 		/*
 		   glColor4f(1.0, 0.0, 0.0, 1.0);
 		   glBegin(GL_TRIANGLES);
@@ -804,7 +799,7 @@ void Particle::draw(const Uint64 usec) {
 	assert(std::isfinite(base->billboard_scalar));
 	assert(std::isfinite(size));
 	assert(std::isfinite(tempsize));
-	Uint32 texture = get_texture();         // Always hires, since we're not checking distance.
+	Uint32 texture = get_texture(); // Always hires, since we're not checking distance.
 	effect->draw_particle(tempsize, texture, color[0], color[1], color[2], tempalpha, pos, burn);
 	if (effect->motion_blur_points > 0) {
 		const alpha_t faderate = std::pow(effect->motion_blur_fade_rate, (float)usec / 1000000);
@@ -827,7 +822,7 @@ coord_t Particle::flare() const {
 	if (flare_max == 1.0) {
 		return 1.0;
 	}
-	const short offset = (short)long(&alpha);         //Unique to the particle.
+	const short offset = (short)long(&alpha); // Unique to the particle.
 	tmp = offset;
 	if (pos.is_valid()) {
 		tmp += pos.x + pos.y + pos.z;
@@ -913,8 +908,8 @@ coord_t SmoothPolygonBoundingRange::get_radius(const angle_t angle) const {
 		upper = elements.begin();
 	}
 	float upper_percent;
-	//@TRINITA 2011 - Ajout d'un contrôle sur l'élément qu'on souhaite afficher.
-	if ( elements.size() > 0 ) {
+	// @TRINITA 2011 - Ajout d'un contrôle sur l'élément qu'on souhaite afficher.
+	if (elements.size() > 0) {
 		if (upper->angle > lower->angle) {
 			upper_percent = (angle2 - lower->angle) / (upper->angle - lower->angle);
 		} else if (angle2 > lower->angle) {
@@ -948,7 +943,7 @@ Vec3 BoundingMover::get_force_gradient(Particle& p) const {
 Vec3 SimpleGravityMover::get_force_gradient(Particle& p) const {
 	return Vec3(0.0, -1.6, 0.0);
 }
-Vec3 GradientMover::get_obstruction_gradient(Particle& p) const { //Unlike normal force gradients, obstruction gradients are used in a magnitude-preserving fashion.
+Vec3 GradientMover::get_obstruction_gradient(Particle& p) const { // Unlike normal force gradients, obstruction gradients are used in a magnitude-preserving fashion.
 	Vec3 ret(0.0, 0.0, 0.0);
 	for (std::vector<Obstruction *>::iterator iter = effect->obstructions->begin(); iter != effect->obstructions->end(); iter++) {
 		ret += (*iter)->get_force_gradient(p);
@@ -1152,24 +1147,19 @@ Vec3 HollowDiscSpawner::get_new_coords() {
 Vec3 FilledBoundingSpawner::get_new_coords() {
 	Vec3 cur_pos;
 	const Vec3 camera_center_difference = *center - *base_center;
-	//  int i;
-	//  for (i = 0; i < 30; i++)
 	{
 		const angle_t angle = randangle(2 * PI);
 		const coord_t scalar = randcoord() * MAX_DRAW_DISTANCE * range_scalar;
 		cur_pos = Vec3(sin(angle) * scalar, 0.0, cos(angle) * scalar);
 		const angle_t angle_to_center = atan2(cur_pos.x, cur_pos.z);
 		const coord_t radius = bounding_range->get_radius(angle_to_center);
-		//    std::cout << cur_pos << " - " << camera_center_difference << ".magnitude_squared() (" << (cur_pos - camera_center_difference).magnitude_squared() << ") < " << square(radius) << std::endl;
-		//    if ((cur_pos - camera_center_difference).magnitude_squared() < square(radius))
+		// if ((cur_pos - camera_center_difference).magnitude_squared() < square(radius))
 		if ((cur_pos - camera_center_difference).magnitude_squared() > square(radius)) {
-			//      break;
 			return Vec3(-32768.0, 0.0, 0.0);
 		}
 	}
-	//  if (i == 10)
-	//    return Vec3(-32768.0, 0.0, 0.0);
-	//  else
+	// if (i == 10)
+	// else
 	return cur_pos;
 }
 coord_t FilledBoundingSpawner::get_area() const { // Not 100% accurate, but goot enough.  :)
@@ -1274,7 +1264,6 @@ void EyeCandy::set_thresholds(const int _max_particles, const float min_framerat
 	LOD_3_time_threshold = min_framerate + range * (2.0 / 9.0);
 	LOD_2_time_threshold = min_framerate + range * (1.0 / 9.0);
 	LOD_1_time_threshold = min_framerate + range * (0.0 / 9.0);
-	//  allowable_particles_to_add = max_particles;
 }
 Uint32 EyeCandy::get_texture(const TextureEnum type) const {
 	return get_texture_index(type);
@@ -1352,14 +1341,13 @@ void EyeCandy::push_back_effect(Effect *e) {
 	effects.push_back(e);
 }
 bool EyeCandy::push_back_particle(Particle *p) {
-	if /*(*/ ((int)particles.size() >= max_particles) {     /* || (!allowable_particles_to_add))*/
+	if /*(*/ ((int)particles.size() >= max_particles) { /* || (!allowable_particles_to_add))*/
 		delete p;
 		return false;
 	} else {
 		particles.push_back(p);
 		p->effect->register_particle(p);
 		light_estimate += p->estimate_light_level();
-		//    allowable_particles_to_add--;
 		return true;
 	}
 }
@@ -1476,16 +1464,14 @@ void EyeCandy::idle() {
 		time_diff = 10;
 	}
 	short cluster = get_actor_cluster();
-	for (int i = 0; i < (int)effects.size(); ) {
+	for (int i = 0; i < (int)effects.size();) {
 		std::vector<Effect *>::iterator iter = effects.begin() + i;
 		Effect *e = *iter;
-		//    std::cout << e << ": " << e->get_expire_time() << ", " << cur_time << std::endl;
 		if (e->get_expire_time() < cur_time) {
 			e->recall = true;
 		}
 		Vec3 shifted_pos = *(e->pos) - center;
 		coord_t distance_squared = shifted_pos.planar_magnitude_squared();
-		//    std::cout << e << ": " << center << ", " << *e->pos << ": " << (center - *(e->pos)).magnitude_squared() << " <? " << MAX_DRAW_DISTANCE_SQUARED << std::endl;
 		bool same_cluster = e->belongsToCluster(cluster);
 		if (!e->active) {
 			if (e->bounds) {
@@ -1521,7 +1507,7 @@ void EyeCandy::idle() {
 				}
 			} else {
 				if (distance_squared > MAX_DRAW_DISTANCE_SQUARED || !same_cluster) {
-					if (e->get_type() != EC_MISSILE) {               // don't deactivate missed missiles
+					if (e->get_type() != EC_MISSILE) { // don't deactivate missed missiles
 						if (EC_DEBUG) {
 							std::cout << "Deactivating effect " << e << " (" << distance_squared << " > " << MAX_DRAW_DISTANCE_SQUARED << ")" << std::endl;
 						}
@@ -1588,25 +1574,23 @@ void EyeCandy::idle() {
 	} else {
 		change_LOD2 = 1.0;
 	}
-	//  std::cout << framerate << ", " << LOD_10_time_threshold << " : " << last_forced_LOD << ": " << change_LOD << " / " << change_LOD2 << " (" << particles.size() << ")" << std::endl;
-	if (change_LOD > change_LOD2) {              //Pick whichever one is lower.
+	if (change_LOD > change_LOD2) { // Pick whichever one is lower.
 		change_LOD = change_LOD2;
 	}
 	for (std::vector<Effect *>::iterator iter = effects.begin(); iter != effects.end(); iter++) {
 		(*iter)->request_LOD(change_LOD);
 	}
 	const float particle_cleanout_rate = (1.0 - std::pow(0.5f, 5.0f / (framerate * square(change_LOD))));
-	//  std::cout << (1.0 / particle_cleanout_rate) << std::endl;
 	float counter = randfloat();
-	for (int i = 0; i < (int)particles.size(); ) {               //Iterate using an int, not an iterator, because we may be adding/deleting entries, and that messes up iterators.
+	for (int i = 0; i < (int)particles.size();) { // Iterate using an int, not an iterator, because we may be adding/deleting entries, and that messes up iterators.
 		std::vector<Particle *>::iterator iter = particles.begin() + i;
 		Particle *p = *iter;
 		counter -= particle_cleanout_rate;
-		if (counter < 0) {               // Kill off a random particle.
+		if (counter < 0) { // Kill off a random particle.
 			counter++;
 			if ((p->deletable()) && (!p->effect->active)) {
 				particles.erase(iter);
-				for (int j = 0; j < (int)light_particles.size(); ) {
+				for (int j = 0; j < (int)light_particles.size();) {
 					std::vector< std::pair<Particle *, light_t> >::iterator iter2 = light_particles.begin() + j;
 					if (iter2->first == p) {
 						light_particles.erase(iter2);
@@ -1628,9 +1612,9 @@ void EyeCandy::idle() {
 		p->mover->move(*p, time_diff);
 		const bool ret = p->idle(time_diff);
 		if (!ret) {
-			iter = particles.begin() + i;                 //Why the heck do I need to redo this just because I've push_back'ed entries to the vector in idle()?  :P  Makes no sense.  My best guess: array resizing.
+			iter = particles.begin() + i; // Why the heck do I need to redo this just because I've push_back'ed entries to the vector in idle()?  :P  Makes no sense.  My best guess: array resizing.
 			particles.erase(iter);
-			for (int j = 0; j < (int)light_particles.size(); ) {
+			for (int j = 0; j < (int)light_particles.size();) {
 				std::vector< std::pair<Particle *, light_t> >::iterator iter2 = light_particles.begin() + j;
 				if (iter2->first == p) {
 					light_particles.erase(iter2);
@@ -1646,8 +1630,6 @@ void EyeCandy::idle() {
 		}
 	}
 	last_forced_LOD = (Uint16)round(change_LOD);
-	//  allowable_particles_to_add = 1 + (int)(particles.size() * 0.00005 * time_diff / 1000000.0 * (max_particles - particles.size()) * change_LOD);
-	//  std::cout << "Current: " << particles.size() << "; Allowable new: " << allowable_particles_to_add << std::endl;
 	Uint32 i, count;
 	count = effects.size();
 	for (i = 0; i < count; i++) {
@@ -1670,7 +1652,7 @@ void EyeCandy::add_light(GLenum light_id) {
 	glLightfv(light_id, GL_POSITION, light_pos);
 	glLightf(light_id, GL_LINEAR_ATTENUATION, 1.0);
 }
-// F U N C T I O N S //////////////////////////////////////////////////////////
+// F U N C T I O N S
 Uint64 get_time() {
 #if defined(_WIN32) || defined(_WIN64)
 	FILETIME ft;
@@ -1687,7 +1669,7 @@ Uint64 get_time() {
 #endif
 }
 void hsv_to_rgb(const color_t h, const color_t s, const color_t v, color_t& r, color_t& g, color_t& b) {
-	if (!s) {              // Greyscale
+	if (!s) { // Greyscale
 		r = g = b = v;
 		return;
 	}
@@ -1731,5 +1713,4 @@ void hsv_to_rgb(const color_t h, const color_t s, const color_t v, color_t& r, c
 		break;
 	}
 }
-///////////////////////////////////////////////////////////////////////////////
 }

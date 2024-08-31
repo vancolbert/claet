@@ -37,8 +37,8 @@ void load_questlog() {
 #ifndef WINDOWS
 	snprintf(questlog_ini, sizeof(questlog_ini), "%s/%s_quest.log", configdir, temp);
 	// don't use my_fopen here, not everyone uses local settings
-	f = fopen(questlog_ini, "rb"); //try to load local settings
-	if (!f) { //use global settings
+	f = fopen(questlog_ini, "rb"); // try to load local settings
+	if (!f) { // use global settings
 		f = my_fopen(questlog_ini, "rb");
 	}
 #else
@@ -76,7 +76,7 @@ void unload_questlog() {
 	_logquest *q = logquest;
 	while (q != NULL) {
 		_logquest *tmpq = q;
-		//frees all the quest list
+		// frees all the quest list
 		_logdata *t = q->Data;
 		while (t != NULL) {
 			_logdata *tmp = t;
@@ -101,7 +101,7 @@ void unload_questlog() {
 // Justification du texte à la largueur de la fenetre
 void string_fix(char *t, int len) {
 	char *s = t;
-	int maxchar = (questlog_menu_x_len - 25) / 8;   // calculate maximum amount of characters per line
+	int maxchar = (questlog_menu_x_len - 25) / 8; // calculate maximum amount of characters per line
 	int i = 0, j = 0, lastspace = 0, c = 0;
 	while (s[i] != 0 && len >= 0) {
 		if (s[i] == ' ') {
@@ -120,7 +120,6 @@ void string_fix(char *t, int len) {
 }
 // Ajoute une chaine au QuestLog
 void add_questlog(char *t, int len) {
-	//char *s= t;
 	// write on file
 	if (qlf == NULL) {
 		char questlog_ini[256];
@@ -152,9 +151,9 @@ void add_questlog(char *t, int len) {
 	// On a pas de tag Alors on l'ajoute à la chaîne
 	if (t[1] != '[') {
 		if (add_questlog_line2("[Quête Inconnue]", t, len, 0)) {
-			fwrite(t, sizeof(char), 1, qlf);                                                // Color
-			fwrite("[Quête Inconnue]", sizeof(char), 16, qlf);      // Quest
-			fwrite(t + 1, sizeof(char), len - 1, qlf);                               // Text
+			fwrite(t, sizeof(char), 1, qlf); // Color
+			fwrite("[Quête Inconnue]", sizeof(char), 16, qlf); // Quest
+			fwrite(t + 1, sizeof(char), len - 1, qlf); // Text
 			fputc(10, qlf);
 		}
 	} else if (memchr(t + 1, ']', len - 1) != NULL) {
@@ -240,7 +239,7 @@ int add_questlog_line2(char *q, char *t, int len, int finish) {
 	l->msg[len] = 0;
 	// On vérifie que la chaine n'existe pas déjà dans la quete
 	l2 = quest->Data;
-	while ( l2 != NULL ) {
+	while (l2 != NULL) {
 		if (strcmp(l->msg, l2->msg) == 0) {
 			free(l->msg);
 			free(l);
@@ -278,7 +277,7 @@ void goto_quest_entry(int ln) {
 		current_quest = last_quest;
 		return;
 	}
-	//reset to the start
+	// reset to the start
 	current_quest = logquest;
 	// loop thru all of the entries
 	while (current_quest->Next && cnt-- > 0) {
@@ -300,7 +299,7 @@ void goto_questlog_entry(int ln) {
 		current = selected_quest->Last;
 		return;
 	}
-	//reset to the start
+	// reset to the start
 	current = selected_quest->Data;
 	// loop thru all of the entries
 	while (current->Next && cnt-- > 0) {
@@ -311,7 +310,7 @@ void goto_questlog_entry(int ln) {
 int draw_questlog_string(char *t) {
 	char temp[256];
 	int i = 0;
-	//we split the string in lines and draw it.
+	// we split the string in lines and draw it.
 	while (*t != 0) {
 		while (*t != 10 && *t != 0) {
 			temp[i] = *t;
@@ -336,18 +335,17 @@ int     display_questlog_handler(window_info *win) {
 	_logquest *q = current_quest;
 	_logdata *t = current;
 	char titre[100];
-	//calc where the scroll bar goes
+	// calc where the scroll bar goes
 	int scroll_text = quest_text_page_pos;
 	int scroll_quest = quest_quest_page_pos;
 	set_font(0);
-	//glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glBegin(GL_LINES);
 	// window separators
 	glVertex3i(0, questlog_split, 0);
 	glVertex3i(win->len_x, questlog_split, 0);
-	//scroll bar Quete
+	// scroll bar Quete
 	glVertex3i(win->len_x - 20, 0, 0);
 	glVertex3i(win->len_x - 20, win->len_y, 0);
 	glVertex3i(win->len_x - 15, 10, 0);
@@ -358,7 +356,7 @@ int     display_questlog_handler(window_info *win) {
 	glVertex3i(win->len_x - 10, questlog_split - 5, 0);
 	glVertex3i(win->len_x - 10, questlog_split - 5, 0);
 	glVertex3i(win->len_x - 5, questlog_split - 10, 0);
-	//scroll bar Texte
+	// scroll bar Texte
 	glVertex3i(win->len_x - 15, questlog_split + 10, 0);
 	glVertex3i(win->len_x - 10, questlog_split + 5, 0);
 	glVertex3i(win->len_x - 10, questlog_split + 5, 0);
@@ -369,7 +367,7 @@ int     display_questlog_handler(window_info *win) {
 	glVertex3i(win->len_x - 5, win->len_y - 10, 0);
 	glEnd();
 	glBegin(GL_QUADS);
-	//scroll bar Quete
+	// scroll bar Quete
 	glVertex3i(win->len_x - 13, (15) + scroll_quest, 0);
 	glVertex3i(win->len_x - 7, (15) + scroll_quest, 0);
 	glVertex3i(win->len_x - 7, (35) + scroll_quest, 0);
@@ -467,7 +465,7 @@ int click_questlog_handler(window_info *win, int mx, int my, Uint32 flags) {
 	}
 	// Scroll Texte
 	if ((x > win->len_x - 16 && y > questlog_split + 2 && y < questlog_split + 16) || (y > questlog_split + 2 && y < win->len_y - 2 && flags & ELW_WHEEL_UP)) {
-		if ( selected_quest && quest_text_page_start > 0) {
+		if (selected_quest && quest_text_page_start > 0) {
 			quest_text_page_start--;
 			goto_questlog_entry(quest_text_page_start);
 			quest_text_page_pos = ((win->len_y - 50 - questlog_split) * quest_text_page_start) / selected_quest->Count;
@@ -475,7 +473,7 @@ int click_questlog_handler(window_info *win, int mx, int my, Uint32 flags) {
 		return 1;
 	}
 	if ((x > win->len_x - 16 && y > win->len_y - 15 && y < win->len_y - 4) || (y > questlog_split + 2 && y < win->len_y - 2 && flags & ELW_WHEEL_DOWN)) {
-		if ( selected_quest && quest_text_page_start < selected_quest->Count) {
+		if (selected_quest && quest_text_page_start < selected_quest->Count) {
 			quest_text_page_start++;
 			goto_questlog_entry(quest_text_page_start);
 			quest_text_page_pos = ((win->len_y - 50 - questlog_split) * quest_text_page_start) / selected_quest->Count;
@@ -487,7 +485,7 @@ int click_questlog_handler(window_info *win, int mx, int my, Uint32 flags) {
 // Gestion du drag dans la fenêtre
 int drag_questlog_handler(window_info *win, int mx, int my, Uint32 flags, int dx, int dy) {
 	if ((win->drag_in == 1) || (win->drag_in == 0 && count_quest > 0 && mx > win->len_x - 20 && my > (0) + 15 + quest_quest_page_pos && my < (0) + 35 + quest_quest_page_pos)) {
-		int scroll_area = questlog_split - (50);    // account for the X ^ V and the scrollbar
+		int scroll_area = questlog_split - (50); // account for the X ^ V and the scrollbar
 		quest_quest_page_pos += dy;
 		if (quest_quest_page_pos < 0) {
 			quest_quest_page_pos = 0;
@@ -502,10 +500,10 @@ int drag_questlog_handler(window_info *win, int mx, int my, Uint32 flags, int dx
 		return 1;
 	}
 	if ((win->drag_in == 2) || (win->drag_in == 0 && selected_quest && mx > win->len_x - 20 && my > questlog_split + 15 + quest_text_page_pos && my < questlog_split + 35 + quest_text_page_pos)) {
-		int scroll_area = win->len_y - 50 - questlog_split;  // account for the X ^ V and the scrollbar
+		int scroll_area = win->len_y - 50 - questlog_split; // account for the X ^ V and the scrollbar
 		// Drag dans la seconde partie
 		win->drag_in = 2;
-		//if(left_click>1)
+		// if(left_click>1)
 		quest_text_page_pos += dy;
 		// bounds checking
 		if (quest_text_page_pos < 0) {
@@ -514,7 +512,7 @@ int drag_questlog_handler(window_info *win, int mx, int my, Uint32 flags, int dx
 		if (quest_text_page_pos >= scroll_area) {
 			quest_text_page_pos = scroll_area;
 		}
-		//and set which item to list first
+		// and set which item to list first
 		quest_text_page_start = (selected_quest->Count * quest_text_page_pos) / scroll_area;
 		goto_questlog_entry(quest_text_page_start);
 		return 1;
@@ -537,8 +535,7 @@ void display_questlog() {
 		select_window(questlog_win);
 	}
 }
-//	Draw a context menu like hightlight using the supplied coords.
-//
+// Draw a context menu like hightlight using the supplied coords.
 void draw_highlight(int topleftx, int toplefty, int widthx, int widthy, size_t col) {
 	float colours[2][2][3] = {{{0.11f, 0.11f, 0.11f}, {0.77f, 0.57f, 0.39f}},
 				  {{0.11, 0.11f, 0.11f}, {0.33, 0.42f, 0.70f}}};

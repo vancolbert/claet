@@ -126,8 +126,8 @@ static int cm_selected_entry = -1;
 static int cm_selected_id = -1;
 static int cm_entry_count = -1;
 static int cm_floating_flag = 0;
-unsigned int floating_counter_flags = 0;     /* persisted in el.cfg file */
-int floating_session_counters = 0;           /* persisted in el.ini */
+unsigned int floating_counter_flags = 0; /* persisted in el.cfg file */
+int floating_session_counters = 0; /* persisted in el.ini */
 int sort_counter_func(const void *a, const void *b) {
 	const struct Counter *ca, *cb;
 	if (sort_by[sort_counter_id - 1] < 0) {
@@ -226,7 +226,7 @@ void load_counters() {
 		if (fread(&io_name_len, sizeof(io_name_len), 1, f) != 1) {
 			break;
 		}
-		//@tosh : prévention d'un buffer overflow
+		// @tosh : prévention d'un buffer overflow
 		if (io_name_len >= sizeof(io_name)) {
 			LOG_ERROR("Erreur: nom de compteur trop long !\n");
 			break;
@@ -244,7 +244,7 @@ void load_counters() {
 		}
 		fread_ok = 1;
 		if (strlen(io_name) < 1 || strlen(io_name) > 100) {
-			//doesn't seem to have a real name, so we don't want it
+			// doesn't seem to have a real name, so we don't want it
 			continue;
 		}
 		i = io_counter_id - 1;
@@ -334,7 +334,7 @@ static struct Counter *search_counter(int type, char *name) {
  */
 void set_max_value_counter(int type, char *name, int val) {
 	struct Counter *count;
-	//On a pas trouvé le counter.
+	// On a pas trouvé le counter.
 	if ((count = search_counter(type, name)) == NULL) {
 		increment_counter(type, name, val, 0);
 	} else {
@@ -357,9 +357,8 @@ static void increment_product_counter(int counter_id, const char *name, int quan
 void increment_counter(int counter_id, const char *name, int quantity, int extra) {
 	int i, j;
 	int new_entry = 1;
-	//printf("%s: counter_id=%d name=[%s] quantity=%d extra=%d\n", __FUNCTION__, counter_id, name, quantity, extra);
 	if (name == 0 || strlen(name) < 1 || strlen(name) > 100) {
-		//doesn't seem to have a real name, so no point saving it
+		// doesn't seem to have a real name, so no point saving it
 		return;
 	}
 	i = counter_id - 1;
@@ -377,7 +376,7 @@ void increment_counter(int counter_id, const char *name, int quantity, int extra
 	if (new_entry) {
 		/* Create a new entry. */
 		j = entries[i]++;
-		last_selected_counter_id = -1;  /* force recalculation of the scrollbar */
+		last_selected_counter_id = -1; /* force recalculation of the scrollbar */
 		counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
 		counters[i][j].name = strdup(name);
 		counters[i][j].n_fullsession = quantity;
@@ -426,10 +425,9 @@ static void cm_counters_pre_show_handler(window_info *win, int widget_id, int mx
 	// set the control var from floating flags
 	cm_floating_flag = (floating_counter_flags & (1 << cm_selected_id)) ?1 :0;
 }
-//	Prints the entries (total and name) in the specified category.
-//	If just_session is true, then session infomation is also
-//	included but only non-zero entries are included.
-//
+// Prints the entries (total and name) in the specified category.
+// If just_session is true, then session infomation is also
+// included but only non-zero entries are included.
 static void print_category(size_t cat, int just_session) {
 	int i;
 	char buf[256];
@@ -463,7 +461,6 @@ static void print_category(size_t cat, int just_session) {
 	}
 }
 // The #session_counters command and menu option
-//
 void print_session_counters(const char *category) {
 	int i;
 	if ((category == NULL) || !(*category)) {
@@ -487,7 +484,7 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
 		the_entry = &counters[cm_selected_id][cm_selected_entry];
 	}
 	switch (option) {
-	case 0:                 // delete entry
+	case 0: // delete entry
 		if (the_entry != NULL) {
 			int i;
 			if (the_entry->name != NULL) {
@@ -507,14 +504,14 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
 			return 0;
 		}
 		break;
-	case 2:                 // reset session total for entry
+	case 2: // reset session total for entry
 		if (the_entry != NULL) {
 			the_entry->n_session = 0;
 		} else {
 			return 0;
 		}
 		break;
-	case 4:                 // set the floating flag from the control var
+	case 4: // set the floating flag from the control var
 	{
 		int flagbit = multiselect_get_selected(counters_win, multiselect_id);
 		if (cm_floating_flag) {
@@ -527,10 +524,10 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
 		}
 		break;
 	}
-	case 6:                 // print the category to console
+	case 6: // print the category to console
 		print_category(cm_selected_id, 0);
 		break;
-	case 7:                 // print all categories to console
+	case 7: // print all categories to console
 	{
 		int i;
 		for (i = 0; i < NUM_COUNTERS; i++) {
@@ -538,7 +535,7 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
 		}
 		break;
 	}
-	case 8:                 // print session information to console
+	case 8: // print session information to console
 		print_session_counters(NULL);
 		break;
 	default:
@@ -1015,7 +1012,6 @@ void reset_session_counters() {
 /* checks text for breaks and harvest events */
 void catch_counters_text(const char *text) {
 	size_t text_len = strlen(text);
-	//printf("%s: [%s]\n", __FUNCTION__, text);
 	if (!counters_initialized) {
 		return;
 	}

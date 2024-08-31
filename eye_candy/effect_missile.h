@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_MISSILE_H
 #define EFFECT_MISSILE_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class MissileEffect : public Effect {
 public:
 enum MissileType {
@@ -51,6 +51,5 @@ TextureEnum texture;
 Uint16 LOD;
 MissileEffect::MissileType type;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_MISSILE_H
+#endif // defined EFFECT_MISSILE_H

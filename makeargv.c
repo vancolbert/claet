@@ -28,10 +28,10 @@ unsigned int current_token = 0;
 char *current_token_start = string;
 char *current_char = string;
 int i;
-while ( *current_char != '\0' ) {
-	switch ( state ) {
+while (*current_char != '\0') {
+	switch (state) {
 	case READ_ARG_CHAR:
-		switch ( *current_char ) {
+		switch (*current_char) {
 		case '\n':
 		case '\t':
 		case ' ':
@@ -77,7 +77,7 @@ while ( *current_char != '\0' ) {
 	current_char++;
 }
 /* Remaining */
-if ( *current_token_start ) {
+if (*current_token_start) {
 	current_argv[current_token++] = current_token_start;
 }
 /* Allocate */
@@ -93,7 +93,7 @@ for (i = 0; i < current_token; i++) {
 (*argv)[i] = NULL;
 return current_token;
 }
-//frees the char** created by makeargv
+// frees the char** created by makeargv
 void freemakeargv(char **argv) {
 	char **saveargv = argv;
 	if (argv == NULL) {

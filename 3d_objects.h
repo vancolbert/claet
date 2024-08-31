@@ -10,7 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int use_3d_alpha_blend;  // do 3d models use alpha blending?
+extern int use_3d_alpha_blend; // do 3d models use alpha blending?
 /*!
  * \ingroup	display_3d
  * \brief	Optimized display or a selected 3d object list

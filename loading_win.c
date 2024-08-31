@@ -19,18 +19,18 @@
 const float load_bar_colors[12] = {
 /*
         // exp bar colors
-        //red    green   blue
+        // red    green   blue
         0.100f, 0.800f, 0.100f, // topleft
         0.100f, 0.800f, 0.100f, // topright
         0.100f, 0.400f, 0.100f, // bottomright
-        0.100f, 0.400f, 0.100f  // bottomleft
+        0.100f, 0.400f, 0.100f // bottomleft
  */
 	// Roja's colors
-	//red    green   blue
+	// red    green   blue
 	0.243f, 0.082f, 0.047f, // topleft
 	0.243f, 0.082f, 0.047f, // topright
 	0.349f, 0.117f, 0.110f, // bottomright
-	0.349f, 0.117f, 0.110f  // bottomleft
+	0.349f, 0.117f, 0.110f // bottomleft
 };
 Uint32 loading_win = -1;
 Uint32 loading_win_progress_bar = -1;
@@ -134,7 +134,7 @@ void take_snapshot(int width, int height) {
 		LOG_ERROR("%s: %d glReadBuffer(GL_BACK) problem.\n", __FUNCTION__, __LINE__);
 		glReadBuffer(GL_FRONT);
 	}
-	if ( bg_height >= 2048 ) {
+	if (bg_height >= 2048) {
 		glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, bg_width, bg_height, 0, GL_RGBA, GL_BYTE, &loading_texture);
 	} else {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bg_width, bg_height, 0, GL_RGBA, GL_BYTE, &loading_texture);
@@ -153,7 +153,7 @@ int create_loading_win(int width, int height, int snapshot) {
 	if (snapshot) {
 		take_snapshot(width, height);
 	}
-	if (loading_win == -1) {// Make sure we only have one loading window
+	if (loading_win == -1) { // Make sure we only have one loading window
 		loading_win = create_window("Loading window", -1, -1, 0, 0, width, height, ELW_TITLE_NONE | ELW_SHOW);
 		set_window_handler(loading_win, ELW_HANDLER_DISPLAY, &display_loading_win_handler);
 		loading_win_progress_bar = progressbar_add_extended(loading_win, PROGRESSBAR_ID, NULL, (width - PROGRESSBAR_LEN) / 2, (height * 2) / 3, PROGRESSBAR_LEN, PROGRESSBAR_HEIGHT, 0, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, load_bar_colors);

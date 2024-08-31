@@ -11,22 +11,18 @@
 #include "gl_init.h"
 #include "interface.h"
 #include "sound.h"
-//
-//  Implements a simple context menu system using the standard el windows.
-//  Intended to be a familiar GUI context menu activated via a right mouse click.
-//  At its simplest, the user code just needs create a new context object
-//  providing a callback function for when an option is selected or using boolean
-//	only options.  The Container class provides a creation/destruction/management/access
-//  wrapper.
-//  Author bluap/pjbroad March/April 2008
-//
+// Implements a simple context menu system using the standard el windows.
+// Intended to be a familiar GUI context menu activated via a right mouse click.
+// At its simplest, the user code just needs create a new context object
+// providing a callback function for when an option is selected or using boolean
+// only options.  The Container class provides a creation/destruction/management/access
+// wrapper.
+// Author bluap/pjbroad March/April 2008
 namespace cm {
-//
-//  The context menu class.  Each manu uses a seperate object stored in
-//	the Container class.  One el window is used for all menus.  This class
-//	implements the menu display, option hight-lighting, checkbox options and
-//	menu option selection.  It also stores size, colour and state information.
-//
+// The context menu class.  Each manu uses a seperate object stored in
+// the Container class.  One el window is used for all menus.  This class
+// implements the menu display, option hight-lighting, checkbox options and
+// menu option selection.  It also stores size, colour and state information.
 class Menu {
 public:
 Menu(const char *menu_list, int(*handler)(window_info *, int, int, int, int));
@@ -77,12 +73,10 @@ myRGB highlight_bottom;
 myRGB text_colour;
 myRGB grey_colour;
 };
-//
-//  A simple container class for the context menus.
-//  Provides creation and destruction of context menus
-//  and any other 'across all menu' functions
-//  There can only be one instance!
-//
+// A simple container class for the context menus.
+// Provides creation and destruction of context menus
+// and any other 'across all menu' functions
+// There can only be one instance!
 class Container {
 public:
 Container(void);
@@ -114,7 +108,7 @@ void showinfo(void);
 void *get_data(size_t cm_id) const {if (!valid(cm_id)) {return 0;} return menus[cm_id]->get_data();}
 void set_data(size_t cm_id, void *data) {if (valid(cm_id)) {menus[cm_id]->set_data(data);}}
 private:
-class Region                            //  Wrapper for window region activation area.
+class Region // Wrapper for window region activation area.
 {
 public:
 Region(size_t _cm_id, int _pos_x, int _pos_y, int _len_x, int _len_y)
@@ -124,7 +118,7 @@ int pos_x, pos_y, len_x, len_y;
 };
 typedef std::multimap<int, Region> REG_MM;
 REG_MM window_regions;
-class Widget                            //  Wrapper for window widget activation area.
+class Widget // Wrapper for window widget activation area.
 {
 public:
 Widget(size_t _cm_id, int _widget_id)
@@ -138,7 +132,7 @@ int cm_window_id;
 int active_window_id;
 int active_widget_id;
 std::vector<Menu *> menus;
-std::map<int, size_t> full_windows;                         // <window_id, cm_id>
+std::map<int, size_t> full_windows; // <window_id, cm_id>
 bool menu_opened;
 static int instance_count;
 };
@@ -248,12 +242,12 @@ int Container::destroy(size_t cm_id) {
 	delete menus[cm_id];
 	menus[cm_id] = 0;
 	return 1;
-}         // end Container::destroy()
+} // end Container::destroy()
 // do the pre show checks and return the activation state, e.g. if mouse right-clicked
 int Container::pre_show_check(Uint32 flags) {
 	int cm_to_activate = flags & ELW_RIGHT_MOUSE;
 	if (cm_to_activate && ((flags & SHIFT) || (flags & ALT) || (flags & CTRL))) {
-		cm_to_activate = 0;          // exclude right clicks with modifier keys pressed
+		cm_to_activate = 0; // exclude right clicks with modifier keys pressed
 	}
 	menu_opened = false;
 	return cm_to_activate;
@@ -313,7 +307,7 @@ int Container::show_if_active(int window_id) {
 		return show_direct(fwit->second, window_id, -1);
 	}
 	return 0;
-}         // end Container::show_if_active()
+} // end Container::show_if_active()
 // directly open the specified conetext menu, use specified window/widget id as if activated
 int Container::show_direct(size_t cm_id, int window_id, int widget_id) {
 	if (!valid(cm_id)) {
@@ -373,7 +367,7 @@ void Container::showinfo(void) {
 		window_info *win = window_info_from_id(itp->first);
 		std::cout << "  window_id=" << itp->first << " name=[" << ((win != NULL)?win->window_name:"") << "] widget=" << itp->second.widget_id << " menu_id=" << itp->second.cm_id << std::endl;
 	}
-}         // end showinfo()
+} // end showinfo()
 // Constructor - set default values for new menu
 Menu::Menu(const char *menu_list, int(*handler)(window_info *, int, int, int, int))
 	: border(5), text_border(5), line_sep(3), zoom(0.8), data_ptr(0), selection(-1), menu_has_bools(false) {
@@ -416,7 +410,7 @@ int Menu::add(const char *menu_list, int (*handler)(window_info *, int, int, int
 	}
 	return resize();
 }
-//  Change a single menu item if it exists
+// Change a single menu item if it exists
 int Menu::change_line(size_t line_index, const char *new_entry) {
 	if (line_index >= menu_lines.size()) {
 		return 0;
@@ -430,7 +424,7 @@ int Menu::change_line(size_t line_index, const char *new_entry) {
 	}
 	return 1;
 }
-//  Make a line in the menu an off/on option, control_var determines state
+// Make a line in the menu an off/on option, control_var determines state
 int Menu::bool_line(size_t line_index, int *control_var, const char *config_name) {
 	if (line_index >= menu_lines.size()) {
 		return 0;
@@ -443,7 +437,7 @@ int Menu::bool_line(size_t line_index, int *control_var, const char *config_name
 	}
 	return 1;
 }
-//  grey/ungrey a menu line
+// grey/ungrey a menu line
 int Menu::grey_line(size_t line_index, bool is_grey) {
 	if (line_index >= menu_lines.size()) {
 		return 0;
@@ -451,7 +445,7 @@ int Menu::grey_line(size_t line_index, bool is_grey) {
 	menu_lines[line_index].is_grey = is_grey;
 	return 1;
 }
-//  Calculate the height/width of the context menu and resize the window
+// Calculate the height/width of the context menu and resize the window
 int Menu::resize(void) {
 	const float scale = zoom * DEFAULT_FONT_X_LEN / 12.0;
 	float fwidth = 0, fheight = 0;
@@ -477,7 +471,7 @@ int Menu::resize(void) {
 	width = static_cast<int>(fwidth + 0.5);
 	return 1;
 }
-//  show the selected context menu
+// show the selected context menu
 int Menu::show(int cm_window_id) {
 	// if the window is already displayed, hide it then return
 	if (get_show_window(cm_window_id)) {
@@ -522,7 +516,7 @@ int Menu::show(int cm_window_id) {
 	select_window(cm_window_id);
 	return 1;
 }
-//  display the menu options with highlight if mouse is over one
+// display the menu options with highlight if mouse is over one
 int Menu::display(window_info *win, int mx, int my, Uint32 flags) {
 	CHECK_GL_ERRORS();
 	float currenty = border + line_sep;
@@ -582,11 +576,11 @@ int Menu::display(window_info *win, int mx, int my, Uint32 flags) {
 			draw_string_zoomed(int(border + text_border + bool_tick_width + 0.5), int(currenty + 0.5), (unsigned char *)menu_lines[i].text.c_str(), 1, zoom);
 			currenty += line_step;
 		}
-	}         // end foir each line
+	} // end foir each line
 	CHECK_GL_ERRORS();
 	return 1;
-}         // end Menu::display()
-//  if an option is selected, toggle if a bool option and call any callback function
+} // end Menu::display()
+// if an option is selected, toggle if a bool option and call any callback function
 int Menu::click(window_info *win, int mx, int my, Uint32 flags) {
 	if (selection < 0) {
 		return 0;
@@ -737,6 +731,4 @@ extern "C" void *cm_get_data(size_t cm_id) {
 extern "C" void cm_set_data(size_t cm_id, void *data) {
 	cm::container.set_data(cm_id, data);
 }
-//
-//	Provides a window to exercise context menu functions.
-//
+// Provides a window to exercise context menu functions.

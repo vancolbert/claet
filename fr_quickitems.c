@@ -380,7 +380,7 @@ void init_fr_quickitems() {
 /* Affichage de la barre rapide */
 int display_fr_quickitems_handler(window_info *win) {
 	char str[80];
-	int delta, i; //, j;
+	int delta, i; // , j;
 	Uint32 _cur_time = SDL_GetTicks(); /* grab a snapshot of current time */
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -388,7 +388,7 @@ int display_fr_quickitems_handler(window_info *win) {
 	for (i = 0; i < quickitems_size; i++) {
 		if (fr_quickitem_list[i].quantity >= 0) {
 			int x_start, x_end, y_start, y_end;
-			//get the x and y
+			// get the x and y
 			set_quickitem_coords(i, &x_start, &x_end, &y_start, &y_end);
 			// dessine l'item avec la texture correspondante dans la case
 			draw_item(fr_quickitem_list[i].image_id, x_start, y_start, fr_quickitems_dim + 1);
@@ -547,8 +547,6 @@ int mouseover_fr_quickitems_handler(window_info *win, int mx, int my) {
 	}
 	// Recherche l'item dans l'inventaire correspondant au clic sur la quickbar
 	if (fr_quickitem_list[id_quick].quantity > 0) {
-		// TODO: if (fr_quickitem_list[id_quick].is_stackable) id_item = fr_quickitem_list[id_quick].pos; else
-		// Ou même directement : id_item = fr_quickitem_list[id_quick].pos;
 		for (i = 0; i < ITEM_WEAR_START; i++) {
 			if (item_list[i].quantity < 1) {
 				continue;
@@ -571,7 +569,7 @@ int mouseover_fr_quickitems_handler(window_info *win, int mx, int my) {
 int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags) {
 	int i, id_quick, id_item;
 	Uint8 str[100];
-	int trigger = ELW_RIGHT_MOUSE | ELW_CTRL | ELW_SHIFT;//flags we'll use for the quickbar relocation handling
+	int trigger = ELW_RIGHT_MOUSE | ELW_CTRL | ELW_SHIFT; // flags we'll use for the quickbar relocation handling
 	int right_click = flags & ELW_RIGHT_MOUSE;
 	if (flags & ELW_WHEEL) {
 		// modification de la quantité de l'objet en cours de drag avec la molette
@@ -594,15 +592,15 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags) 
 	if (right_click) {
 		// déplacements de la quickbar (avec clic droit et non gauche !)
 		switch (flags & trigger) {
-		//toggle draggable (fenetre volante ou non)
+		// toggle draggable (fenetre volante ou non)
 		case (ELW_RIGHT_MOUSE | ELW_CTRL):
 			toggle_fr_quickitems_draggable();
 			return 1;
-		//toggle vertical/horisontal (meme si non draggable)
+		// toggle vertical/horisontal (meme si non draggable)
 		case (ELW_RIGHT_MOUSE | ELW_SHIFT):
 			flip_fr_quickitems();
 			return 1;
-		//reset (retour position par défaut)
+		// reset (retour position par défaut)
 		case (ELW_RIGHT_MOUSE | ELW_CTRL | ELW_SHIFT):
 			reset_fr_quickitems();
 			return 1;
@@ -795,8 +793,6 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags) 
 	// Recherche l'item dans l'inventaire correspondant au clic sur la quickbar
 	id_item = -1;
 	if (fr_quickitem_list[id_quick].quantity > 0) {
-		// TODO: if (fr_quickitem_list[id_quick].is_stackable) id_item = fr_quickitem_list[id_quick].pos; else
-		// Ou même directement : id_item = fr_quickitem_list[id_quick].pos;
 		for (i = 0; i < ITEM_WEAR_START; i++) {
 			if (item_list[i].quantity < 1) {
 				continue;
@@ -948,7 +944,7 @@ void load_fr_quickitems() {
 	char nom_fichier[128];
 	FILE *fichier;
 	int i;
-	quickbar_loaded = 1;  // même si le chargement échoue (permet de sauver le fichier initial)
+	quickbar_loaded = 1; // même si le chargement échoue (permet de sauver le fichier initial)
 	memset(fr_quickitem_list, 0, sizeof(fr_quickitem_list));
 	safe_snprintf(nom_fichier, sizeof(nom_fichier), "barre_inventaire_%s.dat", username_str);
 	my_tolower(nom_fichier);

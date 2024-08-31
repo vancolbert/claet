@@ -15,11 +15,11 @@
  *
  * dbuffer_t *mybuffer = dbuffer_new();
  *
- * mybuffer = dbuffer_append_data( mybuffer, somedatapointer, somedatasize );
+ * mybuffer = dbuffer_append_data(mybuffer, somedatapointer, somedatasize);
  *
- * do_something_with_contents( mybuffer->data, mybuffer->current_size );
+ * do_something_with_contents(mybuffer->data, mybuffer->current_size);
  *
- * dbuffer_destroy( mybuffer );
+ * dbuffer_destroy(mybuffer);
  *
  *
  */
@@ -27,9 +27,7 @@
 /**
    \ingroup dbuffer
    \brief Main dbuffer structure
-
    The size of this "structure" is not fixed.
-
  */
 typedef struct {
 	size_t alloc_size; /**< Current allocated size of buffer */
@@ -51,7 +49,7 @@ typedef struct {
 #   define UNUSED_RESULT_DECL
 #  endif
 # endif // UNUSED_RESULT_DECL
-#endif //DOXYGEN_SHOULD_SKIP_THIS
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 /**
    \ingroup dbuffer
    \brief Destroy a dbuffer
@@ -64,10 +62,8 @@ static __inline__ void dbuffer_destroy(dbuffer_t *dbuf) {
 /**
    \ingroup dbuffer
    \brief Append data to a dbuffer
-
    Append the specified data (bytes) to dbuffer. Make sure you reassign your dbuffer to the return value,
    cause it can be reallocated.
-
    \param dbuf The dbuffer
    \param data The data to append
    \param datalen The data size
@@ -75,7 +71,7 @@ static __inline__ void dbuffer_destroy(dbuffer_t *dbuf) {
  */
 static __inline__ UNUSED_RESULT_DECL dbuffer_t *dbuffer_append_data(dbuffer_t *dbuf, const unsigned char *data, size_t datalen) {
 	size_t next_alloc_size;
-	if ( NULL != dbuf ) {
+	if (NULL != dbuf) {
 		next_alloc_size = DBUFFER_ALIGN(dbuf->current_size + datalen + DBUFFER_HDRSIZE);
 		if (next_alloc_size > dbuf->alloc_size) {
 			dbuf = (dbuffer_t *)realloc((void *)dbuf, next_alloc_size);

@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_lamp.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 LampParticle::LampParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const float _scale, const Uint16 _LOD) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 4 * (0.15 + 2.3 * randcoord() * randcoord()) / (_LOD + 2)) {
@@ -33,9 +33,6 @@ bool LampParticle::idle(const Uint64 delta_t) {
 		return false;
 	}
 	const float scalar = std::pow(0.5f, (float)delta_t / 400000);
-	//  color[0] = color[0] * scalar * 0.5 + color[0] * 0.5;
-	//  color[1] = color[1] * scalar * 0.5 + color[1] * 0.5;
-	//  color[2] = color[2] * scalar * 0.5 + color[2] * 0.5;
 	alpha *= scalar;
 	return true;
 }
@@ -64,9 +61,6 @@ bool LampBigParticle::idle(const Uint64 delta_t) {
 		return false;
 	}
 	const float scalar = 1.0 - std::pow(0.5f, (interval_t)delta_t * LOD / 32000000.0f);
-	//  color[0] = color[0] * scalar * 0.5 + color[0] * 0.5;
-	//  color[1] = color[1] * scalar * 0.5 + color[1] * 0.5;
-	//  color[2] = color[2] * scalar * 0.5 + color[2] * 0.5;
 	alpha -= scalar;
 	if (alpha < 0.03) {
 		return false;
@@ -203,5 +197,4 @@ bool LampEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

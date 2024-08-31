@@ -20,10 +20,10 @@
 #include "sky.h"
 int use_fog = 1;
 int show_weather = 1;
-int wind_speed_srv = 0; //strength of wind, as set by server. 100 is about the max
-int wind_direction_srv = 0;     //wind direction, in degrees, as set by server. 0 and 360 == north
-int wind_speed = 0;     //strength of wind, based on server's setting and local randomization
-int wind_direction = 0; //wind direction, based on server's setting and local randomization
+int wind_speed_srv = 0; // strength of wind, as set by server. 100 is about the max
+int wind_direction_srv = 0; // wind direction, in degrees, as set by server. 0 and 360 == north
+int wind_speed = 0; // strength of wind, based on server's setting and local randomization
+int wind_direction = 0; // wind direction, based on server's setting and local randomization
 /* N E W   W E A T H E R *****************************************************/
 #define MAX_RAIN_DROPS 10000
 #define MAX_LIGHTNING_DEFS 20
@@ -538,7 +538,7 @@ void weather_sound_control() {
 			}
 		}
 	}
-	for (i = 0; i < thunders_count; ) {
+	for (i = 0; i < thunders_count;) {
 		float dx = thunders[i].x_pos + camera_x;
 		float dy = thunders[i].y_pos + camera_y;
 		float dist = sqrtf(dx * dx + dy * dy);
@@ -707,8 +707,7 @@ int weather_read_defs(const char *file_name) {
 	/*
 	    @TRINITA 10/10/2012
 	    Suite à des soucis d'écran noir sur Fedora Core, je me suis aperçu d'un soucis
-	    dans le chargement des entity du xml :(
-	    l'option XML_PARSE_NOENT résoud le soucis.
+	    dans le chargement des entity du xml :(l'option XML_PARSE_NOENT résoud le soucis.
 	    A ce jour pas de soucis sur plusieurs OS/système
 	 */
 	doc = xmlReadFile(file_name, NULL, XML_PARSE_NOENT);

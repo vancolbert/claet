@@ -20,25 +20,25 @@ typedef enum {
 	S_SUCCES = 1, S_FAILED, S_INVALID, S_SELECT_TARGET, S_SELECT_TELE_LOCATION, S_NAME, } spell_errors;
 /*! @} */
 typedef struct {
-	char spell_name[60];//The spell_name
-	Sint8 spell_image;//image_id
+	char spell_name[60]; // The spell_name
+	Sint8 spell_image; // image_id
 	Sint8 spell_id;
 	Uint8 spell_str[30];
-	//to be difficult, we will store the entire string ready
-	//to be sent to the server, including CAST_SPELL and len bytes, len will be byte 2
+	// to be difficult, we will store the entire string ready
+	// to be sent to the server, including CAST_SPELL and len bytes, len will be byte 2
 } mqbdata;
-extern mqbdata *mqb_data[QUICKSPELLS_MAXSIZE + 1];//mqb_data will hold the magic quickbar name, image, pos.
+extern mqbdata *mqb_data[QUICKSPELLS_MAXSIZE + 1]; // mqb_data will hold the magic quickbar name, image, pos.
 extern int quickspell_mqb_selected;
-extern mqbdata *mqb_data2[QUICKSPELLS_MAXSIZE + 1];//mqb_data will hold the magic quickbar name, image, pos.
-extern mqbdata *mqb_data3[QUICKSPELLS_MAXSIZE + 1];//mqb_data will hold the magic quickbar name, image, pos.
-extern mqbdata *mqb_data4[QUICKSPELLS_MAXSIZE + 1];//mqb_data will hold the magic quickbar name, image, pos.
-extern mqbdata *mqb_data5[QUICKSPELLS_MAXSIZE + 1];//mqb_data will hold the magic quickbar name, image, pos.
+extern mqbdata *mqb_data2[QUICKSPELLS_MAXSIZE + 1]; // mqb_data will hold the magic quickbar name, image, pos.
+extern mqbdata *mqb_data3[QUICKSPELLS_MAXSIZE + 1]; // mqb_data will hold the magic quickbar name, image, pos.
+extern mqbdata *mqb_data4[QUICKSPELLS_MAXSIZE + 1]; // mqb_data will hold the magic quickbar name, image, pos.
+extern mqbdata *mqb_data5[QUICKSPELLS_MAXSIZE + 1]; // mqb_data will hold the magic quickbar name, image, pos.
 extern int spell_temp, spell_dragged;
 extern int quickspell_x_len;
 extern int quickspell_y_len;
-extern int quickspells_size;      /*!< nombre de raccourcis affichés sur la barre rapide */
-extern int quickspells_dir;       /*!< orientation de la barre (VERTICAL=1|HORIZONTAL=2) */
-extern int quickspells_on_top;    /*!< barre toujours affichée au dessus ? */
+extern int quickspells_size; /*!< nombre de raccourcis affichés sur la barre rapide */
+extern int quickspells_dir; /*!< orientation de la barre (VERTICAL=1|HORIZONTAL=2) */
+extern int quickspells_on_top; /*!< barre toujours affichée au dessus ? */
 extern int quickspells_draggable; /*!< barre de raccourcis déplaçable ? */
 int resize_quickspells(int nb);
 /*!
@@ -175,7 +175,7 @@ void add_spell_to_quickbar();
 int get_quickspell_y_base();
 int we_are_poisoned();
 void restart_active_spell_sounds(void);
-//Trent en cours
+// Trent en cours
 int chargement_necro_recettes(int choix);
 int une_bebete();
 int plusieurs_bebetes();

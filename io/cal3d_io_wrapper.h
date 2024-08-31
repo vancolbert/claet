@@ -23,4 +23,4 @@ extern void set_invert_v_coord();
 #ifdef __cplusplus
 }
 #endif
-#endif  /* UUID_ff56ac18_4412_418c_b07e_b67a8634ec2c */
+#endif /* UUID_ff56ac18_4412_418c_b07e_b67a8634ec2c */

@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_HARVESTING_H
 #define EFFECT_HARVESTING_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class HarvestingEffect : public Effect {
 public:
 enum HarvestingType {
@@ -49,6 +49,5 @@ TextureEnum texture;
 Uint16 LOD;
 HarvestingEffect::HarvestingType type;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_HARVESTING_H
+#endif // defined EFFECT_HARVESTING_H

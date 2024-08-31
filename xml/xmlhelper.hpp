@@ -91,8 +91,7 @@ inline T get_value_from_node(xmlNodePtr cur_node) {
 	if (cur_node == 0) {
 		EXTENDED_EXCEPTION(ExtendedException::ec_item_not_found, "Node is zero");
 	} else {
-		return get_value_from_str<T>(reinterpret_cast<const char *>(
-						     xmlNodeGetContent(cur_node)));
+		return get_value_from_str<T>(reinterpret_cast<const char *>(xmlNodeGetContent(cur_node)));
 	}
 }
 /**
@@ -105,8 +104,7 @@ inline void get_values_from_node(xmlNodePtr cur_node, V &values) {
 		EXTENDED_EXCEPTION(ExtendedException::ec_item_not_found, "Node is zero");
 	} else {
 		std::string tmp;
-		std::istringstream strin(reinterpret_cast<const char *>(
-						 xmlNodeGetContent(cur_node)));
+		std::istringstream strin(reinterpret_cast<const char *>(xmlNodeGetContent(cur_node)));
 		while (getline(strin, tmp, ' ')) {
 			values.push_back(get_value_from_str<T>(tmp.c_str()));
 		}
@@ -117,20 +115,15 @@ xmlNodePtr get_node_element_children(const xmlNodePtr cur_node);
 void reader_read(xmlTextReaderPtr reader, bool ignore_whitespace = true);
 bool reader_read_next(xmlTextReaderPtr reader);
 #define NODE_NAME_CHECK(node, name) \
-	do \
-	{ \
-		if (node == 0) \
-		{ \
+	do { \
+		if (node == 0) { \
 			EXTENDED_EXCEPTION(ExtendedException::ec_item_not_found, "Expected node " << name << ", but node is zero"); \
-		} \
-		else \
-		{ \
-			if (!is_node(node, name)) \
-			{ \
+		} else { \
+			if (!is_node(node, name)) { \
 				EXTENDED_EXCEPTION(ExtendedException::ec_item_not_found, "Expected node " << name << ", but node name is " << get_node_name(node)); \
 			} \
 		} \
 	} \
 	while (false)
 }
-#endif  // _XMLHELPER_HPP_
+#endif // _XMLHELPER_HPP_

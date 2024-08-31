@@ -12,7 +12,7 @@ extern "C" {
 #endif
 #ifndef MAKEFOURCC
 	#define MAKEFOURCC(c0, c1, c2, c3) (c0 | (c1 << 8) | (c2 << 16) | (c3 << 24))
-#endif  /* MAKEFOURCC */
+#endif /* MAKEFOURCC */
 typedef struct DdsPixelFormat {
 	Uint32 m_size;
 	Uint32 m_flags;
@@ -143,4 +143,4 @@ void unpack_ati2(DXTInterpolatedAlphaBlock *first_block, DXTInterpolatedAlphaBlo
 #ifdef __cplusplus
 } // extern "C"
 #endif
-#endif  /* _DDS_H_ */
+#endif /* _DDS_H_ */

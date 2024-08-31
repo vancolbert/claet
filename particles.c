@@ -44,7 +44,7 @@ int real_add_particle_sys(const char *file_name, float x_pos, float y_pos, float
 int use_point_particles = 1;
 int particles_percentage = 100;
 int enable_blood = 0;
-SDL_mutex *particles_list_mutex;        //used for locking between the timer and main threads
+SDL_mutex *particles_list_mutex; // used for locking between the timer and main threads
 static int particle_textures[MAX_PARTICLE_TEXTURES];
 particle_sys *particles_list[MAX_PARTICLE_SYSTEMS];
 /******************************************************
@@ -74,13 +74,13 @@ particle_sys_def *load_particle_def(const char *filename) {
 	FILE *f = NULL;
 	particle_sys_def *def = NULL;
 	clean_file_name(cleanpath, filename, sizeof(cleanpath));
-	//Check if it's already loaded
+	// Check if it's already loaded
 	for (i = 0; i < MAX_PARTICLE_DEFS; i++) {
 		if (defs_list[i] && !part_strcmp(cleanpath, defs_list[i]->file_name)) {
 			return defs_list[i];
 		}
 	}
-	//Check if we have a free slot for it
+	// Check if we have a free slot for it
 	for (i = 0; i < MAX_PARTICLE_DEFS; i++) {
 		if (!defs_list[i]) {
 			defs_list[i] = (particle_sys_def *)calloc(1, sizeof(particle_sys_def));
@@ -407,16 +407,13 @@ static __inline__ void destroy_partice_sys_without_lock(int i) {
 	free(particles_list[i]);
 	particles_list[i] = NULL;
 }
-//void destroy_particle_sys(int i)
-//{
-//	LOCK_PARTICLES_LIST();
-//	destroy_partice_sys_without_lock(i);
-//	UNLOCK_PARTICLES_LIST();
-//}
+// void destroy_particle_sys(int i)
+// {
+// }
 /*******************************************************************
 *            INITIALIZATION AND CLEANUP FUNCTIONS                 *
 *******************************************************************/
-//Threading support for particles_list
+// Threading support for particles_list
 void init_particles() {
 	int i;
 	for (i = 0; i < MAX_PARTICLE_TEXTURES; i++) {
@@ -429,14 +426,14 @@ void init_particles() {
 		}
 	}
 	particles_list_mutex = SDL_CreateMutex();
-	LOCK_PARTICLES_LIST();    // lock it to avoid timing issues
+	LOCK_PARTICLES_LIST(); // lock it to avoid timing issues
 	for (i = 0; i < MAX_PARTICLE_SYSTEMS; i++) {
 		particles_list[i] = NULL;
 	}
 	for (i = 0; i < MAX_PARTICLE_DEFS; i++) {
 		defs_list[i] = NULL;
 	}
-	UNLOCK_PARTICLES_LIST();  // release now that we are done
+	UNLOCK_PARTICLES_LIST(); // release now that we are done
 }
 void end_particles() {
 	LOCK_PARTICLES_LIST();
@@ -514,8 +511,6 @@ void add_ec_effect_to_e3d(object3d *e3d) {
 	ec_bounds *bounds = ec_create_bounds_list();
 	float shift[3] = {0.0f, 0.0f, 0.0f};
 	// useful for debugging:
-	// ec_create_fountain(e3d->x_pos + shift[0], e3d->y_pos + shift[1], e3d->z_pos + shift[2], 0.0, 1.0, (e3d->z_pos >= 0.8 ? e3d->z_pos - 0.8 : 0.0), 0, 1.0, (poor_man ? 6 : 10));
-	// printf("%f %f %s %i\n", e3d->x_pos*2, e3d->y_pos*2, e3d->file_name, e3d->self_lit);
 	if (strstr(e3d->file_name, "/lantern1.e3d")) {
 		ec_add_smooth_polygon_bound(bounds, 2.0, 0.25);
 		shift[2] += 0.25f; // add height
@@ -688,10 +683,10 @@ int create_particle_sys(particle_sys_def *def, float x, float y, float z, unsign
 	if (!def) {
 		return -1;
 	}
-	//allocate memory for this particle system
+	// allocate memory for this particle system
 	system_id = (particle_sys *)calloc(1, sizeof(particle_sys));
 	LOCK_PARTICLES_LIST();
-	//now, find a place for this system
+	// now, find a place for this system
 	for (psys = 0; psys < MAX_PARTICLE_SYSTEMS; psys++) {
 		if (!particles_list[psys]) {
 			particles_list[psys] = system_id;
@@ -735,7 +730,7 @@ void draw_text_particle_sys(particle_sys *system_id) {
 	float x_len = z_len * cos(-rz * M_PI / 180.0);
 	float y_len = z_len * sin(-rz * M_PI / 180.0);
 	particle *p;
-	LOCK_PARTICLES_LIST();  //lock it to avoid timing issues
+	LOCK_PARTICLES_LIST(); // lock it to avoid timing issues
 	CHECK_GL_ERRORS();
 	bind_texture(particle_textures[system_id->def->part_texture]);
 	for (i = 0, p = &system_id->particles[0]; i < system_id->def->total_particle_no; i = i + 5, p = p + 5) {
@@ -756,7 +751,7 @@ void draw_text_particle_sys(particle_sys *system_id) {
 			glPopMatrix();
 		}
 	}
-	UNLOCK_PARTICLES_LIST();        // release now that we are done
+	UNLOCK_PARTICLES_LIST(); // release now that we are done
 	CHECK_GL_ERRORS();
 }
 void draw_point_particle_sys(particle_sys *system_id) {
@@ -768,14 +763,14 @@ void draw_point_particle_sys(particle_sys *system_id) {
 	glPointSize(system_id->def->part_size * (5.5f - zoom_level) * 4.4f);
 	bind_texture(particle_textures[system_id->def->part_texture]);
 	glBegin(GL_POINTS);
-	LOCK_PARTICLES_LIST();  //lock it to avoid timing issues
+	LOCK_PARTICLES_LIST(); // lock it to avoid timing issues
 	for (i = 0, p = &system_id->particles[0]; i < system_id->def->total_particle_no; i++, p++) {
 		if (!p->free) {
 			glColor4f(p->r, p->g, p->b, p->a);
 			glVertex3f(p->x, p->y, p->z);
 		}
 	}
-	UNLOCK_PARTICLES_LIST();        // release now that we are done
+	UNLOCK_PARTICLES_LIST(); // release now that we are done
 	glEnd();
 	glDisable(GL_POINT_SPRITE_NV);
 	CHECK_GL_ERRORS();
@@ -813,7 +808,7 @@ void display_particles() {
 		}
 	}
 	UNLOCK_PARTICLES_LIST();
-	glDisable(GL_CULL_FACE); //Intel fix
+	glDisable(GL_CULL_FACE); // Intel fix
 	glPopAttrib();
 	CHECK_GL_ERRORS();
 }
@@ -826,14 +821,14 @@ void update_fountain_sys(particle_sys *system_id) {
 	int particles_to_add = 0;
 	particle *p;
 	total_particle_no = system_id->def->total_particle_no;
-	//see if we need to add new particles
+	// see if we need to add new particles
 	LOCK_PARTICLES_LIST();
 	if (system_id->ttl) {
 		particles_to_add = total_particle_no - system_id->particle_count;
 	}
 	if (particles_to_add) {
 		for (j = i = 0; i < particles_to_add; i++) {
-			//find a free space
+			// find a free space
 			for (; j < total_particle_no; j++) {
 				if (system_id->particles[j].free) {
 					create_particle(system_id, &(system_id->particles[j]));
@@ -843,13 +838,11 @@ void update_fountain_sys(particle_sys *system_id) {
 			}
 		}
 	}
-	//excellent, now we have to actually update the particles
-	//find used particles
+	// excellent, now we have to actually update the particles
+	// find used particles
 	for (j = 0, p = &system_id->particles[0]; j < total_particle_no; j++, p++) {
 		if (!p->free) {
 			if (p->a < 0.0f) {
-				//poor particle, it died :(
-				p->free = 1;
 				if (system_id->particle_count) {
 					system_id->particle_count--;
 				}
@@ -879,7 +872,7 @@ void update_burst_sys(particle_sys *system_id) {
 	particle *p;
 	total_particle_no = system_id->def->total_particle_no;
 	LOCK_PARTICLES_LIST();
-	//find used particles
+	// find used particles
 	for (j = 0, p = &system_id->particles[0]; j < total_particle_no; j++, p++) {
 		if (!p->free) {
 			float distx = p->x - system_id->x_pos;
@@ -887,8 +880,6 @@ void update_burst_sys(particle_sys *system_id) {
 			float distz = p->z - system_id->z_pos;
 			float dist_sq = distx * distx + disty * disty + distz * distz;
 			if (dist_sq > system_id->def->constrain_rad_sq * 9.0 || dist_sq < 0.01) {
-				//poor particle, it died :(
-				p->free = 1;
 				if (system_id->particle_count) {
 					system_id->particle_count--;
 				}
@@ -917,31 +908,29 @@ void update_fire_sys(particle_sys *system_id) {
 	int total_particle_no = system_id->def->total_particle_no;
 	particle *p;
 	int j;
-	//see if we need to add new particles
+	// see if we need to add new particles
 	LOCK_PARTICLES_LIST();
 	if (system_id->ttl) {
 		particles_to_add = total_particle_no - system_id->particle_count;
 	}
 	for (j = i = 0; i < particles_to_add; i++) {
-		//find a free space
+		// find a free space
 		for (; j < total_particle_no; j++) {
 			if (system_id->particles[j].free) {
-				//finally, we found a spot
+				// finally, we found a spot
 				create_particle(system_id, &(system_id->particles[j]));
-				//increase the particle count
+				// increase the particle count
 				system_id->particle_count++;
 				j++;
-				break;                  //done looping
+				break; // done looping
 			}
 		}
 	}
-	//excellent, now we have to actually update the particles
-	//find a used particle
+	// excellent, now we have to actually update the particles
+	// find a used particle
 	for (j = 0, p = &system_id->particles[0]; j < total_particle_no; j++, p++) {
 		if (!p->free) {
 			if (p->a < 0.0f) {
-				//poor particle, it died :(
-				p->free = 1;
 				if (system_id->particle_count) {
 					system_id->particle_count--;
 				}
@@ -965,33 +954,31 @@ void update_teleporter_sys(particle_sys *system_id) {
 	int total_particle_no = system_id->def->total_particle_no;
 	particle *p;
 	int j;
-	//see if we need to add new particles
+	// see if we need to add new particles
 	LOCK_PARTICLES_LIST();
 	if (system_id->ttl) {
 		particles_to_add = total_particle_no - system_id->particle_count;
 	}
 	for (j = i = 0; i < particles_to_add; i++) {
-		//find a free space
+		// find a free space
 		for (; j < total_particle_no; j++) {
 			if (system_id->particles[j].free) {
-				//finally, we found a spot
+				// finally, we found a spot
 				create_particle(system_id, &(system_id->particles[j]));
 				if (system_id->particles[j].z < system_id->z_pos) {
 					system_id->particles[j].z = system_id->z_pos;
 				}
-				//increase the particle count
+				// increase the particle count
 				system_id->particle_count++;
-				break;                  //done looping
+				break; // done looping
 			}
 		}
 	}
-	//excellent, now we have to actually update the particles
-	//find used particles
+	// excellent, now we have to actually update the particles
+	// find used particles
 	for (j = 0, p = &system_id->particles[0]; j < total_particle_no; j++, p++) {
 		if (!p->free) {
 			if (p->z > system_id->z_pos + 2.0f) {
-				//poor particle, it died :(
-				p->free = 1;
 				if (system_id->particle_count) {
 					system_id->particle_count--;
 				}
@@ -1015,13 +1002,13 @@ void update_teleport_sys(particle_sys *system_id) {
 	int particles_to_add = 0;
 	particle *p;
 	int j;
-	//see if we need to add new particles
+	// see if we need to add new particles
 	LOCK_PARTICLES_LIST();
 	if (system_id->ttl) {
 		particles_to_add = total_particle_no - system_id->particle_count;
 	}
 	for (j = i = 0; i < particles_to_add; i++) {
-		//find a free space
+		// find a free space
 		for (; j < total_particle_no; j++) {
 			if (system_id->particles[j].free) {
 				create_particle(system_id, &(system_id->particles[j]));
@@ -1033,13 +1020,11 @@ void update_teleport_sys(particle_sys *system_id) {
 			}
 		}
 	}
-	//excellent, now we have to actually update the particles
-	//find used particles
+	// excellent, now we have to actually update the particles
+	// find used particles
 	for (j = 0, p = &system_id->particles[0]; j < total_particle_no; j++, p++) {
 		if (!p->free) {
 			if (p->z > system_id->z_pos + 2.0f) {
-				//poor particle, it died :(
-				p->free = 1;
 				if (system_id->particle_count) {
 					system_id->particle_count--;
 				}
@@ -1063,33 +1048,31 @@ void update_bag_part_sys(particle_sys *system_id) {
 	int particles_to_add = 0;
 	particle *p;
 	int j;
-	//see if we need to add new particles
+	// see if we need to add new particles
 	LOCK_PARTICLES_LIST();
 	if (system_id->ttl) {
 		particles_to_add = total_particle_no - system_id->particle_count;
 	}
 	for (j = i = 0; i < particles_to_add; i++) {
-		//find a free space
+		// find a free space
 		for (; j < total_particle_no; j++) {
 			if (system_id->particles[j].free) {
-				//finally, we found a spot
+				// finally, we found a spot
 				create_particle(system_id, &(system_id->particles[j]));
 				if (system_id->particles[j].z < system_id->z_pos) {
 					system_id->particles[j].z = system_id->z_pos;
 				}
-				//increase the particle count
+				// increase the particle count
 				system_id->particle_count++;
-				break;                  //done looping
+				break; // done looping
 			}
 		}
 	}
-	//excellent, now we have to actually update the particles
-	//find used particles
+	// excellent, now we have to actually update the particles
+	// find used particles
 	for (j = 0, p = &system_id->particles[0]; j < total_particle_no; j++, p++) {
 		if (!p->free) {
 			if (p->z > system_id->z_pos + 1.0f) {
-				//poor particle, it died :(
-				p->free = 1;
 				if (system_id->particle_count) {
 					system_id->particle_count--;
 				}
@@ -1142,7 +1125,7 @@ void update_particles() {
 			if (particles_list[i]->ttl > 0) {
 				particles_list[i]->ttl--;
 			}
-			//if there are no more particles to add, and the TTL expired, then kill this evil system
+			// if there are no more particles to add, and the TTL expired, then kill this evil system
 			if (!particles_list[i]->ttl && !particles_list[i]->particle_count) {
 				destroy_partice_sys_without_lock(i);
 			}
@@ -1189,27 +1172,27 @@ void add_teleporters_from_list(const Uint8 *teleport_list) {
 	int teleport_x, teleport_y, my_offset;
 	float x, y, z;
 	teleporters_no = SDL_SwapLE16(*((Uint16 *)(teleport_list)));
-	LOCK_PARTICLES_LIST();  //lock it to avoid timing issues
+	LOCK_PARTICLES_LIST(); // lock it to avoid timing issues
 	for (i = 0; i < teleporters_no; i++) {
 		my_offset = i * 5 + 2;
 		teleport_x = SDL_SwapLE16(*((Uint16 *)(teleport_list + my_offset)));
 		teleport_y = SDL_SwapLE16(*((Uint16 *)(teleport_list + my_offset + 2)));
-		//later on, maybe we want to have different visual types
-		//now, get the Z position
+		// later on, maybe we want to have different visual types
+		// now, get the Z position
 		if (!get_tile_valid(teleport_x, teleport_y)) {
 			continue;
 		}
 		z = get_tile_height(teleport_x, teleport_y);
-		//convert from height values to meters
+		// convert from height values to meters
 		x = (float)teleport_x / 2;
 		y = (float)teleport_y / 2;
-		//center the object
+		// center the object
 		x = x + 0.25f;
 		y = y + 0.25f;
 		add_particle_sys("./particles/teleporter.part", x, y, z, 1);
 		add_e3d("./3dobjects/portal1.e3d", x, y, z, 0, 0, 0, 1, 0, 1.0f, 1.0f, 1.0f, 1);
-		//mark the teleporter as an unwalkable so that the pathfinder
-		//won't try to plot a path through it
+		// mark the teleporter as an unwalkable so that the pathfinder
+		// won't try to plot a path through it
 		pf_tile_map[teleport_y * tile_map_size_x * 6 + teleport_x].z = 0;
 	}
 	UNLOCK_PARTICLES_LIST();

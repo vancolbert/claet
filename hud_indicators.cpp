@@ -1,15 +1,11 @@
-//	Status Indicators
-//
-//		Simple HUD window to show the status of multiple client states
-//		Harvesting, Special Day and Poison status are initial provided.
-//
-//	TODO change list
-//		Possibly use a coloured light or preferably an icon for
-//			the indicators rather than a simple character.
-//		Make movable and save state, allow reset too.  Use context menu?
-//
-//		Author bluap/pjbroad Jan 2014
-//
+// Status Indicators
+// Simple HUD window to show the status of multiple client states
+// Harvesting, Special Day and Poison status are initial provided.
+// TODO change list
+// Possibly use a coloured light or preferably an icon for
+// the indicators rather than a simple character.
+// Make movable and save state, allow reset too.  Use context menu?
+// Author bluap/pjbroad Jan 2014
 #include <vector>
 #include <string>
 #include <cstring>
@@ -34,8 +30,7 @@ void init_hud_indicators(void) {
 	init_indicators();
 }
 }
-//	Constants used by the window
-//
+// Constants used by the window
 class Vars {
 public:
 static const float zoom(void) {return 1.0;}
@@ -45,8 +40,7 @@ static const float font_x(void) {return DEFAULT_FONT_X_LEN;}
 static const float font_y(void) {return DEFAULT_FONT_Y_LEN;}
 static const int y_len(void) {return static_cast<int>(border() + zoom() * font_y() + 0.5);}
 };
-//	A class to hold the state for an individual indicator
-//
+// A class to hold the state for an individual indicator
 class Indicator {
 public:
 Indicator(const char *the_strings, int(*ctrl)(void), int no, const char *the_action);
@@ -64,8 +58,7 @@ int x_pos;
 int y_pos;
 bool mouse_over;
 };
-//	Construct the indicator deriving the strings from the "||" separated string passed
-//
+// Construct the indicator deriving the strings from the "||" separated string passed
 Indicator::Indicator(const char *the_strings, int(*ctrl)(void), int no, const char *the_action)
 	: disp("*"), on_tooltip("Unset"), off_tooltip("Unset"), cntr_func(ctrl), y_pos(Vars::border()), mouse_over(false) {
 	x_pos = static_cast<int>(Vars::border() + no * (Vars::zoom() * Vars::font_x() + Vars::space()) + 0.5);
@@ -95,8 +88,7 @@ Indicator::Indicator(const char *the_strings, int(*ctrl)(void), int no, const ch
 		}
 	}
 }
-//	Simply draw the single character, highlighted if the status is true
-//
+// Simply draw the single character, highlighted if the status is true
 void Indicator::do_draw(void) {
 	if (mouse_over) {
 		glColor3f(1.0f, 1.0f, 1.0f);
@@ -108,8 +100,7 @@ void Indicator::do_draw(void) {
 	draw_string_zoomed(x_pos, y_pos, (const unsigned char *)disp.c_str(), 1, Vars::zoom());
 	mouse_over = false;
 }
-//	If an action string is defined, execute it as a command line
-//
+// If an action string is defined, execute it as a command line
 void Indicator::do_action(void) const {
 	if (action.empty()) {
 		do_alert1_sound();
@@ -121,22 +112,19 @@ void Indicator::do_action(void) const {
 	safe_strncpy(temp, action.c_str(), command_len);
 	parse_input(temp, strlen(temp));
 }
-//	Show the tooltip that explains the status
-//
+// Show the tooltip that explains the status
 void Indicator::show_tooltip(void) const {
 	const char *tooltip = ((cntr_func && cntr_func()) ?on_tooltip.c_str() : off_tooltip.c_str());
 	show_help(tooltip, -static_cast<int>(Vars::border() + SMALL_FONT_X_LEN * (1 + strlen(tooltip)) + 0.5), y_pos);
 }
-//	If mouse is over, set for this frame and return true
-//
+// If mouse is over, set for this frame and return true
 bool Indicator::is_over(int mx) {
 	mouse_over = ((mx > x_pos && (mx < x_pos + Vars::zoom() * Vars::font_x())));
 	return mouse_over;
 }
-//	The indicators
+// The indicators
 static std::vector<Indicator> indicators;
-//	Window display callback, display the indicators
-//
+// Window display callback, display the indicators
 static int display_indicators_handler(window_info *win) {
 	std::vector<Indicator>::iterator i;
 	for (i = indicators.begin(); i < indicators.end(); ++i) {
@@ -144,8 +132,7 @@ static int display_indicators_handler(window_info *win) {
 	}
 	return 1;
 }
-//	Window mouse over callback, show tooltip if over an indicator
-//
+// Window mouse over callback, show tooltip if over an indicator
 static int mouseover_indicators_handler(window_info *win, int mx, int my) {
 	std::vector<Indicator>::iterator i;
 	for (i = indicators.begin(); i < indicators.end(); ++i) {
@@ -155,8 +142,7 @@ static int mouseover_indicators_handler(window_info *win, int mx, int my) {
 	}
 	return 0;
 }
-//	Window mouse click callback, execute action if over an indicator
-//
+// Window mouse click callback, execute action if over an indicator
 static int click_indicators_handler(window_info *win, int mx, int my, Uint32 flags) {
 	// TODO move window code, finish/abandon....
 	/*if (flags&ELW_CTRL)
@@ -177,8 +163,7 @@ static int click_indicators_handler(window_info *win, int mx, int my, Uint32 fla
 	}
 	return 1;
 }
-//	Initialise the indicators, create or re-init the window
-//
+// Initialise the indicators, create or re-init the window
 static void init_indicators(void) {
 	if (indicators.empty()) {
 		indicators.reserve(3);

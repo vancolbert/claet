@@ -7,6 +7,6 @@
 #ifndef _NORMAL_H_
 #define _NORMAL_H_
 #include <SDL_types.h>
-/*Uint16 compress_normal(const float *normal);*/        //Trent: code inutilisé et qui donne un warning
+/*Uint16 compress_normal(const float *normal);*/        // Trent: code inutilisé et qui donne un warning
 void uncompress_normal(const Uint16 value, float *normal);
-#endif  /* _NORMAL_H_ */
+#endif /* _NORMAL_H_ */

@@ -68,7 +68,7 @@ void unpack_dxt_explicit_alpha(DXTExplicitAlphaBlock *block, Uint8 *values) {
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
 			value = block->m_alphas[i] >> (j * 4) & 0xF;
-			values[index] = value * 17.0f;  // = (value * 255.0f) / 15.0f;
+			values[index] = value * 17.0f; // = (value * 255.0f) / 15.0f;
 			index++;
 		}
 	}

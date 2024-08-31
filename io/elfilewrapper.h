@@ -217,4 +217,4 @@ char *el_fgets(char *str, int size, el_file_ptr file);
 #ifdef __cplusplus
 }
 #endif
-#endif  /* UUID_366fd032_5c72_48c3_9229_4089ad0bc93e */
+#endif /* UUID_366fd032_5c72_48c3_9229_4089ad0bc93e */

@@ -41,13 +41,12 @@ void start_paste(widget_list *widget) {
 	CFDataRef flavorData;
 	char *flavorText;
 	err = PasteboardCreate(kPasteboardClipboard, &gClipboard);
-	//require_noerr( err, CantCreateClipboard );
 	err = PasteboardGetItemIdentifier(gClipboard, 1, &itemID);
 	err = PasteboardCopyItemFlavorData(gClipboard, itemID, CFSTR("com.apple.traditional-mac-plain-text"), &flavorData);
 	int flavorDataSize = CFDataGetLength(flavorData);
 	flavorText = (char *)malloc(flavorDataSize + 1);
 	short dataIndex;
-	for (dataIndex = 0; dataIndex <= flavorDataSize; dataIndex++ ) {
+	for (dataIndex = 0; dataIndex <= flavorDataSize; dataIndex++) {
 		char byte = *(CFDataGetBytePtr(flavorData) + dataIndex);
 		flavorText[dataIndex] = (byte > 32) ? byte : ' ';
 	}
@@ -122,9 +121,9 @@ void processpaste(Display *dpy, Window window, Atom atom) {
 	XFree(value);
 	// From the XGetWindowProperty man page:
 	// *) The length parameter is in 32 bit units, so we can divide
-	//    bytes by four (rounding up
+	// bytes by four (rounding up
 	// *) It always allocates one extra byte and sets it to zero, so
-	//    using value as a zero-terminated string should be safe
+	// using value as a zero-terminated string should be safe
 	XGetWindowProperty(dpy, window, atom, 0, (bytes + 3) / 4, 1, XA_STRING, &type, &actualformat, &items, &tmp, &value);
 	if (type == XA_STRING) {
 		if (paste_to_widget == NULL) {
@@ -170,9 +169,8 @@ static void start_paste_from_target(widget_list *widget, int clipboard) {
 		 */
 		// Alia: we should receive SelectionNotify event, property is NULL until it comes.
 		// Let's try to comment it :)
-		// //if(clipboard) {
-		//	processpaste(dpy, window, property);
-		//}
+		// // if(clipboard) {
+		// }
 		wminfo.info.x11.unlock_func();
 	}
 }
@@ -208,7 +206,6 @@ static void copy_to_clipboard_target(const char *text, int clipboard) {
 			}
 			cur_text_primary = strdup(text);
 		}
-		//property = XInternAtom(dpy, "PASTE", 0);
 		XSetSelectionOwner(dpy, selection, window, CurrentTime);
 		wminfo.info.x11.unlock_func();
 	}

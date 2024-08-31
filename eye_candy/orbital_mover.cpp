@@ -22,7 +22,6 @@ void OrbitalMover::detachParticle(Particle *p) {
 	if (i != m_hParticleData.end()) {
 		m_hParticleData.erase(i);
 	}
-	//m_hParticleData[p] = OrbitalParticleData();
 }
 void OrbitalMover::setParticleData(Particle *p, const OrbitalParticleData &data) {
 	m_hParticleData[p] = data;

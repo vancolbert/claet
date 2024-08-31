@@ -85,7 +85,7 @@ int put_new_data_offset = 0;
 Uint8 tcp_cache[256];
 Uint32 tcp_cache_len = 0;
 Uint32 tcp_cache_time = 0;
-//for the client/server sync
+// for the client/server sync
 int server_time_stamp = 0;
 int client_time_stamp = 0;
 int client_server_delta_time = 0;
@@ -104,9 +104,9 @@ short real_game_second = 0;
  * 	read.  The alternative would be for all clients to request the new date
  * 	just after the day changes.  This way lessens the load on the server.
  */
-static char the_date[40] = "<vide>";    /* do not read directly, use get_date() */
-static int need_new_date = 1;                   /* the date string is not valid - needs a refresh*/
-static int requested_date = 0;                  /* a new date has been requested from the server */
+static char the_date[40] = "<vide>"; /* do not read directly, use get_date() */
+static int need_new_date = 1; /* the date string is not valid - needs a refresh*/
+static int requested_date = 0; /* a new date has been requested from the server */
 /* if not NULL the function to pass a new date string - one should do... */
 static void (*who_to_tell_callback)(const char *) = NULL;
 int set_date(const char *the_string) {
@@ -198,7 +198,7 @@ static int my_locked_tcp_flush(TCPsocket my_socket) {
 	return ret;
 }
 int my_tcp_send(TCPsocket my_socket, const Uint8 *str, int len) {
-	Uint8 new_str[1024];    //should be enough
+	Uint8 new_str[1024]; // should be enough
 	CHECK_AND_LOCK_MUTEX(tcp_out_data_mutex);
 	if (disconnected) {
 		CHECK_AND_UNLOCK_MUTEX(tcp_out_data_mutex);
@@ -234,54 +234,53 @@ int my_tcp_send(TCPsocket my_socket, const Uint8 *str, int len) {
 		// 1% of the produce from manufacturers may be donated to Labrat for this patch,
 		// or for the bagspammers, sell the items you were going to spam and give the proceeds
 		// to a noob on IP :)
-		//
 		return 1;
 	}
-	//check to see if we have too many packets being sent of the same to reduce server flood
-	if (len < sizeof(tcp_cache)) {  // only if it fits
+	// check to see if we have too many packets being sent of the same to reduce server flood
+	if (len < sizeof(tcp_cache)) { // only if it fits
 		if (str[0] == MOVE_TO || str[0] == RUN_TO || str[0] == SIT_DOWN || str[0] == HARVEST || str[0] == MANUFACTURE_THIS || str[0] == CAST_SPELL || str[0] == RESPOND_TO_NPC || str[0] == ATTACK_SOMEONE || str[0] == SEND_PM || str[0] == RAW_TEXT || str[0] == TURN_LEFT || str[0] == TURN_RIGHT) {
 			Uint32 time_limit = 600;
-			if ( str[0] == SEND_PM || str[0] == RAW_TEXT) {
+			if (str[0] == SEND_PM || str[0] == RAW_TEXT) {
 				time_limit = 1500;
 			}
-			if ( str[0] == SIT_DOWN) {
+			if (str[0] == SIT_DOWN) {
 				if (last_sit + 1500 > cur_time) {
 					return 0;
 				}
 				last_sit = cur_time;
 			}
-			if ( str[0] == TURN_RIGHT || str[0] == TURN_LEFT ) {
+			if (str[0] == TURN_RIGHT || str[0] == TURN_LEFT) {
 				if (last_turn_around + 600 > cur_time) {
 					return 0;
 				}
 				last_turn_around = cur_time;
 			}
-			//if too close together
+			// if too close together
 			if (len == (int)tcp_cache_len && *str == *tcp_cache && cur_time < tcp_cache_time + time_limit) {
-				//and the same packet
+				// and the same packet
 				if (!memcmp(str, tcp_cache, len)) {
-					//ignore this packet
+					// ignore this packet
 					return 0;
 				}
 			}
-			//turns do not interrupt queued moves
+			// turns do not interrupt queued moves
 			if (tcp_cache[0] == MOVE_TO && (str[0] == TURN_LEFT || str[0] == TURN_RIGHT)) {
 				return 0;
 			}
-			//memorize the data we are sending for next time
+			// memorize the data we are sending for next time
 			memcpy(tcp_cache, str, len);
 			tcp_cache_len = len;
 			tcp_cache_time = cur_time;
 		}
 	}
 	CHECK_AND_LOCK_MUTEX(tcp_out_data_mutex);
-	//update the heartbeat timer
+	// update the heartbeat timer
 	last_heart_beat = time(NULL);
 	// check to see if the data would fit in the buffer
 	if (len + 2 < MAX_TCP_BUFFER) {
 		// yes, buffer it for later processing
-		tcp_out_data[tcp_out_loc] = str[0];     //copy the protocol byte
-		*((short *)(tcp_out_data + tcp_out_loc + 1)) = SDL_SwapLE16((Uint16)len);//the data length
+		tcp_out_data[tcp_out_loc] = str[0]; // copy the protocol byte
+		*((short *)(tcp_out_data + tcp_out_loc + 1)) = SDL_SwapLE16((Uint16)len); // the data length
 		// copy the rest of the data
 		memcpy(&tcp_out_data[tcp_out_loc + 3], &str[1], len - 1);
 		// adjust then buffer offset
@@ -291,8 +290,8 @@ int my_tcp_send(TCPsocket my_socket, const Uint8 *str, int len) {
 	}
 	// no, send it as is now
 	CHECK_AND_UNLOCK_MUTEX(tcp_out_data_mutex);
-	new_str[0] = str[0];    //copy the protocol byte
-	*((short *)(new_str + 1)) = SDL_SwapLE16((Uint16)len);//the data length
+	new_str[0] = str[0]; // copy the protocol byte
+	*((short *)(new_str + 1)) = SDL_SwapLE16((Uint16)len); // the data length
 	if (len + 4 > sizeof(new_str)) {
 		return 1;
 	}
@@ -340,17 +339,17 @@ void connect_to_server() {
 		SDLNet_TCP_Close(my_socket);
 		my_socket = 0;
 	}
-	//clear the buddy list so we don't get multiple entries
+	// clear the buddy list so we don't get multiple entries
 	clear_buddy();
 	LOG_TO_CONSOLE(c_red1, connect_to_server_str);
-	draw_scene();   // update the screen
+	draw_scene(); // update the screen
 	set = SDLNet_AllocSocketSet(1);
 	if (!set) {
 		LOG_ERROR("SDLNet_AllocSocketSet: %s\n", SDLNet_GetError());
 		do_error_sound();
 		SDLNet_Quit();
 		SDL_Quit();
-		exit(4);         //most of the time this is a major error, but do what you want.
+		exit(4); // most of the time this is a major error, but do what you want.
 	}
 	if (SDLNet_ResolveHost(&ip, (char *)server_address, port) == -1) {
 		LOG_TO_CONSOLE(c_red2, failed_resolve);
@@ -372,10 +371,10 @@ void connect_to_server() {
 		exit(2);
 	}
 	disconnected = 0;
-	have_storage_list = 0;  //With a reconnect, our cached copy of what's in storage may no longer be accurate
-	//send the current version to the server
+	have_storage_list = 0; // With a reconnect, our cached copy of what's in storage may no longer be accurate
+	// send the current version to the server
 	send_version_to_server(&ip);
-	//ask for the opening screen
+	// ask for the opening screen
 	if (!previously_logged_in) {
 		Uint8 str[1];
 		str[0] = SEND_OPENING_SCREEN;
@@ -386,24 +385,24 @@ void connect_to_server() {
 		destroy_all_actors();
 		send_login_info();
 	}
-	//clear out info
+	// clear out info
 	clear_now_harvesting();
 	last_heart_beat = time(NULL);
-	send_heart_beat();      // prime the hearbeat to prevent some stray issues when there is lots of lag
+	send_heart_beat(); // prime the hearbeat to prevent some stray issues when there is lots of lag
 	hide_window(trade_win);
 	do_connect_sound();
-	my_tcp_flush(my_socket);    // make sure tcp output buffer is empty
+	my_tcp_flush(my_socket); // make sure tcp output buffer is empty
 }
 void send_login_info() {
 	int i, j, len;
 	unsigned char str[40];
 	len = strlen(username_str);
-	//check for the username length
+	// check for the username length
 	if (len < 3) {
 		set_login_error(error_username_length, strlen(error_username_length), 1);
 		return;
 	}
-	//join the username and password, and send them to the server
+	// join the username and password, and send them to the server
 	str[0] = LOG_IN;
 	if (caps_filter && my_isupper(username_str, len)) {
 		my_tolower(username_str);
@@ -419,11 +418,11 @@ void send_login_info() {
 	}
 	str[i + j + 1] = 0;
 	len = strlen((char *)str);
-	len++;//send the last 0 too
+	len++; // send the last 0 too
 	if (my_tcp_send(my_socket, str, len) < len) {
-		//we got a nasty error, log it
+		// we got a nasty error, log it
 	}
-	my_tcp_flush(my_socket);    // make sure tcp output buffer is empty
+	my_tcp_flush(my_socket); // make sure tcp output buffer is empty
 }
 void send_new_char(char *user_str, char *pass_str, char skin, char hair, char shirt, char pants, char boots, char head, char type, char scale) {
 	int i, j, len;
@@ -440,7 +439,7 @@ void send_new_char(char *user_str, char *pass_str, char skin, char hair, char sh
 		str[i + j + 1] = pass_str[j];
 	}
 	str[i + j + 1] = 0;
-	//put the colors and gender
+	// put the colors and gender
 	str[i + j + 2] = skin;
 	str[i + j + 3] = hair;
 	str[i + j + 4] = shirt;
@@ -451,22 +450,22 @@ void send_new_char(char *user_str, char *pass_str, char skin, char hair, char sh
 	str[i + j + 9] = scale;
 	len = i + j + 10;
 	if (my_tcp_send(my_socket, str, len) < len) {
-		//we got a nasty error, log it
+		// we got a nasty error, log it
 	}
-	my_tcp_flush(my_socket);    // make sure tcp output buffer is empty
+	my_tcp_flush(my_socket); // make sure tcp output buffer is empty
 }
 // TEMP LOGAND [5/25/2004]
 #ifndef NPC_SAY_OVERTEXT
 #define NPC_SAY_OVERTEXT 58
 #endif
-//---
+// ---
 void process_message_from_server(const Uint8 *in_data, int data_length) {
 	Uint8 text_buf[MAX_TCP_BUFFER];
 	if (data_length <= 2) {
 		LOG_WARNING("CAUTION: Possibly forged packet received.\n");
 		return;
 	}
-	//see what kind of data we got
+	// see what kind of data we got
 	switch (in_data[PROTOCOL]) {
 	case RAW_TEXT: {
 		int len;
@@ -501,7 +500,6 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 		add_actor_from_server((char *)&in_data[3], data_length - 3);
 		break;
 	case ADD_NEW_ENHANCED_ACTOR:
-		//print_packet(in_data,data_length);
 		if (data_length <= 32) {
 			LOG_WARNING("CAUTION: Possibly forged ADD_ENHANCED_ACTOR packet received.\n");
 			break;
@@ -705,7 +703,7 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 			else {
 				counters_set_product_info("", 0);
 			}
-		}                  // End successs counters block
+		} // End successs counters block
 		/* You failed to create a[n] ..., and lost the ingredients */
 		if (my_strncompare(inventory_item_string + 1, "Tu as échoué dans la création d'un ", 35)) {
 			size_t item_name_len = 0;
@@ -721,7 +719,7 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 				safe_strncpy2(item_name, item_string, sizeof(item_name), item_name_len);
 				increment_critfail_counter(item_name);
 			}
-		}                  // End critfail counters block
+		} // End critfail counters block
 		if (my_strncompare(inventory_item_string + 1, "Tu as échoué dans la création d'une ", 36)) {
 			size_t item_name_len = 0;
 			char item_name[128];
@@ -736,7 +734,7 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 				safe_strncpy2(item_name, item_string, sizeof(item_name), item_name_len);
 				increment_critfail_counter(item_name);
 			}
-		}                  // End critfail counters block
+		} // End critfail counters block
 		if (my_strncompare(inventory_item_string + 1, "Tu as échoué dans l'invocation d'un ", 36)) {
 			size_t item_name_len = 0;
 			char item_name[128];
@@ -751,7 +749,7 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 				safe_strncpy2(item_name, item_string, sizeof(item_name), item_name_len);
 				increment_critfail_counter(item_name);
 			}
-		}                  // End critfail counters block
+		} // End critfail counters block
 		if (my_strncompare(inventory_item_string + 1, "Tu as échoué dans l'invocation d'une ", 37)) {
 			size_t item_name_len = 0;
 			char item_name[128];
@@ -766,7 +764,7 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 				safe_strncpy2(item_name, item_string, sizeof(item_name), item_name_len);
 				increment_critfail_counter(item_name);
 			}
-		}                  // End critfail counters block
+		} // End critfail counters block
 #define MATCH_PREFIX(s, p) (0 == strncmp(s, p, sizeof(p) - 1))
 		if (MATCH_PREFIX(inventory_item_string + 1, "Ingrédients dangereux...")) {
 			if (strstr(inventory_item_string, "Ta création d'un Vif-Argent vient d'échouer")) {
@@ -1377,10 +1375,10 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 			break;
 		}
 		switch (in_data[3]) {
-		case    0:                      //2D
+		case    0: // 2D
 			set_2d_object(in_data[4], in_data + 5, data_length - 3);
 			break;
-		case    1:                      //3D
+		case    1: // 3D
 			set_3d_object(in_data[4], in_data + 5, data_length - 3);
 			break;
 		}
@@ -1392,10 +1390,10 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 			break;
 		}
 		switch (in_data[3]) {
-		case    0:                      //2D
+		case    0: // 2D
 			state_2d_object(in_data[4], in_data + 5, data_length - 3);
 			break;
-		case    1:                      //3D
+		case    1: // 3D
 			state_3d_object(in_data[4], in_data + 5, data_length - 3);
 			break;
 		}
@@ -1455,24 +1453,22 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 		}
 		break;
 	case DISPLAY_POPUP:
-		if (data_length <= 8) {               /* At least one char title and one char text */
+		if (data_length <= 8) { /* At least one char title and one char text */
 			LOG_WARNING("CAUTION: Possibly forged DISPLAY_POPUP packet received.\n");
 			break;
 		}
 		popup_create_from_network(&in_data[3], data_length - 3);
 		break;
 	case SEND_MAP_MARKER: {
-		//in_data[3]=id
-		//in_data[5]=x;
-		//in_data[7]=y;
-		//map_name\0text\0
+		// in_data[3]=id
+		// map_name\0text\0
 		int i, fl = 0, k = 0;
 		server_mark *sm;
 		if (data_length <= 10) {
 			LOG_WARNING("CAUTION: Possibly forged SEND_MAP_MARKER packet received.\n");
 			break;
 		}
-		sm = calloc(1, sizeof(server_mark));       //memory is set to zero
+		sm = calloc(1, sizeof(server_mark)); // memory is set to zero
 		sm->x = SDL_SwapLE16(*((short *)(in_data + 5)));
 		sm->y = SDL_SwapLE16(*((short *)(in_data + 7)));
 		sm->id = SDL_SwapLE16(*((short *)(in_data + 3)));
@@ -1483,19 +1479,18 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 				continue;
 			}
 			if (!fl) {
-				sm->map_name[k++] = in_data[i];       //reading map name
+				sm->map_name[k++] = in_data[i]; // reading map name
 			} else {
-				sm->text[k++] = in_data[i];   //reading mark text
+				sm->text[k++] = in_data[i]; // reading mark text
 			}
 		}
-		//printf("ADD MARKER: %i %i %i %s %s\n",sm->id,sm->x,sm->y,sm->map_name,sm->text);
 		if (!server_marks) {
 			init_server_markers();
 		}
-		hash_delete(server_marks, (NULL + sm->id));      //remove old marker if present
+		hash_delete(server_marks, (NULL + sm->id)); // remove old marker if present
 		hash_add(server_marks, (NULL + sm->id), (void *)sm);
 		save_server_markings();
-		load_map_marks();        //load again, so the new marker is added correctly.
+		load_map_marks(); // load again, so the new marker is added correctly.
 		break;
 	}
 	case REMOVE_MAP_MARKER: {
@@ -1505,9 +1500,9 @@ void process_message_from_server(const Uint8 *in_data, int data_length) {
 			break;
 		}
 		id = SDL_SwapLE16(*((short *)(in_data + 3)));
-		hash_delete(server_marks, (NULL + id));      //remove marker if present
+		hash_delete(server_marks, (NULL + id)); // remove marker if present
 		save_server_markings();
-		load_map_marks();        //load again, so the new marker is removed correctly.
+		load_map_marks(); // load again, so the new marker is removed correctly.
 		break;
 	}
 	case COMBAT_INFO:
@@ -1546,7 +1541,7 @@ static void process_data_from_server(queue_t *queue) {
 		do { /* while (3 <= in_data_used) (enough data present for the length field) */
 			size = SDL_SwapLE16(*((short *)(pData + 1)));
 			size += 2; /* add length field size */
-			if (sizeof(tcp_in_data) - 3 >= size) {  /* buffer big enough ? */
+			if (sizeof(tcp_in_data) - 3 >= size) { /* buffer big enough ? */
 				if (size <= in_data_used) { /* do we have a complete message ? */
 					message_t *message = malloc(sizeof *message);
 					message->data = malloc(size * sizeof(unsigned char));
@@ -1589,10 +1584,10 @@ int get_message_from_server(void *thread_args) {
 		// Sleep while disconnected
 		if (disconnected) {
 			SDL_Delay(100); // 10 times per second should be often enough
-			continue; //Continue to make the main loop check int done.
+			continue; // Continue to make the main loop check int done.
 		} else if (SDLNet_CheckSockets(set, 100) <= 0 || !SDLNet_SocketReady(my_socket)) {
-			//if no data, loop back and check again, the delay is in SDLNet_CheckSockets()
-			continue; //Continue to make the main loop check int done.
+			// if no data, loop back and check again, the delay is in SDLNet_CheckSockets()
+			continue; // Continue to make the main loop check int done.
 		}
 		if ((received = SDLNet_TCP_Recv(my_socket, &tcp_in_data[in_data_used], sizeof(tcp_in_data) - in_data_used)) > 0) {
 			in_data_used += received;

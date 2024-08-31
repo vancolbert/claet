@@ -2,10 +2,10 @@
 #include <string.h>
 #ifdef WINDOWS
 	#include <io.h>
-#else //!WINDOWS
+#else // !WINDOWS
 	#include <glob.h>
 	#include <unistd.h>
-#endif //WINDOWS
+#endif // WINDOWS
 #include "font.h"
 #include "asc.h"
 #include "chat.h"
@@ -25,14 +25,14 @@
 *                           CONSTANTS AND VARIABLES                          *
 * ========================================================================== */
 // Disposition des caractères sur les planches de fontes
-#define FONT_CHARS_PER_LINE  16  // nombre de colonnes
-#define FONT_CHARS_MAX_LINE  12  // nombre de lignes
-#define FONT_X_SPACING       32  // largeur des "cases"
-#define FONT_Y_SPACING       42  // hauteur des "cases"
-#define FONTS_ARRAY_SIZE     20  // nombre max de fontes
+#define FONT_CHARS_PER_LINE  16 // nombre de colonnes
+#define FONT_CHARS_MAX_LINE  12 // nombre de lignes
+#define FONT_X_SPACING       32 // largeur des "cases"
+#define FONT_Y_SPACING       42 // hauteur des "cases"
+#define FONTS_ARRAY_SIZE     20 // nombre max de fontes
 static const char texture_dir[] = "fontes/";
-static int font_text = 0;  // id de la texture en cours
-int cur_font_num = 0;      // id de la fonte en cours
+static int font_text = 0; // id de la texture en cours
+int cur_font_num = 0; // id de la fonte en cours
 // Table mémorisant l'UV-Mapping des caractères sur les planches de fontes
 typedef struct {
 	float u_start;
@@ -83,8 +83,8 @@ int apply_color(unsigned char cur_char) {
 		r = (float)colors_list[color].r1 / 255.0f;
 		g = (float)colors_list[color].g1 / 255.0f;
 		b = (float)colors_list[color].b1 / 255.0f;
-		//This fixes missing letters in the font on some clients
-		//No idea why going from 3f to 4f helps, but it does
+		// This fixes missing letters in the font on some clients
+		// No idea why going from 3f to 4f helps, but it does
 		glColor4f(r, g, b, 1.0);
 		return 1;
 	}
@@ -218,7 +218,7 @@ int draw_string_scaled(int x, int y, const unsigned char *our_string, int max_wi
 	int cur_x, cur_y;
 	int current_lines = 1;
 	int i = 0;
-	//enable alpha filtering, so we have some alpha key
+	// enable alpha filtering, so we have some alpha key
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// ancien seuil alpha inutile mais conservé à cause d'un bug des cartes ATI
@@ -235,7 +235,7 @@ int draw_string_scaled(int x, int y, const unsigned char *our_string, int max_wi
 		}
 		// passe à une nouvelle ligne (retour chariot ou largeur max)
 		if ((cur_char == '\n') || (cur_char == '\r') || (cur_x - x + displayed_font_x_size >= max_width)) {
-			//TODO: si on traite le \n n'est-ce pas mieux d'ignorer le \r ?
+			// TODO: si on traite le \n n'est-ce pas mieux d'ignorer le \r ?
 			if (current_lines < max_lines) {
 				current_lines++;
 				cur_y += displayed_font_y_size;
@@ -287,13 +287,13 @@ int draw_string_legende(int x, int y, const unsigned char *our_string, int max_l
 }
 int draw_string_scaled_shadowed(int x, int y, const unsigned char *our_string, int max_lines, float displayed_font_x_size, float displayed_font_y_size, float fr, float fg, float fb, float br, float bg, float bb) {
 	int px, py;
-	glColor3f(br, bg, bb); //set shadow colour
+	glColor3f(br, bg, bb); // set shadow colour
 	for (px = -1; px <= 1; px += 2) {
 		for (py = -1; py <= 1; py += 2) {
 			draw_string_scaled(x + px, y + py, our_string, window_width, max_lines, displayed_font_x_size, displayed_font_y_size);
 		}
 	}
-	glColor3f(fr, fg, fb); //set foreground colour
+	glColor3f(fr, fg, fb); // set foreground colour
 	return draw_string_scaled(x, y, our_string, window_width, max_lines, displayed_font_x_size, displayed_font_y_size);
 }
 // Affichage avec taille standart "DEFAULT" avec contour + nb lignes max (avec couleurs, sans largeur max)
@@ -312,12 +312,11 @@ int draw_string_shadowed_width(int x, int y, const unsigned char *our_string, in
 int draw_string_zoomed_shadowed(int x, int y, const unsigned char *our_string, int max_lines, float text_zoom, float fr, float fg, float fb, float br, float bg, float bb) {
 	float displayed_font_x_size = DEFAULT_FONT_X_LEN * text_zoom;
 	float displayed_font_y_size = DEFAULT_FONT_Y_LEN * text_zoom;
-//	return draw_string_scaled_shadowed(x, y, our_string, max_lines, displayed_font_x_size, displayed_font_y_size, fr, fg, fb, br, bg, bb);
-	glColor3f(br, bg, bb); //set shadow colour
+	glColor3f(br, bg, bb); // set shadow colour
 	draw_string_scaled(x + 2, y, our_string, window_width, max_lines, displayed_font_x_size, displayed_font_y_size);
 	draw_string_scaled(x + 1, y + 1, our_string, window_width, max_lines, displayed_font_x_size, displayed_font_y_size);
 	draw_string_scaled(x, y + 2, our_string, window_width, max_lines, displayed_font_x_size, displayed_font_y_size);
-	glColor3f(fr, fg, fb); //set foreground colour
+	glColor3f(fr, fg, fb); // set foreground colour
 	return draw_string_scaled(x, y, our_string, window_width, max_lines, displayed_font_x_size, displayed_font_y_size);
 }
 /* -------------------------------------------------------------------------- */
@@ -336,8 +335,6 @@ void draw_string_zoomed_clipped(int x, int y, const unsigned char *our_string, i
 	// enable alpha filtering, so we have some alpha key
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	glEnable(GL_ALPHA_TEST);
-//	glAlphaFunc(GL_GREATER, 0.1f);
 	bind_texture(font_text);
 	cur_x = x;
 	cur_y = y;
@@ -376,7 +373,6 @@ void draw_string_zoomed_clipped(int x, int y, const unsigned char *our_string, i
 	}
 	glEnd();
 	glDisable(GL_BLEND);
-//	glDisable(GL_ALPHA_TEST);
 }
 // Affichage d'un texte contenu dans une box (tronqué) sans zoom ni curseur
 void draw_string_clipped(int x, int y, const unsigned char *our_string, int width, int height) {
@@ -391,7 +387,7 @@ void draw_ortho_ingame_scaled(float x, float y, float z, const unsigned char *ou
 	float cur_x, cur_y;
 	int current_lines = 1;
 	int i = 0;
-	//enable alpha filtering, so we have some alpha key
+	// enable alpha filtering, so we have some alpha key
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
@@ -455,7 +451,7 @@ void draw_ingame_string(float x, float y, const unsigned char *our_string, int m
 	float cur_x, cur_y;
 	int current_lines = 1;
 	int i = 0;
-	//enable alpha filtering, so we have some alpha key
+	// enable alpha filtering, so we have some alpha key
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
@@ -615,7 +611,6 @@ int reset_soft_breaks(char *str, int len, int size, float zoom, int width, int *
 /* ========================================================================== *
 *                              CHANNELS MESSAGES                             *
 * ========================================================================== */
-//
 int pos_selected(int msg, int ichar, select_info *select) {
 	int d = 0;
 	if (select == NULL) {
@@ -645,7 +640,6 @@ int pos_selected(int msg, int ichar, select_info *select) {
 	}
 	return 1;
 }
-//
 void recolour_message(text_message *msg) {
 	if (msg->chan_idx >= CHAT_CHANNEL1 && msg->chan_idx <= CHAT_CHANNEL5 && msg->len > 0 && msg->data[0] && !msg->deleted) {
 		int i;
@@ -670,7 +664,6 @@ void recolour_messages(text_message *msgs) {
 	}
 }
 /* -------------------------------------------------------------------------- */
-//
 void draw_messages(int x, int y, text_message *msgs, int msgs_size, Uint8 filter, int msg_start, int offset_start, int cursor, int width, int height, float text_zoom, select_info *select) {
 	float displayed_font_x_size = DEFAULT_FONT_X_LEN * text_zoom;
 	float displayed_font_y_size = DEFAULT_FONT_Y_LEN * text_zoom;
@@ -736,8 +729,6 @@ void draw_messages(int x, int y, text_message *msgs, int msgs_size, Uint8 filter
 	// enable alpha filtering, so we have some alpha key
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-// 	glEnable (GL_ALPHA_TEST);
-//	glAlphaFunc (GL_GREATER, 0.1f);
 	bind_texture(font_text);
 	i = 0;
 	cur_x = x;
@@ -847,7 +838,6 @@ void draw_messages(int x, int y, text_message *msgs, int msgs_size, Uint8 filter
 	}
 	glEnd();
 	glDisable(GL_BLEND);
-//	glDisable(GL_ALPHA_TEST);
 }
 /* ========================================================================== *
 *  Fonction d'affichage dans le terminal (mode debug)                        *
@@ -880,17 +870,16 @@ void cleanup_fonts() {
 /* ========================================================================== *
 *  Fonctions d'initialisation de la liste des fontes disponibles             *
 * ========================================================================== */
-//
 int load_font_textures() {
 	int i;
 /*
-        if (fonts[0] == NULL || fonts[1] == NULL || fonts[2] == NULL || fonts[3]==NULL )
+        if (fonts[0] == NULL || fonts[1] == NULL || fonts[2] == NULL || fonts[3]==NULL)
         {
                 for (i = 0; i < FONTS_ARRAY_SIZE; i++) {
                         if (fonts[i] != NULL) free (fonts[i]);
                         fonts[i] = NULL;
                 }
-                if ( ! init_fonts() ) return 0;
+                if (! init_fonts()) return 0;
         }
  */
 	for (i = 0; i < FONTS_ARRAY_SIZE; i++) {
@@ -909,7 +898,7 @@ int load_font_textures() {
 			add_multi_option("name_font", fonts[i]->name);
 		}
 	}
-	//set the default font
+	// set the default font
 	set_font(0);
 	return 1;
 }
@@ -996,7 +985,6 @@ void set_font_parameters(xmlNode *node) {
 		} else if (xmlStrEqual(node->name, (xmlChar *)"widths")) {
 			int n;
 			int width = xmlGetInt(node, (xmlChar *)"fixed");
-//			fonts[i]->fixed_width = width;
 			if (width > 0) {
 				for (n = 0; n < FONT_CHARS_PER_LINE * FONT_CHARS_MAX_LINE; n++) {
 					fonts[num]->widths[n] = width;
@@ -1012,9 +1000,7 @@ int init_fonts() {
 	char *fname = "./fontes.xml";
 	xmlDoc *doc;
 	xmlNode *root;
-	//
 	init_char_uv();
-	//
 	for (i = 0; i < FONTS_ARRAY_SIZE; i++) {
 		fonts[i] = NULL;
 		fonts[i] = (font_info *)calloc(1, sizeof(font_info));
@@ -1028,7 +1014,6 @@ int init_fonts() {
 		fonts[i]->adjust = 1.0f;
 		fonts[i]->spacing = 0;
 		fonts[i]->baseline = 0;
-//		fonts[i]->fixed_width = 12;
 		for (j = 0; j < FONT_CHARS_PER_LINE * FONT_CHARS_MAX_LINE; j++) {
 			fonts[i]->widths[j] = 12;
 		}
@@ -1056,7 +1041,7 @@ int init_fonts() {
 		}
 	}
 	xmlFreeDoc(doc);
-	//TODO: vérifier que la fonte 0 a été définie
+	// TODO: vérifier que la fonte 0 a été définie
 	set_font(0);
 	return ok;
 }

@@ -4,10 +4,10 @@
  */
 #ifndef EFFECT_LAMP_H
 #define EFFECT_LAMP_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class LampEffect : public Effect {
 public:
 LampEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const color_t _hue_adjust, const color_t _saturation_adjust, const float scale, const bool halo, const Uint16 _LOD);
@@ -83,6 +83,5 @@ virtual bool deletable() {
 Vec3 true_pos;
 coord_t true_size;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_LAMP_H
+#endif // defined EFFECT_LAMP_H

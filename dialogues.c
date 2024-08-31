@@ -29,7 +29,6 @@ int dialogue_menu_x = 1;
 int dialogue_menu_y = 1;
 int dialogue_menu_x_len = 638;
 int dialogue_menu_y_len = 220;
-//int dialogue_menu_dragged=0;
 int no_bounding_box = 0;
 int show_keypress_letters = 0;
 int autoclose_storage_dialogue = 0;
@@ -73,7 +72,7 @@ void build_response_entries(const Uint8 *data, int total_length) {
 	y_start = 0;
 	orig_x_start = 0;
 	orig_y_start = 0;
-	//first, clear the previous dialogue entries
+	// first, clear the previous dialogue entries
 	for (i = 0; i < MAX_RESPONSES; i++) {
 		dialogue_responces[i].in_use = 0;
 	}
@@ -129,7 +128,7 @@ void build_response_entries(const Uint8 *data, int total_length) {
 static int      display_dialogue_handler(window_info *win) {
 	int i;
 	float u_start, v_start, u_end, v_end;
-	int this_texture; //,cur_item,cur_pos; unused?
+	int this_texture; // ,cur_item,cur_pos; unused?
 	int x_start, x_end, y_start, y_end;
 	unsigned char str[128];
 	// for the moaners - auto select storage option
@@ -142,11 +141,11 @@ static int      display_dialogue_handler(window_info *win) {
 			}
 		}
 	}
-	//calculate the npc_name_x_start (to have it centered on the screen)
+	// calculate the npc_name_x_start (to have it centered on the screen)
 	npc_name_len = strlen((char *)npc_name);
 	npc_name_x_start = win->len_x / 2 - (npc_name_len * SMALL_FONT_X_LEN) / 2;
 	glDisable(GL_TEXTURE_2D);
-	//draw the character frame
+	// draw the character frame
 	glColor3f(0.0f, 1.0f, 1.0f);
 	glBegin(GL_LINE_LOOP);
 	glVertex3i(0, 0, 0);
@@ -156,19 +155,19 @@ static int      display_dialogue_handler(window_info *win) {
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//ok, now let's draw the portrait
+	// ok, now let's draw the portrait
 	if (cur_portrait != -1) {
-		//get the UV coordinates.
+		// get the UV coordinates.
 		u_start = 0.25f * (cur_portrait % 4);
 		u_end = u_start + 0.25f;
 		v_start = 0.25f * (cur_portrait / 4);
 		v_end = v_start + 0.25f;
-		//get the x and y
+		// get the x and y
 		x_start = 1;
 		x_end = x_start + 64;
 		y_start = 1;
 		y_end = y_start + 64;
-		//get the texture this item belongs to
+		// get the texture this item belongs to
 		this_texture = cur_portrait / 16;
 		this_texture = portraits_tex[this_texture];
 		bind_texture(this_texture);
@@ -177,9 +176,9 @@ static int      display_dialogue_handler(window_info *win) {
 		glEnd();
 	}
 	y_start = 0;
-	//draw the main text
+	// draw the main text
 	draw_string_small(70, 2, dialogue_string, MAX_MESS_LINES);
-	//ok, now draw the responses
+	// ok, now draw the responses
 	for (i = 0; i < MAX_RESPONSES; i++) {
 		if (dialogue_responces[i].in_use) {
 			if (dialogue_responces[i].mouse_over) {
@@ -193,7 +192,7 @@ static int      display_dialogue_handler(window_info *win) {
 			if (use_keypress_dialogue_boxes && show_keypress_letters) {
 				if (i >= 0 && i <= 8) { // 1-9
 					safe_snprintf((char *)str, sizeof(str), "%c] %s", 49 + i, (unsigned char *)dialogue_responces[i].text);
-				} else if (i == 9) { //0
+				} else if (i == 9) { // 0
 					safe_snprintf((char *)str, sizeof(str), "0] %s", (unsigned char *)dialogue_responces[i].text);
 				} else if (i >= 10 && i <= 35) { // A-Z
 					safe_snprintf((char *)str, sizeof(str), "%c] %s", 55 + i, (unsigned char *)dialogue_responces[i].text);
@@ -210,12 +209,12 @@ static int      display_dialogue_handler(window_info *win) {
 		}
 	}
 	glColor3f(1.0f, 1.0f, 1.0f);
-	if (y_start > win->orig_len_y) {//automatically Y-resizing window if there are a lot of options
+	if (y_start > win->orig_len_y) { // automatically Y-resizing window if there are a lot of options
 		win->len_y = y_start;
 	} else {
 		win->len_y = win->orig_len_y;
 	}
-	//now, draw the character name
+	// now, draw the character name
 	set_font(police_nom_pnj_dialogue);
 	glColor3f(couleur_nom_pnj_dialogue.rouge, couleur_nom_pnj_dialogue.vert, couleur_nom_pnj_dialogue.bleu);
 	draw_string_small(npc_name_x_start, win->len_y - (SMALL_FONT_Y_LEN + 1), npc_name, 1);
@@ -285,7 +284,7 @@ static int mouseover_dialogue_handler(window_info *win, int mx, int my) {
 	if (mx > npc_name_x_start && mx < npc_name_x_start + npc_name_len * SMALL_FONT_X_LEN && my >= win->len_y - (SMALL_FONT_Y_LEN + 1)) {
 		mouse_over_name = 1;
 	}
-	//first, clear the mouse overs
+	// first, clear the mouse overs
 	for (i = 0; i < MAX_RESPONSES; i++) {
 		dialogue_responces[i].mouse_over = 0;
 	}
@@ -465,21 +464,21 @@ static int keypress_dialogue_handler(window_info *win, int mx, int my, Uint32 ke
 		return 0;
 	}
 	ch = key_to_char(unikey);
-	if ((key & ELW_ALT) || (key & ELW_CTRL)) { //Do not process Ctrl or Alt keypresses
+	if ((key & ELW_ALT) || (key & ELW_CTRL)) { // Do not process Ctrl or Alt keypresses
 		return 0;
 	}
 	if (ch < '0' || ch > 'z') { // do not send special keys
 		return 0;
 	}
 	if (ch >= 'a' && ch <= 'z') {
-		ch -= 87; //a-z->10-35
+		ch -= 87; // a-z->10-35
 	} else if (ch >= 'A' && ch <= 'Z') {
-		ch -= 55; //A-Z->10-35
+		ch -= 55; // A-Z->10-35
 	} else if (ch >= '1' && ch <= '9') {
-		ch -= 49; //1-9->0-8
-	} else if (ch == '0') { //0->9
+		ch -= 49; // 1-9->0-8
+	} else if (ch == '0') { // 0->9
 		ch = 9;
-	} else { //out of range
+	} else { // out of range
 		return 0;
 	}
 	// if not being used for responses, check for other use
@@ -493,10 +492,10 @@ static int keypress_dialogue_handler(window_info *win, int mx, int my, Uint32 ke
 			return 1;
 		}
 	}
-	if ((key & ELW_ALT) || (key & ELW_CTRL)) { //Do not process Ctrl or Alt keypresses
+	if ((key & ELW_ALT) || (key & ELW_CTRL)) { // Do not process Ctrl or Alt keypresses
 		return 0;
 	}
-	if (MAX_RESPONSES - 1 < ch) {//pressed a key that the client is not expecting, ignore it
+	if (MAX_RESPONSES - 1 < ch) { // pressed a key that the client is not expecting, ignore it
 		return 1;
 	}
 	if (dialogue_responces[ch].in_use) {

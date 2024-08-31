@@ -52,7 +52,7 @@ void acquire(counter *c) throw() { // increment the count
 		++c->count;
 	}
 }
-void release() {  // decrement the count, delete if it is 0
+void release() { // decrement the count, delete if it is 0
 	if (itsCounter) {
 		if (--itsCounter->count == 0) {
 			delete itsCounter->ptr;

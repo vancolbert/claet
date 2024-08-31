@@ -39,7 +39,7 @@ const dict_elem skin_color_dict[] =
  {"normal", SKIN_NORMAL},
  {"pale", SKIN_PALE},
  {"tan", SKIN_TAN},
- {"darkblue", SKIN_DARK_BLUE},                  // Elf's only
+ {"darkblue", SKIN_DARK_BLUE}, // Elf's only
  {"clair", SKIN_EN_CLAIR},
  {"fonce", SKIN_EN_FONCE},
  {"gris", SKIN_EN_GRIS},
@@ -60,8 +60,8 @@ const dict_elem head_number_dict[] =
  {"4", HEAD_4},
  {"5", HEAD_5},
  {NULL, -1}};
-int actor_part_sizes[ACTOR_NUM_PARTS] = {10, 40, 100, 100, 240, 100, 10, 20, 40, 80, 20};               // Elements according to actor_parts_enum
-//Forward declarations
+int actor_part_sizes[ACTOR_NUM_PARTS] = {10, 40, 100, 100, 240, 100, 10, 20, 40, 80, 20}; // Elements according to actor_parts_enum
+// Forward declarations
 int cal_load_weapon_mesh(actor_types *act, const char *fn, const char *kind);
 int cal_load_mesh(actor_types *act, const char *fn, const char *kind);
 void unqueue_cmd(int i);
@@ -74,11 +74,9 @@ void cal_actor_set_random_idle(int id) {
 	if (actors_list[id]->calmodel == NULL) {
 		return;
 	}
-	//LOG_TO_CONSOLE(c_green2,"Randomizing");
-	//if (actors_list[id]->cur_anim.anim_index==anim.anim_index) return;
 	srand((unsigned)time(NULL));
 	mixer = CalModel_GetMixer(actors_list[id]->calmodel);
-	//Stop previous animation if needed
+	// Stop previous animation if needed
 	if (actors_list[id]->IsOnIdle != 1) {
 		if ((actors_list[id]->cur_anim.anim_index != -1) && (actors_list[id]->cur_anim.kind == 0)) {
 			CalMixer_ClearCycle(mixer, actors_list[id]->cur_anim.anim_index, 0.05);
@@ -104,16 +102,9 @@ void cal_actor_set_random_idle(int id) {
 				CalMixer_BlendCycle(mixer, random_anim_index, 0.5, 0.05);
 			}
 		}
-		//safe_snprintf(str, sizeof(str),"%d",random_anim);
-		//LOG_TO_CONSOLE(c_green2,str);
 		actors_list[id]->cur_idle_anims[i].anim_index = random_anim_index;
-		//anim.anim_index,1.0,0.05);else
 	}
-	//if (anim.kind==0) CalMixer_BlendCycle(mixer,anim.anim_index,1.0,0.05);else
-	//CalMixer_ExecuteAction(mixer,anim.anim_index,0.0,0.0);
-	//actors_list[id]->cur_anim=anim;
-	//actors_list[id]->anim_time=0.0;
-	CalModel_Update(actors_list[id]->calmodel, 0.0001);//Make changes take effect now
+	CalModel_Update(actors_list[id]->calmodel, 0.0001); // Make changes take effect now
 	build_actor_bounding_box(actors_list[id]);
 	actors_list[id]->IsOnIdle = 1;
 	actors_list[id]->cur_anim.duration = 0;
@@ -124,11 +115,10 @@ void cal_actor_set_random_idle(int id) {
 		stop_sound(actors_list[id]->cur_anim_sound_cookie);
 	}
 	actors_list[id]->cur_anim_sound_cookie = 0;
-	//if (actors_list[id]->cur_anim.anim_index==-1) actors_list[id]->busy=0;
 }
 float unwindAngle_Degrees(float fAngle) {
 	fAngle -= 360.0f * (int)(fAngle / 360.0f);
-	if ( fAngle < 0.0f ) {
+	if (fAngle < 0.0f) {
 		fAngle += 360.0f;
 	}
 	return fAngle;
@@ -199,7 +189,7 @@ void animate_actors() {
 	int time_diff = cur_time - last_update;
 	int tmp_time_diff;
 	// lock the actors_list so that nothing can interere with this look
-	LOCK_ACTORS_LISTS();    //lock it to avoid timing issues
+	LOCK_ACTORS_LISTS(); // lock it to avoid timing issues
 	for (i = 0; i < max_actors; i++) {
 		if (actors_list[i]) {
 			if (actors_list[i]->moving) {
@@ -213,20 +203,17 @@ void animate_actors() {
 					actors_list[i]->z_pos += actors_list[i]->move_z_speed * actors_list[i]->movement_time_left;
 				}
 				actors_list[i]->movement_time_left -= time_diff;
-				if (actors_list[i]->movement_time_left <= 0) {   //we moved all the way
+				if (actors_list[i]->movement_time_left <= 0) { // we moved all the way
 					Uint8 last_command;
 					int dx, dy;
-					actors_list[i]->moving = 0;      //don't move next time, ok?
-					//now, we need to update the x/y_tile_pos, and round off
-					//the x/y_pos according to x/y_tile_pos
+					actors_list[i]->moving = 0; // don't move next time, ok?
+					// now, we need to update the x/y_tile_pos, and round off
+					// the x/y_pos according to x/y_tile_pos
 					last_command = actors_list[i]->last_command;
-					//if(HAS_HORSE(i)) {MY_HORSE(i)->busy=0; if(actors_list[i]->actor_id==yourself) printf("%i, %s wakes up Horse\n",thecount, ACTOR(i)->actor_name);}
 					if (get_motion_vector(last_command, &dx, &dy)) {
 						actors_list[i]->x_tile_pos += dx;
 						actors_list[i]->y_tile_pos += dy;
 						actors_list[i]->busy = 0;
-						//if(actors_list[i]->actor_id==yourself) printf("%i, unbusy(moved)\n", thecount);
-						//if(actors_list[i]->actor_id<0) printf("%i, unbusy horse(moved)\n", thecount);
 						if (actors_list[i]->que[0] >= move_n && actors_list[i]->que[0] <= move_nw) {
 							next_command();
 						} else {
@@ -236,15 +223,13 @@ void animate_actors() {
 						}
 					} else {
 						actors_list[i]->busy = 0;
-						//if(actors_list[i]->actor_id==yourself) printf("%i, unbusy(moved2)\n", thecount);
-						//if(actors_list[i]->actor_id<0) printf("%i, unbusy horse(moved2)\n", thecount);
 					}
 				}
-			} //moving
+			} // moving
 			if (actors_list[i]->rotating) {
 				actors_list[i]->rotate_time_left -= time_diff;
-				if (actors_list[i]->rotate_time_left <= 0) { //we rotated all the way
-					actors_list[i]->rotating = 0;//don't rotate next time, ok?
+				if (actors_list[i]->rotate_time_left <= 0) { // we rotated all the way
+					actors_list[i]->rotating = 0; // don't rotate next time, ok?
 					tmp_time_diff = time_diff + actors_list[i]->rotate_time_left;
 				} else {
 					tmp_time_diff = time_diff;
@@ -257,7 +242,7 @@ void animate_actors() {
 				} else if (actors_list[i]->z_rot <= 0) {
 					actors_list[i]->z_rot += 360;
 				}
-			}//rotating
+			} // rotating
 			actors_list[i]->anim_time += ((cur_time - last_update) * actors_list[i]->cur_anim.duration_scale) / 1000.0;
 			if (actors_list[i]->calmodel != NULL) {
 				CalModel_Update(actors_list[i]->calmodel, (((cur_time - last_update) * actors_list[i]->cur_anim.duration_scale) / 1000.0));
@@ -272,7 +257,7 @@ void animate_actors() {
 void unqueue_cmd(int i) {
 	int k;
 	int max_queue = 0;
-	//move que down with one command
+	// move que down with one command
 	for (k = 0; k < MAX_CMD_QUEUE - 1; k++) {
 		if (k > max_queue && actors_list[i]->que[k] != nothing) {
 			max_queue = k;
@@ -316,10 +301,6 @@ void flush_delayed_item_changes(actor *a) {
 int coun = 0;
 void move_to_next_frame() {
 	int i;
-	//int numFrames=0;
-	//char frame_exists;
-	//struct CalMixer *mixer;
-	//char str[255];
 	LOCK_ACTORS_LISTS();
 	for (i = 0; i < max_actors; i++) {
 		if (actors_list[i] != NULL) {
@@ -353,10 +334,8 @@ void move_to_next_frame() {
 			}
 			if (actors_list[i]->cur_anim.anim_index == -1) {
 				actors_list[i]->busy = 0;
-				//if(actors_list[i]->actor_id==yourself) printf("%i, unbusy(-1)\n", thecount);
-				//if(actors_list[i]->actor_id<0) printf("%i, unbusy horse(-1)\n", thecount);
 			}
-			//first thing, decrease the damage time, so we will see the damage splash only for 2 seconds
+			// first thing, decrease the damage time, so we will see the damage splash only for 2 seconds
 			if (actors_list[i]->damage_ms) {
 				actors_list[i]->damage_ms -= 80;
 				if (actors_list[i]->damage_ms < 0) {
@@ -402,19 +381,18 @@ void set_on_idle(int actor_idx) {
 		}
 	}
 }
-//in case the actor is not busy, and has commands in it's que, execute them
+// in case the actor is not busy, and has commands in it's que, execute them
 void next_command() {
 	int i, index;
 	for (i = 0; i < max_actors; i++) {
 		if (!actors_list[i]) {
-			continue;           //actor exists?
+			continue; // actor exists?
 		}
-		if (!actors_list[i]->busy) {//Are we busy?
-			if (actors_list[i]->que[0] == nothing) {//Is the queue empty?
-				//if que is empty, set on idle
+		if (!actors_list[i]->busy) { // Are we busy?
+			if (actors_list[i]->que[0] == nothing) { // Is the queue empty?
+				// if que is empty, set on idle
 				set_on_idle(i);
-				//synch_attachment(i);
-				actors_list[i]->last_command = nothing;//prevents us from not updating the walk/run animation
+				actors_list[i]->last_command = nothing; // prevents us from not updating the walk/run animation
 			} else {
 				int actor_type;
 				int last_command = actors_list[i]->last_command;
@@ -479,7 +457,6 @@ void next_command() {
 					}
 					break;
 				case stand_up:
-					//LOG_TO_CONSOLE(c_green2,"stand_up");
 					cal_actor_set_anim(i, actors_defs[actor_type].cal_frames[cal_actor_stand_up_frame]);
 					actors_list[i]->stop_animation = 1;
 					actors_list[i]->sitting = 0;
@@ -565,9 +542,9 @@ void next_command() {
 					if (actors_list[i]->is_enhanced_model) {
 						cal_actor_set_anim(i, actors_defs[actor_type].weapon[actors_list[i]->cur_weapon].cal_frames[index]);
 					} else {
-						//non enhanced models
+						// non enhanced models
 						{
-							//select normal actor att frames
+							// select normal actor att frames
 							index += cal_actor_attack_up_1_frame;
 							cal_actor_set_anim(i, actors_defs[actor_type].cal_frames[index]);
 						}
@@ -600,18 +577,17 @@ void next_command() {
 				case turn_left:
 				case turn_right: {
 					int mul = (actors_list[i]->que[0] == turn_left) ? (1):(-1);
-					//LOG_TO_CONSOLE(c_green2,"turn left");
 					actors_list[i]->rotate_z_speed = mul * 45.0 / 540.0;
 					actors_list[i]->rotate_time_left = 540;
 					actors_list[i]->rotating = 1;
-					//generate a fake movement, so we will know when to make the actor
-					//not busy
+					// generate a fake movement, so we will know when to make the actor
+					// not busy
 					actors_list[i]->move_x_speed = 0;
 					actors_list[i]->move_y_speed = 0;
 					actors_list[i]->move_z_speed = 0;
 					actors_list[i]->movement_time_left = 540;
 					actors_list[i]->moving = 1;
-					//test
+					// test
 					if (!actors_list[i]->fighting) {
 						attachment_props *att_props = get_attachment_props_if_held(actors_list[i]);
 						if (att_props) {
@@ -623,7 +599,7 @@ void next_command() {
 					actors_list[i]->stop_animation = 0;
 					break;
 				}
-				//ok, now the movement, this is the tricky part
+				// ok, now the movement, this is the tricky part
 				default:
 					if (actors_list[i]->que[0] >= move_n && actors_list[i]->que[0] <= move_nw) {
 						float rotation_angle;
@@ -638,11 +614,11 @@ void next_command() {
 						}
 						actors_list[i]->moving = 1;
 						actors_list[i]->fighting = 0;
-						if (last_command < move_n || last_command > move_nw) {  //update the frame name too
+						if (last_command < move_n || last_command > move_nw) { // update the frame name too
 							cal_actor_set_anim(i, *walk_anim);
 							actors_list[i]->stop_animation = 0;
 						}
-						if (last_command != actors_list[i]->que[0]) {     //Calculate the rotation
+						if (last_command != actors_list[i]->que[0]) { // Calculate the rotation
 							targeted_z_rot = (actors_list[i]->que[0] - move_n) * 45.0f;
 							rotation_angle = get_rotation_vector(z_rot, targeted_z_rot);
 							actors_list[i]->rotate_z_speed = rotation_angle / 360.0;
@@ -661,9 +637,9 @@ void next_command() {
 						if (actors_list[i]->que[1] >= move_n && actors_list[i]->que[1] <= move_nw) {
 							if (actors_list[i]->que[2] >= move_n && actors_list[i]->que[2] <= move_nw) {
 								if (actors_list[i]->que[3] >= move_n && actors_list[i]->que[3] <= move_nw) {
-									actors_list[i]->movement_time_left = (int)(step_duration * 0.9);       // 3 moves
+									actors_list[i]->movement_time_left = (int)(step_duration * 0.9); // 3 moves
 								} else {
-									actors_list[i]->movement_time_left = step_duration;         // 2 moves
+									actors_list[i]->movement_time_left = step_duration; // 2 moves
 								}
 							} else {
 								actors_list[i]->movement_time_left = (int)(step_duration * 1.1); // 1 move
@@ -704,12 +680,11 @@ void next_command() {
 						actors_list[i]->stop_animation = 1;
 					}
 				}
-				//mark the actor as being busy
+				// mark the actor as being busy
 				if (!no_action) {
 					actors_list[i]->busy = 1;
 				}
-				//if (actors_list[i]->actor_id==yourself) LOG_TO_CONSOLE(c_green2,"Busy");
-				//save the last command. It is especially good for run and walk
+				// save the last command. It is especially good for run and walk
 				actors_list[i]->last_command = actors_list[i]->que[0];
 				unqueue_cmd(i);
 			}
@@ -738,7 +713,7 @@ void destroy_actor(int actor_id) {
 	int i;
 	int attached_actor = -1;
 	for (i = 0; i < max_actors; i++) {
-		if (actors_list[i]) {//The timer thread doesn't free memory
+		if (actors_list[i]) { // The timer thread doesn't free memory
 			if (actors_list[i]->actor_id == actor_id) {
 				LOCK_ACTORS_LISTS();
 				attached_actor = actors_list[i]->attached_actor;
@@ -751,7 +726,7 @@ void destroy_actor(int actor_id) {
 				if (i == max_actors - 1) {
 					max_actors--;
 				} else {
-					//copy the last one down and fill in the hole
+					// copy the last one down and fill in the hole
 					max_actors--;
 					actors_list[i] = actors_list[max_actors];
 					actors_list[max_actors] = NULL;
@@ -769,7 +744,7 @@ void destroy_actor(int actor_id) {
 					if (attached_actor == max_actors - 1) {
 						max_actors--;
 					} else {
-						//copy the last one down and fill in the hole
+						// copy the last one down and fill in the hole
 						max_actors--;
 						actors_list[attached_actor] = actors_list[max_actors];
 						actors_list[max_actors] = NULL;
@@ -787,7 +762,7 @@ void destroy_actor(int actor_id) {
 }
 void destroy_all_actors() {
 	int i = 0;
-	LOCK_ACTORS_LISTS();    //lock it to avoid timing issues
+	LOCK_ACTORS_LISTS(); // lock it to avoid timing issues
 	set_our_actor(NULL);
 	for (i = 0; i < max_actors; i++) {
 		if (actors_list[i]) {
@@ -800,11 +775,11 @@ void destroy_all_actors() {
 	actor_under_mouse = NULL;
 	my_timer_adjust = 0;
 	harvesting_effect_reference = NULL;
-	UNLOCK_ACTORS_LISTS();  //unlock it since we are done
+	UNLOCK_ACTORS_LISTS(); // unlock it since we are done
 }
 void update_all_actors() {
 	Uint8 str[40];
-	//we got a nasty error, log it
+	// we got a nasty error, log it
 	LOG_TO_CONSOLE(c_red2, resync_server);
 	destroy_all_actors();
 	str[0] = SEND_ME_MY_ACTORS;
@@ -814,19 +789,19 @@ int push_command_in_actor_queue(unsigned int command, actor *act) {
 	int k;
 	for (k = 0; k < MAX_CMD_QUEUE; k++) {
 		if (act->que[k] == nothing) {
-			//if we are SEVERLY behind, just update all the actors in range
+			// if we are SEVERLY behind, just update all the actors in range
 			if (k > MAX_CMD_QUEUE - 2) {
 				break;
 			} else if (k > MAX_CMD_QUEUE - 8) {
 				// is the front a sit/stand spam?
 				if ((act->que[0] == stand_up || act->que[0] == sit_down) && (act->que[1] == stand_up || act->que[1] == sit_down)) {
 					int j;
-					//move que down with one command
+					// move que down with one command
 					for (j = 0; j <= k; j++) {
 						act->que[j] = act->que[j + 1];
 					}
 					act->que[j] = nothing;
-					//backup one entry
+					// backup one entry
 					k--;
 				}
 				// is the end a sit/stand spam?
@@ -854,23 +829,20 @@ void sanitize_cmd_queue(actor *act) {
 	}
 }
 void add_command_to_actor(int actor_id, unsigned char command) {
-	//int i=0;
 	int k = 0;
 	int k2 = 0;
-	//int have_actor=0;
-//if ((actor_id==yourself)&&(command==enter_combat)) LOG_TO_CONSOLE(c_green2,"FIGHT!");
 	actor *act;
 	int isme = 0;
 	act = get_actor_ptr_from_id(actor_id);
 	if (!act) {
-		//Resync
-		//if we got here, it means we don't have this actor, so get it from the server...
+		// Resync
+		// if we got here, it means we don't have this actor, so get it from the server...
 		LOG_ERROR("%s %d - %d\n", cant_add_command, command, actor_id);
 	} else {
 		LOCK_ACTORS_LISTS();
 		if (command == leave_combat || command == enter_combat || command == die1 || command == die2) {
 			int j = 0;
-			//Strip the queue for attack messages
+			// Strip the queue for attack messages
 			for (k = 0; k < MAX_CMD_QUEUE; k++) {
 				switch (act->que[k]) {
 				case pain1:
@@ -893,7 +865,7 @@ void add_command_to_actor(int actor_id, unsigned char command) {
 				}
 			}
 			if (act->last_command == nothing) {
-				//We may be on idle, update the actor so we can reduce the rendering lag
+				// We may be on idle, update the actor so we can reduce the rendering lag
 				CalModel_Update(act->calmodel, 5.0f);
 				build_actor_bounding_box(act);
 			}
@@ -910,26 +882,21 @@ void add_command_to_actor(int actor_id, unsigned char command) {
 				isme = act->actor_id == me->actor_id;
 			}
 		}
-		//if(act->actor_id==yourself) printf("COMMAND: %i at pos %i (and %i)\n",command,k,k2);
-		//if(act->actor_id==yourself) print_queue(act);
-		//Reduce resync in invasions
+		// Reduce resync in invasions
 		if (command == enter_combat) {
 			// we received an enter_combat, look back in the queue
 			// if a leave_combat is found and all the commands in between
 			// are turning commands, just ignore the leave and the enter combat commands
 			int j = k - 1;
 			while (act->que[j] >= turn_n && act->que[j] <= turn_nw && j >= 0) {
-				j--;                                                //skip rotations
+				j--; // skip rotations
 			}
 			if (j >= 0 && act->que[j] == leave_combat) {
-				//remove leave_combat and enter_combat
+				// remove leave_combat and enter_combat
 				act->que[j] = nothing;
 				act->que[k] = nothing;
 				sanitize_cmd_queue(act);
-				//if(act->actor_id==yourself) printf("   actor %s: skipped %i and %i\n",act->actor_name,j,k);
 			}
-			//if(act->actor_id==yourself) printf("   ***Skip Done***\n");
-			//if(act->actor_id==yourself) print_queue(act);
 		}
 		switch (command) {
 		case enter_combat:
@@ -1047,7 +1014,6 @@ void add_command_to_actor(int actor_id, unsigned char command) {
 	}
 }
 void get_actor_damage(int actor_id, int damage, int sante) {
-	//int i=0;
 	actor *act;
 	float blood_level;
 	float bone_list[1024][3];
@@ -1056,7 +1022,7 @@ void get_actor_damage(int actor_id, int damage, int sante) {
 	float bone_x, bone_y, bone_z;
 	act = get_actor_ptr_from_id(actor_id);
 	if (!act) {
-		//if we got here, it means we don't have this actor, so get it from the server...
+		// if we got here, it means we don't have this actor, so get it from the server...
 	} else {
 		if (floatingmessages_enabled) {
 			act->last_health_loss = cur_time;
@@ -1077,25 +1043,23 @@ void get_actor_damage(int actor_id, int damage, int sante) {
 		}
 		act->last_range_attacker_id = -1;
 		if (use_eye_candy && enable_blood) {
-			if (strcmp(act->actor_name, "Gargoyle") && strcmp(act->actor_name, "Skeleton") && strcmp(act->actor_name, "Phantom Warrior")) { //Ideally, we'd also check to see if it was a player or not, but since this is just cosmetic...
+			if (strcmp(act->actor_name, "Gargoyle") && strcmp(act->actor_name, "Skeleton") && strcmp(act->actor_name, "Phantom Warrior")) { // Ideally, we'd also check to see if it was a player or not, but since this is just cosmetic...
 				blood_level = (act->max_health) ? (int)powf(damage / powf(act->max_health, 0.5), 0.75) + 0.5 : (int)powf(damage / 8, 0.75) + 0.5;
 				total_bones = CalSkeleton_GetBonePoints(CalModel_GetSkeleton(act->calmodel), &bone_list[0][0]);
 				bone = rand() % total_bones;
 				bone_x = bone_list[bone][0] + act->x_pos + 0.25;
 				bone_y = bone_list[bone][1] + act->y_pos + 0.25;
 				bone_z = bone_list[bone][2] + ec_get_z(act);
-//				printf("ec_create_impact_blood((%f %f, %f), (%f, %f, %f), %d, %f);", bone_x, bone_y, bone_z, ((float)rand()) * blood_level / RAND_MAX / 13.0, ((float)rand()) * blood_level / RAND_MAX / 13.0, ((float)rand()) * blood_level / RAND_MAX / 13.0, (poor_man ? 6 : 10), blood_level);
 				ec_create_impact_blood(bone_x, bone_y, bone_z, ((float)rand()) * blood_level / RAND_MAX / 13.0, ((float)rand()) * blood_level / RAND_MAX / 13.0, ((float)rand()) * blood_level / RAND_MAX / 13.0, (poor_man ? 6 : 10), blood_level);
 			}
 		}
 	}
 }
 void get_actor_heal(int actor_id, int quantity, int sante) {
-	//int i=0;
 	actor *act;
 	act = get_actor_ptr_from_id(actor_id);
 	if (!act) {
-		//if we got here, it means we don't have this actor, so get it from the server...
+		// if we got here, it means we don't have this actor, so get it from the server...
 	} else {
 		if (actor_id == yourself) {
 			set_last_heal(quantity);
@@ -1111,33 +1075,29 @@ void get_actor_heal(int actor_id, int quantity, int sante) {
 			act->cur_health = sante;
 		}
 	}
-	//if we got here, it means we don't have this actor, so get it from the server...
+	// if we got here, it means we don't have this actor, so get it from the server...
 }
 void get_actor_health(int actor_id, int quantity, int sante) {
-	//int i=0;
 	actor *act;
 	act = get_actor_ptr_from_id(actor_id);
 	if (!act) {
-		//if we got here, it means we don't have this actor, so get it from the server...
+		// if we got here, it means we don't have this actor, so get it from the server...
 	} else {
-//		if(floatingmessages_enabled){
-		//act->damage=-quantity;
-		//act->damage_ms=2000;
-		//act->last_health_loss=cur_time;
-//		}
+// if(floatingmessages_enabled){
+// }
 		if (sante == PAS_ETAT_SANTE) {
 			act->max_health = quantity;
 		} else {
 			act->cur_health = sante;
 		}
 	}
-	//if we got here, it means we don't have this actor, so get it from the server...
+	// if we got here, it means we don't have this actor, so get it from the server...
 }
 void move_self_forward() {
 	int x, y, rot, tx, ty;
 	actor *me = get_our_actor();
 	if (!me) {
-		return;//Wtf!?
+		return; // Wtf!?
 	}
 	x = me->x_tile_pos;
 	y = me->y_tile_pos;
@@ -1146,36 +1106,36 @@ void move_self_forward() {
 		rot += 8;
 	}
 	switch (rot) {
-	case 8:         //360
-	case 0:         //0
+	case 8: // 360
+	case 0: // 0
 		tx = x;
 		ty = y + 1;
 		break;
-	case 1:         //45
+	case 1: // 45
 		tx = x + 1;
 		ty = y + 1;
 		break;
-	case 2:         //90
+	case 2: // 90
 		tx = x + 1;
 		ty = y;
 		break;
-	case 3:         //135
+	case 3: // 135
 		tx = x + 1;
 		ty = y - 1;
 		break;
-	case 4:         //180
+	case 4: // 180
 		tx = x;
 		ty = y - 1;
 		break;
-	case 5:         //225
+	case 5: // 225
 		tx = x - 1;
 		ty = y - 1;
 		break;
-	case 6:         //270
+	case 6: // 270
 		tx = x - 1;
 		ty = y;
 		break;
-	case 7:         //315
+	case 7: // 315
 		tx = x - 1;
 		ty = y + 1;
 		break;
@@ -1183,7 +1143,7 @@ void move_self_forward() {
 		tx = x;
 		ty = y;
 	}
-	//check to see if the coordinates are OUTSIDE the map
+	// check to see if the coordinates are OUTSIDE the map
 	if (ty < 0 || tx < 0 || tx >= tile_map_size_x * 6 || ty >= tile_map_size_y * 6) {
 		return;
 	}
@@ -1205,7 +1165,7 @@ const xmlNode *get_default_node(const xmlNode *cfg, const xmlNode *defaults) {
 	if (defaults == NULL || cfg == NULL) {
 		return NULL;
 	}
-	//lets find out what group to look for
+	// lets find out what group to look for
 	group = get_string_property(cfg, "group");
 	// look for defaul entries with the same name
 	for (item = defaults->children; item; item = item->next) {
@@ -1553,7 +1513,7 @@ int parse_actor_weapon_detail(actor_types *act, weapon_part *weapon, const xmlNo
 					weapon->cal_frames[index] = cal_load_anim(act, str, get_string_property(item, "sound"), get_string_property(item, "sound_scale"), get_int_property(item, "duration"));
 				} else {
 					if (strstr((const char *)(item->name), "held") != NULL) {
-						//do not log this error, it's due to def files with more_attached_actors frames
+						// do not log this error, it's due to def files with more_attached_actors frames
 					} else {
 						LOG_ERROR("unknown weapon property \"%s\"", item->name);
 					}
@@ -1607,7 +1567,7 @@ int parse_actor_weapon(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 		}
 	}
 	// check the critical information
-	if (type_idx != WEAPON_NONE) {  // no weapon doesn't have a skin/model
+	if (type_idx != WEAPON_NONE) { // no weapon doesn't have a skin/model
 		actor_check_string(act, "weapon", "skin", weapon->skin_name);
 		if (type_idx != GLOVE_FUR && type_idx != GLOVE_LEATHER && type_idx != GANTS_CUIR_NOIR && type_idx != GLOVE_FUR_LEO && type_idx != GLOVE_LEATHER_3) { // these dont have meshes
 			actor_check_string(act, "weapon", "model", weapon->model_name);
@@ -1920,9 +1880,9 @@ int cal_get_idle_group(actor_types *act, char *name) {
 		}
 	}
 	if (res >= 0) {
-		return res;    //Found it, return
+		return res; // Found it, return
 	}
-	//Create a new named group
+	// Create a new named group
 	res = act->group_count;
 	safe_strncpy(act->idle_group[res].name, name, sizeof(act->idle_group[res].name));
 	++act->group_count;
@@ -1952,23 +1912,17 @@ void cal_group_addanim(actor_types *act, int gindex, char *fanim) {
 	int i;
 	i = act->idle_group[gindex].count;
 	act->idle_group[gindex].anim[i] = cal_load_idle(act, fanim);
-	//LOG_TO_CONSOLE(c_green2,fanim);
 	++act->idle_group[gindex].count;
 }
 void parse_idle_group(actor_types *act, const char *str) {
 	char gname[255] = {0};
 	char fname[255] = {0};
-	//char temp[255];
 	int gindex;
 	if (sscanf(str, "%254s %254s", gname, fname) != 2) {
 		return;
 	}
 	gindex = cal_get_idle_group(act, gname);
 	cal_group_addanim(act, gindex, fname);
-	//safe_snprintf(temp, sizeof(temp), "%d",gindex);
-	//LOG_TO_CONSOLE(c_green2,gname);
-	//LOG_TO_CONSOLE(c_green2,fname);
-	//LOG_TO_CONSOLE(c_green2,temp);
 }
 int parse_actor_frames(actor_types *act, const xmlNode *cfg, const xmlNode *defaults) {
 	const xmlNode *item;
@@ -1982,10 +1936,8 @@ int parse_actor_frames(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 			index = -1;
 			if (xmlStrcasecmp(item->name, (xmlChar *)"CAL_IDLE_GROUP") == 0) {
 				get_string_value(str, sizeof(str), item);
-				//act->cal_walk_frame=cal_load_anim(act,str);
-				//LOG_TO_CONSOLE(c_green2,str);
 				parse_idle_group(act, str);
-				//Not functional!
+				// Not functional!
 				index = -2;
 			} else if (xmlStrcasecmp(item->name, (xmlChar *)"CAL_walk") == 0) {
 				index = cal_actor_walk_frame;
@@ -2227,7 +2179,7 @@ int parse_actor_boots(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	actor_check_int(act, "boots", "mesh", boots->mesh_index);
 	return ok;
 }
-//Searches if a mesh is already loaded- TODO:MAKE THIS BETTER
+// Searches if a mesh is already loaded- TODO:MAKE THIS BETTER
 int cal_search_mesh(actor_types *act, const char *fn, const char *kind) {
 	int i;
 	if (kind == NULL) {
@@ -2289,7 +2241,7 @@ int cal_search_mesh(actor_types *act, const char *fn, const char *kind) {
 	}
 	return -1;
 }
-//Loads a Cal3D mesh
+// Loads a Cal3D mesh
 int cal_load_mesh(actor_types *act, const char *fn, const char *kind) {
 	int res;
 	struct CalCoreMesh *mesh;
@@ -2308,9 +2260,9 @@ int cal_load_mesh(actor_types *act, const char *fn, const char *kind) {
 			return res;
 		}
 	}
-	//Load coremesh
+	// Load coremesh
 	res = CalCoreModel_ELLoadCoreMesh(act->coremodel, fn);
-	//Scale coremesh
+	// Scale coremesh
 	if (res >= 0) {
 		mesh = CalCoreModel_GetCoreMesh(act->coremodel, res);
 		if ((mesh) && (act->mesh_scale != 1.0)) {
@@ -2339,9 +2291,9 @@ int cal_load_weapon_mesh(actor_types *act, const char *fn, const char *kind) {
 			return res;
 		}
 	}
-	//Load coremesh
+	// Load coremesh
 	res = CalCoreModel_ELLoadCoreMesh(act->coremodel, fn);
-	//Scale coremesh
+	// Scale coremesh
 	if (res >= 0) {
 		mesh = CalCoreModel_GetCoreMesh(act->coremodel, res);
 		if ((mesh) && (act->skel_scale != 1.0)) {
@@ -2461,10 +2413,10 @@ int parse_actor_script(const xmlNode *cfg) {
 		LOG_ERROR(str);
 	}
 	ok = 1;
-	act->actor_type = act_idx;       // memorize the ID & name to help in debugging
+	act->actor_type = act_idx; // memorize the ID & name to help in debugging
 	safe_strncpy(act->actor_name, get_string_property(cfg, "type"), sizeof(act->actor_name));
 	actor_check_string(act, "actor", "name", act->actor_name);
-	//Initialize Cal3D settings
+	// Initialize Cal3D settings
 	act->coremodel = NULL;
 	act->actor_scale = 1.0;
 	act->scale = 1.0;
@@ -2488,7 +2440,7 @@ int parse_actor_script(const xmlNode *cfg) {
 	}
 	ok = parse_actor_nodes(act, cfg, NULL);
 	// TODO: add error checking for missing actor information
-	//Actor def parsed, now setup the coremodel
+	// Actor def parsed, now setup the coremodel
 	if (act->coremodel != NULL) {
 		skel = CalCoreModel_GetCoreSkeleton(act->coremodel);
 		if (skel) {
@@ -2497,7 +2449,7 @@ int parse_actor_script(const xmlNode *cfg) {
 		// If this not an enhanced actor, load the single mesh and exit
 		if (!act->head || strcmp(act->head[0].model_name, "") == 0) {
 			act->shirt = (shirt_part *)calloc(actor_part_sizes[ACTOR_SHIRT_SIZE], sizeof(shirt_part));
-			act->shirt[0].mesh_index = cal_load_mesh(act, act->file_name, NULL); //save the single meshindex as torso
+			act->shirt[0].mesh_index = cal_load_mesh(act, act->file_name, NULL); // save the single meshindex as torso
 		}
 	}
 	return ok;

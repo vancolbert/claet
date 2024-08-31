@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_bag.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 BagParticle::BagParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size) :
 	Particle(_effect, _mover, _pos, _velocity, _size) {
 	color[0] = randcolor(0.3) + 0.7;
@@ -84,5 +84,4 @@ bool BagEffect::idle(const Uint64 usec) {
 	effect_center.z = pos->z;
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

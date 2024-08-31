@@ -1,14 +1,9 @@
 
-////////////////////////////////////////////////////////////////////////////////
-// eye_candy_wrapper.h                                                        //
-// Copyright (C) 2006 Karen Pease                                             //
-// Based on the cal3d wrapper by Bruno 'Beosil' Heidelberger                  //
-////////////////////////////////////////////////////////////////////////////////
-// This library is free software; you can redistribute it and/or modify it    //
-// under the terms of the GNU Lesser General Public License as published by   //
-// the Free Software Foundation; either version 2.1 of the License, or (at    //
-// your option) any later version.                                            //
-////////////////////////////////////////////////////////////////////////////////
+// eye_candy_wrapper.h
+// Copyright (C) 2006 Karen Pease
+// Based on the cal3d wrapper by Bruno 'Beosil' Heidelberger
+// under the terms of the GNU Lesser General Public License as published by
+// your option) any later version.
 #ifndef EYE_CANDY_WRAPPER_H
 #define EYE_CANDY_WRAPPER_H
 #include "eye_candy_types.h"
@@ -53,9 +48,7 @@ extern int light_columns_threshold;
 extern int use_fancy_smoke;
 extern int max_idle_cycles_per_second;
 #endif
-////////////////////////////////////////////////////////////////////////////////
-// Defines for Win32 and MingW32                                              //
-////////////////////////////////////////////////////////////////////////////////
+// Defines for Win32 and MingW32
 #ifdef WINDOWS
 #ifndef __MINGW32__
 #pragma warning(disable : 4251)
@@ -63,9 +56,7 @@ extern int max_idle_cycles_per_second;
 #pragma warning(disable : 4099)
 #endif
 #endif
-////////////////////////////////////////////////////////////////////////////////
-// "C" wrapper functions declaration                                          //
-////////////////////////////////////////////////////////////////////////////////
+// "C" wrapper functions declaration
 #ifdef __cplusplus
 extern "C"
 {
@@ -122,21 +113,19 @@ typedef std::vector<ec_object_obstruction *> ec_object_obstructions;
 typedef std::vector<ec_actor_obstruction *> ec_actor_obstructions;
 typedef std::vector<ec::Effect *> ec_internal_effects;
 #endif
-typedef enum ec_EffectEnum         // Keep in sync with eye_candy/eye_candy.h!
+typedef enum ec_EffectEnum // Keep in sync with eye_candy/eye_candy.h!
 {
 	EC_LAMP = 0, EC_CAMPFIRE = 1, EC_FOUNTAIN = 2, EC_TELEPORTER = 3, EC_FIREFLY = 4, EC_SWORD = 5, EC_SUMMON = 6, EC_SELFMAGIC = 7, EC_TARGETMAGIC = 8, EC_ONGOING = 9, EC_IMPACT = 10, EC_SMOKE = 11, EC_BAG = 12, EC_CLOUD = 13, EC_HARVESTING = 14, EC_WIND = 15, EC_BREATH = 16, EC_CANDLE = 17, EC_MINES = 18, EC_GLOW = 19, EC_MISSILE = 20, EC_STAFF = 21,
 } ec_EffectEnum;
-////////////////////////////////////////////////////////////////////////////////
-// EyeCandy wrapper functions declaration                                     //
-////////////////////////////////////////////////////////////////////////////////
+// EyeCandy wrapper functions declaration
 void ec_load_textures();
 void ec_init();
 void ec_add_light(GLenum light_id);
 float ec_get_z(actor *_actor);
 float ec_get_z2(int x, int y);
-void ec_idle();         //!< \callergraph
-void ec_heartbeat();         // Once per second.
-void ec_draw();         //!< \callergraph
+void ec_idle(); // !< \callergraph
+void ec_heartbeat(); // Once per second.
+void ec_draw(); // !< \callergraph
 void ec_actor_delete(actor *_actor);
 void ec_recall_effect(ec_reference ref);
 void ec_destroy_all_effects();
@@ -155,7 +144,6 @@ ec_bounds ec_create_bounds_list();
 void ec_remove_obstruction_by_object3d(object3d *obj3d);
 void ec_remove_obstruction_by_e3d_object(e3d_object *obj3d);
 void ec_free_bounds_list(ec_bounds bounds);
-//  void ec_add_polar_coords_bound(ec_bounds bounds, float frequency, float offset, float scalar, float power);
 void
 ec_add_smooth_polygon_bound(ec_bounds bounds, float angle, float radius);
 ec_effects ec_create_effects_list();
@@ -403,4 +391,3 @@ ec_create_missile_effect(int missile_id, int LOD, int hitOrMiss);
 }
 #endif
 #endif /* EYE_CANDY_WRAPPER_H */
-////////////////////////////////////////////////////////////////////////////////

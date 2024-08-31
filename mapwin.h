@@ -24,7 +24,7 @@ typedef struct {
 	/*! @} */
 	char text[512]; /*!< text of the marking */
 	char server_side;
-	int r, g, b; //color of the marker
+	int r, g, b; // color of the marker
 } marking;
 #define MAX_MARKINGS 300
 #define MAX_USER_MARKS 250
@@ -36,7 +36,7 @@ extern int temp_tile_map_size_x; /*!< The tile map size in the x direction */
 extern int temp_tile_map_size_y; /*!< The tile map size in the y direction */
 extern marking marks[MAX_MARKINGS]; /*!< a global array of marks */
 extern marking temp_marks[MAX_USER_MARKS]; /*!< a global array of temporary marks */
-extern int curmark_r, curmark_g, curmark_b; //current mark color
+extern int curmark_r, curmark_g, curmark_b; // current mark color
 extern int reload_tab_map; /*!< flag that indicates the tabmap needs to be reloaded */
 extern char inspect_map_name[128]; /*!< current inspected map name (used for marks edition) */
 extern int inspect_tile_map_size_x; /*!< The tile map size in the x direction for the inspected map */
@@ -55,8 +55,8 @@ int map_get_mouse_position(int mouse_x, int mouse_y, int *px, int *py);
  */
 void create_map_root_window(int width, int height);
 /* controls TAB map mark filtering */
-extern int mark_filter_active;    /* true when filter active */
-extern char mark_filter_text[];   /* the text of the current filter */
+extern int mark_filter_active; /* true when filter active */
+extern char mark_filter_text[]; /* the text of the current filter */
 #ifdef __cplusplus
 } // extern "C"
 #endif

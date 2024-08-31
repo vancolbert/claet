@@ -61,14 +61,14 @@ void draw_3d_object_detail(object3d *object_id, Uint32 material_index, Uint32 us
 	// check for having to load the arrays
 	load_e3d_detail_if_needed(object_id->e3d_data);
 	CHECK_GL_ERRORS();
-	//also, update the last time this object was used
+	// also, update the last time this object was used
 	object_id->last_acessed_time = cur_time;
-	//debug
+	// debug
 	if (object_id->self_lit && (!is_day || dungeon) && use_lightning) {
 		glColor3fv(object_id->color);
 	}
 	CHECK_GL_ERRORS();
-	glPushMatrix();//we don't want to affect the rest of the scene
+	glPushMatrix(); // we don't want to affect the rest of the scene
 	glMultMatrixf(object_id->matrix);
 	CHECK_GL_ERRORS();
 	if (!dungeon && (clouds_shadows || use_shadow_mapping) && use_extra_textures) {
@@ -129,9 +129,9 @@ void draw_3d_object_detail(object3d *object_id, Uint32 material_index, Uint32 us
 	} else {
 		glDrawElements(GL_TRIANGLES, object_id->e3d_data->materials[material_index].triangles_indices_count, object_id->e3d_data->index_type, object_id->e3d_data->materials[material_index].triangles_indices_index);
 	}
-	glPopMatrix();//restore the scene
+	glPopMatrix(); // restore the scene
 	CHECK_GL_ERRORS();
-	//OK, let's check if our mouse is over...
+	// OK, let's check if our mouse is over...
 }
 void draw_3d_objects(unsigned int object_type) {
 	unsigned int start, stop;
@@ -154,7 +154,7 @@ void draw_3d_objects(unsigned int object_type) {
 			if (objects_list[l] == NULL) {
 				continue;
 			}
-			//track the usage
+			// track the usage
 			cache_use(objects_list[l]->e3d_data->cache_ptr);
 		}
 		// and all done
@@ -172,7 +172,7 @@ void draw_3d_objects(unsigned int object_type) {
 		glEnable(GL_MULTISAMPLE);
 	}
 	if (is_transparent) {
-		//enable alpha filtering, so we have some alpha key
+		// enable alpha filtering, so we have some alpha key
 		glEnable(GL_ALPHA_TEST);
 		if (is_ground) {
 			glAlphaFunc(GL_GREATER, 0.23f);
@@ -201,10 +201,10 @@ void draw_3d_objects(unsigned int object_type) {
 		if (objects_list[l] == NULL) {
 			continue;
 		}
-		//track the usage
+		// track the usage
 		cache_use(objects_list[l]->e3d_data->cache_ptr);
 		if (!objects_list[l]->display) {
-			continue;                       // not currently on the map, ignore it
+			continue; // not currently on the map, ignore it
 		}
 		draw_3d_object_detail(objects_list[l], get_3dobject_material(j), 1, 1, 1);
 		if (read_mouse_now && (get_cur_intersect_type(main_bbox_tree) == INTERSECTION_TYPE_DEFAULT)) {
@@ -232,16 +232,16 @@ void draw_3d_objects(unsigned int object_type) {
 	}
 	CHECK_GL_ERRORS();
 }
-//Tests to see if an e3d object is already loaded. If it is, return the handle.
-//If not, load it, and return the handle
+// Tests to see if an e3d object is already loaded. If it is, return the handle.
+// If not, load it, and return the handle
 static e3d_object *load_e3d_cache(const char *file_name) {
 	e3d_object *e3d_id;
-	//do we have it already?
+	// do we have it already?
 	e3d_id = cache_find_item(cache_e3d, file_name);
 	if (e3d_id) {
 		return e3d_id;
 	}
-	//e3d not found in the cache, so load it, and store it
+	// e3d not found in the cache, so load it, and store it
 	// allocate the memory
 	e3d_id = calloc(1, sizeof(e3d_object));
 	if (!e3d_id) {
@@ -286,7 +286,7 @@ int add_e3d_at_id(int id, const char *file_name, float x_pos, float y_pos, float
 	returned_e3d = load_e3d_cache(fname);
 	if (!returned_e3d) {
 		LOG_ERROR(nasty_error_str, fname);
-		//replace it with the null object, to avoid object IDs corruption
+		// replace it with the null object, to avoid object IDs corruption
 		returned_e3d = load_e3d_cache("./3dobjects/badobject.e3d");
 		my_strncp(fname, "./3dobjects/badobject.e3d", sizeof(fname));
 		if (!returned_e3d) {
@@ -333,7 +333,6 @@ int add_e3d_at_id(int id, const char *file_name, float x_pos, float y_pos, float
 	}
 	calc_rotation_and_translation_matrix(our_object->matrix, x_pos, y_pos, z_pos, x_rot, y_rot, z_rot);
 	// watch for needing to load the detailed information
-	//load_e3d_detail_if_needed(returned_e3d);
 	ground = returned_e3d->vertex_layout->normal_count == 0;
 	for (i = 0; i < returned_e3d->material_no; i++) {
 		bbox.bbmin[X] = returned_e3d->materials[i].min_x;
@@ -353,8 +352,6 @@ int add_e3d_at_id(int id, const char *file_name, float x_pos, float y_pos, float
 	}
 	add_ec_effect_to_e3d(our_object);
 	ec_add_object_obstruction(our_object, returned_e3d, 2.0);
-//	LOG_DEBUG_VERBOSE("Bounding: %f, %f, %f -> %f, %f, %f\n", returned_e3d->min_x, returned_e3d->min_y, returned_e3d->min_z, returned_e3d->max_x, returned_e3d->max_y, returned_e3d->max_z);
-//	LOG_DEBUG_VERBOSE("Rotation: %f, %f, %f\n", our_object->x_rot, our_object->y_rot, our_object->z_rot);
 	return id;
 }
 int add_e3d(const char *file_name, float x_pos, float y_pos, float z_pos, float x_rot, float y_rot, float z_rot, char self_lit, char blended, float r, float g, float b, unsigned int dynamic) {
@@ -389,7 +386,7 @@ void display_objects(void) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -410,7 +407,7 @@ void display_objects(void) {
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);
@@ -424,7 +421,7 @@ void display_ground_objects(void) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -443,7 +440,7 @@ void display_ground_objects(void) {
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);
@@ -456,7 +453,7 @@ void display_alpha_objects(void) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -474,7 +471,7 @@ void display_alpha_objects(void) {
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);
@@ -490,7 +487,7 @@ void display_blended_objects(void) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (!dungeon && clouds_shadows) {
-		//bind the detail texture
+		// bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
 		bind_texture_unbuffered(ground_detail_text);
@@ -516,7 +513,7 @@ void display_blended_objects(void) {
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glDisable(GL_BLEND);
 	if (!dungeon && clouds_shadows) {
-		//disable the second texture unit
+		// disable the second texture unit
 		ELglActiveTextureARB(detail_unit);
 		glDisable(GL_TEXTURE_2D);
 		ELglActiveTextureARB(base_unit);

@@ -1,11 +1,9 @@
 /*
         Implements the "Generic special text window" feature.
-
         Messages from server channel 255 are displayed in a text
         window that automatically pops up.  Each message is treaded
         as a new block of text to display.  Any existing pop up
         window will be closed and the text discarded.
-
         The first line of the message is used as the widow title.
         If there are more lines, they are displayed in a text widget.
         If the text width will not fit on screen, the text is wrapped.
@@ -16,7 +14,6 @@
         in the game options window.
         Great length have been taken to make sure this works with
         different fonts and font sizes!
-
         bluap aka pjbroad November 2006
  */
 /* todo
@@ -307,7 +304,7 @@ void display_server_popup_win(const char *const message) {
 		actual_scroll_width = scroll_width;
 	}
 	/* calc the require window width for the text size */
-	/* the fudge is that the width cal does not work 100% exactly for some fonts :( */
+	/* the fudge is that the width cal does not work 100% exactly for some fonts :(*/
 	if (!text_message_is_empty(&widget_text)) {
 		text_widget_width = sep /*fudge*/ + 2 * sep + widget_text.max_line_width;
 	} else {

@@ -18,7 +18,7 @@ extern "C" {
  * \name Windows handlers
  */
 /*! @{ */
-extern int stats_win;      /*!< handle for the stats window */
+extern int stats_win; /*!< handle for the stats window */
 /*! @} */
 /*!
  * The names structure is used for all sort of attributes, skill, nexi to give them a long and a short name.
@@ -116,17 +116,17 @@ typedef struct {
 	attrib_16 ration; /*!< functions to get the base and current value of the rationality cross attribute */
 	attrib_16 dext; /*!< functions to get the base and current value of the dexterity cross attribute */
 	attrib_16 eth; /*!< functions to get the base and current value of the ethereality cross attribute */
-	//TODO TRINITA Nexus implementation !
-	attrib_16 defense_nexus;    //  nexus old human_nexus
-	attrib_16 attaque_nexus;    //  nexus old human_nexus @Trinita not use for this moment
-	attrib_16 necro_nexus;          //  nexus old animal_nexus
-	attrib_16 potion_nexus;         //  nexus old vegetal_nexus
-	attrib_16 recolte_nexus;        //  nexus old inorganic_nexus
-	attrib_16 fabrication_nexus;    //  nexus old artificial_nexus
-	attrib_16 artisanat_nexus;      //  nexus old magic_nexus
-	attrib_16 magie_nexus;          //  nexus new
-	attrib_16 alchimie_nexus;       //  nexus new
-	attrib_16 ingenierie_nexus;       //  nexus new
+	// TODO TRINITA Nexus implementation !
+	attrib_16 defense_nexus; // nexus old human_nexus
+	attrib_16 attaque_nexus; // nexus old human_nexus @Trinita not use for this moment
+	attrib_16 necro_nexus; // nexus old animal_nexus
+	attrib_16 potion_nexus; // nexus old vegetal_nexus
+	attrib_16 recolte_nexus; // nexus old inorganic_nexus
+	attrib_16 fabrication_nexus; // nexus old artificial_nexus
+	attrib_16 artisanat_nexus; // nexus old magic_nexus
+	attrib_16 magie_nexus; // nexus new
+	attrib_16 alchimie_nexus; // nexus new
+	attrib_16 ingenierie_nexus; // nexus new
 	attrib_16 material_points; /*!< base and current value of the players material points */
 	attrib_16 ethereal_points; /*!< base and current value of the players ethereal points */
 	attrib_16 manufacturing_skill; /*!< base and current value of the manu skill */
@@ -198,13 +198,13 @@ enum {SI_ATT = 0, SI_DEF, SI_HAR, SI_ALC, SI_MAG, SI_POT, SI_SUM, SI_MAN, SI_CRA
  * An array of pointers to the player stats information - enables looping rather than duplicate code.
  */
 extern struct stats_struct statsinfo[];
-#define NUM_SKILLS 11           /*!< the number of skills */
-#define NUM_WATCH_STAT  12      /*!< allow watching stats 0-11 */
-#define MAX_WATCH_STATS 5       /*!< max number of stats watchable in hud */
+#define NUM_SKILLS 11 /*!< the number of skills */
+#define NUM_WATCH_STAT  12 /*!< allow watching stats 0-11 */
+#define MAX_WATCH_STATS 5 /*!< max number of stats watchable in hud */
 extern int attrib_menu_x;
 extern int attrib_menu_y;
-extern int watch_this_stats[];  /*!< used for displaying more than 1 stat in the hud */
-extern int max_disp_stats;      /*!< max number of stats displayable in hud, depending on screen resolution */
+extern int watch_this_stats[]; /*!< used for displaying more than 1 stat in the hud */
+extern int max_disp_stats; /*!< max number of stats displayable in hud, depending on screen resolution */
 extern int have_stats; /*!< indicator for whether or not the stats have been send to us yet*/
 extern player_attribs your_info; /*!< the players attributes */
 /*!

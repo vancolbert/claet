@@ -21,7 +21,7 @@ int blend(caftrack *tr, caftrack *fr, cafanim *bl) {
 	if (!bl) {
 		return 0;
 	}
-	//search bone in bl
+	// search bone in bl
 	for (kf = 0; kf < bl->header.tracks; kf++) {
 		if (bl->tracks[kf].bone == tr->bone) {
 			bltr = kf;
@@ -40,7 +40,7 @@ int blend(caftrack *tr, caftrack *fr, cafanim *bl) {
 		tr->frames[kf].ty = bl->tracks[bltr].frames[0].ty + (fr->frames[kf].ty - fr->frames[kf - 1].ty);
 		tr->frames[kf].tz = bl->tracks[bltr].frames[0].tz + (fr->frames[kf].tz - fr->frames[kf - 1].tz);
 	}
-	//assuming frame[0].time is 0
+	// assuming frame[0].time is 0
 	memcpy(&tr->frames[0], &bl->tracks[bltr].frames[0], sizeof(cafkeyframe));
 	return 1;
 }
@@ -51,7 +51,7 @@ int hardblend(caftrack *tr, caftrack *fr, cafanim *bl) {
 	if (!bl) {
 		return 0;
 	}
-	//search bone in bl
+	// search bone in bl
 	for (kf = 0; kf < bl->header.tracks; kf++) {
 		if (bl->tracks[kf].bone == tr->bone) {
 			bltr = kf;
@@ -70,7 +70,7 @@ int hardblend(caftrack *tr, caftrack *fr, cafanim *bl) {
 		}
 		tr->frames[kf].time = time;
 	}
-	//assuming frame[0].time is 0
+	// assuming frame[0].time is 0
 	return 1;
 }
 void striptracks(cafanim *from, cafanim *to, csfdata *csf, cafanim *bl) {
@@ -140,10 +140,10 @@ void striptracks(cafanim *from, cafanim *to, csfdata *csf, cafanim *bl) {
 	printf("Tracks Blended: %2i\n", tbl);
 	printf("Tracks Kept: %4i\n", to->header.tracks);
 }
-//CSF FUNCS
+// CSF FUNCS
 int read_csf(FILE *fc, csfdata *csf) {
 	int cb, ck;
-	//read header
+	// read header
 	fread(&csf->header, sizeof(csfheader), 1, fc);
 	if (csf->header.magic[0] != 'C' || csf->header.magic[1] != 'S' || csf->header.magic[2] != 'F' || csf->header.magic[3] != '\0') {
 		printf("\nError in csf header %i %c %c %c %i\n", csf->header.version, csf->header.magic[0], csf->header.magic[1], csf->header.magic[2], csf->header.magic[3]);
@@ -151,7 +151,7 @@ int read_csf(FILE *fc, csfdata *csf) {
 	} else {
 		printf("Csf Version: %i\n", csf->header.version);
 	}
-	//read bones
+	// read bones
 	for (cb = 0; cb < csf->header.bones; cb++) {
 		fread(&csf->bones[cb].name_len, sizeof(csf->bones[cb].name_len), 1, fc);
 		fread(&csf->bones[cb].name, 1, csf->bones[cb].name_len, fc);
@@ -170,10 +170,10 @@ void print_bone_table(csfdata *csf) {
 	}
 	printf("------------------------------\n");
 }
-//CAF FUNCS
+// CAF FUNCS
 int read_caf(FILE *fc, cafanim *caf) {
 	int ct, ck;
-	//read header
+	// read header
 	fread(&caf->header, sizeof(cafheader), 1, fc);
 	if (caf->header.magic[0] != 'C' || caf->header.magic[1] != 'A' || caf->header.magic[2] != 'F' || caf->header.magic[3] != '\0') {
 		printf("\nError in caf header %i %c %c %c %i\n", caf->header.version, caf->header.magic[0], caf->header.magic[1], caf->header.magic[2], caf->header.magic[3]);
@@ -181,7 +181,7 @@ int read_caf(FILE *fc, cafanim *caf) {
 	} else {
 		printf("Caf Version: %i\n", caf->header.version);
 	}
-	//read tracks
+	// read tracks
 	for (ct = 0; ct < caf->header.tracks; ct++) {
 		fread(&caf->tracks[ct].bone, sizeof(caf->tracks[ct].bone), 1, fc);
 		fread(&caf->tracks[ct].keyframes, sizeof(caf->tracks[ct].keyframes), 1, fc);
@@ -193,9 +193,9 @@ int read_caf(FILE *fc, cafanim *caf) {
 }
 int write_caf(FILE *fo, cafanim *caf) {
 	int ct, ck;
-	//write header
+	// write header
 	fwrite(&caf->header, sizeof(cafheader), 1, fo);
-	//write tracks
+	// write tracks
 	for (ct = 0; ct < caf->header.tracks; ct++) {
 		fwrite(&caf->tracks[ct].bone, sizeof(caf->tracks[ct].bone), 1, fo);
 		fwrite(&caf->tracks[ct].keyframes, sizeof(caf->tracks[ct].keyframes), 1, fo);
@@ -222,7 +222,7 @@ void helptext() {
 }
 int main(int argc, char *argv[]) {
 	FILE *fc, *fo, *fs, *fb;
-	//static here is to prevent stack overflow in windows (-_-')
+	// static here is to prevent stack overflow in windows (-_-')
 	static cafanim caf_in, caf_to, caf_blend;
 	static csfdata csf;
 	if (argc < 4) {

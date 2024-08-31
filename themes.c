@@ -1,4 +1,4 @@
-//#include <libxml/xmlmemory.h>
+// #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <string.h>
@@ -18,8 +18,8 @@
 #include "themes.h"
 #include "hud.h"
 theme liste_themes[LISTE_THEMES_MAX]; // liste des thèmes trouvés (updates + datadir)
-int liste_themes_nb = 0;              // nombre d'éléments dans la liste des thèmes
-char titre_theme[20] = "officiel";    // titre du thème à utiliser par défaut
+int liste_themes_nb = 0; // nombre d'éléments dans la liste des thèmes
+char titre_theme[20] = "officiel"; // titre du thème à utiliser par défaut
 /*******************************************************************************
  * Fonctions de conversion d'une chaine vers un nombre
  */
@@ -28,7 +28,6 @@ void strtod_securise(const char *valeur, float *variable) {
 	float resultat;
 	char *temp;
 	int trim_effectue = 0;
-
 	if ((valeur[0] == ' ') || (valeur[strlen(valeur)] == ' ')) {
 		temp = strdup(valeur);
 		resultat = strtod(trim(temp), &PosErreur);
@@ -51,7 +50,6 @@ void strtol_securise(const char *valeur, int *variable) {
 	long resultat;
 	char *temp;
 	int trim_effectue = 0;
-
 	if ((valeur[0] == ' ') || (valeur[strlen(valeur)] == ' ')) {
 		temp = strdup(valeur);
 		resultat = strtol(trim(temp), &PosErreur, 10);
@@ -138,7 +136,6 @@ void lecture_rvba(const xmlNode *noeud, couleur_rvba *couleur) {
  */
 void lecture_palette(const xmlNode *noeud, Uint8 *couleur) {
 	char *label = trim(strdup((const char *)noeud->children->content));
-
 	// Note : Les couleurs rouge ont été retirés,
 	// pour qu'elles continuent a être reservées à la modération.
 	if (!strcmp(label, "green1")) {
@@ -208,7 +205,6 @@ void lecture_palette(const xmlNode *noeud, Uint8 *couleur) {
  */
 void section_palette(const xmlNode *noeud) {
 	int global = get_int_property(noeud, "global");
-
 	for (noeud = noeud->children; noeud; noeud = noeud->next) {
 		if (noeud->type != XML_ELEMENT_NODE) {
 			continue;
@@ -342,12 +338,12 @@ void section_polices(const xmlNode *noeud) {
 }
 // -----------------------------------------------------------------------------
 int fr_quickitems_dim = 30; // dimension d'une case (largeur=hauteur, hors cadre)
-int fr_quickitems_div = 4;  // nombre de cases formant un groupe
-int fr_quickitems_sep = 3;  // taille du séparateur entre les groupes de cases
-int quickspells_ico = 24;   // taille des icones de la barre rapide
-int quickspells_dim = 30;   // dimension d'une case (largeur=hauteur, hors cadre)
-int quickspells_div = 4;    // nombre de cases formant un groupe
-int quickspells_sep = 3;    // taille du séparateur entre les groupes de cases
+int fr_quickitems_div = 4; // nombre de cases formant un groupe
+int fr_quickitems_sep = 3; // taille du séparateur entre les groupes de cases
+int quickspells_ico = 24; // taille des icones de la barre rapide
+int quickspells_dim = 30; // dimension d'une case (largeur=hauteur, hors cadre)
+int quickspells_div = 4; // nombre de cases formant un groupe
+int quickspells_sep = 3; // taille du séparateur entre les groupes de cases
 void section_quickitems(const xmlNode *noeud) {
 	for (noeud = noeud->children; noeud; noeud = noeud->next) {
 		if (noeud->type != XML_ELEMENT_NODE) {
@@ -499,7 +495,6 @@ int icon_posx_theme[MAX_ICONES] = {-1};
 void section_hudicons(const xmlNode *noeud) {
 	int icon_pos = 0;
 	int i, icon_size = 32;
-
 	for (i = 0; i < MAX_ICONES; i++) {
 		icon_posx_theme[i] = -99;
 	}
@@ -573,7 +568,6 @@ int recherche_sections(const xmlNode *noeud) {
 void init_theme(char *titre) {
 	xmlDoc *doc;
 	int i;
-
 	for (i = 0; i < liste_themes_nb; i++) {
 		if (strcmp(liste_themes[i].titre, titre) == 0) {
 			LOG_INFO("theme : chargement du fichier xml (%s) pour '%s'\n", liste_themes[i].fichier, titre);
@@ -601,7 +595,6 @@ int chargement_theme_detail(int n) {
 	xmlNode *root;
 	xmlDoc *doc;
 	int ok = 1;
-
 	doc = xmlReadFile(liste_themes[n].fichier, NULL, 0);
 	if (doc == NULL) {
 		LOG_ERROR("%s : %s \"%s\"\n", reg_error_str, liste_themes[n].fichier, cant_open_file);
@@ -625,7 +618,6 @@ int chargement_liste_themes(char *dossier_themes) {
 	DIR *dp;
 	struct dirent *ep;
 	int i, deja;
-
 	LOG_INFO("theme : recherche dans le dossier '%s'", dossier_themes);
 	dp = opendir(dossier_themes);
 	if (dp == NULL) {
@@ -670,7 +662,6 @@ int chargement_liste_themes(char *dossier_themes) {
 // Initialise la liste des thèmes disponibles depuis les dossiers updates, datadir puis local
 void init_liste_themes() {
 	char dossier_themes[256];
-
 	// on remet la liste à zéro (en cas de rechargement de la liste)
 	liste_themes_nb = 0;
 	// on cherche d'abord la présence de thèmes dans le dossier perso (conf locale)
@@ -697,7 +688,6 @@ void init_liste_themes() {
 int command_liste_themes() {
 	char str[200];
 	int i;
-
 	init_liste_themes();
 	LOG_TO_CONSOLE(c_green2, "Liste des thèmes disponibles :");
 	for (i = 0; i < liste_themes_nb; i++) {
@@ -710,7 +700,6 @@ int command_liste_themes() {
 int command_change_theme(char *text) {
 	char str[200];
 	int i;
-
 	init_liste_themes();
 	for (; isspace(*text); text++) {}
 	for (i = 0; i < liste_themes_nb; i++) {
@@ -724,7 +713,6 @@ int command_change_theme(char *text) {
 			resize_quickspells(-1);
 			// rechargement de la barre d'icone du hud
 			// Ackak suppression vu la fusion US.
-			//reload_icon_pos();
 			return 1;
 		}
 	}

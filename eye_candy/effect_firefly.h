@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_FIREFLY_H
 #define EFFECT_FIREFLY_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class FireflyParticle : public Particle {
 public:
 FireflyParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const coord_t _size, const coord_t _min_height, const coord_t _max_height);
@@ -42,6 +42,5 @@ Vec3 center;
 int firefly_count;
 float size;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_FIREFLY_H
+#endif // defined EFFECT_FIREFLY_H

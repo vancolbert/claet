@@ -28,8 +28,8 @@ extern "C" {
 #define LEGENDE_FONT_X_LEN 6.0f
 #define LEGENDE_FONT_Y_LEN 11.0f
 /*! @} */
-extern int chat_font;      /*!< font size used for chat font */
-extern int name_font;      /*!< font size used for name font */
+extern int chat_font; /*!< font size used for chat font */
+extern int name_font; /*!< font size used for name font */
 void recolour_message(text_message *msg);
 void recolour_messages(text_message *msgs);
 /*!

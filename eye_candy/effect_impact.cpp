@@ -1,9 +1,9 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 #include "math_cache.h"
 #include "effect_impact.h"
 namespace ec {
-// C L A S S   F U N C T I O N S //////////////////////////////////////////////
+// C L A S S   F U N C T I O N S
 ImpactParticle::ImpactParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const coord_t _size, const alpha_t _alpha, const color_t red, const color_t green, const color_t blue, TextureEnum _texture, const Uint16 _LOD, const ImpactEffect::ImpactType _type) :
 	Particle(_effect, _mover, _pos, _velocity,
 		 (0.3 + randcoord()) * 15 / 3.16 / std::sqrt(_LOD)) {
@@ -15,7 +15,6 @@ ImpactParticle::ImpactParticle(Effect *_effect, ParticleMover *_mover, const Vec
 	alpha = _alpha;
 	velocity /= size;
 	size *= _size;
-	//  std::cout << ": " << velocity << std::endl;
 	flare_max = 1.0;
 	flare_exp = 0.1;
 	flare_frequency = 50.0;
@@ -170,10 +169,8 @@ ImpactEffect::ImpactEffect(EyeCandy *_base, bool *_dead, Vec3 *_pos, const Vec3 
 			Vec3 velocity = -angle;
 			Vec3 offset;
 			offset.randomize(0.7);
-			//        std::cout << velocity << ", " << angle << ", " << vel_scalar << std::endl;
 			velocity += offset;
 			velocity.normalize(0.8 * vel_scalar);
-			//        std::cout << velocity << std::endl;
 			Particle
 			*p = new ImpactParticle(this, mover, center, velocity, square(square(randcoord(0.85))) * size_scalar, 0.5, 0.3 + randcolor(0.7), 0.15 + randcolor(0.1), 0.15 + randcolor(0.1), EC_WATER, LOD, type);
 			p->state = 1;
@@ -201,5 +198,4 @@ bool ImpactEffect::idle(const Uint64 usec) {
 	}
 	return true;
 }
-///////////////////////////////////////////////////////////////////////////////
 }

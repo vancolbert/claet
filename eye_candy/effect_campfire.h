@@ -3,10 +3,10 @@
  */
 #ifndef EFFECT_CAMPFIRE_H
 #define EFFECT_CAMPFIRE_H
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy.h"
 namespace ec {
-// C L A S S E S //////////////////////////////////////////////////////////////
+// C L A S S E S
 class CampfireParticle : public Particle {
 public:
 CampfireParticle(Effect *_effect, ParticleMover *_mover, const Vec3 _pos, const Vec3 _velocity, const color_t hue_adjust, const color_t saturation_adjust, const float _scale, const float _sqrt_scale, const int _state, const Uint16 _LOD);
@@ -52,6 +52,5 @@ int big_particles;
 float scale;
 float sqrt_scale;
 };
-///////////////////////////////////////////////////////////////////////////////
 } // End namespace ec
-#endif  // defined EFFECT_CAMPFIRE_H
+#endif // defined EFFECT_CAMPFIRE_H

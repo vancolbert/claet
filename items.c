@@ -49,7 +49,7 @@ int item_action_mode = ACTION_WALK;
 int items_win = -1;
 int items_menu_x = 10;
 int items_menu_y = 20;
-int items_grid_size = 51;//Changes depending on the size of the root window (is 51 > 640x480 and 33 in 640x480).
+int items_grid_size = 51; // Changes depending on the size of the root window (is 51 > 640x480 and 33 in 640x480).
 int items_menu_x_len = 6 * 51 + 110;
 int items_menu_y_len = 6 * 51 + 90;
 int items_text[MAX_ITEMS_TEXTURES];
@@ -97,7 +97,7 @@ int items_dropall_nolastcol = 0;
 int items_dropall_nofirstcol = 0;
 int allow_wheel_quantity_edit = 0;
 int allow_wheel_quantity_drag = 0;
-int last_quantity = 1;     // mémorise la valeur initiale d'une quantité éditée pour annuler l'édition
+int last_quantity = 1; // mémorise la valeur initiale d'une quantité éditée pour annuler l'édition
 int item_dragged_max_quantity = 1; // quantité max disponible pour un objet pris du sac
 int wear_grid_size = 51;
 static void equip_item(int item_pos_to_equip, int destination_pos);
@@ -123,8 +123,7 @@ static int over_button(window_info *win, int mx, int my) {
 void gray_out(int x_start, int y_start, int gridsize) {
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
-	//glBlendFunc(GL_DST_COLOR, GL_ONE); //this brightens up
-	glBlendFunc(GL_ZERO, GL_SRC_COLOR); //this brightens down
+	glBlendFunc(GL_ZERO, GL_SRC_COLOR); // this brightens down
 	glColor3f(0.4f, 0.2f, 0.2f);
 	glBegin(GL_QUADS);
 	glVertex3i(x_start, y_start, 0);
@@ -254,14 +253,14 @@ void get_your_items(const Uint8 *data) {
 	} else {
 		len = 8;
 	}
-	//data[0] -> num_items
-	//data[1] -> image_id
-	//data[3] -> quantity
-	//data[7] -> pos
-	//data[8] -> flags
-	//data[9] -> id
+	// data[0] -> num_items
+	// data[1] -> image_id
+	// data[3] -> quantity
+	// data[7] -> pos
+	// data[8] -> flags
+	// data[9] -> id
 	total_items = data[0];
-	//clear the items first
+	// clear the items first
 	for (i = 0; i < ITEM_NUM_ITEMS; i++) {
 		item_list[i].quantity = 0;
 	}
@@ -380,10 +379,10 @@ void draw_item(int id, int x_start, int y_start, int gridsize) {
 	float u_start, v_start, u_end, v_end;
 	int cur_item;
 	int this_texture;
-	//get the UV coordinates.
+	// get the UV coordinates.
 	cur_item = id % 25;
 	get_item_uv(cur_item, &u_start, &v_start, &u_end, &v_end);
-	//get the texture this item belongs to
+	// get the texture this item belongs to
 	this_texture = get_items_texture(id / 25);
 	bind_texture(this_texture);
 	glBegin(GL_QUADS);
@@ -425,14 +424,14 @@ int display_items_handler(window_info *win) {
 	glColor3f(0.57f, 0.67f, 0.49f);
 	draw_string_small(wear_items_x_offset + wear_grid_size - (8 * strlen(equip_str)) / 2 + 1, wear_items_y_offset - 18, (unsigned char *)equip_str, 1);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//ok, now let's draw the objects...
+	// ok, now let's draw the objects...
 	for (i = ITEM_NUM_ITEMS - 1; i >= 0; i--) {
 		if (item_list[i].quantity) {
 			int cur_pos;
 			int x_start, x_end, y_start, y_end;
-			//get the x and y
+			// get the x and y
 			cur_pos = i;
-			if (cur_pos >= ITEM_WEAR_START) {//the items we 'wear' are smaller
+			if (cur_pos >= ITEM_WEAR_START) { // the items we 'wear' are smaller
 				cur_pos -= ITEM_WEAR_START;
 				item_is_weared = 1;
 				x_start = wear_items_x_offset + wear_grid_size * (cur_pos % 2) + 1;
@@ -510,7 +509,7 @@ int display_items_handler(window_info *win) {
 	}
 	mouseover_item_pos = -1;
 	glColor3f(1.0f, 1.0f, 1.0f);
-	//draw the load string
+	// draw the load string
 	if (!use_small_items_window) {
 		safe_snprintf(str, sizeof(str), "%s:", attributes.carry_capacity.shortname);
 		draw_string_small(items_grid_size * 6 + 6, items_grid_size * 6 - SMALL_FONT_Y_LEN * 2, (unsigned char *)str, 1);
@@ -522,7 +521,7 @@ int display_items_handler(window_info *win) {
 			draw_string_small(2, quantity_y_offset - 19, (unsigned char *)str, 1);
 		}
 	}
-	//now, draw the inventory text, if any.
+	// now, draw the inventory text, if any.
 	if (last_items_string_id != inventory_item_string_id) {
 		put_small_text_in_box((unsigned char *)inventory_item_string, strlen(inventory_item_string), win->len_x - 2, items_string);
 		last_items_string_id = inventory_item_string_id;
@@ -536,7 +535,7 @@ int display_items_handler(window_info *win) {
 	// cards
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f, 0.57f, 0.39f);
-	//draw the grids
+	// draw the grids
 	rendergrid(6, 6, 0, 0, items_grid_size, items_grid_size);
 	glColor3f(0.57f, 0.67f, 0.49f);
 	rendergrid(2, 4, wear_items_x_offset, wear_items_y_offset, wear_grid_size, wear_grid_size);
@@ -584,7 +583,7 @@ int display_items_handler(window_info *win) {
                 glVertex3i(wear_items_x_offset+wear_grid_size+4,  wear_items_y_offset+wear_grid_size*4+25,0);
         glEnd();
  */
-	//now, draw the quantity boxes
+	// now, draw the quantity boxes
 	glColor3f(0.3f, 0.5f, 1.0f);
 	rendergrid(ITEM_EDIT_QUANT, 1, quantity_x_offset, quantity_y_offset, quantity_width, 20);
 	glEnable(GL_TEXTURE_2D);
@@ -765,7 +764,7 @@ int move_item(int item_pos_to_mov, int destination_pos) {
 	/* move item */
 	if (drop_on_stack || !item_list[destination_pos].quantity) {
 		Uint8 str[20];
-		//send the drop info to the server
+		// send the drop info to the server
 		str[0] = MOVE_INVENTORY_ITEM;
 		str[1] = item_list[item_pos_to_mov].pos;
 		str[2] = destination_pos;
@@ -777,7 +776,7 @@ int move_item(int item_pos_to_mov, int destination_pos) {
 }
 static void equip_item(int item_pos_to_equip, int destination_pos) {
 	Uint8 str[20];
-	//send the drop info to the server
+	// send the drop info to the server
 	str[0] = MOVE_INVENTORY_ITEM;
 	str[1] = item_list[item_pos_to_equip].pos;
 	str[2] = destination_pos;
@@ -841,7 +840,6 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 	int right_click = flags & ELW_RIGHT_MOUSE;
 	int ctrl_on = flags & ELW_CTRL;
 	int shift_on = flags & ELW_SHIFT;
-	//int pos; // autres variables utilisées maintenant dans get_all_handler()
 	if (flags & ELW_WHEEL) {
 		// modification de la quantité de la case en cours d'édition avec la molette
 		if ((allow_wheel_quantity_edit) && (edit_quantity != -1)) {
@@ -891,7 +889,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 			}
 			return 1;
 		} else if (mx >= quantity_x_offset && mx < quantity_x_offset + ITEM_EDIT_QUANT * quantity_width && my >= quantity_y_offset && my < quantity_y_offset + 20) {
-			//fall through...
+			// fall through...
 		} else {
 			switch (item_action_mode) {
 			case ACTION_WALK:
@@ -918,13 +916,13 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 	if (item_action_mode == ACTION_USE) {
 		action_mode = ACTION_USE;
 	}
-	//see if we changed the quantity
+	// see if we changed the quantity
 	if (mx >= quantity_x_offset && mx < quantity_x_offset + ITEM_EDIT_QUANT * quantity_width && my >= quantity_y_offset && my < quantity_y_offset + 20) {
 		int pos = get_mouse_pos_in_grid(mx, my, ITEM_EDIT_QUANT, 1, quantity_x_offset, quantity_y_offset, quantity_width, 20);
 		if (pos == -1) {} else if (flags & ELW_LEFT_MOUSE) {
 			if (edit_quantity != -1) {
 				if (!quantities.quantity[edit_quantity].len) {
-					//Reset the quantity
+					// Reset the quantity
 					reset_quantity(edit_quantity);
 				}
 				edit_quantity = -1;
@@ -935,8 +933,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 			// si cette quantité est déjà en cours d'édition
 			// le clic-droit annule l'édition en remettant la valeur par défaut
 			if (edit_quantity == pos) {
-				//Reset the quantity
-				//reset_quantity(edit_quantity);
+				// Reset the quantity
 				safe_snprintf(quantities.quantity[pos].str, sizeof(quantities.quantity[pos].str), "%d", last_quantity);
 				quantities.quantity[pos].len = strlen(quantities.quantity[pos].str);
 				quantities.quantity[pos].val = last_quantity;
@@ -945,7 +942,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 			}
 			last_quantity = quantities.quantity[pos].val;
 			quantities.selected = pos;
-			//Edit the given quantity
+			// Edit the given quantity
 			edit_quantity = pos;
 		}
 		return 1;
@@ -958,13 +955,13 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 		quantities.selected = edit_quantity;
 		edit_quantity = -1;
 	}
-	//see if we clicked on any item in the main category
+	// see if we clicked on any item in the main category
 	else if (mx > 0 && mx < 6 * items_grid_size && my > 0 && my < 6 * items_grid_size) {
 		int pos = get_mouse_pos_in_grid(mx, my, 6, 6, 0, 0, items_grid_size, items_grid_size);
 		item_list[pos].action = ITEM_NO_ACTION;
 		item_list[pos].action_time = 0;
 		if (pos == -1) {} else if (item_dragged != -1) {
-			if (item_dragged == pos) { //let's try auto equip
+			if (item_dragged == pos) { // let's try auto equip
 				int i;
 				for (i = ITEM_WEAR_START; i < ITEM_WEAR_START + 8; i++) {
 					if (item_list[i].quantity < 1) {
@@ -998,7 +995,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 				if (item_list[pos].is_stackable) {
 					*((Uint32 *)(str + 2)) = SDL_SwapLE32(item_list[pos].quantity);
 				} else {
-					*((Uint32 *)(str + 2)) = SDL_SwapLE32(36);//Drop all
+					*((Uint32 *)(str + 2)) = SDL_SwapLE32(36); // Drop all
 				}
 				my_tcp_send(my_socket, str, 6);
 				do_drop_item_sound();
@@ -1081,7 +1078,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
 		get_all_handler();
 	}
 	// Sto All button
-	else if (over_button(win, mx, my) == BUT_STORE && storage_win >= 0 && view_only_storage == 0 && get_show_window(storage_win) /*thanks alberich*/ ) {
+	else if (over_button(win, mx, my) == BUT_STORE && storage_win >= 0 && view_only_storage == 0 && get_show_window(storage_win) /*thanks alberich*/) {
 		str[0] = TOUT_DEPOT;
 		my_tcp_send(my_socket, str, 1);
 	}
@@ -1150,22 +1147,18 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
         en partant de la première case. Il est alors impossible au client de savoir
         quelle case va être finalement libérée dans le sac (la recherche du premier objet
         semblable dans le sac n'étant pas fiable avec l'image_id).
-
         Avec l'ajout des ITEM_UID, le client pourrait deviner ce que va faire le serveur :
         rechercher la 1ère occurence de l'objet qui sera rangée et éventuellement enchainer
         avec un déplacement de l'objet déséquipé vers la case de l'objet rangé.
-
         Celà resterait un enchainement de manipulation un peu fastidieux...
         D'autant que ce comportement du serveur est regrettable aussi le reste du temps :
         avoir 20 objets identiques dans son sac, ranger le dernier pour voir que le serveur
         range le premier quoiqu'on lui dise...
-
         TODO: L'idéal serait donc de modifier le comportement du serveur sur un DEPOSITE_ITEM,
         qu'il se comporte de la même manière que lors d'un DROP_ITEM (dépot au sol) :
         il parcours l'inventaire à partir de la position indiquée pour trouver les objets
         correspondant à retirer, une fois arrivé à la 36ème case, si la quantité demandée
         n'est pas atteinte, il refait une boucle de la position indiquée jusqu'à 0.
-
                 else if (mx>=wear_items_x_offset+wear_grid_size+4 && mx<=wear_items_x_offset+wear_grid_size-4)
                 {
                         int destination_pos = -1;
@@ -1204,7 +1197,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags) {
  */
 		return 0;
 	}
-	//see if we clicked on any item in the wear category
+	// see if we clicked on any item in the wear category
 	else if (mx > wear_items_x_offset && mx < wear_items_x_offset + 2 * wear_grid_size && my > wear_items_y_offset && my < wear_items_y_offset + 4 * wear_grid_size) {
 		int pos = 36 + get_mouse_pos_in_grid(mx, my, 2, 4, wear_items_x_offset, wear_items_y_offset, wear_grid_size, wear_grid_size);
 		if (pos < 36) {}
@@ -1389,7 +1382,6 @@ int mouseover_items_handler(window_info *win, int mx, int my) {
 		if (mx >= wear_items_x_offset + 4 && mx <= wear_items_x_offset + wear_grid_size - 4) {
 			show_help(unwear_all_to_inv_str, 0, quantity_y_offset + 30);
 		} else if (mx >= wear_items_x_offset + wear_grid_size + 4 && mx <= wear_items_x_offset + wear_grid_size * 2 - 4) {
-//			show_help(unwear_all_to_sto_str, 0, quantity_y_offset+30);
 		}
 	}
 	return 0;
@@ -1433,7 +1425,7 @@ void get_all_handler() {
 	int pos;
 	actor *me = get_our_actor();
 	if (!me) {
-		return; //Wtf!?
+		return; // Wtf!?
 	}
 	for (pos = 0; pos < NUM_BAGS; pos++) {
 		if ((bag_list[pos].x == me->x_tile_pos) && (bag_list[pos].y == me->y_tile_pos)) {
@@ -1522,7 +1514,6 @@ int show_items_handler(window_info *win) {
 	resize_items_handler(&windows_list.window[items_win]);
 	item_quantity = quantities.quantity[quantities.selected].val;
 	cm_remove_regions(items_win);
-//	cm_add_region(cm_stoall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[1], XLENBUT, YLENBUT);
 	cm_add_region(cm_getall_but, items_win, win->len_x - (XLENBUT + 3), wear_items_y_offset + but_y_off[0], XLENBUT, YLENBUT);
 	cm_add_region(cm_dropall_but, items_win, win->len_x - (XLENBUT + 3), wear_items_y_offset + but_y_off[2], XLENBUT, YLENBUT);
 	cm_add_region(cm_mix_but, items_win, win->len_x - (XLENBUT + 3), wear_items_y_offset + but_y_off[4], XLENBUT, YLENBUT);

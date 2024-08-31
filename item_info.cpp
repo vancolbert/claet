@@ -1,19 +1,15 @@
 /*
         Provide item description and emu lookup from a data file.
-
         Using the file from http://el.other-life.com/downloads/item_info.txt
         The file should be stored in the datadir or updates directory and is
         read when first needed.
-
         Functions provide descriptions and emu for items based on their image
         and unique id.  If unique id are not enabled (#item_uid) and so only
         image id are used then the values may not be unique.  The get_item_count()
         function allows you to check for uniqueness.
-
         The description, emu and count functions all cached last result to speed
         up the look-up, otherwise, the return time is dependant on the position
         in the list (but still not that slow).
-
         Author bluap/pjbroad February 2013
  */
 #include <iostream>
@@ -31,8 +27,7 @@
 #include "text.h"
 #include "url.h"
 namespace Item_Info {
-//	Class for a single item, holding ids, emu and description
-//
+// Class for a single item, holding ids, emu and description
 class Item {
 public:
 Item(const std::string &text);
@@ -48,8 +43,7 @@ int emu;
 std::string description;
 bool valid;
 };
-//	Construct the item by parsing the line from the item_info.txt file
-//
+// Construct the item by parsing the line from the item_info.txt file
 Item::Item(const std::string &text)
 	: valid(false) {
 	std::stringstream ss(text);
@@ -73,8 +67,7 @@ Item::Item(const std::string &text)
 	}
 	valid = true;
 }
-//	Return true of the item matches the ids, allowing for unset unique ids
-//
+// Return true of the item matches the ids, allowing for unset unique ids
 const bool Item::compare(Uint16 the_item_id, int the_image_id) const {
 	if ((the_item_id == unset_item_uid) && (the_image_id == image_id)) {
 		return true;
@@ -84,8 +77,7 @@ const bool Item::compare(Uint16 the_item_id, int the_image_id) const {
 	}
 	return false;
 }
-//	Class to hold the list of items
-//
+// Class to hold the list of items
 class List {
 public:
 List(void) : load_tried(false), shown_help(false), last_item(0) {}
@@ -119,16 +111,14 @@ int count;
 Count last_count;
 };
 std::string List::empty_str;
-//	Clean up memory on exit
-//
+// Clean up memory on exit
 List::~List(void) {
 	for (size_t i = 0; i < the_list.size(); ++i) {
 		delete the_list[i];
 	}
 	the_list.clear();
 }
-//	Find and item by the ids
-//
+// Find and item by the ids
 Item *List::get_item(Uint16 item_id, int image_id) {
 	info_available();
 	if (last_item && last_item->compare(item_id, image_id)) {
@@ -142,8 +132,7 @@ Item *List::get_item(Uint16 item_id, int image_id) {
 	}
 	return 0;
 }
-//	Get the description for the specified ids, or return an empty string
-//
+// Get the description for the specified ids, or return an empty string
 const std::string & List::get_description(Uint16 item_id, int image_id) {
 	Item *matching_item = get_item(item_id, image_id);
 	if (matching_item) {
@@ -151,8 +140,7 @@ const std::string & List::get_description(Uint16 item_id, int image_id) {
 	}
 	return empty_str;
 }
-//	Get the emu for the specified ids, or return -1
-//
+// Get the emu for the specified ids, or return -1
 int List::get_emu(Uint16 item_id, int image_id) {
 	Item *matching_item = get_item(item_id, image_id);
 	if (matching_item) {
@@ -160,8 +148,7 @@ int List::get_emu(Uint16 item_id, int image_id) {
 	}
 	return -1;
 }
-//	Return the number of unique items matching the ids
-//
+// Return the number of unique items matching the ids
 int List::get_count(Uint16 item_id, int image_id) {
 	info_available();
 	if (last_count.matches(item_id, image_id)) {
@@ -176,9 +163,8 @@ int List::get_count(Uint16 item_id, int image_id) {
 	last_count.set(item_id, image_id, match_count);
 	return last_count.get_count();
 }
-//	Match passed string against specified item descriptions and return details for matches
-//	Element in results array set to zero if their description matches the passed string
-//
+// Match passed string against specified item descriptions and return details for matches
+// Element in results array set to zero if their description matches the passed string
 void List::filter_by_description(Uint8 *storage_items_filter, const ground_item *storage_items, const char *filter_item_text, int no_storage) {
 	if (!info_available() || (no_storage <= 0) || !storage_items_filter || !storage_items) {
 		return;
@@ -197,8 +183,7 @@ void List::filter_by_description(Uint8 *storage_items_filter, const ground_item 
 		}
 	}
 }
-//	Read lines from the item_info.txt file and create item objects
-//
+// Read lines from the item_info.txt file and create item objects
 void List::load(void) {
 	load_tried = true;
 	std::ifstream in;
@@ -222,8 +207,7 @@ void List::load(void) {
 		}
 	}
 }
-//	If the item_info file is missing or item_uid not enabled, show one time help
-//
+// If the item_info file is missing or item_uid not enabled, show one time help
 void List::help_if_needed(void) {
 	if (shown_help) {
 		return;

@@ -7,9 +7,9 @@
 #include "cal3d/coretrack.h"
 #include <iostream>
 #include "elfilewrapper.h"
-//****************************************************************************//
-// CalLoader wrapper functions definition                                     //
-//****************************************************************************//
+// ****************************************************************************
+// CalLoader wrapper functions definition
+// ****************************************************************************
 class ElDataSource : public CalDataSource {
 private:
 el_file_ptr m_file;

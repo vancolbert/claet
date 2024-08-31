@@ -5,7 +5,7 @@
   #include <dirent.h>
   #include <errno.h>
   #include <unistd.h>
-#endif //_MSC_VER
+#endif // _MSC_VER
 #include <sys/types.h>
 #include <sys/stat.h>
 #include        <zlib.h>
@@ -38,9 +38,9 @@
 #ifdef WINDOWS
 #define MKDIR(file) mkdir(file)
 #else
-//#define MKDIR(file) (mkdir(file, S_IRWXU | S_IRWXG) || chmod(file, S_IRWXU | S_IRWXG | S_ISGID))
+// #define MKDIR(file) (mkdir(file, S_IRWXU | S_IRWXG) || chmod(file, S_IRWXU | S_IRWXG | S_ISGID))
 #define MKDIR(file) (mkdir(file, S_IRWXU | S_IRWXG))
-#endif //WINDOWS
+#endif // WINDOWS
 LINE click_line;
 void get_click_line(LINE *line) {
 	double proj[16];
@@ -91,7 +91,7 @@ int click_line_bbox_intersection(const AABBOX bbox) {
 	}
 	// line.cross(y-axis)?
 	r = E[X] * fabs(click_line.direction[Z]) + E[Z] * fabs(click_line.direction[X]);
-	if ( fabs(T[Z] * click_line.direction[X] - T[X] * click_line.direction[Z]) > r) {
+	if (fabs(T[Z] * click_line.direction[X] - T[X] * click_line.direction[Z]) > r) {
 		return 0;
 	}
 	// line.cross(z-axis)?
@@ -134,7 +134,7 @@ off_t get_file_size(const char *fname) {
 	}
 	return fstat.st_size;
 }
-//warning: when checking directories, do not include the trailing slash, for portability reasons
+// warning: when checking directories, do not include the trailing slash, for portability reasons
 int file_exists(const char *fname) {
 	int statres;
 	struct stat fstat;
@@ -143,7 +143,7 @@ int file_exists(const char *fname) {
 		statres = errno;
 	}
 	if (statres != ENOENT && statres != 0) {
-		//something went wrong...
+		// something went wrong...
 		LOG_ERROR("Error when checking file or directory %s (error code %d)\n", fname, statres);
 		return -1;
 	} else {
@@ -193,17 +193,14 @@ static int png_colortype_from_surface(SDL_Surface *surface) {
 	return colortype;
 }
 static void png_user_warn(png_structp ctx, png_const_charp str) {
-	//fprintf(stderr, "libpng: warning: %s\n", str);
 	LOG_WARNING("libpng: %s\n", str);
 }
 static void png_user_error(png_structp ctx, png_const_charp str) {
-	//fprintf(stderr, "libpng: error: %s\n", str);
 	LOG_ERROR("libpng: %s\n", str);
 }
 int IMG_SavePNG_RW(SDL_Surface *face, SDL_RWops *src) {
 	png_structp png_ptr = 0;
 	png_infop info_ptr = NULL;
-	//png_colorp palette = 0;
 	png_bytep *row_pointers = NULL;
 	int i;
 	int colortype;
@@ -254,7 +251,7 @@ int IMG_SavePNG_RW(SDL_Surface *face, SDL_RWops *src) {
 	/* write out the entire image data in one call */
 	png_write_image(png_ptr, row_pointers);
 	png_write_end(png_ptr, info_ptr);
-	result = 0;  /* success! */
+	result = 0; /* success! */
 done:
 	if (row_pointers != NULL) {
 		free(row_pointers);
@@ -295,10 +292,9 @@ void makeScreenShot() {
 	/* see if the screenshots directory exists */
 #ifdef WINDOWS
 	safe_snprintf(fname, sizeof(fname), "%sscreenshots", configdir);
-	//safe_snprintf (fname, sizeof (fname), "./data/screenshots");
-#else //WINDOWS
+#else // WINDOWS
 	safe_snprintf(fname, sizeof(fname), "%sscreenshots", configdir);
-#endif //WINDOWS
+#endif // WINDOWS
 	ret = file_exists(fname);
 	if (ret == 0) {
 		if (MKDIR(fname) < 0) {
@@ -316,7 +312,7 @@ void makeScreenShot() {
 		if (ret == 0) {
 			break;
 		} else if (ret == -1) {
-			return; //we hit an error, it's already reported
+			return; // we hit an error, it's already reported
 		}
 	}
 	/* if all numbered file names have been taken, use the default */
@@ -342,7 +338,6 @@ void makeScreenShot() {
 	if (SDL_MUSTLOCK(surf)) {
 		SDL_UnlockSurface(surf);
 	}
-	//SDL_SaveBMP (surf, fname);
 	IMG_SavePNG(surf, fname);
 	free(pixels);
 	SDL_FreeSurface(surf);
@@ -352,7 +347,6 @@ void draw_circle_ext(int x, int y, int radius, int interval, int angle_from, int
 	int angle;
 	x += gx_adjust;
 	y += gy_adjust;
-//	angle_to++;            // plus simple que de changer < en <= dans le for ;)
 	angle_from += interval; // solution alternative : un coup en moins au commencement
 	if (radius == 0) {
 		glVertex2f(x, y);
@@ -452,7 +446,7 @@ void draw_smooth_button(char *str, float size, int x, int y, int w, int lines, f
 	}
 	glEnable(GL_TEXTURE_2D);
 #ifdef OSX
-}               // to close off square_buttons conditional
+} // to close off square_buttons conditional
 #endif
 	if (highlight) {
 		glColor3f(r, g, b);

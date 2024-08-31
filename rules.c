@@ -55,10 +55,10 @@ int have_rules = 0;
 rule_string *display_rules = NULL;
 int last_display = -1;
 /* virtual window */
-int virt_win_len = 0;                   /* length in pixels of all rules/info and current expanded rules */
-int virt_win_offset = 0;                /* virtual line number at top of displayed text */
-int recalc_virt_win_len = 1;    /* if true, force a virtual window recal before display */
-int set_rule_offset = -1;               /* if > 0, set the first displayed rule to this */
+int virt_win_len = 0; /* length in pixels of all rules/info and current expanded rules */
+int virt_win_offset = 0; /* virtual line number at top of displayed text */
+int recalc_virt_win_len = 1; /* if true, force a virtual window recal before display */
+int set_rule_offset = -1; /* if > 0, set the first displayed rule to this */
 /*Interface*/
 int countdown = 0;
 int rules_root_scroll_id = 0;
@@ -66,10 +66,10 @@ int rules_root_accept_id = 0;
 int next_win_id;
 /* Colors */
 const float rules_winRGB[8][3] = {
-	{1.0f, 0.6f, 0.0f},                                   // TITLE
+	{1.0f, 0.6f, 0.0f}, // TITLE
 	{1.0f, 0.0f, 0.0f}, {0.0f, 0.7f, 1.0f}, {1.0f, 1.0f, 0.8f}, // RULE (highlight|mouseover|normal)
-	{0.6f, 1.0f, 1.2f}, {0.4f, 0.8f, 1.0f},                  // INFO (mouseover|normal)
-	{0.8f, 0.0f, 0.0f}, {0.8f, 0.8f, 0.8f}                   // LONG DESC (highlight|normal)
+	{0.6f, 1.0f, 1.2f}, {0.4f, 0.8f, 1.0f}, // INFO (mouseover|normal)
+	{0.8f, 0.0f, 0.0f}, {0.8f, 0.8f, 0.8f} // LONG DESC (highlight|normal)
 };
 static int rules_text = -1;
 int rules_root_reject_id = 0;
@@ -126,7 +126,7 @@ int read_rules() {
 	safe_snprintf(file_name, sizeof(file_name), "languages/%s/rules.xml", lang);
 	if ((doc = xmlReadFile(file_name, NULL, 0)) == NULL) {
 		if ((doc = xmlReadFile("languages/en/rules.xml", NULL, 0)) == NULL) {
-			//report this error:
+			// report this error:
 			LOG_ERROR(read_rules_str);
 			return 0;
 		}
@@ -326,7 +326,7 @@ void highlight_rule(int type, const Uint8 *rule, int no) {
 		rule_start = &rule[3];
 		no -= 3;
 	} else {
-		return; //Hmm...
+		return; // Hmm...
 	}
 	if (display_rules) {
 		reset_rules(display_rules);
@@ -349,7 +349,7 @@ void highlight_rule(int type, const Uint8 *rule, int no) {
 		}
 		for (i = 0; display_rules[i].type != -1; i++) {
 			if (display_rules[i].type == RULE && display_rules[i].highlight) {
-				set_rule_offset = i;    //Get the first highlighted entry
+				set_rule_offset = i; // Get the first highlighted entry
 				recalc_virt_win_len = 1;
 				return;
 			}
@@ -393,7 +393,7 @@ void calc_virt_win_len(rule_string *rules_ptr, int win_heigth, float text_size) 
 		}
 		switch (rules_ptr[i].type) {
 		case TITLE:
-			zoom = text_size;      //*1.5f;
+			zoom = text_size; // *1.5f;
 			ydiff = 30 * zoom;
 			break;
 		case RULE:
@@ -455,11 +455,11 @@ int draw_rules(rule_string *rules_ptr, int x_in, int y_in, int lenx, int leny, f
 		switch (rules_ptr[i].type) {
 		case -1:
 			read_all_rules = reached_end = 1;
-			rules_ptr[i].y_start = 2 * leny;    //Minor trick
+			rules_ptr[i].y_start = 2 * leny; // Minor trick
 			return i;
 		case TITLE:
 			glColor3f(rgb[0][0], rgb[0][1], rgb[0][2]);
-			zoom = text_size;      //*1.5f;
+			zoom = text_size; // *1.5f;
 			ydiff = 30 * zoom;
 			xdiff = 0;
 			x = x_in + ((lenx - x_in) >> 1) - (strlen(rules_ptr[i].short_str[0]) >> 1) * 11 * zoom;
@@ -494,7 +494,7 @@ int draw_rules(rule_string *rules_ptr, int x_in, int y_in, int lenx, int leny, f
 		}
 		rules_ptr[i].x_start = x;
 		rules_ptr[i].y_start = (y_curr - virt_win_offset);
-		for (j = 0; rules_ptr[i].short_str[j]; j++) {//Draw the lines
+		for (j = 0; rules_ptr[i].short_str[j]; j++) { // Draw the lines
 			if (j == 1) {
 				ptr = str;
 			}
@@ -520,7 +520,7 @@ int draw_rules(rule_string *rules_ptr, int x_in, int y_in, int lenx, int leny, f
 		y_curr += ydiff;
 		rules_ptr[i].y_end = (y_curr - virt_win_offset);
 		rules_ptr[i].x_end = rules_ptr[i].x_start + len;
-		if (rules_ptr[i].show_long_desc && rules_ptr[i].long_str) {//Draw the lines of the long description
+		if (rules_ptr[i].show_long_desc && rules_ptr[i].long_str) { // Draw the lines of the long description
 			if (rules_ptr[i].highlight) {
 				glColor3f(rgb[6][0], rgb[6][1], rgb[6][2]);
 			} else {
@@ -541,21 +541,21 @@ int draw_rules(rule_string *rules_ptr, int x_in, int y_in, int lenx, int leny, f
 			y_curr += ydiff;
 		}
 	}
-	rules_ptr[i].y_start = 2 * leny;//hehe ;-)
-	return i;//The number of rules we're displaying
+	rules_ptr[i].y_start = 2 * leny; // hehe ;-)
+	return i; // The number of rules we're displaying
 }
 int has_accepted = 0;
 /*Root window*/
 void init_rules_interface(float text_size, int count, int len_x, int len_y) {
 	if (rules.no) {
 		if (last_display) {
-			//We need to format the rules again..
+			// We need to format the rules again..
 			if (display_rules) {
 				free_rules(display_rules);
 			}
 			display_rules = get_interface_rules(570 / (12 * text_size) - 1);
 		}
-		countdown = count;      // Countdown in 0.5 seconds...
+		countdown = count; // Countdown in 0.5 seconds...
 	}
 	last_display = 0;
 	has_accepted = 0;
@@ -700,7 +700,7 @@ int click_rules_root_handler(window_info *win, int mx, int my, Uint32 flags) {
 int keypress_rules_root_handler(window_info *win, int mx, int my, Uint32 key, Uint32 unikey) {
 	Uint16 keysym = key & 0xffff;
 	// first, try to see if we pressed Alt+x, to quit.
-	if ( check_quit_or_fullscreen(key)) {
+	if (check_quit_or_fullscreen(key)) {
 		return 1;
 	} else if (keysym == SDLK_DOWN) {
 		vscrollbar_scroll_down(rules_root_win, rules_root_scroll_id);

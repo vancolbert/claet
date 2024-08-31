@@ -66,12 +66,12 @@ typedef struct wl {
 	 */
 	/*! @{ */
 	Uint16 pos_x, pos_y, len_x, len_y; /*!< Widget area */
-	Uint32 id;                         /*!< Widget unique id */
+	Uint32 id; /*!< Widget unique id */
 	int window_id; /*!< The id of the parent window */
-	const struct WIDGET_TYPE *type;  /*!< Specifies what properties the widget inherits from it's type */
-	void *spec;             /*!< The specific implementation info for this widget which is passed to type-nonspecific handlers*/
-	Uint32 Flags;  /*!< Status flags... visible, enabled, etc */
-	float size;    /*!< Size of text, image, etc */
+	const struct WIDGET_TYPE *type; /*!< Specifies what properties the widget inherits from it's type */
+	void *spec; /*!< The specific implementation info for this widget which is passed to type-nonspecific handlers*/
+	Uint32 Flags; /*!< Status flags... visible, enabled, etc */
+	float size; /*!< Size of text, image, etc */
 	float r, g, b; /*!< Associated color */
 	/*! @} */
 	/*! \name The specific widget handlers */
@@ -86,7 +86,7 @@ typedef struct wl {
 	int (*OnDestroy)();
 	/*! \} */
 	void *widget_info; /*!< Pointer to specific widget data */
-	struct wl *next;   /*!< Pointer to the next widget in the window */
+	struct wl *next; /*!< Pointer to the next widget in the window */
 } widget_list;
 /*!
  * \name	Generic flags for widgets
@@ -678,7 +678,7 @@ int checkbox_get_checked(int window_id, Uint32 widget_id);
  * \sa widget_find
  */
 int checkbox_set_checked(int window_id, Uint32 widget_id, int checked);
-//Button
+// Button
 /* Config option: disables double click protection. */
 extern int disable_double_click;
 /*!
@@ -1284,7 +1284,7 @@ int text_field_keypress(widget_list *w, int mx, int my, Uint32 key, Uint32 unike
  * \param[in] tf text_field where we set cursor_line.
  */
 void text_field_find_cursor_line(text_field *tf);
-//FIXME: Write documentation for these...
+// FIXME: Write documentation for these...
 #define P_NORMAL    0
 #define P_TEXT      1
 #define P_NONE      2

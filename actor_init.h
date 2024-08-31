@@ -26,4 +26,4 @@ void cal_render_actor_shader(actor *act, Uint32 use_lightning, Uint32 use_textur
 #ifdef __cplusplus
 }
 #endif
-#endif  //_ACTOR_INIT_H_
+#endif // _ACTOR_INIT_H_

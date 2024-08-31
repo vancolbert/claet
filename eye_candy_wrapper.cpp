@@ -1,4 +1,4 @@
-// I N C L U D E S ////////////////////////////////////////////////////////////
+// I N C L U D E S
 #include "eye_candy_wrapper.h"
 #include "cal.h"
 #include "cal3d_wrapper.h"
@@ -14,7 +14,7 @@
 #include "skeletons.h"
 #include "tiles.h"
 #include "weather.h"
-// G L O B A L S //////////////////////////////////////////////////////////////
+// G L O B A L S
 extern "C"
 {
 int use_eye_candy = 1;
@@ -45,7 +45,7 @@ std::vector<ec::Obstruction *> fire_obstructions_list;
 bool force_idle = false;
 volatile bool idle_semaphore = false;
 float average_framerate = 20000.0; // Windows has such horrible timer resolution, I have to average these out.  Anyways, it doesn't hurt to do this in Linux, either.
-// F U N C T I O N S //////////////////////////////////////////////////////////
+// F U N C T I O N S
 void set_vec3_actor_bone2(ec::Vec3& position, actor *_actor, int bone);
 void set_vec3_actor_bone2(ec::Vec3& position, actor *_actor, int bone, const ec::Vec3 shift);
 void set_vec3_target_bone2(ec::Vec3& position, actor *_actor, int bone);
@@ -172,11 +172,6 @@ extern "C" void ec_idle() {
 		idle_semaphore = false;
 		return;
 	}
-	//  GLfloat rot_matrix[16];
-	//  glGetFloatv(GL_MODELVIEW_MATRIX, rot_matrix);
-	//  const float x = rot_matrix[12];
-	//  const float y = rot_matrix[13];
-	//  const float z = rot_matrix[14];
 	if (poor_man) {
 		eye_candy.set_thresholds(150, min_ec_framerate, max_ec_framerate);
 	} else {
@@ -199,7 +194,7 @@ extern "C" void ec_idle() {
 	eye_candy.set_dimensions(window_width, window_height, powf(zoom_level, 0.1));
 	Uint64 new_time = ec::get_time();
 	short cluster = get_actor_cluster();
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -230,18 +225,14 @@ extern "C" void ec_idle() {
 						set_vec3_actor_bone2((*iter)->position, (*iter)->caster, get_actor_bone_id((*iter)->caster, hand_right_bone));
 					}
 				} else {
-					//          (*iter)->position = ec::Vec3((*iter)->caster->x_pos + X_OFFSET, ec_get_z((*iter)->caster) - 0.25, -((*iter)->caster->y_pos + Y_OFFSET));
-					//                std::cout << "ec_idle: old position: " << (*iter)->position << std::endl;
 					if ((*iter)->casterbone > -1) {
 						set_vec3_actor_bone2((*iter)->position, (*iter)->caster, (*iter)->casterbone);
 					} else { // use default bone
 						set_vec3_actor_bone2((*iter)->position, (*iter)->caster, get_actor_bone_id((*iter)->caster, body_bottom_bone));
 					}
-					//                std::cout << "ec_idle: new position: " << (*iter)->position << std::endl;
 				}
 			}
 			if ((*iter)->target) {
-				//          (*iter)->position2 = ec::Vec3((*iter)->target->x_pos, ec_get_z((*iter)->target) + 0.4, -(*iter)->target->y_pos);
 				if ((*iter)->targetbone > -1) {
 					set_vec3_target_bone2((*iter)->position2, (*iter)->target, (*iter)->targetbone);
 				} else { // use default bone
@@ -250,7 +241,6 @@ extern "C" void ec_idle() {
 			}
 			for (int j = 0; j < (int)(*iter)->target_actors.size(); j++) {
 				if ((*iter)->target_actors[j]) {
-					//set_vec3_target_bone2((*iter)->targets[j], (*iter)->target_actors[j], 25);
 					// we do not store target bones for multiple targets, so use default target bone
 					set_vec3_target_bone2((*iter)->targets[j], (*iter)->target_actors[j], get_actor_bone_id((*iter)->target_actors[j], body_bottom_bone));
 				}
@@ -273,8 +263,6 @@ extern "C" void ec_idle() {
 			}
 			if ((*iter)->effect && (((*iter)->effect->get_type() == ec::EC_CLOUD) || ((*iter)->effect->get_type() == ec::EC_FIREFLY) || ((*iter)->effect->get_type() == ec::EC_WIND))) {
 				// doesn't work, moves effects to -2.2 under the ground
-				// (*iter)->position.y = ec_get_z2(-(int)camera_x, -(int)camera_y); // Keep the effect level with the ground.
-				// std::cout << (-(int)camera_x) << ", " << (-(int)camera_y) << ": " << (*iter)->position.y << std::endl;
 			}
 		}
 		i++;
@@ -292,7 +280,6 @@ extern "C" void ec_idle() {
 	if (eye_candy.time_diff > 400000) { // Don't want it to jump if it's been very long between frames.
 		eye_candy.time_diff = 400000;
 	}
-// 	average_framerate = average_framerate * 0.7 + 1000000.0 / eye_candy.time_diff * 0.3;
 	average_framerate = fps_average;
 	eye_candy.framerate = average_framerate;
 	ec_last_time = ec_cur_time;
@@ -308,9 +295,7 @@ extern "C" void ec_idle() {
 	idle_semaphore = false;
 }
 extern "C" void ec_heartbeat() {
-	//  std::cout << "Actor: <" << camera_x << ", " << camera_z << ", " << -camera_y << ">" << std::endl;
-	//  if (!((int)(ec_cur_time / 1000000.0) % 9))
-	//    ec_create_breath_fire(44.75, 38.0, 1.0, 44.75, 43.0, 0.6, 2, 1.5);
+	// if (!((int)(ec_cur_time / 1000000.0) % 9))
 	idle_cycles_this_second = 0;
 	general_obstructions_list.clear();
 	fire_obstructions_list.clear();
@@ -370,7 +355,7 @@ extern "C" void ec_draw() {
 	if (use_eye_candy) {
 		short cluster = get_actor_cluster();
 		// Update firefly activity.
-		for (int i = 0; i < (int)references.size(); ) {
+		for (int i = 0; i < (int)references.size();) {
 			std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 			if ((*iter)->dead) {
 				delete *iter;
@@ -378,8 +363,7 @@ extern "C" void ec_draw() {
 				continue;
 			}
 			if ((*iter)->effect && (*iter)->effect->get_type() == ec::EC_FIREFLY && (*iter)->effect->belongsToCluster(cluster)) {
-				(*iter)->effect->active = (!(is_day || dungeon || (weather_get_density() > 0.01f)
-							     ));
+				(*iter)->effect->active = (!(is_day || dungeon || (weather_get_density() > 0.01f)));
 			}
 			i++;
 		}
@@ -391,7 +375,7 @@ extern "C" void ec_draw() {
 }
 extern "C" void ec_actor_delete(actor *_actor) {
 	force_idle = true;
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -449,7 +433,7 @@ extern "C" void ec_destroy_all_effects() {
 }
 extern "C" void ec_delete_all_effects() {
 	force_idle = true;
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -464,7 +448,7 @@ extern "C" void ec_delete_all_effects() {
 }
 extern "C" void ec_delete_effect_loc(float x, float y) {
 	force_idle = true;
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -480,7 +464,7 @@ extern "C" void ec_delete_effect_loc(float x, float y) {
 }
 extern "C" void ec_delete_effect_loc_type(float x, float y, ec_EffectEnum type) {
 	force_idle = true;
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -496,7 +480,7 @@ extern "C" void ec_delete_effect_loc_type(float x, float y, ec_EffectEnum type) 
 }
 extern "C" void ec_delete_effect_type(ec_EffectEnum type) {
 	force_idle = true;
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -651,7 +635,7 @@ extern "C" void ec_free_effects_list(ec_effects effects) {
 }
 extern "C" void ec_remove_weapon(actor *_actor) {
 	force_idle = true;
-	for (int i = 0; i < (int)references.size(); ) {
+	for (int i = 0; i < (int)references.size();) {
 		std::vector<ec_internal_reference *>::iterator iter = references.begin() + i;
 		if ((*iter)->dead) {
 			delete *iter;
@@ -721,7 +705,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 	}
 	ec_reference ref = NULL;
 	switch (raw_code[0]) {
-	case 0x00:         // Campfire
+	case 0x00: // Campfire
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -729,7 +713,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_campfire(x, y, z, hue, saturation, LOD, scale);
 		break;
 	}
-	case 0x01:         // Cloud
+	case 0x01: // Cloud
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -737,7 +721,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_cloud(x, y, z, hue, saturation, density, bounds, LOD);
 		break;
 	}
-	case 0x02:         // Fireflies
+	case 0x02: // Fireflies
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -746,7 +730,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_fireflies(x, y, z, hue, saturation, density, scale, bounds);
 		break;
 	}
-	case 0x03:         // Fountain
+	case 0x03: // Fountain
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -756,7 +740,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_fountain(x, y, z, hue, saturation, base_height, backlit, scale, LOD);
 		break;
 	}
-	case 0x04:         // Lamp
+	case 0x04: // Lamp
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -764,7 +748,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_lamp(x, y, z, hue, saturation, scale, LOD);
 		break;
 	}
-	case 0x05:         // Magic protection
+	case 0x05: // Magic protection
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -772,7 +756,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_ongoing_magic_protection(x, y, z, hue, saturation, LOD, scale);
 		break;
 	}
-	case 0x06:         // Shield
+	case 0x06: // Shield
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -780,7 +764,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_ongoing_shield(x, y, z, hue, saturation, LOD, scale);
 		break;
 	}
-	case 0x07:         // Magic immunity
+	case 0x07: // Magic immunity
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -788,7 +772,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_ongoing_magic_immunity(x, y, z, hue, saturation, LOD, scale);
 		break;
 	}
-	case 0x08:         // Poison
+	case 0x08: // Poison
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -796,7 +780,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_ongoing_poison(x, y, z, hue, saturation, LOD, scale);
 		break;
 	}
-	case 0x09:         // Smoke
+	case 0x09: // Smoke
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -804,7 +788,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_smoke(x, y, z, hue, saturation, density, LOD);
 		break;
 	}
-	case 0x0A:         // Teleporter
+	case 0x0A: // Teleporter
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -812,7 +796,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_teleporter(x, y, z, hue, saturation, scale, LOD);
 		break;
 	}
-	case 0x0B:         // Leaves
+	case 0x0B: // Leaves
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -821,7 +805,7 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_wind_leaves(x, y, z, hue, saturation, scale, density, bounds, 1.0, 0.0, 0.0);
 		break;
 	}
-	case 0x0C:         // Petals
+	case 0x0C: // Petals
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -830,29 +814,16 @@ extern "C" ec_reference ec_create_effect_from_map_code(char *code, float x, floa
 		ref = ec_create_wind_petals(x, y, z, hue, saturation, scale, density, bounds, 1.0, 0.0, 0.0);
 		break;
 	}
-	case 0x0D:         // Waterfall
-		//      const float hue = raw_code[41] / 256.0;
-		//      const float saturation = raw_code[42] / 16.0;
-		//      const float density = raw_code[43] + raw_code[44] / 256.0;
-		//      const float base_height = raw_code[45] * 8.0 + raw_code[46] / 32.0;
-		//      const float angle = raw_code[47] * ec::PI / 128.0;
+	case 0x0D: // Waterfall
 		// Effect does not yet exist.
 		break;
-	case 0x0E:         // Bees
-		//      const float hue = raw_code[41] / 256.0;
-		//      const float saturation = raw_code[42] / 16.0;
-		//      const float density = raw_code[43] + raw_code[44] / 256.0;
-		//      const float scale = raw_code[45] + raw_code[46] / 256.0;
+	case 0x0E: // Bees
 		// Effect does not yet exist.
 		break;
-	case 0x0F:         // Portal
-		//      const float hue = raw_code[41] / 256.0;
-		//      const float saturation = raw_code[42] / 16.0;
-		//      const float scale = raw_code[43] + raw_code[44] / 256.0;
-		//      const float angle = raw_code[45] * ec::PI / 128.0;
+	case 0x0F: // Portal
 		// Effect does not yet exist.
 		break;
-	case 0x10:         // Candle
+	case 0x10: // Candle
 	{
 		const float hue = raw_code[41] / 256.0;
 		const float saturation = raw_code[42] / 16.0;
@@ -3033,7 +3004,6 @@ extern "C" void ec_launch_targetmagic_smite_summoned(ec_reference reference, flo
 	eye_candy.push_back_effect(cast_reference->effect);
 }
 extern "C" ec_reference ec_create_targetmagic_drain_mana(float start_x, float start_y, float start_z, float end_x, float end_y, float end_z, int LOD) {
-	//std::cout << "Start X: " << start_x << "Start Y: " << start_y << "Start Z: " << start_z << "End X: " << end_x << "End Y: " << end_y << "End Z: " << end_z << std::endl;
 	if (!ec_in_range(start_x, start_y, start_z, ec::TargetMagicEffect::get_max_end_time())) {
 		return NULL;
 	}
@@ -3045,8 +3015,6 @@ extern "C" ec_reference ec_create_targetmagic_drain_mana(float start_x, float st
 	return (ec_reference)ret;
 }
 extern "C" ec_reference ec_create_targetmagic_drain_mana2(actor *caster, actor *target, int LOD) {
-	//std::cout << "Caster: ID: " << caster->actor_id << " Name: " << caster->actor_name << " X: " << caster->x_pos << " Y: " << caster->y_pos << std::endl;
-	//std::cout << "Target: ID: " << target->actor_id << " Name: " << target->actor_name << " X: " << target->x_pos << " Y: " << target->y_pos << std::endl;
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::TargetMagicEffect::get_max_end_time())) {
 		return NULL;
 	}
@@ -3154,4 +3122,3 @@ extern "C" ec_reference ec_create_mine_detonate2(actor *caster, int mine_type, i
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-///////////////////////////////////////////////////////////////////////////////

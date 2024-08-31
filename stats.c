@@ -28,7 +28,6 @@ const char *religions[] = {
 };
 const char *tab_nexus[] = {"Ignorant", "Initié", "Compagnon", "Expert", "Expert", "Maître", "Maître", "Error"};
 const char *tab_nexus_malus[] = {"Ignorant-", "Initié-", "Compagnon-", "Compagnon-", "Expert-", "Expert-", "Maître-", "Error-"};
-///const char* tab_nexus_malus[] = {"Ignorant", "Initié", "Compagnon", "Compagnon", "Expert", "Expert", "Maître", "Error-"};
 int stats_win = -1;
 player_attribs your_info;
 player_attribs someone_info;
@@ -37,15 +36,14 @@ int attrib_menu_x = 100;
 int attrib_menu_y = 20;
 int attrib_menu_x_len = STATS_TAB_WIDTH;
 int attrib_menu_y_len = STATS_TAB_HEIGHT;
-//int attrib_menu_dragged=0;
-int max_disp_stats = 1;  // default to only 1 displayable stat
+int max_disp_stats = 1; // default to only 1 displayable stat
 int check_grid_y_top = 0;
 int check_grid_x_left = 0;
 int have_stats = 0;
 struct stats_struct statsinfo[NUM_SKILLS];
 #define MAX_NUMBER_OF_FLOATING_MESSAGES 25
 typedef struct {
-	int actor_id;//The actor it's related to
+	int actor_id; // The actor it's related to
 	char message[50];
 	int first_time;
 	int active_time;
@@ -60,8 +58,8 @@ void floatingmessages_compare_stat(int actor_id, int value, int new_value, const
 void draw_stat_final(int len, int x, int y, const unsigned char *name, const char *value);
 void get_the_stats(Sint16 *stats) {
 	have_stats = 1;
-	memset(&your_info, 0, sizeof(your_info));       // failsafe incase structure changes
-	//initiate the function pointers
+	memset(&your_info, 0, sizeof(your_info)); // failsafe incase structure changes
+	// initiate the function pointers
 	your_info.phy.cur = SDL_SwapLE16(stats[0]);
 	your_info.phy.base = SDL_SwapLE16(stats[1]);
 	your_info.coo.cur = SDL_SwapLE16(stats[2]);
@@ -212,7 +210,6 @@ void get_partial_stat(Uint8 name, Sint32 value) {
 		your_info.vit.base = value;
 		break;
 	case MIGHT_CUR:
-		///printf("DEBUG TRINITA your_info.might.cur: %i\n", value );
 		your_info.might.cur = value;
 		break;
 	case MIGHT_BASE:
@@ -623,9 +620,9 @@ void get_partial_stat(Uint8 name, Sint32 value) {
 	default:
 		LOG_ERROR("Server sent invalid stat number\n");
 	}
-	//update spells
-	//this must be here, atm spells depend on mana, magic level and alchemy (bones to gold)
-	//but in the future they could involve other attributes/skills
+	// update spells
+	// this must be here, atm spells depend on mana, magic level and alchemy (bones to gold)
+	// but in the future they could involve other attributes/skills
 	check_castability();
 }
 Sint16 get_base_might() {
@@ -745,7 +742,6 @@ void draw_stat(int len, int x, int y, attrib_16 *var, names *name) {
     exp,
     exp_next,
     cur_nex)
-
  **/
 int draw_skill(int len, int x, int y, attrib_16 *lvl, names *name, int exp, int exp_next, int cur_nex, int base_nex) {
 	char str[100];
@@ -801,7 +797,7 @@ int display_stats_handler(window_info *win) {
 	draw_stat(12, x, y, &(cur_stats.ins), &(attributes.ins));
 	y += 14;
 	draw_stat(12, x, y, &(cur_stats.vit), &(attributes.vit));
-	//cross attributes
+	// cross attributes
 	glColor3f(1.0f, 1.0f, 0.0f);
 	x += 170;
 	y = 5;
@@ -826,8 +822,8 @@ int display_stats_handler(window_info *win) {
 	y += 14;
 	draw_stat(11, x, y, &(cur_stats.eth), &(attributes.eth));
 	glColor3f(0.5f, 0.5f, 1.0f);
-	y += 14;  // blank lines for spacing
-	//other attribs
+	y += 14; // blank lines for spacing
+	// other attribs
 	x = 350;
 	y = 24;
 	safe_snprintf(str, sizeof(str), "%i", cur_stats.food_level);
@@ -851,7 +847,7 @@ int display_stats_handler(window_info *win) {
 	} else {
 		draw_stat_final(14, x, y, attributes.religion.name, "Aucune");
 	}
-	//skills
+	// skills
 	y = 170;
 	x = 11;
 	glColor3f(1.0f, 0.5f, 0.2f);
@@ -921,7 +917,6 @@ int click_stats_handler(window_info *win, int mx, int my, Uint32 flags) {
 	return 0;
 }
 void fill_stats_win() {
-	//set_window_color(stats_win, ELW_COLOR_BORDER, 0.0f, 1.0f, 0.0f, 0.0f);
 	set_window_handler(stats_win, ELW_HANDLER_DISPLAY, &display_stats_handler);
 	set_window_handler(stats_win, ELW_HANDLER_CLICK, &click_stats_handler);
 }
@@ -930,7 +925,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
 	double f, width, y, x, z;
 	double model[16], proj[16];
 	int view[4];
-	//@tosh : pour éviter un plantage, si un message flottant arrive pendant une synchro
+	// @tosh : pour éviter un plantage, si un message flottant arrive pendant une synchro
 	if (!your_actor) {
 		return;
 	}
@@ -941,7 +936,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
 	f = ((float)(message->active_time - (cur_time - message->first_time))) / message->active_time;
 	glColor4f(message->color[0], message->color[1], message->color[2], f > cut ? 1.0f : (f / cut));
 	width = (float)get_string_width((unsigned char *)message->message) * INGAME_FONT_X_LEN * name_zoom * 8.0;
-	//Figure out where the point just above the actor's head is in the viewport
+	// Figure out where the point just above the actor's head is in the viewport
 	glGetDoublev(GL_MODELVIEW_MATRIX, model);
 	glGetDoublev(GL_PROJECTION_MATRIX, proj);
 	glGetIntegerv(GL_VIEWPORT, view);
@@ -950,7 +945,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
 		y = window_height / 2.0 - 40.0;
 	} else {
 		gluProject(0.0, 0.0, healthbar_z * get_actor_scale(your_actor), model, proj, view, &x, &y, &z);
-		y += 50 * name_zoom;       // size of the actor name/bar
+		y += 50 * name_zoom; // size of the actor name/bar
 	}
 	switch (message->direction) {
 	case FLOATINGMESSAGE_EAST:
@@ -1033,7 +1028,7 @@ void add_floating_message(int actor_id, char *str, int direction, float r, float
 	int time;
 	static int last_time_added[5] = {0};
 	static int last_direction_added[5] = {0};
-	static int last_actor[5] = {0};//Make sure that we don't see too many messages from that actor
+	static int last_actor[5] = {0}; // Make sure that we don't see too many messages from that actor
 	floating_message *m = get_free_floatingmessage();
 	if (!m) {
 		return;

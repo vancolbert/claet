@@ -14,7 +14,7 @@ extern int book_win;
 extern int paper_win;
 extern float book_zoom; /*!< zoom factor for book text */
 extern int book_reload;
-extern int livre_ouvert; //Le numéro du livre actuellement ouvert
+extern int livre_ouvert; // Le numéro du livre actuellement ouvert
 /*!
  * \ingroup	network_books
  * \brief	Opens a local book.

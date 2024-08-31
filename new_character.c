@@ -52,10 +52,10 @@ struct cadrage {
 	{-90, 0, 270}, // Kultar     O
 	{-90, 0, 180}, // Galdur     S
 	{-90, 0, 280}, // Homme bleu SO
-	{-90, 0, 70},  // Sinan      E
+	{-90, 0, 70}, // Sinan      E
 	{-90, 0, 120}, // Elfe noir  SE
 };
-typedef int my_enum;//This enumeration will decrease, then wrap to top, increase and then wrap to bottom, when using the inc() and dec() functions. Special purpose though, since you have to have between 2 and 255 values in the enumeration and you have to have the same value in enum[0] as in enum[max] - otherwise we'll probably segfault...
+typedef int my_enum; // This enumeration will decrease, then wrap to top, increase and then wrap to bottom, when using the inc() and dec() functions. Special purpose though, since you have to have between 2 and 255 values in the enumeration and you have to have the same value in enum[0] as in enum[max] - otherwise we'll probably segfault...
 my_enum normal_skin_enum[] = {SKIN_BROWN, SKIN_NORMAL, SKIN_PALE, SKIN_TAN, SKIN_BROWN};
 my_enum haut_elfe_skin_enum[] = {SKIN_NORMAL, SKIN_PALE, SKIN_TAN, SKIN_NORMAL};
 my_enum elfe_noir_skin_enum[] = {SKIN_BROWN, SKIN_EN_CLAIR, SKIN_EN_FONCE, SKIN_EN_GRIS, SKIN_EN_MEDIUM, SKIN_BROWN};
@@ -99,7 +99,7 @@ struct race_def {
 };
 struct char_def {
 	int male;
-	int race_id;//races[race_id]
+	int race_id; // races[race_id]
 	int race;
 	int skin;
 	int hair;
@@ -115,7 +115,7 @@ struct char_def {
 	NULL,
 	NULL
 };
-//Enum handling
+// Enum handling
 int find_pos_in_enum(my_enum *def, int val) {
 	int i;
 	for (i = 1; i < 255; i++) {
@@ -149,7 +149,7 @@ int dec(my_enum *def, int val, int no_steps) {
 	}
 	return *here;
 }
-//New char interface
+// New char interface
 static char create_char_error_str[520] = {0};
 int old_use_windowed_chat;
 int display_time = 0;
@@ -217,7 +217,7 @@ void change_actor(void) {
 		my_strncp(our_actor.our_model->body_parts->pants_tex, actors_defs[our_actor.race].legs[our_actor.pants].legs_name, sizeof(our_actor.our_model->body_parts->pants_tex));
 		my_strncp(our_actor.our_model->body_parts->boots_tex, actors_defs[our_actor.race].boots[our_actor.boots].boots_name, sizeof(our_actor.our_model->body_parts->boots_tex));
 		free_actor_texture(our_actor.our_model->texture_id);
-		our_actor.our_model->texture_id = load_enhanced_actor(our_actor.our_model->body_parts, 0);      // Rebuild the actor's textures.
+		our_actor.our_model->texture_id = load_enhanced_actor(our_actor.our_model->body_parts, 0); // Rebuild the actor's textures.
 		// Move the actor. Could be a little disorienting, though.
 		our_actor.our_model->x_tile_pos = our_actor.def->x;
 		our_actor.our_model->y_tile_pos = our_actor.def->y;
@@ -228,7 +228,6 @@ void change_actor(void) {
 		our_actor.our_model->stand_idle = 0;
 	}
 }
-//////////////////////////////////////////////////////////////////////////
 // New character window code below.
 int newchar_root_win = -1;
 int color_race_win = -1;
@@ -236,8 +235,7 @@ int namepass_win = -1;
 int newchar_advice_win = -1;
 int newchar_hud_win = -1;
 static int start_y = 50;
-//	Display the "Character creation screen" and creation step help window.
-//
+// Display the "Character creation screen" and creation step help window.
 int display_advice_handler(window_info *win) {
 	static int lastw = -1, lasth = -1;
 	static Uint32 last_time = 0;
@@ -293,15 +291,15 @@ int display_newchar_handler(window_info *win) {
 		/* connect_to_server() calls draw_scene() so we need to prevent recursion */
 		if (!nested_flag) {
 			LOG_TO_CONSOLE(c_red2, "Connection failed, please try again");
-			creating_char = 1;      /* this was clear before the failed connect so reset */
+			creating_char = 1; /* this was clear before the failed connect so reset */
 			nested_flag = 1;
 			connect_to_server();
 			nested_flag = 0;
 		}
 	}
-	//see if we have to load a model (male or female)
+	// see if we have to load a model (male or female)
 	if (creating_char && !our_actor.our_model) {
-		move_camera();//Make sure we lag a little...
+		move_camera(); // Make sure we lag a little...
 		our_actor.our_model = add_actor_interface(our_actor.def->x, our_actor.def->y, our_actor.def->z_rot, 1.0f, our_actor.race, our_actor.skin, our_actor.hair, our_actor.shirt, our_actor.pants, our_actor.boots, our_actor.head);
 		yourself = 0;
 		LOCK_ACTORS_LISTS();
@@ -313,7 +311,7 @@ int display_newchar_handler(window_info *win) {
 	} else {
 		read_mouse_now = 0;
 	}
-	//This window is a bit special since it's not fully 2D
+	// This window is a bit special since it's not fully 2D
 	Leave2DMode();
 	glPushMatrix();
 	update_camera();
@@ -374,7 +372,7 @@ int display_newchar_handler(window_info *win) {
 		}
 		CHECK_GL_ERRORS();
 	}
-	//particles should be last, we have no Z writting
+	// particles should be last, we have no Z writting
 	display_particles();
 	CHECK_GL_ERRORS();
 	Enter2DMode();
@@ -383,17 +381,17 @@ int display_newchar_handler(window_info *win) {
 	CHECK_GL_ERRORS();
 	{
 		int msg, offset;
-		if ( find_last_lines_time(&msg, &offset, current_filter, console_text_width)) {
-			set_font(chat_font);    // switch to the chat font
+		if (find_last_lines_time(&msg, &offset, current_filter, console_text_width)) {
+			set_font(chat_font); // switch to the chat font
 			draw_messages(10, 40, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, msg, offset, -1, win->len_x - hud_x - 20, win->len_y, chat_zoom, NULL);
-			set_font(0);    // switch to fixed
+			set_font(0); // switch to fixed
 		}
 	}
 	draw_string_small_shadowed(98, win->len_y - hud_y + 15, (unsigned char *)zoom_in_out, 1, 1.0f, 0.9f, 0.8f, 0.0f, 0.0f, 0.0f);
 	draw_string_small_shadowed(98, win->len_y - hud_y + 32, (unsigned char *)rotate_camera, 1, 1.0f, 0.9f, 0.8f, 0.0f, 0.0f, 0.0f);
 	Leave2DMode();
 	glEnable(GL_LIGHTING);
-	glPopMatrix();  // restore the state
+	glPopMatrix(); // restore the state
 	Enter2DMode();
 	main_count++;
 	return 1;
@@ -426,7 +424,7 @@ int keypress_newchar_handler(window_info *win, int mx, int my, Uint32 key, Uint3
 	static int last_time = 0;
 	int alt_on = key & ELW_ALT;
 	int ctrl_on = key & ELW_CTRL;
-	if ( check_quit_or_fullscreen(key)) {
+	if (check_quit_or_fullscreen(key)) {
 		return 1;
 	} else if (disconnected && !alt_on && !ctrl_on) {
 		connect_to_server();
@@ -517,8 +515,8 @@ void create_newchar_root_window(void) {
 	if (newchar_root_win < 0) {
 		// on remet le perso initial aléatoire (srand(0) génant supprimé dans sky.c)
 		our_actor.race_id = RAND(0, 15);
-		our_actor.def = &races[our_actor.race_id];//6 "races" - counting women as their own race, of course ;-) We cannot include the new races in the random function since they are p2p
-		our_actor.skin = inc(our_actor.def->skin, SKIN_BROWN, RAND(SKIN_BROWN, SKIN_TAN)); //Increment a random # of times.
+		our_actor.def = &races[our_actor.race_id]; // 6 "races" - counting women as their own race, of course ;-) We cannot include the new races in the random function since they are p2p
+		our_actor.skin = inc(our_actor.def->skin, SKIN_BROWN, RAND(SKIN_BROWN, SKIN_TAN)); // Increment a random # of times.
 		our_actor.hair = inc(our_actor.def->hair, HAIR_BLACK, RAND(HAIR_BLACK, our_actor.def->type >= draegoni_female ? HAIR_PURPLE:HAIR_WHITE));
 		our_actor.shirt = inc(our_actor.def->shirts, SHIRT_BLACK, RAND(SHIRT_BLACK, SHIRT_YELLOW));
 		our_actor.pants = inc(our_actor.def->pants, PANTS_BLACK, RAND(PANTS_BLACK, PANTS_WHITE));
@@ -527,7 +525,7 @@ void create_newchar_root_window(void) {
 		our_actor.race = our_actor.def->type;
 		our_actor.male = our_actor.race < gnome_female?our_actor.race % 2:!(our_actor.race % 2);
 		our_actor.scale = inc(our_actor.def->scale, SCALE_5, 1);
-		game_minute = 120;      //Midday. So that it's bright and sunny.
+		game_minute = 120; // Midday. So that it's bright and sunny.
 		real_game_minute = game_minute;
 		change_map("./maps/0_nouveau_perso");
 		newchar_root_win = create_window(win_newchar, -1, -1, 0, 0, window_width, window_height, ELW_TITLE_NONE | ELW_SHOW_LAST);
@@ -563,16 +561,16 @@ char *get_pass_str(int l) {
 	str[l] = 0;
 	return str;
 }
-//Returns 1 if it's valid, 0 if invalid and -1 if there's too many numbers in the name
+// Returns 1 if it's valid, 0 if invalid and -1 if there's too many numbers in the name
 int check_character(int type, char ch) {
 	int retval = 0;
 	if (type == 0) {
-		//name
-		//@tosh : seul les caractères alphabétiques et _ sont autorisés dans le pseudo
+		// name
+		// @tosh : seul les caractères alphabétiques et _ sont autorisés dans le pseudo
 		if (isalpha(ch) || ch == '_') {
 			retval = 1;
 		}
-	} else {        // password
+	} else { // password
 		if (ch >= 33 && ch < 126) {
 			retval = 1;
 		}
@@ -622,13 +620,13 @@ void login_from_new_char(void) {
 	if (elconfig_win >= 0) {
 		hide_window(elconfig_win);
 	}
-	//restore use_windowed_chat
+	// restore use_windowed_chat
 	use_windowed_chat = old_use_windowed_chat;
 	hide_window(newchar_hud_win);
-	//now send the log in info
+	// now send the log in info
 	send_login_info();
 }
-//The character design window
+// The character design window
 void change_race(int new_race) {
 	if (our_actor.race_id == new_race) {
 		return;
@@ -637,7 +635,7 @@ void change_race(int new_race) {
 	our_actor.our_model = NULL;
 	our_actor.race_id = new_race;
 	our_actor.def = &races[new_race];
-	our_actor.skin = our_actor.def->skin[find_pos_in_enum(our_actor.def->skin, our_actor.skin)];//Increment a random # of times.
+	our_actor.skin = our_actor.def->skin[find_pos_in_enum(our_actor.def->skin, our_actor.skin)]; // Increment a random # of times.
 	our_actor.hair = our_actor.def->hair[find_pos_in_enum(our_actor.def->hair, our_actor.hair)];
 	our_actor.shirt = our_actor.def->shirts[find_pos_in_enum(our_actor.def->shirts, our_actor.shirt)];
 	our_actor.pants = our_actor.def->pants[find_pos_in_enum(our_actor.def->pants, our_actor.pants)];
@@ -671,7 +669,7 @@ void toggle_book(int id) {
 	move_window(book_win, -1, 0, windows_list.window[book_win].pos_x, windows_list.window[book_win].pos_y);
 	show_window(book_win);
 }
-int newchar_mouseover = 0; //book id if mouse is over a book 1 if mouse is over p2p race
+int newchar_mouseover = 0; // book id if mouse is over a book 1 if mouse is over p2p race
 int newchar_mouseover_time = 0;
 char *tooltip;
 int tooltip_x, tooltip_y;
@@ -713,7 +711,7 @@ int click_back_handler(widget_list *w, int mx, int my, Uint32 flags) {
 	if (w->window_id == color_race_win) {
 		destroy_all_actors();
 		our_actor.our_model = NULL;
-		use_windowed_chat = old_use_windowed_chat; //Restore use_windowed_chat
+		use_windowed_chat = old_use_windowed_chat; // Restore use_windowed_chat
 		hide_window(newchar_hud_win);
 		hide_window(newchar_root_win);
 		show_window(login_root_win);
@@ -754,7 +752,7 @@ int keypress_namepass_handler(window_info *win, int mx, int my, Uint32 key, Uint
 	if ((ret = check_character(active > 0, ch))) {
 		if (ret == -1) {
 			add_text_to_buffer(c_red1, error_max_digits, 6000);
-		} else if (t->pos + 1 > MAX_USERNAME_LENGTH - 1) {      // MAX_USERNAME_LENGTH includes the null terminator and t->pos counts from 0
+		} else if (t->pos + 1 > MAX_USERNAME_LENGTH - 1) { // MAX_USERNAME_LENGTH includes the null terminator and t->pos counts from 0
 			add_text_to_buffer(c_red2, error_length, 6000);
 		} else {
 			// don't allow a character to start with player
@@ -765,7 +763,7 @@ int keypress_namepass_handler(window_info *win, int mx, int my, Uint32 key, Uint
 			char *p = t->str + t->pos++;
 			*p++ = ch;
 			*p = 0;
-			ret = 1;  //Reused to show that a letter has been added
+			ret = 1; // Reused to show that a letter has been added
 		}
 	} else if (unikey == SDLK_TAB || unikey == SDLK_RETURN) {
 		active++;
@@ -786,16 +784,16 @@ int keypress_namepass_handler(window_info *win, int mx, int my, Uint32 key, Uint
 				numbers_in_name--;
 			}
 			t->str[t->pos] = 0;
-			ret = 1;        // Reused to show that a letter has been removed
+			ret = 1; // Reused to show that a letter has been removed
 		}
 	} else {
-		//only send error messages on non-null characters
+		// only send error messages on non-null characters
 		if (ch != 0) {
 			add_text_to_buffer(c_red2, error_illegal_character, 6000);
 		}
 	}
 	if (active > 0) {
-		//Password/confirm
+		// Password/confirm
 		if (ret) {
 			if (!strncasecmp(inputs[1].str, actors_list[0]->actor_name, strlen(actors_list[0]->actor_name))) {
 				add_text_to_buffer(c_red2, error_bad_pass, 6000);
@@ -810,13 +808,13 @@ int keypress_namepass_handler(window_info *win, int mx, int my, Uint32 key, Uint
 	}
 	return 1;
 }
-const struct WIDGET_TYPE name_type = {NULL, &name_draw, &click_namepass_field, NULL, NULL, NULL, NULL, NULL}; //custom widget for the name button
-const struct WIDGET_TYPE password_type = {NULL, &password_draw, &click_namepass_field, NULL, NULL, NULL, NULL, NULL}; //custom widget for the password buttons
-const struct WIDGET_TYPE errorbox_type = {NULL, &errorbox_draw, NULL, NULL, NULL, NULL, NULL, NULL}; //custom widget for displaying name/password errors
+const struct WIDGET_TYPE name_type = {NULL, &name_draw, &click_namepass_field, NULL, NULL, NULL, NULL, NULL}; // custom widget for the name button
+const struct WIDGET_TYPE password_type = {NULL, &password_draw, &click_namepass_field, NULL, NULL, NULL, NULL, NULL}; // custom widget for the password buttons
+const struct WIDGET_TYPE errorbox_type = {NULL, &errorbox_draw, NULL, NULL, NULL, NULL, NULL, NULL}; // custom widget for displaying name/password errors
 int specs[3] = {0, 1, 2};
 int init_namepass_handler(window_info *win) {
-	float r = 0.77f, g = 0.57f, b = 0.39f; //widget color
-	float very_small = DEFAULT_SMALL_RATIO; //font sizes
+	float r = 0.77f, g = 0.57f, b = 0.39f; // widget color
+	float very_small = DEFAULT_SMALL_RATIO; // font sizes
 	float bit_small = 0.9f;
 	float normal = 1.0f;
 	int free_widget_id = 8;
@@ -825,7 +823,7 @@ int init_namepass_handler(window_info *win) {
 	int center = 1;
 	// on adapte l'espacement vertical selon la taille de la fenêtre
 	int sep = (window_height - HUD_MARGIN_Y - 280) / 25; // 280px + 25 sep
-	//Choose your name and password
+	// Choose your name and password
 	label_add_extended(win->window_id, free_widget_id++, 0, 10, y, 0, normal, 1.0f, 0.5f, 0.0f, "Nom du personnage :");
 	y += 20 + sep;
 	widget_id = widget_add(win->window_id, free_widget_id++, 0, win->len_x - 155, y, 145, 20, 0, very_small, r, g, b, &name_type, inputs[0].str, (void *)&specs[0]);
@@ -855,7 +853,7 @@ int init_namepass_handler(window_info *win) {
 	y += DEFAULT_FONT_Y_LEN * very_small;
 	y += sep;
 	widget_add(win->window_id, free_widget_id++, 0, 35, y, 200, win->len_y - y, 0, very_small, r, g, b, &errorbox_type, NULL, NULL);
-	//Done and Back buttons
+	// Done and Back buttons
 	y = win->len_y - 30;
 	widget_id = button_add_extended(win->window_id, free_widget_id++, 0, 30, y, 100, 20, 0, very_small, r, g, b, char_back);
 	widget_set_OnClick(win->window_id, widget_id, &click_back_handler);
@@ -875,28 +873,28 @@ int click_newchar_book_handler(widget_list *w, int mx, int my, Uint32 flags) {
 int mouseover_newchar_book_handler(widget_list *w, int mx, int my) {
 	image_set_uv(w->window_id, w->id, (float)32 / 256, 1.0f - (float)64 / 256, (float)63 / 256, 1.0f - (float)95 / 256);
 	newchar_mouseover = w->id;
-	if ( newchar_mouseover == book_eldo) {
+	if (newchar_mouseover == book_eldo) {
 		tooltip = about_eldo;
-	} else if ( newchar_mouseover == book_haut_elfe) {
+	} else if (newchar_mouseover == book_haut_elfe) {
 		tooltip = about_haut_elfe;
-	} else if ( newchar_mouseover == book_dwarf) {
+	} else if (newchar_mouseover == book_dwarf) {
 		tooltip = about_dwarfs;
-	} else if ( newchar_mouseover == book_orchan) {
+	} else if (newchar_mouseover == book_orchan) {
 		tooltip = about_orchans;
-	} else if ( newchar_mouseover == book_gnome) {
+	} else if (newchar_mouseover == book_gnome) {
 		tooltip = about_gnomes;
-	} else if ( newchar_mouseover == book_sinan) {
+	} else if (newchar_mouseover == book_sinan) {
 		tooltip = about_sinan;
-	} else if ( newchar_mouseover == book_elfe_noir) {
+	} else if (newchar_mouseover == book_elfe_noir) {
 		tooltip = about_elfe_noir;
-	} else if ( newchar_mouseover == book_draegoni) {
+	} else if (newchar_mouseover == book_draegoni) {
 		tooltip = about_draegoni;
-	} else if ( newchar_mouseover == book_eldo) {
+	} else if (newchar_mouseover == book_eldo) {
 		tooltip = about_eldo;
 	} else {
 		return 1;
 	}
-	newchar_mouseover_time = cur_time; //we are currently over something
+	newchar_mouseover_time = cur_time; // we are currently over something
 	{
 		int size = strlen(tooltip) * SMALL_FONT_X_LEN;
 		tooltip_x = (mx + size <= 270) ? mx : 270 - size;
@@ -918,8 +916,8 @@ int click_newchar_gender_handler(widget_list *w, int mx, int my, Uint32 flags) {
 }
 int mouseover_p2p_race_handler(widget_list *w, int mx, int my) {
 	int size = strlen(p2p_race) * SMALL_FONT_X_LEN;
-	newchar_mouseover = 1; //we are over an p2p race
-	newchar_mouseover_time = cur_time; //we are currently over something
+	newchar_mouseover = 1; // we are over an p2p race
+	newchar_mouseover_time = cur_time; // we are currently over something
 	tooltip = p2p_race;
 	tooltip_x = (mx + size <= 270) ? mx : 270 - size;
 	tooltip_y = my + 20;
@@ -1107,24 +1105,24 @@ int mouseover_color_race_handler(window_info *win, int mx, int my) {
 		image_set_uv(win->window_id, book_draegoni, (float)0 / 256, 1.0f - (float)64 / 256, (float)31 / 256, 1.0f - (float)95 / 256);
 	}
 	if (!newchar_mouseover) {
-		newchar_mouseover_time = 0; //reset timer
+		newchar_mouseover_time = 0; // reset timer
 	}
 	newchar_mouseover = 0;
 	return 1;
 }
 int box_draw(widget_list *w) {
-	glColor3f(w->r, w->g, w->b); //draw a box
+	glColor3f(w->r, w->g, w->b); // draw a box
 	draw_box(w->widget_info, w->pos_x, w->pos_y, w->len_x, w->len_y, 0);
 	return 1;
 }
-const struct WIDGET_TYPE box_type = {NULL, &box_draw, NULL, NULL, NULL, NULL, NULL, NULL}; //a custom box widget
+const struct WIDGET_TYPE box_type = {NULL, &box_draw, NULL, NULL, NULL, NULL, NULL, NULL}; // a custom box widget
 int init_color_race_handler(window_info *win) {
-	float r = 0.77f, g = 0.57f, b = 0.39f; //widget color
-	float rh = 0.32f, gh = 0.23f, bh = 0.15f; //highlighted color
-	float very_small = DEFAULT_SMALL_RATIO; //font sizes
+	float r = 0.77f, g = 0.57f, b = 0.39f; // widget color
+	float rh = 0.32f, gh = 0.23f, bh = 0.15f; // highlighted color
+	float very_small = DEFAULT_SMALL_RATIO; // font sizes
 	float bit_small = 0.9f;
 	float normal = 1.0f;
-	int free_widget_id = 8; //next free widget id
+	int free_widget_id = 8; // next free widget id
 	int widget_id;
 	int i, x, y = 20, size;
 	int sep = 5;
@@ -1135,9 +1133,9 @@ int init_color_race_handler(window_info *win) {
 	// on adapte l'espacement vertical selon la taille de la fenêtre
 	sep = (window_height - HUD_MARGIN_Y - 228) / 30; // 228px + 30 sep
 	y = sep;
-	//Design your character
+	// Design your character
 	label_add_extended(win->window_id, free_widget_id++, 0, (win->len_x - strlen((char *)win_design) * DEFAULT_FONT_X_LEN * bit_small) / 2, 0, 0, bit_small, 1.0f, 0.5f, 0.0f, (char *)win_design);
-	//Gender selection
+	// Gender selection
 	y += DEFAULT_FONT_Y_LEN * bit_small + 2 * sep;
 	widget_add(win->window_id, free_widget_id++, 0, 10, y, win->len_x - 20, 20 + 4 * sep, 0, normal, r, g, b, &box_type, gender_str, NULL);
 	y += 2 * sep;
@@ -1145,7 +1143,7 @@ int init_color_race_handler(window_info *win) {
 	multiselect_button_add_extended(win->window_id, widget_id, 0, 0, 100, male_str, very_small, our_actor.male);
 	multiselect_button_add_extended(win->window_id, widget_id, win->len_x - 140, 0, 100, female_str, very_small, !our_actor.male);
 	widget_set_OnClick(win->window_id, widget_id, &click_newchar_gender_handler);
-	//Races
+	// Races
 	y += 20 + 5 * sep;
 	widget_add(win->window_id, free_widget_id++, 0, 10, y, win->len_x - 20, 4 * 20 + 7 * sep, 0, normal, r, g, b, &box_type, race_str, NULL);
 	y += 2 * sep;
@@ -1178,11 +1176,11 @@ int init_color_race_handler(window_info *win) {
 	y += DEFAULT_FONT_Y_LEN * very_small;
 	label_add_extended(win->window_id, free_widget_id++, 0, 15, y, 0, very_small, 1.0f, 0.8f, 0.6f, "les particularités des peuples");
 	y += DEFAULT_FONT_Y_LEN * very_small + 3 * sep;
-	//Appereance
+	// Appereance
 	size = 2 * DEFAULT_FONT_X_LEN * bit_small;
 	widget_add(win->window_id, free_widget_id++, 0, 10, y, win->len_x - 20, 3 * DEFAULT_FONT_Y_LEN * bit_small + 7 * sep, 0, normal, r, g, b, &box_type, appearance_str, NULL);
 	y += 2 * sep;
-	for (i = 0; i < 3; i++) {//Head, Skin and Hair
+	for (i = 0; i < 3; i++) { // Head, Skin and Hair
 		widget_id = label_add_extended(win->window_id, free_widget_id++, 0, 20, y + (DEFAULT_FONT_Y_LEN * bit_small + sep) * i, 0, bit_small, r, g, b, "<<");
 		widget_set_OnClick(win->window_id, widget_id, body_handlers_dec[i]);
 		x = 20 + size + (win->len_x / 2 - 30 - 2 * size - strlen((char *)body_part_strs[i]) * DEFAULT_FONT_X_LEN * very_small) / 2;
@@ -1190,7 +1188,7 @@ int init_color_race_handler(window_info *win) {
 		widget_id = label_add_extended(win->window_id, free_widget_id++, 0, win->len_x / 2 - 10 - size, y + (DEFAULT_FONT_Y_LEN * bit_small + sep) * i, 0, bit_small, r, g, b, ">>");
 		widget_set_OnClick(win->window_id, widget_id, body_handlers_inc[i]);
 	}
-	for (i = 3; i < 6; i++) {//Shirt, Pants and Boots
+	for (i = 3; i < 6; i++) { // Shirt, Pants and Boots
 		widget_id = label_add_extended(win->window_id, free_widget_id++, 0, win->len_x / 2 + 10, y + (DEFAULT_FONT_Y_LEN * bit_small + sep) * (i - 3), 0, bit_small, r, g, b, "<<");
 		widget_set_OnClick(win->window_id, widget_id, body_handlers_dec[i]);
 		x = win->len_x / 2 + 10 + size + (win->len_x / 2 - 30 - 2 * size - strlen((char *)body_part_strs[i]) * DEFAULT_FONT_X_LEN * very_small) / 2;
@@ -1207,7 +1205,7 @@ int init_color_race_handler(window_info *win) {
 	widget_id = label_add_extended(win->window_id, free_widget_id++, 0, 160, y + (DEFAULT_FONT_Y_LEN * bit_small + sep) * (i - 3), 0, bit_small, r, g, b, ">>");
 	widget_set_OnClick(win->window_id, widget_id, body_handlers_inc[i]);
 	y = win->len_y - 30;
-	//Done and Back
+	// Done and Back
 	widget_id = button_add_extended(win->window_id, free_widget_id++, 0, 30, y, 100, 20, 0, very_small, r, g, b, char_back);
 	widget_set_OnClick(win->window_id, widget_id, &click_back_handler);
 	widget_id = button_add_extended(win->window_id, free_widget_id++, 0, 140, y, 100, 20, 0, very_small, r, g, b, char_done);
@@ -1216,13 +1214,13 @@ int init_color_race_handler(window_info *win) {
 }
 int tooltip_win;
 int display_tooltip_handler(window_info *win) {
-	if (newchar_mouseover_time == cur_time) { //draw a help text if currently over something
+	if (newchar_mouseover_time == cur_time) { // draw a help text if currently over something
 		show_help(tooltip, tooltip_x, tooltip_y);
 	}
 	return 1;
 }
 int display_newchar_hud_handler(window_info *win) {
-	glColor3f(0.0f, 0.0f, 0.0f); //Draw a black background
+	glColor3f(0.0f, 0.0f, 0.0f); // Draw a black background
 	glBegin(GL_QUADS);
 	glVertex2i(0, 0);
 	glVertex2i(0, win->len_y);
@@ -1240,17 +1238,17 @@ void create_newchar_hud_window(void) {
 	set_window_handler(newchar_hud_win, ELW_HANDLER_DISPLAY, &display_newchar_hud_handler);
 	tooltip_win = create_window("Help Text", newchar_hud_win, 0, 0, 0, 0, 0, ELW_SHOW);
 	set_window_handler(tooltip_win, ELW_HANDLER_DISPLAY, &display_tooltip_handler);
-	color_race_win = create_window(win_design, newchar_hud_win, 0, 0, 10, 270, window_height - hud_y - 10, ELW_SHOW | ELW_SHOW_LAST); //Design your character
+	color_race_win = create_window(win_design, newchar_hud_win, 0, 0, 10, 270, window_height - hud_y - 10, ELW_SHOW | ELW_SHOW_LAST); // Design your character
 	set_window_handler(color_race_win, ELW_HANDLER_INIT, &init_color_race_handler);
 	set_window_handler(color_race_win, ELW_HANDLER_MOUSEOVER, &mouseover_color_race_handler);
 	init_window(color_race_win, newchar_hud_win, 0, 0, 10, 270, window_height - hud_y - 10);
-	namepass_win = create_window(win_name_pass, newchar_hud_win, 0, 0, 10, 270, window_height - hud_y - 10, ELW_SHOW_LAST); //Choose name and password
+	namepass_win = create_window(win_name_pass, newchar_hud_win, 0, 0, 10, 270, window_height - hud_y - 10, ELW_SHOW_LAST); // Choose name and password
 	set_window_handler(namepass_win, ELW_HANDLER_INIT, &init_namepass_handler);
 	set_window_handler(namepass_win, ELW_HANDLER_KEYPRESS, &keypress_namepass_handler);
 	init_window(namepass_win, newchar_hud_win, 0, 0, 10, 270, window_height - hud_y - 10);
 }
 void resize_newchar_hud_window(void) {
-	if (get_show_window(newchar_hud_win)) { //Simply destroy and recreate everything
+	if (get_show_window(newchar_hud_win)) { // Simply destroy and recreate everything
 		destroy_window(color_race_win);
 		destroy_window(namepass_win);
 		destroy_window(newchar_hud_win);
