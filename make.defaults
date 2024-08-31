@@ -32,6 +32,7 @@ FEATURES += MIDDLE_MOUSE_PASTE              # Paste using the middle mouse butto
 FEATURES += ATTACHED_ACTORS
 FEATURES += LARGE_TEXTURES                 # Changes player character texture size block to 512x512.
 #FEATURES += ACHIEVEMENTS                   # Display player achievements window when use eye cursor on player
+FEATURES += FASTER_STARTUP
 
 ### Testing options (these options are possible for the next release and should be tested) ###
 #FEATURES += ANTI_ALIAS                     # allows to enable/disable anti-aliasing in el.ini
