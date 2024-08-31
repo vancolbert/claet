@@ -5,6 +5,7 @@ I have made minor changes for recent compilers and libraries.
 ## Branches
 - **main**: Upstream source code with minimal changes.
 - **test**: More involved fixes and new features needing evaluation.
+- **cleanup**: Aggressive and incompatible sanitization.
 ## Building on Linux
 ```
 git clone https://github.com/vancolbert/claet

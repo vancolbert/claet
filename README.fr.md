@@ -5,6 +5,7 @@ J'ai fait quelques modifications mineures au but d'être compatible avec les com
 ### Les Branches
 - **main**: Code source d'origine minimalement changé.
 - **test**: Corrections plus compliquées et nouvelles fonctionnalités à évaluer.
+- ***cleanup**: Nettoyage agressif et inconciliable.
 ## Compilation sous Linux
 ```
 git clone https://github.com/vancolbert/claet
