@@ -257,18 +257,8 @@ void animate_actors() {
 				} else if (actors_list[i]->z_rot <= 0) {
 					actors_list[i]->z_rot += 360;
 				}
-				//if(actors_list[i]->actor_id==yourself) printf("%i, rotating: z_rot %f,  status %i-%i\n",thecount,actors_list[i]->z_rot,actors_list[i]->rotating,actors_list[i]->moving);
-				//if(actors_list[i]->actor_id<0) printf("%i, rotating (horse): z_rot %f,  status %i-%i\n",thecount,actors_list[i]->z_rot,actors_list[i]->rotating,actors_list[i]->moving);
 			}//rotating
 			actors_list[i]->anim_time += ((cur_time - last_update) * actors_list[i]->cur_anim.duration_scale) / 1000.0;
-			/*if(ACTOR(i)->anim_time>=ACTOR(i)->cur_anim.duration) {
-			        if (HAS_HORSE(i)||IS_HORSE(i)) {
-			                        if(MY_HORSE(i)->anim_time<MY_HORSE(i)->cur_anim.duration) {
-			                                MY_HORSE(i)->anim_time=MY_HORSE(i)->cur_anim.duration;
-			                                printf("%i, ANIMATION FORCED\n",thecount);
-			                        }
-			        }
-			   }*/
 			if (actors_list[i]->calmodel != NULL) {
 				CalModel_Update(actors_list[i]->calmodel, (((cur_time - last_update) * actors_list[i]->cur_anim.duration_scale) / 1000.0));
 				build_actor_bounding_box(actors_list[i]);
@@ -311,11 +301,6 @@ void print_queue(actor *act) {
 		printf("%2i|", act->que[k]);
 	}
 	printf("\n");
-	/*for(k=0; k<MAX_RANGE_ACTION_QUEUE; k++){
-	                printf("%2i-%2i|",act->range_actions[k].shot_type,act->range_actions[k].state);
-	   }
-	   printf("\n");
-	 */
 }
 void flush_delayed_item_changes(actor *a) {
 	int item;
@@ -377,18 +362,6 @@ void move_to_next_frame() {
 				if (actors_list[i]->damage_ms < 0) {
 					actors_list[i]->damage_ms = 0;
 				}
-			}
-			//9 frames, not moving, and another command is queued farther on (based on how long we've done this action)
-			if (!actors_list[i]->moving && !actors_list[i]->rotating) {
-				/*	actors_list[i]->stop_animation=1;	//force stopping, not looping
-				        actors_list[i]->busy=0;	//ok, take the next command
-				        LOG_TO_CONSOLE(c_green2,"FREE");
-				        //Idle here?
-				 */
-			}
-			if (actors_list[i]->stop_animation) {
-				//we are done with this guy
-				//Should we go into idle here?
 			}
 		}
 	}
@@ -453,11 +426,6 @@ void next_command() {
 				actor_type = actors_list[i]->actor_type;
 				switch (actors_list[i]->que[0]) {
 				case kill_me:
-/*						if(actors_list[i]->remapped_colors)
-                                                glDeleteTextures(1,&actors_list[i]->texture_id);
-                                                ec_actor_delete(actors_list[i]);
-                                                free(actors_list[i]);
-                                                actors_list[i]=0;*///Obsolete
 					break;
 				case die1:
 					cal_actor_set_anim(i, actors_defs[actor_type].cal_frames[cal_actor_die1_frame]);
@@ -1264,10 +1232,6 @@ int parse_actor_shirt(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 		return 0;
 	}
 	col_idx = get_int_property(cfg, "id");
-/*	if(col_idx < 0){
-                col_idx= get_property(cfg, "color", "shirt color", shirt_color_dict);
-        }
- */
 	if (col_idx < 0 || col_idx >= actor_part_sizes[ACTOR_SHIRT_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -1392,10 +1356,6 @@ int parse_actor_legs(actor_types *act, const xmlNode *cfg, const xmlNode *defaul
 		return 0;
 	}
 	col_idx = get_int_property(cfg, "id");
-/*	if(col_idx < 0){
-                col_idx= get_property(cfg, "color", "legs color", legs_color_dict);
-        }
- */
 	if (col_idx < 0 || col_idx >= actor_part_sizes[ACTOR_LEGS_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -1613,10 +1573,6 @@ int parse_actor_weapon(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 		return 0;
 	}
 	type_idx = get_int_property(cfg, "id");
-/*	if(type_idx < 0){
-                type_idx= get_property(cfg, "type", "weapon type", weapon_type_dict);
-        }
- */
 	if (type_idx < 0 || type_idx >= actor_part_sizes[ACTOR_WEAPON_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -1724,10 +1680,6 @@ int parse_actor_helmet(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 		return 0;
 	}
 	type_idx = get_int_property(cfg, "id");
-/*	if(type_idx < 0){
-                type_idx= get_property(cfg, "type", "helmet type", helmet_type_dict);
-        }
- */
 	if (type_idx < 0 || type_idx >= actor_part_sizes[ACTOR_HELMET_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -1835,10 +1787,6 @@ int parse_actor_cape(actor_types *act, const xmlNode *cfg, const xmlNode *defaul
 		return 0;
 	}
 	type_idx = get_int_property(cfg, "id");
-/*	if(type_idx < 0){
-                type_idx= get_property(cfg, "color", "cape color", cape_color_dict);
-        }
- */
 	if (type_idx < 0 || type_idx >= actor_part_sizes[ACTOR_CAPE_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -1925,10 +1873,6 @@ int parse_actor_shield(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 		return 0;
 	}
 	type_idx = get_int_property(cfg, "id");
-/*	if(type_idx < 0){
-                type_idx= get_property(cfg, "type", "shield type", shield_type_dict);
-        }
- */
 	if (type_idx < 0 || type_idx >= actor_part_sizes[ACTOR_SHIELD_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -1951,10 +1895,6 @@ int parse_actor_hair(actor_types *act, const xmlNode *cfg, const xmlNode *defaul
 		return 0;
 	}
 	col_idx = get_int_property(cfg, "id");
-/*	if(col_idx < 0){
-                col_idx= get_property(cfg, "color", "hair color", hair_color_dict);
-        }
- */
 	if (col_idx < 0 || col_idx >= actor_part_sizes[ACTOR_HAIR_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -2234,10 +2174,6 @@ int parse_actor_boots(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 		return 0;
 	}
 	col_idx = get_int_property(cfg, "id");
-/*	if(col_idx < 0){
-                col_idx = get_property (cfg, "color", "boots color", boots_color_dict);
-        }
- */
 	if (col_idx < 0 || col_idx >= actor_part_sizes[ACTOR_BOOTS_SIZE]) {
 		LOG_ERROR("Unable to find id/property node %s\n", cfg->name);
 		return 0;
@@ -2507,10 +2443,6 @@ int parse_actor_script(const xmlNode *cfg) {
 		return 0;
 	}
 	act_idx = get_int_property(cfg, "id");
-/*	if(act_idx < 0){
-                act_idx= get_property(cfg, "type", "actor type", actor_type_dict);
-        }
- */
 	if (act_idx < 0 || act_idx >= MAX_ACTOR_DEFS) {
 		char str[256];
 		char name[256];
