@@ -20,7 +20,6 @@
 #include "lights.h"
 #include "loading_win.h"
 #include "mapwin.h"
-#include "missiles.h"
 #include "multiplayer.h"
 #include "particles.h"
 #include "pathfinder.h"
@@ -36,7 +35,6 @@
 #include "minimap.h"
 #include "io/elpathwrapper.h"
 #include "sky.h"
-#include "mines.h"
 #include "highlight.h"
 
 int map_type=1;

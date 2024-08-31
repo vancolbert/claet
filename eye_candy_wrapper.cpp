@@ -10,7 +10,6 @@
 #include "gl_init.h"
 #include "init.h"
 #include "map.h"
-#include "missiles.h"
 #include "particles.h"
 #include "shadows.h"
 #include "skeletons.h"

@@ -16,7 +16,6 @@
 #include "init.h"
 #include "interface.h"
 #include "map.h"
-#include "missiles.h"
 #include "new_character.h"
 #include "pathfinder.h"
 #include "textures.h"
