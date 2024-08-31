@@ -29,7 +29,6 @@ FEATURES += MIDDLE_MOUSE_PASTE              # Paste using the middle mouse butto
 #FEATURES += NEW_QUESTLOG                   # Enable the new questlog, rewritten with new features
 # new for 1.9.1 release
 #FEATURES += MORE_ATTACHED_ACTORS           # Enable more activities on horses
-#FEATURES += NECK_ITEMS                     # Enables medallions/scarves
 FEATURES += ATTACHED_ACTORS
 FEATURES += LARGE_TEXTURES                 # Changes player character texture size block to 512x512.
 #FEATURES += ACHIEVEMENTS                   # Display player achievements window when use eye cursor on player
