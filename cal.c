@@ -7,86 +7,23 @@
 #include "font.h"
 #include "global.h"
 #include "load_gl_extensions.h"
-#ifdef MISSILES
-#include "missiles.h"
-#endif
 #include "shadows.h"
 #include "translate.h"
-#ifdef NEW_SOUND
 #include "asc.h"
 #include "sound.h"
 #include "tiles.h"
-#endif /* NEW_SOUND */
-#ifdef DEBUG
-#include "init.h"
-#endif /* DEBUG */
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif /* OPENGL_TRADE */
 #include "io/elfilewrapper.h"
 #include "io/cal3d_io_wrapper.h"
 
-#ifdef MORE_EMOTES
-void start_transition(actor *act, int to, int msec){
-
-	if (act->startIdle==to) return;
-	act->startIdle=act->cur_anim.anim_index;
-	act->endIdle=to;
-	act->idleTime=cur_time;
-	act->idleDuration=msec;
-	act->busy=1;
-	printf("transition started from %i to %i starting at %i, lasting %i\n",act->startIdle,to,act->idleTime,msec);
-}
-
-int do_transition(actor *act){
-	struct CalMixer *mixer;
-	float k;
-
-	if (act==NULL) return 0;
-	if (act->calmodel==NULL) return 0;
-	if (act->startIdle==act->endIdle) return 0;
-
-	printf("doing transition from %i to %i at %i of %i\n",act->startIdle,act->endIdle,cur_time-act->idleTime,act->idleDuration);
-
-	mixer=CalModel_GetMixer(act->calmodel);
-	k=(float)(cur_time-act->idleTime)/act->idleDuration;
-	if(k>1.0) k=1.0;
-	CalMixer_BlendCycle(mixer,act->startIdle,1.0-k, 0.0);
-	CalMixer_BlendCycle(mixer,act->endIdle,k, 0.0);
-
-	if(k>=1.0) {
-		printf("transition done\n");
-		CalMixer_ClearCycle(mixer,act->startIdle, 0.0);
-		act->startIdle=act->endIdle;
-		act->idleTime=0;
-		act->busy=0;
-		return 1;
-	}
-	return 0;
-}
-#endif
 
 
-#ifdef NEW_SOUND
-#ifdef EMOTES
-void cal_play_anim_sound(actor *pActor, struct cal_anim anim, int is_emote){
-#else
 void cal_play_anim_sound(actor *pActor, struct cal_anim anim){
-#endif
 
 	unsigned int *cookie;
 
-#ifdef EMOTES
-	cookie = (is_emote) ? (&pActor->cur_emote_sound_cookie):(&pActor->cur_anim_sound_cookie);
-#else
 	cookie = &pActor->cur_anim_sound_cookie;
-#endif
 	// Check if we need a walking sound
-#ifdef EMOTES
-	if (pActor->moving && !pActor->fighting &&!is_emote){
-#else
 	if (pActor->moving && !pActor->fighting){
-#endif
 		handle_walking_sound(pActor, anim.sound);
 	} else {
 		if (check_sound_loops(*cookie))
@@ -105,128 +42,7 @@ void cal_play_anim_sound(actor *pActor, struct cal_anim anim){
 	}
 
 }
-#endif
 
-#ifdef EMOTES
-void cal_reset_emote_anims(actor *pActor, int cycles_too){
-
-	struct CalMixer *mixer;
-	emote_anim *cur_emote;
-
-	if (pActor==NULL)
-		return;
-
-	if (pActor->calmodel==NULL)
-		return;
-
-	mixer=CalModel_GetMixer(pActor->calmodel);
-	cur_emote=&pActor->cur_emote;
-
-	//remove emote idle
-	if(cur_emote->idle.anim_index>=0&&cycles_too) {
-		//printf("CAL_reset cycle %i\n",cur_emote->idle.anim_index);
-		CalMixer_ClearCycle(mixer,cur_emote->idle.anim_index, cal_cycle_blending_delay);
-		cur_emote->idle.anim_index=-1;
-	}
-	if(cur_emote->active) {
-		int i;
-		//remove actions
-		for(i=0;i<cur_emote->nframes;i++){
-			if(cur_emote->frames[i].anim_index>=0&&cur_emote->frames[i].kind==action){
-				//printf("CAL_reset action %i\n",cur_emote->frames[i].anim_index);
-				CalMixer_RemoveAction(mixer,cur_emote->frames[i].anim_index);
-				cur_emote->frames[i].anim_index=-1;
-			}
-		}
-	}
-	cur_emote->active=0;
-
-#ifdef NEW_SOUND
-	if(pActor->cur_emote_sound_cookie)
-		stop_sound(pActor->cur_emote_sound_cookie);
-#endif
-
-}
-
-
-void cal_actor_set_emote_anim(actor *pActor, emote_frame *anims){
-	struct CalMixer *mixer;
-	struct cal_anim *action;
-	hash_entry *he;
-	emote_anim *cur_emote;
-	int i;
-	float md=0;
-
-	if (pActor==NULL||!anims)
-		return;
-
-	if (pActor->calmodel==NULL)
-		return;
-	mixer=CalModel_GetMixer(pActor->calmodel);
-	cur_emote=&pActor->cur_emote;
-	cur_emote->start_time=cur_time;
-	cur_emote->active=1;
-	cur_emote->nframes=anims->nframes;
-	cur_emote->flow=anims;
-
-	for(i=0;i<anims->nframes;i++) {
-		//printf("adding frame %i: %i\n",i,anims->ids[i]);
-		he=hash_get(actors_defs[pActor->actor_type].emote_frames,(void*)(NULL+anims->ids[i]));
-		if(!he) continue;
-		action = (struct cal_anim*) he->item;
-		//printf("duration scale %f\n",action->duration_scale);
-		cur_emote->frames[i]=*action;
-		if (action->kind==cycle){
-			//handle cycles:
-			//removes previous emote cycles
-			if(cur_emote->idle.anim_index>=0)
-				CalMixer_ClearCycle(mixer,cur_emote->idle.anim_index, cal_cycle_blending_delay);
-			//removes previous idle cycles
-			if(pActor->cur_anim.kind==cycle) {
-				CalMixer_ClearCycle(mixer,pActor->cur_anim.anim_index, cal_cycle_blending_delay);
-				pActor->cur_anim.anim_index=-1;
-			}
-			CalMixer_BlendCycle(mixer,action->anim_index,1.0f, cal_cycle_blending_delay);
-			CalMixer_SetAnimationTime(mixer, 0.0f);
-			cur_emote->idle=*action;
-		} else {
-			CalMixer_ExecuteAction_Stop(mixer,action->anim_index,0,0);
-			md=(action->duration/action->duration_scale>md) ? (action->duration*1000.0/action->duration_scale):(md);
-#ifdef NEW_SOUND
-			if (action->sound>-1) cal_play_anim_sound(pActor, *action,1);
-#endif
-	}
-	}
-	cur_emote->max_duration=(int)md;
-	//printf("EMOTE: start: %i, end: %i, dur: %i\n", cur_emote->start_time, cur_emote->start_time+cur_emote->max_duration,cur_emote->max_duration);
-
-}
-
-void handle_cur_emote(actor *pActor){
-	emote_anim *cur_emote;
-
-	if (pActor==NULL)
-		return;
-
-	if (pActor->calmodel==NULL)
-		return;
-
-	cur_emote = &pActor->cur_emote;
-
-	if(cur_emote->active&&cur_emote->start_time+cur_emote->max_duration<cur_time){
-		//all anims are finished, see if more frames are linked
-		//printf("reset current frame\n");
-		cal_reset_emote_anims(pActor,0);
-		//printf("Remove EMOTE: %i\n",cur_time);
-		if(cur_emote->flow) {
-			cur_emote->flow=cur_emote->flow->next;
-			//printf("starting next emote frame %p\n",cur_emote->flow);
-			cal_actor_set_emote_anim(pActor, cur_emote->flow);
-	}
-	}
-}
-
-#endif // EMOTES
 
 
 
@@ -253,15 +69,12 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay)
 	//this shouldnt happend but its happends if actor doesnt have
 	//animation so we add this workaround to prevent "freezing"
 	if(anim.anim_index==-1){
-#ifdef ATTACHED_ACTORS
         attachment_props *att_props;
-#endif // ATTACHED_ACTORS
 		if(	pActor->sitting==1 ){
 			//we dont have sitting anim so cancel it
 			pActor->sitting=0;
 		}
 		pActor->stop_animation=0;
-#ifdef ATTACHED_ACTORS
         att_props = get_attachment_props_if_held(pActor);
 		if (att_props)
 		{
@@ -271,13 +84,10 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay)
 		}
 		else
 		{
-#endif // ATTACHED_ACTORS
 			anim.anim_index = actors_defs[pActor->actor_type].cal_frames[cal_actor_idle1_frame].anim_index;
 			anim.duration = 0.5; // we're not really idle, so only play a short version as placeholder
 			anim.duration_scale = actors_defs[pActor->actor_type].cal_frames[cal_actor_idle1_frame].duration_scale;
-#ifdef ATTACHED_ACTORS
 		}
-#endif // ATTACHED_ACTORS
 		anim.kind = cycle;
 	}
 
@@ -317,32 +127,8 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay)
 	if (anim.kind==cycle){
 		CalMixer_BlendCycle(mixer,anim.anim_index,1.0f, delay);
 		CalMixer_SetAnimationTime(mixer, 0.0f);	//always start at the beginning of a cycling animation
-#ifdef EMOTES
-		//if an emote is cycling, stop it
-		if(pActor->cur_emote.idle.anim_index!=-1) {
-				//printf("stopping idle emote %i\n", pActor->cur_emote.idle.anim_index);
-				CalMixer_ClearCycle(mixer,pActor->cur_emote.idle.anim_index,0);
-				pActor->cur_emote.idle.anim_index=-1;
-		}
-/*		//if an emote is playing, stop it
-		if(pActor->cur_emote.active) {
-				printf("stopping emote of actor %i\n", pActor->actor_id);
-				cal_reset_emote_anims(pActor,0);
-				pActor->cur_emote.flow=NULL;
-		}
-*/
-#endif // EMOTES
 	} else {
 		CalMixer_ExecuteAction_Stop(mixer,anim.anim_index,delay,0.0);
-#ifdef EMOTES
-		//if an emote is playing, stop it
-/*		if(pActor->cur_emote.active) {
-				printf("stopping emote of actor %i\n", pActor->actor_id);
-				cal_reset_emote_anims(pActor,0);
-				pActor->cur_emote.flow=NULL;
-		}
-*/
-#endif // EMOTES
 	}
 
 	pActor->cur_anim=anim;
@@ -353,27 +139,12 @@ void cal_actor_set_anim_delay(int id, struct cal_anim anim, float delay)
 	CalModel_Update(pActor->calmodel,0.0001);//Make changes take effect now
 	build_actor_bounding_box(pActor);
 
-#ifdef MISSILES
-	missiles_rotate_actor_bones(pActor);
-#endif // MISSILES
 
-#ifdef ENGLISH
-	if (use_animation_program)
-	{
-		set_transformation_buffers(pActor);
-	}
-#endif //ENGLISH
 
 	if (pActor->cur_anim.anim_index==-1)
 		pActor->busy=0;
 	pActor->IsOnIdle=0;
-#ifdef NEW_SOUND
-	#ifdef EMOTES
-		cal_play_anim_sound(pActor, pActor->cur_anim,0);
-	#else
 	cal_play_anim_sound(pActor, pActor->cur_anim);
-	#endif
-#endif
 
 }
 
@@ -382,7 +153,6 @@ void cal_actor_set_anim(int id,struct cal_anim anim)
 	cal_actor_set_anim_delay(id, anim, 0.05f);
 }
 
-#ifdef NEW_SOUND
 void cal_set_anim_sound(struct cal_anim *my_cal_anim, const char *sound, const char *sound_scale)
 {
 	if (sound)
@@ -395,25 +165,16 @@ void cal_set_anim_sound(struct cal_anim *my_cal_anim, const char *sound, const c
 	else
 		my_cal_anim->sound_scale = 1.0f;
 }
-#endif // NEW_SOUND
 
 
-	#ifdef NEW_SOUND
 struct cal_anim cal_load_anim(actor_types *act, const char *str, const char *sound, const char *sound_scale, int duration)
-	#else
-struct cal_anim cal_load_anim(actor_types *act, const char *str, int duration)
-	#endif	//NEW_SOUND
 {
 	char fname[255]={0};
 	struct cal_anim res={-1,cycle,0,0.0f
-#ifdef NEW_SOUND
 	,-1
-#endif  //NEW_SOUND
 	};
 	struct CalCoreAnimation *coreanim;
-#ifdef NEW_SOUND
 	int i;
-#endif  //NEW_SOUND
 
 	if (sscanf (str, "%254s %d", fname, (int*)(&res.kind)) != 2)
 	{
@@ -421,7 +182,6 @@ struct cal_anim cal_load_anim(actor_types *act, const char *str, int duration)
 		return res;
 	}
 
-#ifdef NEW_SOUND
 	if (have_sound_config && sound && strcasecmp(sound, ""))
 	{
 		i = get_index_for_sound_type_name(sound);
@@ -437,7 +197,6 @@ struct cal_anim cal_load_anim(actor_types *act, const char *str, int duration)
 		res.sound_scale = atof(sound_scale);
 	else
 		res.sound_scale = 1.0f;
-#endif	//NEW_SOUND
 
 	res.anim_index=CalCoreModel_ELLoadCoreAnimation(act->coremodel,fname,act->scale);
 	if(res.anim_index == -1) {
@@ -497,87 +256,9 @@ void cal_render_bones(actor *act)
 	}
 	glEnd();
 
-#ifdef DEBUG
-	// draw the bones orientation
-	if (render_bones_orientation) {
-		float shift[3], pos[3];
-
-		glLineWidth(3.0f);
-		glBegin(GL_LINES);
-		for (currPoint = nrPoints; currPoint--;) {
-			shift[0] = 0.1; shift[1] = 0.0; shift[2] = 0.0;
-			cal_get_actor_bone_local_position(act, currPoint, shift, pos);
-			glColor3f(1.0, 0.0, 0.0);
-			glVertex3f(points[currPoint][0], points[currPoint][1], points[currPoint][2]);
-			glVertex3fv(pos);
-
-			shift[0] = 0.0; shift[1] = 0.1; shift[2] = 0.0;
-			cal_get_actor_bone_local_position(act, currPoint, shift, pos);
-			glColor3f(0.0, 1.0, 0.0);
-			glVertex3f(points[currPoint][0], points[currPoint][1], points[currPoint][2]);
-			glVertex3fv(pos);
-
-			shift[0] = 0.0; shift[1] = 0.0; shift[2] = 0.1;
-			cal_get_actor_bone_local_position(act, currPoint, shift, pos);
-			glColor3f(0.0, 0.0, 1.0);
-			glVertex3f(points[currPoint][0], points[currPoint][1], points[currPoint][2]);
-			glVertex3fv(pos);
-		}
-		glEnd();
-	}
-
-	// draw bones id
-	if (render_bones_id) {
-		GLdouble model[16], proj[16];
-		GLint view[4];
-		GLdouble px,py,pz;
-		unsigned char buf[16];
-		float font_size_x = SMALL_INGAME_FONT_X_LEN/ALT_INGAME_FONT_X_LEN;
-		float font_size_y = SMALL_INGAME_FONT_Y_LEN/ALT_INGAME_FONT_X_LEN;
-
-		glGetDoublev(GL_MODELVIEW_MATRIX, model);
-		glGetDoublev(GL_PROJECTION_MATRIX, proj);
-		glGetIntegerv(GL_VIEWPORT, view);
-
-		glPushMatrix();
-		glLoadIdentity();
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-
-		glOrtho(view[0],view[2]+view[0],view[1],view[3]+view[1],0.0f,-1.0f);
-
-		glPushAttrib(GL_ENABLE_BIT);
-
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-		glColor4f(1.0, 0.0, 1.0, 1.0);
-
-		for (currPoint = nrPoints; currPoint--;) {
-			struct CalBone *bone;
-			bone = CalSkeleton_GetBone(skel, currPoint);
-
-			sprintf((char*)buf, "%d", currPoint);
-			gluProject(points[currPoint][0], points[currPoint][1], points[currPoint][2], model, proj, view, &px, &py, &pz);
-			draw_ortho_ingame_string(px, py, pz, buf, 1, font_size_x, font_size_y);
-		}
-
-		glPopAttrib();
-
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-	}
-#endif // DEBUG
 
 	glLineWidth(1.0f);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 }
 
@@ -637,9 +318,6 @@ static __inline__ void render_submesh(int meshId, int submeshCount, struct CalRe
 				glDrawElements(GL_TRIANGLES, faceCount * 3, GL_UNSIGNED_INT, &meshFaces[0][0]);
 		}
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 
@@ -676,25 +354,8 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 		glScalef(act->scale,act->scale,act->scale);
 	}
 
-#ifdef	DYNAMIC_ANIMATIONS
-	if(act->last_anim_update < cur_time)
-		if(act->cur_anim.duration_scale > 0.0f)
-			CalModel_Update(act->calmodel, (((cur_time-act->last_anim_update)*act->cur_anim.duration_scale)/1000.0));
-	build_actor_bounding_box(act);
-#ifdef MISSILES
-	missiles_rotate_actor_bones(act);
-#endif // MISSILES
-	if (use_animation_program)
-	{
-		set_transformation_buffers(act);
-	}
-	act->last_anim_update= cur_time;
-#endif	//DYNAMIC_ANIMATIONS
 
 	// get the renderer of the model
-#ifdef DEBUG
-	if (render_mesh) {
-#endif
 		pCalRenderer = CalModel_GetRenderer(act->calmodel);
 		// begin the rendering loop
 		if(CalRenderer_BeginRendering(pCalRenderer)){
@@ -756,12 +417,6 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 									glow=actors_defs[act->actor_type].weapon[act->cur_weapon].glow;
 								}
 								break;
-#ifdef ENGLISH
-							case 21:
-								if(actors_defs[act->actor_type].shield[act->cur_shield].glow>0){
-									glow=actors_defs[act->actor_type].shield[act->cur_shield].glow;
-								}
-#endif //ENGLISH
 							default:
 								break;
 						}
@@ -839,30 +494,10 @@ void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uin
 			// end the rendering
 			CalRenderer_EndRendering(pCalRenderer);
 		}
-#ifdef DEBUG
-	}
-#endif
 
 	glColor3f(1,1,1);
 
-#ifdef DEBUG
-	if(render_skeleton)
-	{
-  	glDisable(GL_LIGHTING);
-  	glDisable(GL_DEPTH_TEST);
-  	glDisable(GL_TEXTURE_2D);
-
-		cal_render_bones(act);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	}
-#endif
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void cal_get_actor_bone_local_position(actor *in_act, int in_bone_id, float *in_shift, float *out_pos)

@@ -44,41 +44,14 @@ extern int left_click; /*!< indicates the left mouse button was clicked */
 /*! @} */
 
 extern int view_health_bar; /*!< indicates whether we should display the health bar or not */
-#ifdef ENGLISH
-extern int view_ether_bar; /*!< indicates whether we should display the ethereal bar or not */
-#endif //ENGLISH
 extern int view_names; /*!< indicates whether the names of actors should be displayed or not */
 extern int view_hp; /*!< indicates whether the current/max material points of an actor should be displayed or not */
-#ifdef DISPLAY_MANAPOINT
 extern int view_mp; /*!< indicates whether the current/max mana points of an actor should be displayed or not */
 extern int view_mana_bar; /*!< indicates whether we should display the mana bar or not */
-#endif //DISPLAY_MANAPOINT
-#ifdef SELECT_WITH_MOUSE_ON_BANNER
 extern int select_with_mouse_on_banner;
-#endif //SELECT_WITH_MOUSE_ON_BANNER
-#ifdef ENGLISH
-extern int view_ether; /*!< indicates whether the current/max ethereal points of an actor should be displayed or not */
-#endif //ENGLISH
-#ifdef FR_VERSION
 extern int voir_pdv; /*!< afficher les points de vie ou le niveau de vie */
 extern int voir_musique_carte; /*!< afficher les zones de musiques sur les cartes */
-#endif //FR_VERSION
 extern int view_chat_text_as_overtext; /*!< if this is true, then any text an actor is saying will be additionally displayed in a bubble over its head */
-#ifdef ENGLISH
-extern int view_mode_instance; /*!< indicates if we have instance mode turned on, it shows monsters and our hp only, no other players, overwrites all other actor banner display options */
-extern float view_mode_instance_banner_height; /*!< factor, we use to setup how high is banner above your toon when using view_mode_instance */
-
-//instance mode banners config:
-extern int im_creature_view_names; /*!< indicates whether the names of creatures should be displayed or not in instance mode*/
-extern int im_creature_view_hp; /*!< indicates whether health numbers of creatures should be displayed or not in instance mode*/
-extern int im_creature_view_hp_bar; /*!< indicates whether health bars of creatures should be displayed or not in instance mode*/
-extern int im_creature_banner_bg; /*!< indicates whether creatures banners background should be displayed or not in instance mode*/
-extern int im_other_player_view_names; /*!< indicates whether the names of  other players should be displayed or not in instance mode*/
-extern int im_other_player_view_hp; /*!< indicates whether health numbers of  other players should be displayed or not in instance mode*/
-extern int im_other_player_view_hp_bar; /*!< indicates whether health bars of  other players should be displayed or not in instance mode*/
-extern int im_other_player_banner_bg; /*!< indicates whether other players banners background should be displayed or not in instance mode*/
-extern int im_other_player_show_banner_on_damage;  /*!< indicates whether  other players name and hp should appear for a while if player gets damage in instance mode*/
-#endif //ENGLISH
 
 extern char username_box_selected; /*!< true, if the cursor is currently in the username input field */
 extern char password_box_selected; /*!< true, if the cursor is currently in the password input field */
@@ -91,10 +64,6 @@ extern int cons_text;
 extern int icons_text;
 extern int hud_text;
 
-#ifdef MISSILES
-extern int ranging_lock;
-extern int auto_disable_ranging_lock;
-#endif //MISSILES
 
 /*!
  * A flag for a mode, that show whether a mode is supported and/or selected.
@@ -398,14 +367,10 @@ void put_mark_on_map_on_mouse_position();
  * \pre If we don't have an active actor, this function won't perform any actions further actions.
  */
 int put_mark_on_current_position(char *name);
-#ifdef FR_VERSION
 void edit_mark_on_map_on_mouse_position();
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 extern int cur_cont_map;
 void switch_continent();
-#endif //FR_VERSION
 /*!
  * \ingroup interfaces
  * \brief   Destroys all of the root windows if necessary.

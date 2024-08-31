@@ -5,15 +5,7 @@
 #include "../errors.h"
 #include "../init.h"
 #include "../md5.h"
-#ifdef MAP_EDITOR
-#ifdef ENGLISH
-# include "../map_editor/misc.h"
-#else //ENGLISH
-# include "../../editeur_sources/misc.h"
-#endif //ENGLISH
-#else
 # include "../misc.h"
-#endif //MAP_EDITOR
 #include "../servers.h"
 
 #include <stdlib.h>
@@ -57,23 +49,11 @@ Theoretically safe, unless someone has a HOME that has a really long path. Such 
 #if defined(CONFIGDIR)
 const static char* cfgdirname = CONFIGDIR;
 #elif defined(OSX)
-#ifdef ENGLISH
-const static char* cfgdirname = "Library/Application\ Support/Eternal\ Lands";
-#else //ENGLISH
 const static char* cfgdirname = "Library/Application\ Support/Landes\ Eternelles";
-#endif //ENGLISH
 #elif defined(WINDOWS)
-#ifdef ENGLISH
-const static char* cfgdirname = "Eternal Lands";
-#else //ENGLISH
 const static char* cfgdirname = "Landes Eternelles";
-#endif //ENGLISH
 #else /* *nix */
-#ifdef ENGLISH
-const static char* cfgdirname = ".elc";
-#else //ENGLISH
 const static char* cfgdirname = ".lec";
-#endif //ENGLISH
 #endif // platform check
 
 static __inline__ int dir_exists (const char* path)
@@ -161,11 +141,7 @@ const char * get_path_config(void)
 	static char locbuffer[MAX_PATH] = {0};
 
 	// Check if we have selected a server yet, otherwise return the base config dir
-#ifndef MAP_EDITOR
 	safe_snprintf(locbuffer, sizeof(locbuffer), "%s%s/", get_path_config_base(), get_server_dir());
-#else
-	safe_snprintf(locbuffer, sizeof(locbuffer), "%s/", get_path_config_base());
-#endif //!MAP_EDITOR
 
 	return locbuffer;
 }
@@ -178,11 +154,7 @@ const char * get_path_updates(void)
 		return locbuffer;
 	}
 
-#ifdef ENGLISH
-	safe_snprintf(locbuffer, sizeof(locbuffer), "%supdates/%d_%d_%d/", get_path_config_base(), VER_MAJOR, VER_MINOR, VER_RELEASE);
-#else //ENGLISH
 	safe_snprintf(locbuffer, sizeof(locbuffer), "%supdates/%d_%d_%d_%d/", get_path_config_base(), VER_MAJOR, VER_MINOR, VER_RELEASE, VER_BUILD);
-#endif //ENGLISH
 
 	return locbuffer;
 }
@@ -640,11 +612,7 @@ void file_check_datadir(void)
 		char pwd[MAX_PATH];
 		if (getcwd(pwd, MAX_PATH) == NULL)
 			pwd[0] = '\0';
-#ifdef ENGLISH
-		LOG_WARNING("Didn't find your data_dir, using the current directory instead. Please correct this in your el.ini . Given data_dir was: \"%s\". Using \"%s\".\n", datadir, pwd);
-#else //ENGLISH
 		LOG_WARNING("Attention : impossible de trouver ton \"data_dir\", utilisation du répertoire actuel.. Vérifies le \"data_dir\" dans le fichier le.ini. \"data_dir\" actuel : \"%s\"\n", datadir);
-#endif //ENGLISH
 		strcpy(datadir, "./");
 	}
 #ifdef WINDOWS

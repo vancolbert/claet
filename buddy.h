@@ -32,10 +32,8 @@ extern int buddy_win; /*!< The identifier of the buddy window */
 
 extern int buddy_menu_x;
 extern int buddy_menu_y;
-#ifdef FR_VERSION
 extern int buddy_menu_x_len;
 extern int buddy_menu_y_len;
-#endif //FR_VERSION
 
 /*!
  * \ingroup	other
@@ -98,10 +96,8 @@ int is_in_buddylist(const char *name);
 
 extern queue_t *buddy_request_queue;
 
-#ifndef ENGLISH
 //BUDDY-FIXME: once server-side offline buddies are supported, the next line can go
 extern time_t c_time;
-#endif //ENGLISH
 
 extern _buddy buddy_list[];
 

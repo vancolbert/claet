@@ -24,38 +24,17 @@
 #include "font.h"
 #include "list.h"
 #include "asc.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "misc.h"
 #include "errors.h"
 #include "translate.h"
-#ifdef POPUP_AIDE_FR
-#include "gl_init.h"
-#include "hud.h"
-#include "textures.h"
-#endif //POPUP_AIDE_FR
 
 #undef POPUP_DEBUG
 
-#ifdef POPUP_DEBUG
-
-#define POPUP_FUNC_ENTER \
-    fprintf(stderr,"Entering %s\n", __FUNCTION__ )
-
-#define POPUP_FUNC_LEAVE \
-    fprintf(stderr,"Leaving %s\n", __FUNCTION__ )
-
-#else /* POPUP_DEBUG */
 
 #define POPUP_FUNC_ENTER /* */
 #define POPUP_FUNC_LEAVE /* */
 
-#endif /* POPUP_DEBUG */
 
-#ifdef POPUP_AIDE_FR
-#include "serverpopup.h"
-#endif
 
 static list_node_t *popup_list;
 
@@ -64,11 +43,6 @@ static int popup_position_x = 500/2;
 static int popup_position_y = 480/4;
 static int button_width = 70;
 static int button_height = 30;
-#ifdef POPUP_AIDE_FR
-int info_texture = 0;
-int fenetre_message_info = -1;
-int num_aide = 1;
-#endif //POPUP_AIDE_FR
 
 /* Constant margins */
 
@@ -1287,131 +1261,3 @@ void popup_create_from_network( const unsigned char *payload, size_t size )
 
 /* EOF */
 
-#ifdef POPUP_AIDE_FR
-int afficher_image_info (window_info *win)
-{
-#ifdef OPENGL_TRACE
-    CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-    get_and_set_texture_id(info_texture);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    glBegin(GL_QUADS);
-    draw_2d_thing (0.0f, 0.0f, 1.0f, 1.0f, 0, 50, 50, 0);
-    glEnd();
-
-    glDisable(GL_ALPHA_TEST);
-    glDisable( GL_BLEND );
-#ifdef OPENGL_TRACE
-    CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-    return 0;
-}
-
-int voir_message_info (window_info *win, int mx, int my)
-{
-    draw_string_small(mx+15, my, (unsigned char*)"Aide", 1);
-
-    return 0;
-}
-
-int clique_message_info (window_info *win, int mx, int my, Uint32 flags)
-{
-    hide_window(fenetre_message_info);
-    if (num_aide!=6)
-    {
-        popupclient();
-    }
-    return 0;
-}
-
-void afficher_message_aide(int numero_message_aide)
-{
-    num_aide = numero_message_aide;
-    if (fenetre_message_info < 0)
-    {
-        fenetre_message_info = create_window("Message info", -1, -1, 0, window_height-hud_y-50, 50, 50, ELW_TITLE_NONE);
-        set_window_handler (fenetre_message_info, ELW_HANDLER_DISPLAY, &afficher_image_info);
-        set_window_handler (fenetre_message_info, ELW_HANDLER_MOUSEOVER, &voir_message_info);
-        set_window_handler (fenetre_message_info, ELW_HANDLER_CLICK, &clique_message_info);
-        if (num_aide == 6)
-        {
-            popupclient();
-        }
-
-    }
-    else
-    {
-        show_window(fenetre_message_info);
-        select_window(fenetre_message_info);
-    }
-}
-
-void popupclient()
-{
-	char msgpopup[300]={'\0'};
-        //1.......10........20........30........40........50........10........20........30........40.......100........10........20........30........40.......150........10........20........30........40.......200........10........20........30........40.......250........10........20........30........40.......300
-
-		switch ( num_aide ) {
-		case 0:
-		//Première fois avec un seuil nutritif négatif
-			sprintf(msgpopup,"Votre potentiel nutritif est dans le négatif, vous ne vous régénérez plus. Mangez pour récupérer. (Action 'utiliser' sur un aliment)");
-            display_server_popup_win((char*)msgpopup);
-			break;
-		case 1:
-		//Premier passage de niveau
-			sprintf(msgpopup,"Chaque niveau total vous apporte un point de pratique. Echangez-les auprès de l'Esprit, au nord-est de l'île de Trépont.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-		case 2:
-		//Premier passage proche du port
-			sprintf(msgpopup,"Vous voici au port de l'île du Trépont. Les ports vous permettent d'aller rapidement d'une zone à une autre. Cliquez sur la bannière pour voyager.\nVous rencontrez de très nombreux dangers au cours de votre exploration, restez sur vos gardes !");
-            display_server_popup_win((char*)msgpopup);
-			break;
-		case 3:
-		//Première mort
-			sprintf(msgpopup,"A chaque mort, vous risquez des malus, et certains de vos objets peuvent tomber sur le sol. Vous pouvez les récupérer si vous êtes assez rapide.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 4:
-		//Passage du niveau qui enlève la protection des nouveaux (passage achéron)
-			sprintf(msgpopup,"Désormé, chacune de vos mort vous enverra en Achéron. Il vous faudra en trouver la sortie pour revenir sur l'île du Trépont.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 5:
-		//Passage du niveau qui enlève la protection des nouveaux (mort entraine conséquences)
-			sprintf(msgpopup,"Désormé, chacune de vos mort peut entrainer des conséquences néfastes, baisse provisoire de vos niveaux, casse ou perte d'objets de votre inventaire.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 6:
-		//Arrivé IG => Bienvenue, explication syst aide
-            sprintf(msgpopup,"Bienvenue dans Landes Eternelles, voyageur/nCe système d'aide t'accompagnera tout au long de ton parcourt. Lorsque l'îcone d'aide apparait à gauche, clique dessus. Ferme cette fenêtre puis déplace toi en cliquant sur le sol");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 7:
-		//Premier déplacement => Explication rapide onglets, demande d'ouverture de l'inventaire
-            sprintf(msgpopup, "Bien. Regarde les onglets en bas le l'écran. Ils te permettent de contrôler et de t'informer sur ton avatar. Le premier te permet de passer en mode marche, le troisième d'obtenir des informations, le suivant d'utiliser un objet. Clique sur l'onglet en forme de sac (le n-ième).");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 8:
-		//Première ouverture d'inventaire => Explications inventaire/barre rapide
-            sprintf(msgpopup,"Voici ton inventaire. Les cases de gauche représentent le contenu de ton sac et les cases de droite les objets équipés. La jauge marron en bas de la fenêtre de jeu indique ta charge. Une barre rapide se situe à droite de l'écran, fais glisser un objet dedans pour en profiter.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 9:
-		//Optention AM => explication du principe
-            sprintf(msgpopup,"Tu viens de recevoir ton Al'Manakh. L'Al'Manakh est un receuil de connaissance sur le jeu, tu y trouveras énormément de renseignements sur l'histoire, le jeu, les monstres, les formules, etc. Tu peux y accéder en cliquand sur l'onglet aide(?) en bas de l'écran.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-        case 10:
-		//Optetions livres => explication du principe
-            sprintf(msgpopup,"Les livres te permettent d'apprendre de nouvelles connaissances. Clique un mode utiliser (quatrième onglet en bas de l'écran) sur un livre pour le lire. Tu peux voir la liste de tes connaissances dans l'onglet statistiques.");
-            display_server_popup_win((char*)msgpopup);
-			break;
-		default:
-			return;
-		}
-}
-#endif

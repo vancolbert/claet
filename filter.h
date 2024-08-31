@@ -101,9 +101,6 @@ void load_filters();
  */
 int list_filters();
 
-#ifdef DEBUG
-void print_filter_list ();
-#endif
 
 #ifdef __cplusplus
 } // extern "C"

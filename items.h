@@ -26,10 +26,8 @@ typedef struct
 	int is_resource; /*!< does it appear on the manufacturing menu? */
 	int use_with_inventory;
 	int is_stackable;
-#ifdef NEW_SOUND
 	int action;			/*!< action being done on this item, for playing sounds on server result */
 	int action_time;	/*!< time this action has been active - times out after 2 seconds */
-#endif // NEW_SOUND
 	Uint32 cooldown_time; /*!< time when cooldown shall reach zero */
 	Uint32 cooldown_rate; /*!< time that the item would need to cool down from full heat */
 } item;
@@ -93,11 +91,7 @@ extern int items_menu_y;
 
 /*! \name Text fields for items */
 /*! @{ */
-#ifdef ENGLISH
-#define MAX_ITEMS_TEXTURES  32
-#else //ENGLISH
 #define MAX_ITEMS_TEXTURES  80
-#endif //ENGLISH
 extern int items_text[MAX_ITEMS_TEXTURES];
 /*! @} */
 
@@ -111,9 +105,6 @@ extern int use_small_items_window;
 
 extern int manual_size_items_window;
 
-#ifdef ENGLISH
-extern int items_mod_click_any_cursor;
-#endif //ENGLISH
 
 extern int allow_equip_swap;
 
@@ -126,7 +117,6 @@ extern int items_dropall_nolastrow;
 
 extern int items_auto_get_all;
 extern int items_list_on_left;
-#ifdef FR_VERSION
 extern int items_menu_x_len;
 extern int items_menu_y_len;
 
@@ -142,14 +132,11 @@ extern int allow_wheel_quantity_edit;
 void wheel_change_quantity(Uint32 flags);
 
 extern int item_dragged_max_quantity; // quantité max disponible pour un objet pris du sac
-#endif //FR_VERSION
 
 extern int item_uid_enabled;
 extern const Uint16 unset_item_uid;
 
-#ifdef NEW_SOUND
 void update_item_sound(int interval);
-#endif // NEW_SOUND
 
 int move_item(int item_pos_to_mov, int destination_pos);
 
@@ -157,9 +144,7 @@ int move_item(int item_pos_to_mov, int destination_pos);
 void draw_item(int id, int x_start, int y_start, int gridsize);
 void gray_out(int x_start, int y_start, int gridsize);
 
-#ifndef ENGLISH
 void get_all_handler(); // appelée par le raccourci clavier 'OBTENIR'
-#endif //ENGLISH
 
 /*!
  * \ingroup display_utils
@@ -306,10 +291,8 @@ void update_cooldown ();
  */
 void set_shown_string(char colour_code, const char *the_text);
 
-#ifdef	NEW_TEXTURES
 void get_item_uv(const Uint32 item, float* u_start, float* v_start,
 	float* u_end, float* v_end);
-#endif	/* NEW_TEXTURES */
 
 #ifdef __cplusplus
 } // extern "C"

@@ -14,9 +14,7 @@
 #include "multiplayer.h"
 #include "new_character.h"
 #include "rules.h"
-#ifdef NEW_SOUND
 #include "sound.h"
-#endif // NEW_SOUND
 #include "tabs.h"
 #include "textures.h"
 #include "translate.h"
@@ -46,40 +44,23 @@ int password_bar_y_len = 28;
 
 int log_in_x;
 int log_in_y;
-#ifdef ENGLISH
-int log_in_x_len = 87;
-int log_in_y_len = 35;
-#else //ENGLISH
 int log_in_x_len = 82;
 int log_in_y_len = 34;
-#endif //ENGLISH
 
 int new_char_x;
 int new_char_y;
-#ifdef ENGLISH
-int new_char_x_len = 138;
-int new_char_y_len = 35;
-#else //ENGLISH
 int new_char_x_len = 160;
 int new_char_y_len = 34;
-#endif //ENGLISH
 
 int settings_x;
 int settings_y;
-#ifdef ENGLISH
-int settings_x_len = 87;
-int settings_y_len = 35;
-#else //ENGLISH
 int settings_x_len = 63;
 int settings_y_len = 34;
-#endif //ENGLISH
 
-#ifndef ENGLISH
 int cadre_x;
 int cadre_y;
 int cadre_x_len = 512;
 int cadre_y_len = 447;
-#endif //ENGLISH
 
 char log_in_button_selected = 0;
 char new_char_button_selected = 0;
@@ -88,22 +69,14 @@ char settings_button_selected = 0;
 void init_login_screen ()
 {
 	CHECK_GL_ERRORS();
-#ifdef	NEW_TEXTURES
 	login_screen_menus = load_texture_cached("textures/login_menu.dds", tt_image);
 	login_text = load_texture_cached("textures/login_back.dds", tt_image);
-#else	/* NEW_TEXTURES */
-	login_screen_menus = load_texture_cache ("./textures/login_menu.bmp",0);
-	CHECK_GL_ERRORS();
-	login_text = load_texture_cache ("./textures/login_back.bmp",255);
-#endif	/* NEW_TEXTURES */
 	CHECK_GL_ERRORS();
 }
 
 void set_login_error (const char *msg, int len, int print_err)
 {
-#ifdef NEW_SOUND
 	int snd;
-#endif // NEW_SOUND
 	if (len <= 0)
 	{
 		// server didn't send a message, use the default
@@ -111,11 +84,7 @@ void set_login_error (const char *msg, int len, int print_err)
 	}
 	else if (print_err)
 	{
-#ifdef ENGLISH
-		safe_snprintf (log_in_error_str, sizeof (log_in_error_str), "%s: %.*s", reg_error_str, len, msg);
-#else //ENGLISH
 		safe_snprintf (log_in_error_str, sizeof (log_in_error_str), "%.*s", len, msg);
-#endif //ENGLISH
 	}
 	else
 	{
@@ -123,10 +92,8 @@ void set_login_error (const char *msg, int len, int print_err)
 	}
 	reset_soft_breaks (log_in_error_str, strlen (log_in_error_str), sizeof (log_in_error_str), 1.0, window_width, NULL, NULL);
 
-#ifdef NEW_SOUND
 	if ((snd = get_index_for_sound_type_name("Login Error")) > -1)
 		add_sound_object(snd, 0, 0, 1);
-#endif // NEW_SOUND
 }
 
 int resize_login_handler (window_info *win, Uint32 w, Uint32 h)
@@ -135,70 +102,31 @@ int resize_login_handler (window_info *win, Uint32 w, Uint32 h)
 	int half_screen_y = h / 2;
 	int len1 = strlen (login_username_str);
 	int len2 = strlen (login_password_str);
-#ifdef ENGLISH
-	int offset = 20 + (len1 > len2 ? (len1+1) * 16 : (len2+1) * 16);
-#else //ENGLISH
 	int offset = 60 + (len1 > len2 ? (len1+1) * 16 : (len2+1) * 16);
-#endif //ENGLISH
 
 	username_text_x = half_screen_x - offset;
-#ifdef ENGLISH
-	username_text_y = half_screen_y - 130;
-#else //ENGLISH
 	username_text_y = half_screen_y - 107;
-#endif //ENGLISH
 
 	password_text_x = half_screen_x - offset;
-#ifdef ENGLISH
-	password_text_y = half_screen_y - 100;
-#else //ENGLISH
 	password_text_y = half_screen_y - 75;
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	username_bar_x = half_screen_x;
-	username_bar_y = username_text_y - 7;
-#else //ENGLISH
 	username_bar_x = half_screen_x - username_bar_x_len/2;
 	username_bar_y = half_screen_y - username_bar_y_len/2 - 96;
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	password_bar_x = half_screen_x;
-	password_bar_y = password_text_y - 7;
-#else //ENGLISH
 	password_bar_x = half_screen_x - password_bar_x_len/2;
 	password_bar_y = half_screen_y - password_bar_y_len/2 - 67;
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	log_in_x = username_text_x;
-	log_in_y = half_screen_y - 50;
-#else //ENGLISH
 	log_in_x = half_screen_x - log_in_x_len/2 - 1;
 	log_in_y = half_screen_y - 45;
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	settings_x = username_bar_x + username_bar_x_len - settings_x_len;
-	settings_y = half_screen_y - 50;
-#else //ENGLISH
 	settings_x = half_screen_x - settings_x_len/2;
 	settings_y = half_screen_y + 34;
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	new_char_x = log_in_x + ((settings_x + settings_x_len) - log_in_x)/2 - new_char_x_len/2;
-	new_char_y = half_screen_y - 50;
-#else //ENGLISH
 	new_char_x = half_screen_x - new_char_x_len/2;
 	new_char_y = half_screen_y - 3;
-#endif //ENGLISH
 
-#ifndef ENGLISH
     cadre_x = half_screen_x - cadre_x_len/2;
     cadre_y = half_screen_y - cadre_y_len/2;
-#endif //ENGLISH
 
 	return 1;
 }
@@ -211,106 +139,6 @@ int resize_login_handler (window_info *win, Uint32 w, Uint32 h)
 int display_login_handler (window_info *win)
 {
 	int num_lines;
-#ifdef ENGLISH
-#ifdef	NEW_TEXTURES
-	float selected_bar_u_start = (float)0/256;
-	float selected_bar_v_start = (float)0/256;
-
-	float selected_bar_u_end = (float)174/256;
-	float selected_bar_v_end = (float)28/256;
-
-	float unselected_bar_u_start = (float)0/256;
-	float unselected_bar_v_start = (float)40/256;
-
-	float unselected_bar_u_end = (float)170/256;
-	float unselected_bar_v_end = (float)63/256;
-	/////////////////////////
-	float log_in_unselected_start_u = (float)0/256;
-	float log_in_unselected_start_v = (float)80/256;
-
-	float log_in_unselected_end_u = (float)87/256;
-	float log_in_unselected_end_v = (float)115/256;
-
-	float log_in_selected_start_u = (float)0/256;
-	float log_in_selected_start_v = (float)120/256;
-
-	float log_in_selected_end_u = (float)87/256;
-	float log_in_selected_end_v = (float)155/256;
-	/////////////////////////
-	float new_char_unselected_start_u = (float)100/256;
-	float new_char_unselected_start_v = (float)80/256;
-
-	float new_char_unselected_end_u = (float)238/256;
-	float new_char_unselected_end_v = (float)115/256;
-
-	float new_char_selected_start_u = (float)100/256;
-	float new_char_selected_start_v = (float)120/256;
-
-	float new_char_selected_end_u = (float)238/256;
-	float new_char_selected_end_v = (float)155/256;
-	/////////////////////////
-	float settings_unselected_start_u = (float)0/256;
-	float settings_unselected_start_v = (float)160/256;
-
-	float settings_unselected_end_u = (float)87/256;
-	float settings_unselected_end_v = (float)195/256;
-
-	float settings_selected_start_u = (float)0/256;
-	float settings_selected_start_v = (float)200/256;
-
-	float settings_selected_end_u = (float)87/256;
-	float settings_selected_end_v = (float)235/256;
-#else	/* NEW_TEXTURES */
-	float selected_bar_u_start = (float)0/256;
-	float selected_bar_v_start = 1.0f - (float)0/256;
-
-	float selected_bar_u_end = (float)174/256;
-	float selected_bar_v_end = 1.0f - (float)28/256;
-
-	float unselected_bar_u_start = (float)0/256;
-	float unselected_bar_v_start = 1.0f - (float)40/256;
-
-	float unselected_bar_u_end = (float)170/256;
-	float unselected_bar_v_end = 1.0f - (float)63/256;
-	/////////////////////////
-	float log_in_unselected_start_u = (float)0/256;
-	float log_in_unselected_start_v = 1.0f - (float)80/256;
-
-	float log_in_unselected_end_u = (float)87/256;
-	float log_in_unselected_end_v = 1.0f - (float)115/256;
-
-	float log_in_selected_start_u = (float)0/256;
-	float log_in_selected_start_v = 1.0f - (float)120/256;
-
-	float log_in_selected_end_u = (float)87/256;
-	float log_in_selected_end_v = 1.0f-(float)155/256;
-	/////////////////////////
-	float new_char_unselected_start_u = (float)100/256;
-	float new_char_unselected_start_v = 1.0f-(float)80/256;
-
-	float new_char_unselected_end_u = (float)238/256;
-	float new_char_unselected_end_v = 1.0f-(float)115/256;
-
-	float new_char_selected_start_u = (float)100/256;
-	float new_char_selected_start_v = 1.0f-(float)120/256;
-
-	float new_char_selected_end_u = (float)238/256;
-	float new_char_selected_end_v = 1.0f-(float)155/256;
-	/////////////////////////
-	float settings_unselected_start_u = (float)0/256;
-	float settings_unselected_start_v = 1.0f - (float)160/256;
-
-	float settings_unselected_end_u = (float)87/256;
-	float settings_unselected_end_v = 1.0f - (float)195/256;
-
-	float settings_selected_start_u = (float)0/256;
-	float settings_selected_start_v = 1.0f - (float)200/256;
-
-	float settings_selected_end_u = (float)87/256;
-	float settings_selected_end_v = 1.0f-(float)235/256;
-#endif	/* NEW_TEXTURES */
-#else //ENGLISH
-#ifdef NEW_TEXTURES
     float cadre_u_start = 0.0f;
     float cadre_v_start = 0.0f;
     float cadre_u_end   = 1.0f;
@@ -340,90 +168,15 @@ int display_login_handler (window_info *win)
 	float settings_selected_end_u = (float)502/512;
 	float settings_selected_start_v = (float)450/512;
 	float settings_selected_end_v = (float)484/512;
-#else //NEW_TEXTURES
-    float cadre_u_start = 0.0f;
-    float cadre_v_start = 1.0f;
-    float cadre_u_end   = 1.0f;
-    float cadre_v_end   = 1.0f - (float)447/512;
-
-	float selected_log_bar_u_start = (float)8/512;
-	float selected_log_bar_u_end = (float)182/512;
-	float selected_log_bar_v_start = 1.0f-(float)450/512;
-	float selected_log_bar_v_end = 1.0f-(float)477/512;
-
-	float selected_password_bar_u_start = (float)8/512;
-	float selected_password_bar_u_end = (float)182/512;
-	float selected_password_bar_v_start = 1.0f-(float)479/512;
-	float selected_password_bar_v_end = 1.0f-(float)506/512;
-
-	float log_in_selected_start_u = (float)193/512;
-	float log_in_selected_end_u = (float)275/512;
-	float log_in_selected_start_v = 1.0f - (float)450/512;
-	float log_in_selected_end_v = 1.0f-(float)484/512;
-
-	float new_char_selected_start_u = (float)277/512;
-	float new_char_selected_end_u = (float)437/512;
-	float new_char_selected_start_v = 1.0f - (float)450/512;
-	float new_char_selected_end_v = 1.0f-(float)484/512;
-
-	float settings_selected_start_u = (float)439/512;
-	float settings_selected_end_u = (float)502/512;
-	float settings_selected_start_v = 1.0f - (float)450/512;
-	float settings_selected_end_v = 1.0f-(float)484/512;
-#endif //NEW_TEXTURES
-#endif //ENGLISH
 
 	draw_console_pic(login_text);
 
-#ifdef ENGLISH
-	// ok, start drawing the interface...
-	draw_string (username_text_x, username_text_y, (unsigned char*)login_username_str, 1);
-	draw_string (password_text_x, password_text_y, (unsigned char*)login_password_str, 1);
-
-	num_lines = reset_soft_breaks(login_rules_str, strlen(login_rules_str), sizeof(login_rules_str), 1, settings_x + settings_x_len - username_text_x, NULL, NULL);
-	draw_string_zoomed(username_text_x, log_in_y + 60, (unsigned char*)login_rules_str, num_lines, 1);
-#endif //ENGLISH
 
 	// start drawing the actual interface pieces
-#ifdef	NEW_TEXTURES
 	bind_texture(login_screen_menus);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(login_screen_menus);
-#endif	/* NEW_TEXTURES */
 	glColor3f (1.0f,1.0f,1.0f);
 	glBegin (GL_QUADS);
 
-#ifdef ENGLISH
-	// username box
-	if (username_box_selected)
-		draw_2d_thing (selected_bar_u_start, selected_bar_v_start, selected_bar_u_end, selected_bar_v_end, username_bar_x, username_bar_y, username_bar_x + username_bar_x_len, username_bar_y + username_bar_y_len);
-	else
-		draw_2d_thing (unselected_bar_u_start, unselected_bar_v_start, unselected_bar_u_end, unselected_bar_v_end, username_bar_x, username_bar_y, username_bar_x + username_bar_x_len, username_bar_y + username_bar_y_len);
-
-	// password box
-	if (password_box_selected)
-		draw_2d_thing (selected_bar_u_start, selected_bar_v_start, selected_bar_u_end, selected_bar_v_end, password_bar_x, password_bar_y, password_bar_x + password_bar_x_len, password_bar_y + password_bar_y_len);
-	else
-		draw_2d_thing (unselected_bar_u_start, unselected_bar_v_start, unselected_bar_u_end, unselected_bar_v_end, password_bar_x, password_bar_y, password_bar_x + password_bar_x_len, password_bar_y + password_bar_y_len);
-
-	// log in button
-	if (log_in_button_selected)
-		draw_2d_thing (log_in_selected_start_u, log_in_selected_start_v, log_in_selected_end_u, log_in_selected_end_v, log_in_x, log_in_y, log_in_x + log_in_x_len, log_in_y + log_in_y_len);
-	else
-		draw_2d_thing (log_in_unselected_start_u, log_in_unselected_start_v, log_in_unselected_end_u, log_in_unselected_end_v, log_in_x, log_in_y, log_in_x + log_in_x_len, log_in_y + log_in_y_len);
-
-	// new char button
-	if (new_char_button_selected)
-		draw_2d_thing (new_char_selected_start_u, new_char_selected_start_v, new_char_selected_end_u, new_char_selected_end_v, new_char_x, new_char_y, new_char_x + new_char_x_len, new_char_y + new_char_y_len);
-	else
-		draw_2d_thing (new_char_unselected_start_u, new_char_unselected_start_v, new_char_unselected_end_u, new_char_unselected_end_v, new_char_x, new_char_y, new_char_x + new_char_x_len, new_char_y + new_char_y_len);
-
-	// settings button
-	if (settings_button_selected)
-		draw_2d_thing (settings_selected_start_u, settings_selected_start_v, settings_selected_end_u, settings_selected_end_v, settings_x, settings_y, settings_x + settings_x_len, settings_y + settings_y_len);
-	else
-		draw_2d_thing (settings_unselected_start_u, settings_unselected_start_v, settings_unselected_end_u, settings_unselected_end_v, settings_x, settings_y, settings_x + settings_x_len, settings_y + settings_y_len);
-#else //ENGLISH
     // Dessine le cadre
 	draw_2d_thing (cadre_u_start, cadre_v_start, cadre_u_end, cadre_v_end, cadre_x, cadre_y, cadre_x+cadre_x_len, cadre_y+cadre_y_len);
 
@@ -457,11 +210,9 @@ int display_login_handler (window_info *win)
 		draw_2d_thing (settings_selected_start_u, settings_selected_start_v, settings_selected_end_u, settings_selected_end_v, settings_x, settings_y, settings_x + settings_x_len, settings_y + settings_y_len);
     }
 
-#endif //ENGLISH
 
 	glEnd();
 
-#ifndef ENGLISH
 	draw_string_shadowed(username_text_x, username_text_y, (unsigned char*)login_username_str, 1, 1.0f,0.9f,0.5f, 0.3f,0.2f,0.0f);
 	draw_string_shadowed(password_text_x, password_text_y, (unsigned char*)login_password_str, 1, 1.0f,0.9f,0.5f, 0.3f,0.2f,0.0f);
 
@@ -479,17 +230,9 @@ int display_login_handler (window_info *win)
 
 	draw_string_shadowed(username_bar_x + 4, username_text_y, (unsigned char*)username_str, 1, 1.0f,0.5f,0.1f, 0.3f,0.0f,0.0f);
 	draw_string_shadowed(password_bar_x + 4, password_text_y, (unsigned char*)display_password_str, 1, 1.0f,0.5f,0.1f, 0.3f,0.0f,0.0f);
-#else //ENGLISH
-	glColor3f (0.0f, 0.9f, 1.0f);
-	draw_string (username_bar_x + 4, username_text_y, (unsigned char*)username_str, 1);
-	draw_string (password_bar_x + 4, password_text_y, (unsigned char*)display_password_str, 1);
-#endif //ENGLISH
 	glColor3f (1.0f, 0.0f, 0.0f);
 
 	// print the current error, if any
-#ifdef ENGLISH
-	draw_string (0, log_in_y + 40, (unsigned char*)log_in_error_str, 5);
-#endif //ENGLISH
 
 	CHECK_GL_ERRORS ();
 	draw_delay = 20;

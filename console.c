@@ -3,19 +3,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#ifdef NECK_ITEMS
 #include "new_actors.h"
-#endif
-#ifdef FR_VERSION
 #include <dirent.h>
-#endif //FR_VERSION
 #include "console.h"
 #include "asc.h"
 #include "buddy.h"
 #include "cache.h"
-#ifdef EMOTES
-#include "cal.h"
-#endif
 #include "chat.h"
 #include "consolewin.h"
 #include "elconfig.h"
@@ -37,9 +30,6 @@
 #include "notepad.h"
 #include "pm_log.h"
 #include "platform.h"
-#ifdef NEW_QUESTLOG
-#include "questlog.h"
-#endif
 #include "sound.h"
 #include "spells.h"
 #include "tabs.h"
@@ -53,25 +43,11 @@
 #include "io/elpathwrapper.h"
 #include "io/elfilewrapper.h"
 #include "calc.h"
-#ifdef TEXT_ALIASES
 #include "text_aliases.h"
-#endif
-#ifdef EMOTES
-//only for debugging command #add_emote <actor name> <emote id>, can be removed later
-#include "actor_scripts.h"
-#include "emotes.h"
-#endif
-#ifdef	CUSTOM_UPDATE
-#include "custom_update.h"
-#endif	/* CUSTOM_UPDATE */
-#ifndef ENGLISH
 #include "encyclopedia.h"
-#endif //ENGLISH
-#ifdef FR_VERSION
 #include "themes.h"
 #include "pathfinder.h"
 #include "fr_quickitems.h"
-#endif //FR_VERSION
 
 typedef char name_t[32];
 
@@ -409,11 +385,7 @@ int test_for_console_command(char *text, int length)
 
 	// Skip leading #s
 	if(*text == '#' || *text == char_cmd_str[0]) {
-#ifdef ENGLISH
-		*text = '#';
-#else //ENGLISH
 		*text = char_cmd_str[0];
-#endif //ENGLISH
 		text++;
 		length--;
 	}
@@ -425,23 +397,17 @@ int test_for_console_command(char *text, int length)
 		return 0;
 	} else {
 		int cmd_len;
-#ifdef TEXT_ALIASES
 		/* Handle numeric shortcuts */
 		if ( isdigit(text[0]) ) {
 			if ( process_text_alias(text,length) >= 0 ) {
 				return 1;
 			}
 		}
-#endif
 		/* Look for a matching command */
 		for(i = 0; i < command_count; i++) {
 			cmd_len = strlen(commands[i].command);
-#ifdef ENGLISH
-			if(strlen(text) >= cmd_len && my_strncompare(text, commands[i].command, cmd_len) && (isspace(text[cmd_len]) || text[cmd_len] == '\0')) {
-#else //ENGLISH
 			//@tosh : permet de différencier une commande d'un alias (exemple : &alias 1 salut)
 			if(strlen(text) >= cmd_len && my_strncompare(&text_ptr[1], commands[i].command, cmd_len) && (isspace(text[cmd_len]) || text[cmd_len] == '\0')) {
-#endif
 				/* Command matched */
 				if(commands[i].callback && commands[i].callback(text+cmd_len, length-cmd_len)) {
 					/* The command was handled and we don't want to send it to the server */
@@ -453,16 +419,12 @@ int test_for_console_command(char *text, int length)
 			}
 		}
 	}
-#ifndef ENGLISH
     // on change le caractere pour les commandes afin de l'envoyer au serveur
     text--;
     *text= '#';
-#endif //ENGLISH
 	send_input_text_line (text_ptr, ptr_length);
-#ifndef ENGLISH
     // on remet le bon caractere pour les commandes
     *text= char_cmd_str[0];
-#endif //ENGLISH
 	return 0;
 }
 
@@ -482,278 +444,8 @@ static char *getparams(char *text)
 	return text;
 }
 
-#ifdef EMOTES
-int print_emotes(char *text, int len){
-
-	hash_entry *he;;
-	LOG_TO_CONSOLE(c_orange1,"EMOTES");
-	LOG_TO_CONSOLE(c_orange1,"--------------------");
-	hash_start_iterator(emote_cmds);
-	while((he=hash_get_next(emote_cmds)))
-		LOG_TO_CONSOLE(c_orange1,((emote_dict *)he->item)->command);
-	return 1;
-}
 
 
-int add_emote(char *text, int len){
-
-	int j;
-	char *id;
-	actor *act=NULL;
-
-	for(j=1;j<len;j++) if(text[j]==' ') {text[j]=0; break;}
-	id=&text[j+1];
-	text++;
-	printf("Actor [%s] [%s]\n",text,id);
-	LOCK_ACTORS_LISTS();
-	for (j = 0; j < max_actors; j++){
-		if (!strncasecmp(actors_list[j]->actor_name, text, strlen(text)) &&
-	  	   (actors_list[j]->actor_name[strlen(text)] == ' ' ||
-	    	   actors_list[j]->actor_name[strlen(text)] == '\0')){
-			act = actors_list[j];
-			LOG_TO_CONSOLE(c_orange1, "actor found, adding emote");
-			printf("actor found\n");
-			add_emote_to_actor(act->actor_id,atoi(id));
-			printf("message added %s\n",id);
-		}
-	}
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_TO_CONSOLE(c_orange1, "actor not found");
-		return 1;
-	}
-	UNLOCK_ACTORS_LISTS();
-	*(id-1)=' ';
-	return 1;
-
-}
-
-int send_cmd(char *text, int len){
-
-	int j,x;
-	char *id;
-	actor *act=NULL;
-
-	for(j=1;j<len;j++) if(text[j]==' ') {text[j]=0; break;}
-	id=&text[j+1];
-	x=j;
-	text++;
-	printf("Actor [%s] [%s]\n",text,id);
-	LOCK_ACTORS_LISTS();
-	for (j = 0; j < max_actors; j++){
-		if (!strncasecmp(actors_list[j]->actor_name, text, strlen(text)) &&
-	  	   (actors_list[j]->actor_name[strlen(text)] == ' ' ||
-	    	   actors_list[j]->actor_name[strlen(text)] == '\0')){
-			act = actors_list[j];
-			LOG_TO_CONSOLE(c_orange1, "actor found, adding command");
-			printf("actor found\n");
-			while(*id){
-			add_command_to_actor(act->actor_id,atoi(id));
-			id++;
-				while(*id!=' '&&*id!=0) id++;
-			}
-			printf("command added %s\n",id);
-		}
-	}
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_TO_CONSOLE(c_orange1, "actor not found");
-		return 1;
-	}
-	UNLOCK_ACTORS_LISTS();
-	text[x-1]=' ';
-	return 1;
-}
-
-int set_idle(char *text, int len){
-
-	int j,x;
-	char *id;
-	actor *act=NULL;
-
-	for(j=1;j<len;j++) if(text[j]==' ') {text[j]=0; break;}
-	id=&text[j+1];
-	x=j;
-	text++;
-	printf("Actor [%s] [%s]\n",text,id);
-	LOCK_ACTORS_LISTS();
-	for (j = 0; j < max_actors; j++){
-		if (!strncasecmp(actors_list[j]->actor_name, text, strlen(text)) &&
-	  	   (actors_list[j]->actor_name[strlen(text)] == ' ' ||
-	    	   actors_list[j]->actor_name[strlen(text)] == '\0')){
-				struct CalMixer *mixer;
-			act = actors_list[j];
-				mixer=CalModel_GetMixer(act->calmodel);
-			LOG_TO_CONSOLE(c_orange1, "actor found, adding anims");
-			printf("actor found\n");
-			CalMixer_ClearCycle(mixer,act->cur_anim.anim_index, 0.0f);
-			while(*id){
-				int anim_id;
-				double anim_wg;
-
-				anim_id=atoi(id);
-			id++;
-				while(*id!=' '&&*id!=0) id++;
-				anim_wg=atof(id);
-			id++;
-				while(*id!=' '&&*id!=0) id++;
-				printf("setting anim %i with weight %f\n",anim_id,anim_wg);
-				if(anim_wg<0) CalMixer_ClearCycle(mixer,actors_defs[act->actor_type].cal_frames[anim_id].anim_index, 0.0f);
-				else CalMixer_BlendCycle(mixer,actors_defs[act->actor_type].cal_frames[anim_id].anim_index,anim_wg, 0.1f);
-			}
-			printf("command added %s\n",id);
-		}
-	}
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_TO_CONSOLE(c_orange1, "actor not found");
-		return 1;
-	}
-	UNLOCK_ACTORS_LISTS();
-	text[x-1]=' ';
-	return 1;
-}
-
-int set_action(char *text, int len){
-
-	int j,x;
-	char *id;
-	actor *act=NULL;
-
-	for(j=1;j<len;j++) if(text[j]==' ') {text[j]=0; break;}
-	id=&text[j+1];
-	x=j;
-	text++;
-	printf("Actor [%s] [%s]\n",text,id);
-	LOCK_ACTORS_LISTS();
-	for (j = 0; j < max_actors; j++){
-		if (!strncasecmp(actors_list[j]->actor_name, text, strlen(text)) &&
-	  	   (actors_list[j]->actor_name[strlen(text)] == ' ' ||
-	    	   actors_list[j]->actor_name[strlen(text)] == '\0')){
-				struct CalMixer *mixer;
-			act = actors_list[j];
-				mixer=CalModel_GetMixer(act->calmodel);
-			LOG_TO_CONSOLE(c_orange1, "actor found, adding anims");
-			printf("actor found\n");
-			while(*id){
-				int anim_id;
-				double anim_wg;
-
-				anim_id=atoi(id);
-			id++;
-				while(*id!=' '&&*id!=0) id++;
-				anim_wg=atof(id);
-			id++;
-				while(*id!=' '&&*id!=0) id++;
-				printf("setting action %i with weight %f\n",anim_id,anim_wg);
-				if(anim_wg<0) CalMixer_RemoveAction(mixer,actors_defs[act->actor_type].cal_frames[anim_id].anim_index);
-				else CalMixer_ExecuteActionExt(mixer,actors_defs[act->actor_type].cal_frames[anim_id].anim_index,0.0f,0.0f,anim_wg, 1);
-			}
-			printf("command added %s\n",id);
-		}
-	}
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_TO_CONSOLE(c_orange1, "actor not found");
-		return 1;
-	}
-	UNLOCK_ACTORS_LISTS();
-	text[x-1]=' ';
-	return 1;
-}
-#endif
-
-#ifdef MORE_ATTACHED_ACTORS_DEBUG
-int horse_cmd(char* text, int len){
-
-	int j,x;
-	char *id;
-	actor *act=NULL;
-
-	for(j=1;j<len;j++) if(text[j]==' ') {text[j]=0; break;}
-	id=&text[j+1];
-	x=j;
-	text++;
-	printf("Actor [%s] [%s] [%i]\n",text,id,atoi(id));
-	LOCK_ACTORS_LISTS();
-	for (j = 0; j < max_actors; j++){
-		if (!strncasecmp(actors_list[j]->actor_name, text, strlen(text)) &&
-	  	   (actors_list[j]->actor_name[strlen(text)] == ' ' ||
-	    	   actors_list[j]->actor_name[strlen(text)] == '\0')){
-			act = actors_list[j];
-			LOG_TO_CONSOLE(c_orange1, "actor found, adding horse");
-		}
-	}
-	text[x-1]=' ';
-
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_TO_CONSOLE(c_orange1,"Actor doesn't exist");
-		return 1;		// Eek! We don't have an actor match... o.O
-	}
-
-	act->sit_idle=act->stand_idle=0;
-
-	if(act->attached_actor>=0){
-		//remove horse
-		remove_actor_attachment(act->actor_id);
-		LOG_TO_CONSOLE(c_orange1,"De-horsified");
-
-	} else {
-		//add horse
-		int hh=atoi(id);
-		if (hh<=0) hh=200;
-		add_actor_attachment(act->actor_id, hh);
-		LOG_TO_CONSOLE(c_orange1,"Horsified");
-	}
-	UNLOCK_ACTORS_LISTS();
-
-	return 1;
-
-}
-#endif
-
-#ifdef NECK_ITEMS_DEBUG
-int set_neck(char *text, int len){
-
-	int j;
-	char *id;
-	actor *act=NULL;
-
-	for(j=1;j<len;j++) if(text[j]==' ') {text[j]=0; break;}
-	id=&text[j+1];
-	text++;
-	printf("Actor [%s] [%s]\n",text,id);
-	LOCK_ACTORS_LISTS();
-	for (j = 0; j < max_actors; j++){
-		if (!strncasecmp(actors_list[j]->actor_name, text, strlen(text)) &&
-	  	   (actors_list[j]->actor_name[strlen(text)] == ' ' ||
-	    	   actors_list[j]->actor_name[strlen(text)] == '\0')){
-			act = actors_list[j];
-			LOG_TO_CONSOLE(c_orange1, "actor found, adding neck item");
-			printf("actor found\n");
-			if(atoi(id)) {
-				//wear
-				unwear_item_from_actor(act->actor_id,KIND_OF_NECK);
-				actor_wear_item(act->actor_id,KIND_OF_NECK, atoi(id));
-			} else {
-				//unwear
-				unwear_item_from_actor(act->actor_id,KIND_OF_NECK);
-
-			}
-		}
-	}
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_TO_CONSOLE(c_orange1, "actor not found");
-		return 1;
-	}
-	UNLOCK_ACTORS_LISTS();
-	*(id-1)=' ';
-	return 1;
-
-}
-#endif
 
 
 int command_cls(char *text, int len)
@@ -762,13 +454,11 @@ int command_cls(char *text, int len)
 	return 1;
 }
 
-#ifdef FR_VERSION
 int command_muet(void)
 {
    disable_sound(&no_sound);
    return 1;
 }
-#endif //FR_VERSION
 
 int command_calc(char *text, int len)
 {
@@ -785,43 +475,23 @@ int command_calc(char *text, int len)
 			LOG_TO_CONSOLE (c_orange1, str);
 			break;
 		case CALCERR_SYNTAX:
-#ifdef ENGLISH
-			safe_snprintf (str,sizeof(str), "%s = Syntax error",text);
-#else //ENGLISH
 			safe_snprintf (str,sizeof(str), "%s = Erreur de syntaxe",text);
-#endif //ENGLISH
 			LOG_TO_CONSOLE (c_orange1, str);
 			break;
 		case CALCERR_DIVIDE:
-#ifdef ENGLISH
-			safe_snprintf (str, sizeof(str),"%s = Divide by zero",text);
-#else //ENGLISH
 			safe_snprintf (str, sizeof(str),"%s = Division par zéro",text);
-#endif //ENGLISH
 			LOG_TO_CONSOLE (c_orange1, str);
 			break;
 		case CALCERR_MEM:
-#ifdef ENGLISH
-			safe_snprintf (str,sizeof(str), "%s = Memory error",text);
-#else //ENGLISH
 			safe_snprintf (str,sizeof(str), "%s = Erreur de mémoire",text);
-#endif //ENGLISH
 			LOG_TO_CONSOLE (c_orange1, str);
 			break;
 		case CALCERR_XOPSYNTAX:
-#ifdef ENGLISH
-			safe_snprintf (str,sizeof(str), "%s = Bad argument for X", text);
-#else //ENGLISH
 			safe_snprintf (str,sizeof(str), "%s = Mauvais argument pour X", text);
-#endif //ENGLISH
 			LOG_TO_CONSOLE (c_orange1, str);
 			break;
 		case CALCERR_LOPSYNTAX:
-#ifdef ENGLISH
-			safe_snprintf (str,sizeof(str), "%s = Bad argument for L", text);
-#else //ENGLISH
 			safe_snprintf (str,sizeof(str), "%s = Mauvais argument pour L", text);
-#endif //ENGLISH
 			LOG_TO_CONSOLE (c_orange1, str);
 			break;
 	}
@@ -939,11 +609,7 @@ int command_mark_color(char *text, int len)
 				curmark_b=b;
 		}
 	}
-#ifdef ENGLISH
-	safe_snprintf (str, sizeof(str), "Current marker color is (RGB): %d %d %d", curmark_r,curmark_g,curmark_b);
-#else //ENGLISH
 	safe_snprintf (str, sizeof(str), "La couleur du marqueur choisie est (RVB): %d %d %d", curmark_r,curmark_g,curmark_b);
-#endif //ENGLISH
 	LOG_TO_CONSOLE(c_orange1,str);
 	return 1;
 }
@@ -992,20 +658,15 @@ int command_quit(char *text, int len)
 	return 1;
 }
 
-#ifdef FR_VERSION
 int command_quitter(char *text, int len)
 {
 	confirmation_quitter();
 	return 1;
 }
-#endif //FR_VERSION
 
 int command_mem(char *text, int len)
 {
 	cache_dump_sizes(cache_system);
-#ifdef	DEBUG
-	cache_dump_sizes(cache_e3d);
-#endif	//DEBUG
 	return 1;
 }
 int command_ver(char *text, int len)
@@ -1024,7 +685,6 @@ int command_ignore(char *text, int len)
 	Uint8 ch='\0';
 	int result;
 
-#ifdef FR_VERSION
 	char ignore_type=IGN_ALL;
 	char *arg;
 	//on extrait les éventuels arguments
@@ -1049,10 +709,6 @@ int command_ignore(char *text, int len)
 	    while(isspace(*text))
 		  text++;
 	}
-#else //FR_VERSION
-	while (isspace(*text))
-		text++;
-#endif //FR_VERSION
 
 	for (i = 0; i < MAX_USERNAME_LENGTH - 1; i++)
 	{
@@ -1080,11 +736,7 @@ int command_ignore(char *text, int len)
 		LOG_TO_CONSOLE (c_red1, name_too_short);
 		return 1;
 	}
-#ifdef FR_VERSION
 	result = add_to_ignore_list (name, save_ignores, ignore_type);
-#else //FR_VERSION
-	result = add_to_ignore_list (name, save_ignores);
-#endif //FR_VERSION
 	if (result == -1)
 	{
 		char str[100];
@@ -1310,11 +962,7 @@ int knowledge_command(char *text, int len)
 	char this_string[80], count_str[60];
 	char *cr;
 	int num_read = 0, num_total = 0;
-#ifdef ENGLISH
-	int show_read = 1, show_unread = 1, show_help = 0;
-#else //ENGLISH
 	int show_read = 0, show_unread = 0, show_help = 0;
-#endif //ENGLISH
 	size_t i;
 	char * pstr[3] = { knowledge_param_read, knowledge_param_unread, knowledge_param_total };
 	size_t plen[3] = { strlen(knowledge_param_read), strlen(knowledge_param_unread), strlen(knowledge_param_total) };
@@ -1335,34 +983,21 @@ int knowledge_command(char *text, int len)
 	// Look for -read, -unread or -total paramaters and vary the output appropriately
 	else if (strncmp(text, knowledge_param_read, plen[0]) == 0)
 	{
-#ifdef ENGLISH
-		show_unread = 0;
-#else //ENGLISH
 		show_read = 1;
-#endif //ENGLISH
 		text = getparams(text+plen[0]);
 	}
 	else if (strncmp(text, knowledge_param_unread, plen[1]) == 0)
 	{
-#ifdef ENGLISH
-		show_read = 0;
-#else //ENGLISH
         show_unread = 1;
-#endif //ENGLISH
 		text = getparams(text+plen[1]);
 	}
 	else if (strncmp(text, knowledge_param_total, plen[2]) == 0)
 	{
-#ifdef ENGLISH
-		show_read = show_unread = 0;
-#else //ENGLISH
 		show_read = show_unread = 1;
-#endif //ENGLISH
 		text = getparams(text+plen[1]);
 		text = getparams(text+plen[2]);
 	}
 
-#ifdef FR_VERSION
     if (show_read && !show_unread)
     {
         LOG_TO_CONSOLE(c_green2, connaissances_acquises_str);
@@ -1375,23 +1010,14 @@ int knowledge_command(char *text, int len)
     {
         LOG_TO_CONSOLE(c_green2, connaissances_str);
     }
-#else //FR_VERSION
-	if (show_read || show_unread)
-	LOG_TO_CONSOLE(c_green2,knowledge_cmd_str);
-#endif //FR_VERSION
 
 	for (i=0; i<KNOWLEDGE_LIST_SIZE; i++)
 	{
 		// only display books that contain the specified parameter string
 		// shows all books if no string specified
-#ifdef ENGLISH
-		if ((strlen(knowledge_list[i].name) > 0) &&
-			(get_string_occurance(text, knowledge_list[i].name, strlen(knowledge_list[i].name), 1) != -1))
-#else //ENGLISH
 		if ((strlen(knowledge_list[i].name) > 0) &&
 			(get_string_occurance(text, knowledge_list[i].name, strlen(knowledge_list[i].name), 1) != -1) &&
 			knowledge_list[i].affiche == 1)
-#endif //ENGLISH
 		{
 			// remove any trailing carrage return
 			safe_strncpy(this_string, knowledge_list[i].name, sizeof(this_string));
@@ -1438,11 +1064,7 @@ int command_msg(char *text, int len)
 
 	// find first space, then skip any spaces
 	text = getparams(text);
-#ifdef ENGLISH
-	if(my_strncompare(text, "all", 3)) {
-#else //ENprint_messageGLISH
 	if(my_strncompare(text, "tout", 4)) {
-#endif //ENGLISH
 		for(no = 0; no < pm_log.ppl; no++) {
 			print_message(no);
 		}
@@ -1691,10 +1313,6 @@ int command_ckdata(char *text, int len)
 			safe_strncpy(filename, text, 256 );
 	}
 	/* if no parameters default to current map elm file */
-#ifdef ENGLISH
-	else
-		safe_strncpy(filename, continent_maps[cur_map].name, 256 );
-#else
 	//@tosh : On vérifie la valeur de cur_map pour éviter le plantage.
 	else if(cur_map == -1)
 	{
@@ -1703,7 +1321,6 @@ int command_ckdata(char *text, int len)
 	}
 	else
 		safe_strncpy(filename, continent_maps[cur_map].name, 256 );
-#endif
 
 	/* calculate, display checksum if we're not matching */
 	if (*filename && el_file_exists(filename) && get_file_digest(filename, digest))
@@ -1714,28 +1331,17 @@ int command_ckdata(char *text, int len)
 		digest_str[DIGEST_LEN*2] = 0;
 		if (! *expected_digest_str)
 		{
-#ifdef ENGLISH
-			safe_snprintf(result_str, sizeof(result_str), "#ckdata %s %s", digest_str, filename );
-#else //ENGLISH
 			safe_snprintf(result_str, sizeof(result_str), "&md5sum %s %s", digest_str, filename );
-#endif //ENGLISH
 		LOG_TO_CONSOLE(c_grey1,result_str);
 	}
 	}
 	/* show help if something fails */
 	else
 	{
-#ifdef ENGLISH
-		LOG_TO_CONSOLE(c_red2, "ckdata: invalid file or command syntax.");
-		LOG_TO_CONSOLE(c_red1, "Show current map (elm): #ckdata");
-		LOG_TO_CONSOLE(c_red1, "Show specified file:    #ckdata file_name");
-		LOG_TO_CONSOLE(c_red1, "Check specified file:   #ckdata expected_checksum file_name");
-#else //ENGLISH
 		LOG_TO_CONSOLE(c_red2, "md5sum : fichier invalide ou erreur de syntaxe.");
 		LOG_TO_CONSOLE(c_red1, "Voir la somme md5 pour la carte actuelle :     &md5sum");
 		LOG_TO_CONSOLE(c_red1, "Voir la somme pour un fichier spécifique :     &md5sum nom_fichier");
 		LOG_TO_CONSOLE(c_red1, "Vérifier la somme pour un fichier spécifique : &md5sum somme_md5 nom_fichier");
-#endif //ENGLISH
 		return 1;
 	}
 
@@ -1743,17 +1349,9 @@ int command_ckdata(char *text, int len)
 	if (*expected_digest_str)
 	{
 		if (my_strcompare(digest_str, expected_digest_str))
-#ifdef ENGLISH
-			LOG_TO_CONSOLE(c_green2,"ckdata: File matches expected checksum");
-#else //ENGLISH
 			LOG_TO_CONSOLE(c_green2,"md5sum : Le fichier correspond à la somme donnée");
-#endif //ENGLISH
 		else
-#ifdef ENGLISH
-			LOG_TO_CONSOLE(c_red2,"ckdata: File does not match expected checksum");
-#else //ENGLISH
 			LOG_TO_CONSOLE(c_red2,"md5sum : le fichier ne correspond pas à la somme donnée");
-#endif //ENGLISH
 	}
 
 	return 1;
@@ -1777,10 +1375,8 @@ int command_keypress(char *text, int len)
 
 int save_local_data(char * text, int len){
 	save_bin_cfg();
-#ifdef FR_VERSION
 	//Save the quickbar items
     save_fr_quickitems();
-#endif //FR_VERSION
 	//Save the quickbar spells
 	save_quickspells();
 	//Save recipes
@@ -1791,38 +1387,13 @@ int save_local_data(char * text, int len){
 	if (notepad_loaded) notepad_save_file();
 	save_exploration_map();
 	flush_counters();
-#ifdef NEW_QUESTLOG
-	// for the new questlog, this actually just saves any pending changes
-	// should be renamed when NEW_QUESTLOG #def is removed
-	unload_questlog();
-#endif
 	save_item_lists();
 	save_channel_colors();
 	LOG_TO_CONSOLE(c_green1, local_save_str);
 	return 0;
 }
 
-#ifdef CONTEXT_MENUS_TEST
-int cm_test_window(char *text, int len);
-#endif
 
-#ifdef ENGLISH
-//	On a regular basis, send the "#save" command to the server and save local data.
-//
-void auto_save_local_and_server(void)
-{
-	time_t time_delta = 60 * 90;
-	actor *me;
-
-	me = get_our_actor();
-	if(!disconnected && me && !me->fighting && ((last_save_time + time_delta) <= time(NULL)))
-	{
-		last_save_time = time(NULL);
-		save_local_data(NULL, 0);
-		send_input_text_line("#save", 5);
-	}
-}
-#endif //ENGLISH
 
 /* show counters for this session */
 static int session_counters(char *text, int len)
@@ -1832,16 +1403,13 @@ static int session_counters(char *text, int len)
 	return 1;
 }
 
-#ifndef ENGLISH
 int commande_rechargement_almanakh()
 {
 		ReloadEncyclopedia();
 		view_tab (&tab_help_win, &tab_help_collection_id, HELP_TAB_ENCYCLOPEDIA);
 		return 1;
 }
-#endif //ENGLISH
 
-#ifdef FR_VERSION
 int command_salut (char * text, int len)
 {
     Uint8 str[2];
@@ -1851,7 +1419,6 @@ int command_salut (char * text, int len)
     return 1;
 }
 
-#ifdef FR_NEW_ANIM
 int command_danse (char * text, int len){
     Uint8 str[2];
     str[0] = DANSE;
@@ -1873,11 +1440,8 @@ int command_roue (char * text, int len){
 
     return 1;
 }
-    #endif
 
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 int command_go(char *text)
 {
 	char str[100];
@@ -1944,14 +1508,12 @@ int command_gomarque(char *text)
 	int x=0, y=0;
     int i ;
 
-#ifdef FR_VERSION
 	// n'a de sens sur la carte courante : annule une éventuelle inspection
 	if (inspect_map_text != 0)
 	{
 		inspect_map_text = 0;
 		load_map_marks();
 	}
-#endif //FR_VERSION
 
     s = getparams(text);
 
@@ -2017,7 +1579,6 @@ int command_list_music(char *text)
    closedir(music_dir);
    return 1;
 }
-#endif //FR_VERSION
 
 void init_commands(const char *filename)
 {
@@ -2051,23 +1612,8 @@ void init_commands(const char *filename)
 		fclose(fp);
 	}
 
-#ifdef MORE_ATTACHED_ACTORS_DEBUG
-add_command("horse", &horse_cmd);
-#endif
 
-#ifdef NECK_ITEMS_DEBUG
-	add_command("set_neck", &set_neck);
-#endif
 
-#ifdef EMOTES
-	add_command("emotes", &print_emotes);
-#endif
-#ifdef EMOTES_DEBUG
-	add_command("add_emote", &add_emote);
-	add_command("send_cmd", &send_cmd);
-	add_command("set_idle", &set_idle);
-	add_command("set_action", &set_action);
-#endif
 	add_command("marker_color", &command_mark_color);
 	add_command("calc", &command_calc);
 	add_command("cls", &command_cls);
@@ -2076,27 +1622,17 @@ add_command("horse", &horse_cmd);
 	add_command(cmd_unmark, &command_unmark);
 	add_command(cmd_stats, &command_stats);
 	add_command("ping", &command_ping);
-#ifdef	CUSTOM_UPDATE
-	add_command("update", &command_update);
-#endif	/* CUSTOM_UPDATE */
 	add_command(cmd_time, &command_time);
 	add_command(cmd_date, &command_date);
 	add_command("quit", &command_quit);
 	add_command("exit", &command_quit);
 	add_command(cmd_exit, &command_quit);
 	add_command("mem", &command_mem);
-#ifdef FR_VERSION
 	add_command("quitter", &command_quitter);
-#endif //FR_VERSION
-#ifdef DEBUG
-	add_command("cache", &command_mem);
-#endif //DEBUG
-#ifdef FR_VERSION
 	add_command("liste_themes", &command_liste_themes);
 	add_command("change_theme", &command_change_theme);
 	add_command("go", &command_go);
 	add_command("gomarque", &command_gomarque);
-#endif //FR_VERSION
 	add_command("ver", &command_ver);
 	add_command("vers", &command_ver);
 	add_command(cmd_ignores, &list_ignores);
@@ -2108,84 +1644,38 @@ add_command("horse", &horse_cmd);
 	add_command(cmd_glinfo, &command_glinfo);
 	add_command(cmd_knowledge_short, &knowledge_command);
 	add_command(cmd_knowledge, &knowledge_command);
-#ifdef DEBUG
-	add_command("log conn data", &command_log_conn_data);
-#endif //DEBUG
 	add_command(cmd_msg, &command_msg);
 	add_command(cmd_afk, &command_afk);
 	add_command("jc", &command_jlc);//since we only mess with the part after the
-#ifdef ENGLISH
-	add_command("channel_colors", &command_channel_colors);
-#else //ENGLISH
 	add_command("couleurs_canaux", &command_channel_colors);
-#endif //ENGLISH
-#ifdef ENGLISH
-	add_command("lc", &command_jlc);//command, one function can do both
-#else //ENGLISH
 	add_command("qc", &command_jlc);//command, one function can do both
-#endif //ENGLISH
 	add_command(help_cmd_str, &command_help);
-#ifdef ENGLISH
-	add_command("sto", &command_storage);
-	add_command("storage", &command_storage);
-#endif //ENGLISH
 	add_command("accept_buddy", &command_accept_buddy);
-#ifdef FR_VERSION
 	add_command("affiche_playlist", &command_affiche_playlist);
 	add_command("modif_playlist", &command_modif_playlist);
 	add_command("raz_playlist", &command_raz_playlist);
 	add_command("liste_musique", &command_list_music);
     add_command("muet", &command_muet);
-#endif //FR_VERSION
-#ifdef NEW_SOUND
 	add_command("current_song", &display_song_name);
-#endif // NEW_SOUND
 	add_command("find", &history_grep);
-#ifdef ENGLISH
-	add_command("save", &save_local_data);
-#else //ENGLISH
 	add_command("sauve", &save_local_data);
     add_command("am_cmd", commande_rechargement_almanakh);
-#endif //ENGLISH
-#ifdef FR_VERSION
     add_command("salut",&command_salut);
-    #ifdef FR_NEW_ANIM
         add_command("danse",&command_danse);
         add_command("salto",&command_salto);
         add_command("roue",&command_roue);
-    #endif
-#endif //FR_VERSION
 	add_command("url", &url_command);
 	add_command("chat_to_counters", &chat_to_counters_command);
 	add_command(cmd_session_counters, &session_counters);
 	add_command("exp", &show_exp);
-#ifdef CONTEXT_MENUS_TEST
-	add_command("cmtest", &cm_test_window);
-#endif
-#ifdef TEXT_ALIASES
 	add_command("alias", &alias_command);
 	add_command("unalias", &unalias_command);
-#ifdef ENGLISH
-	add_command("aliases", &aliases_command);
-#else //ENGLISH
 	add_command("liste_alias", &aliases_command);
-#endif //ENGLISH
-#endif
-#ifdef ENGLISH
-	add_command("ckdata", &command_ckdata);
-#if defined(BUFF_DURATION_DEBUG)
-	add_command("buffd", &command_buff_duration);
-#endif
-#else //ENGLISH
 	add_command("md5sum", &command_ckdata);
-#endif //ENGLISH
 	add_command(cmd_reload_icons, &reload_icon_window);
 	add_command(cmd_open_url, &command_open_url);
 	add_command(cmd_show_spell, &command_show_spell);
 	add_command(cmd_cast_spell, &command_cast_spell);
-#ifdef NEW_QUESTLOG
-	add_command("qt", &command_quest_title);
-#endif
 	add_command(cmd_keypress, &command_keypress);
 	add_command(cmd_user_menu_wait_time_ms, &command_set_user_menu_wait_time_ms);
 	command_buffer_offset = NULL;
@@ -2198,16 +1688,6 @@ void print_version_string (char *buf, size_t len)
 {
 	char extra[100];
 
-#ifdef ENGLISH
-	if (client_version_patch > 0)
-	{
-		safe_snprintf (extra, sizeof(extra), "p%d %s", client_version_patch, DEF_INFO);
-	}
-	else
-	{
-		safe_snprintf (extra, sizeof(extra), " %s", DEF_INFO);
-	}
-#else //ENGLISH
 	if (strlen(DEF_INFO) > 0)
 	{
 		safe_snprintf (extra, sizeof(extra), ".%d Beta %s", client_version_patch, DEF_INFO);
@@ -2216,7 +1696,6 @@ void print_version_string (char *buf, size_t len)
 	{
 		safe_snprintf (extra, sizeof(extra), " - %s", nom_version);
 	}
-#endif //ENGlISH
 	safe_snprintf (buf, len, game_version_str, client_version_major, client_version_minor, client_version_release, extra);
 }
 

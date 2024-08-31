@@ -7,12 +7,7 @@
 #include "interface.h"
 #include "tabs.h"
 #include "textures.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
-#ifndef ENGLISH
 #include "url.h"
-#endif //ENGLISH
 
 int help_win=-1;
 int help_menu_x=150;
@@ -21,14 +16,9 @@ int help_menu_x_len=HELP_TAB_WIDTH;
 int help_menu_y_len=HELP_TAB_HEIGHT;
 int help_menu_scroll_id = 0;
 
-#ifdef ENGLISH
-// Pixels to Scroll
-int help_max_lines=1000;
-#endif //ENGLISH
 
 int helppage;
 
-#ifndef ENGLISH
 #define MAX_HISTO_PAGE 20
 typedef struct
 {
@@ -47,7 +37,6 @@ void reset_help()
 	maxhistoriquepagehelp = 0;
 	memset (HistoriqueHelp, 0, sizeof(HistoriqueHelp));
 }
-#endif //ENGLISH
 
 int display_help_handler(window_info *win)
 {
@@ -56,7 +45,6 @@ int display_help_handler(window_info *win)
 	int j;
 	j=vscrollbar_get_pos(help_win,0);
 
-#ifndef ENGLISH
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f,0.57f,0.39f);
 	glBegin(GL_LINES);
@@ -105,17 +93,12 @@ int display_help_handler(window_info *win)
 	}
 
 	glEnable(GL_TEXTURE_2D);
-#endif //ENGLISH
 
 	while(t){
 		int ylen=(t->size)?18:15;
 		int xlen=strlen(t->text)*((t->size)?11:8);
 
-#ifdef ENGLISH
-		if((t->y-j > 0) && (t->y-j < help_menu_y_len-20 ))
-#else
 		if((t->y-j > 0) && (t->y-j < help_menu_y_len-30 ))
-#endif //ENGLISH
 		{
 			if(t->ref)
 			{
@@ -127,9 +110,6 @@ int display_help_handler(window_info *win)
 				glVertex3i(t->x+4+xlen-8,t->y+ylen-j,0);
 				glEnd();
 				glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 			}
 			if(t->size)
 			{
@@ -168,11 +148,7 @@ CHECK_GL_ERRORS();
 						i=i->Next;
 				}
 			}
-#ifdef	NEW_TEXTURES
 			bind_texture(i->id);
-#else	/* NEW_TEXTURES */
-			get_and_set_texture_id(i->id);
-#endif	/* NEW_TEXTURES */
 			glBegin(GL_QUADS);
 			draw_2d_thing(i->u, i->v, i->uend, i->vend,i->x, i->y-j,i->xend,i->yend-j);
 			glEnd();
@@ -186,7 +162,6 @@ int click_help_handler(window_info *win, int mx, int my, Uint32 flags)
 {
 	_Text *t=Page[helppage].T.Next;
 
-#ifndef ENGLISH
 	if(mx > win->len_x-(20*4) && my > win->len_y - 20 && my < win->len_y )
 	{
 		// Previous
@@ -252,7 +227,6 @@ int click_help_handler(window_info *win, int mx, int my, Uint32 flags)
 	}
 	else
 	{
-#endif //ENGLISH
 	if(flags&ELW_WHEEL_UP) {
 		vscrollbar_scroll_up(help_win, help_menu_scroll_id);
 	} else if(flags&ELW_WHEEL_DOWN) {
@@ -272,7 +246,6 @@ int click_help_handler(window_info *win, int mx, int my, Uint32 flags)
 					for(i=0;i<numpage+1;i++){
 						if(!xmlStrcasecmp((xmlChar*)Page[i].Name,(xmlChar*)t->ref)){
 							helppage=i;
-#ifndef ENGLISH
                             // store histopage
 							if (historiquepagehelp+1 < MAX_HISTO_PAGE)
 							{
@@ -292,23 +265,18 @@ int click_help_handler(window_info *win, int mx, int my, Uint32 flags)
 								HistoriqueHelp[historiquepagehelp-1].pos_barre_defilement = vscrollbar_get_pos(help_win, help_menu_scroll_id);
 							}
 							maxhistoriquepagehelp=historiquepagehelp;
-#endif //ENGLISH
 							vscrollbar_set_pos(help_win, help_menu_scroll_id, 0);
 							vscrollbar_set_bar_len(help_win, help_menu_scroll_id, Page[helppage].max_y);
 							break;
 						}
 					}
-#ifndef ENGLISH
 	      }
-#endif //ENGlISH
 				break;
 			}
 			t=t->Next;
 		}
 	}
-#ifndef ENGLISH
     }
-#endif //ENGLISH
 	return 1;
 }
 
@@ -318,24 +286,16 @@ void fill_help_win ()
 	for(i=0;i<=numpage;i++)
 	{
 		if(my_strcompare(Page[i].Name,"HelpPage"))
-#ifndef ENGLISH
 		{
 			helpindex = helppage = i;
             // Ackak : fait planter le client pour l'instant
 			HistoriqueHelp[historiquepagehelp].page_precedente = helpindex;
-#endif //ENGLISH
 			break;
-#ifndef ENGLISH
 		}
-#endif //ENGLISH
 	}
 	helppage=i;
 	set_window_handler (help_win, ELW_HANDLER_DISPLAY, &display_help_handler);
 	set_window_handler (help_win, ELW_HANDLER_CLICK, &click_help_handler);
 
-#ifdef ENGLISH
-	help_menu_scroll_id = vscrollbar_add_extended(help_win, help_menu_scroll_id, NULL, help_menu_x_len-20, 0, 20, help_menu_y_len, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 30, Page[helppage].max_y);
-#else //ENGLISH
 	help_menu_scroll_id = vscrollbar_add_extended(help_win, help_menu_scroll_id, NULL, help_menu_x_len-20, 0, 20, help_menu_y_len-20, 0, help_menu_y_len-20, 0.77f, 0.57f, 0.39f, 0, SMALL_FONT_Y_LEN, Page[helppage].max_y);
-#endif //ENGLISH
 }

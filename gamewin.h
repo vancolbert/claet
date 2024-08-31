@@ -23,26 +23,14 @@ extern int use_old_clicker;
 extern Uint32 next_fps_time;
 extern int last_count;
 extern float fps_average;
-#ifdef ENGLISH
-extern int include_use_cursor_on_animals;
-#else //ENGLISH
 extern float chat_alpha_background;
-#endif //ENGLISH
 extern int have_mouse;
-#ifdef FR_TURN_CAM
-extern int turnon;
-#endif
 extern int keep_grabbing_mouse;
 extern int just_released_mouse;
 void toggle_have_mouse();
-#ifdef NEW_CURSOR
-extern int cursors_tex;
-#endif // NEW_CURSOR
 extern int cm_banner_disabled;
 extern int logo_click_to_url;
-#ifdef WALK_AFTER_SPELL_FR
 extern int walk_after_spell;
-#endif
 
 void draw_special_cursors();
 

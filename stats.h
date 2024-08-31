@@ -32,13 +32,7 @@ extern int	stats_win; /*!< handle for the stats window */
 typedef struct
 {
 	unsigned char name[21]; /*!< the common, long name */
-#ifdef WRITE_XML
-	int saved_name;
-#endif
 	unsigned char shortname[7]; /*!< a short-name for the given name */
-#ifdef WRITE_XML
-	int saved_shortname;
-#endif
 } names;
 
 /*!
@@ -75,9 +69,6 @@ struct attributes_struct
 	names ins; /*!< name and short name of instinct base attribute */
 	names vit; /*!< name and short name of vitality base attribute */
 
-#ifdef FR_RCM_WRAITH
-	names sangf;
-#endif
 	unsigned char cross[30]; /*!< buffer to store the \see names of a cross attribute */
 	names might; /*!< name and short name of might cross attribute */
 	names matter; /*!< name and short name of matter cross attribute */
@@ -90,7 +81,6 @@ struct attributes_struct
 	names eth; /*!< name and short name of ethereality cross attribute */
 
 	unsigned char nexus[30]; /*!< buffer to store the \see names of a nexus */
-#ifdef FR_NEXUS
     names defense_nexus;
     names attaque_nexus;
     names necro_nexus;
@@ -100,17 +90,7 @@ struct attributes_struct
     names artisanat_nexus;
     names magie_nexus;
     names alchimie_nexus;
-#ifdef INGENIERIE
 	names ingenierie_nexus;
-#endif
-#else
-	names human_nex; /*!< name and short name of human nexus */
-	names animal_nex; /*!< name and short name of animal nexus */
-	names vegetal_nex; /*!< name and short name of vegetal nexus */
-	names inorganic_nex; /*!< name and short name of inorganic nexus */
-	names artificial_nex; /*!< name and short name of artificial nexus */
-	names magic_nex; /*!< name and short name of magic nexus */
-#endif
 	unsigned char skills[30]; /*!< buffer to store the \see names of a skill */
 	names manufacturing_skill; /*!< name and short name of manufacturing skill */
 	names harvesting_skill; /*!< name and short name of harvesting skill */
@@ -130,15 +110,10 @@ struct attributes_struct
 	unsigned char pickpoints[30]; /*!< available pickpoints */
 	names material_points; /*!< name and short name of material points */
 	names ethereal_points; /*!< name and short name of ethereal points */
-#ifdef ENGLISH
-	names action_points; /*!< name and short name of action points */
-#endif //ENGLISH
 
 	names carry_capacity; /*!< name and short name of carry capacity */
-#ifndef ENGLISH
     names notoriete;
 	names religion;
-#endif //ENGLISH
 };
 
 extern struct attributes_struct attributes; /*!< global variable for an actors attributes */
@@ -159,21 +134,7 @@ typedef struct
 	attrib_16 ins; /*!< base and current value of the instinct base attribute */
 	attrib_16 vit; /*!< base and current value of the vitality base attribute */
 
-#ifdef FR_RCM_WRAITH
-	attrib_16 sangf;
-#endif
 
-#ifndef FR_ATTRIBUTS_SECONDAIRE
-	attrib_16f might; /*!< functions to get the base and current value of the might cross attribute */
-	attrib_16f matter; /*!< functions to get the base and current value of the matter cross attribute */
-	attrib_16f tough; /*!< functions to get the base and current value of the toughness cross attribute */
-	attrib_16f charm; /*!< functions to get the base and current value of the charm cross attribute */
-	attrib_16f react; /*!< functions to get the base and current value of the reaction cross attribute */
-	attrib_16f perc; /*!< functions to get the base and current value of the perception cross attribute */
-	attrib_16f ration; /*!< functions to get the base and current value of the rationality cross attribute */
-	attrib_16f dext; /*!< functions to get the base and current value of the dexterity cross attribute */
-	attrib_16f eth; /*!< functions to get the base and current value of the ethereality cross attribute */
-#else
     attrib_16 might; /*!< functions to get the base and current value of the might cross attribute */
 	attrib_16 matter; /*!< functions to get the base and current value of the matter cross attribute */
 	attrib_16 tough; /*!< functions to get the base and current value of the toughness cross attribute */
@@ -183,9 +144,7 @@ typedef struct
 	attrib_16 ration; /*!< functions to get the base and current value of the rationality cross attribute */
 	attrib_16 dext; /*!< functions to get the base and current value of the dexterity cross attribute */
 	attrib_16 eth; /*!< functions to get the base and current value of the ethereality cross attribute */
-#endif
 
-#ifdef FR_NEXUS
     //TODO TRINITA Nexus implementation !
     attrib_16 defense_nexus;        //  nexus old human_nexus
     attrib_16 attaque_nexus;        //  nexus old human_nexus @Trinita not use for this moment
@@ -196,17 +155,7 @@ typedef struct
 	attrib_16 artisanat_nexus;      //  nexus old magic_nexus
 	attrib_16 magie_nexus;          //  nexus new
 	attrib_16 alchimie_nexus;       //  nexus new
-#ifdef INGENIERIE
 	attrib_16 ingenierie_nexus;       //  nexus new
-#endif
-#else
-    attrib_16 human_nex; /*!< base and current value of the human nexus */
-	attrib_16 animal_nex; /*!< base and current value of the animal nexus */
-	attrib_16 vegetal_nex; /*!< base and current value of the vegetal nexus */
-	attrib_16 inorganic_nex; /*!< base and current value of the inorganic nexus */
-	attrib_16 artificial_nex; /*!< base and current value of the artificial nexus */
-	attrib_16 magic_nex; /*!< base and current value of the magic nexus */
-#endif
 
 	attrib_16 material_points; /*!< base and current value of the players material points */
 	attrib_16 ethereal_points; /*!< base and current value of the players ethereal points */
@@ -256,12 +205,10 @@ typedef struct
 	Uint32 ranging_exp; /*!< current ranging experience */
 	Uint32 ranging_exp_next_lev; /*!< experience level to reach next ranging level */
 
-#ifndef ENGLISH
 	Sint8 notoriete;
 	Uint16 religion;
 	Uint16 niv_rel;
 	Uint16 race;
-#endif //ENGLISH
 
 	Uint16 researching; /*!< flag to indicate whether a player is currently researching anything or not */
 	Uint16 research_completed; /*!< if a player is currently researching anything, this value will show how much pages are already read */
@@ -285,40 +232,24 @@ struct stats_struct
 /*!
  * Indexes for plat stats arrays
  */
-#ifdef ENGLISH
-enum { SI_ATT = 0, SI_DEF, SI_HAR, SI_ALC, SI_MAG, SI_POT, SI_SUM, SI_MAN, SI_CRA, SI_ENG, SI_TAI, SI_RAN, SI_ALL };
-#else //ENGLISH
 enum { SI_ATT = 0, SI_DEF, SI_HAR, SI_ALC, SI_MAG, SI_POT, SI_SUM, SI_MAN, SI_CRA, SI_ENG, SI_ALL };
-#endif  //ENGLISH
 
 /*!
  * An array of pointers to the player stats information - enables looping rather than duplicate code.
  */
 extern struct stats_struct statsinfo[];
 
-#ifdef ENGLISH
-#define NUM_SKILLS 13		/*!< the number of skills */
-#define	NUM_WATCH_STAT	14	/*!< allow watching stats 0-13 */
-#else //ENGLISH
 
-#ifdef INGENIERIE
 #define NUM_SKILLS 11		/*!< the number of skills */
 #define	NUM_WATCH_STAT	12	/*!< allow watching stats 0-11 */
-#else //INGENIERIE
-#define NUM_SKILLS 10		/*!< the number of skills */
-#define	NUM_WATCH_STAT	11	/*!< allow watching stats 0-10 */
-#endif //INGENIERIE
 
-#endif //ENGLISH
 #define MAX_WATCH_STATS	5	/*!< max number of stats watchable in hud */
 
 extern int attrib_menu_x;
 extern int attrib_menu_y;
 
-#ifndef ENGLISH
 extern int watch_this_stats[];	/*!< used for displaying more than 1 stat in the hud */
 extern int max_disp_stats;	/*!< max number of stats displayable in hud, depending on screen resolution */
-#endif //ENGLISH
 
 extern int have_stats; /*!< indicator for whether or not the stats have been send to us yet*/
 

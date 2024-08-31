@@ -3,9 +3,6 @@
 
 #include <stdlib.h>
 #include "vmath.h"
-#ifdef DEBUG
-#include "errors.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -110,9 +107,7 @@ typedef struct
 	Uint16			options;
 	Uint8			type;
 	Uint8			extra;
-#ifdef CLUSTER_INSIDES
 	Uint16			cluster;
-#endif // CLUSTER_INSIDES
 } BBOX_ITEM;
 
 typedef struct
@@ -420,9 +415,6 @@ static __inline__ Uint32 is_blend_3d_object(Uint32 type)
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_SELF_LIT_OBJECT: return 0;
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_NO_SELF_LIT_OBJECT: return 0;
 		default:
-#ifdef	DEBUG
-			LOG_ERROR("Wrong type (%d) for is_blend_3d_object!", type);
-#endif
 			return 0;
 	}
 }
@@ -448,9 +440,6 @@ static __inline__ Uint32 is_ground_3d_object(Uint32 type)
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_SELF_LIT_OBJECT: return 0;
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_NO_SELF_LIT_OBJECT: return 0;
 		default:
-#ifdef	DEBUG
-		LOG_ERROR("Wrong type (%d) for is_ground_3d_object!", type);
-#endif
 			return 0;
 	}
 }
@@ -476,9 +465,6 @@ static __inline__ Uint32 is_alpha_3d_object(Uint32 type)
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_SELF_LIT_OBJECT: return 0;
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_NO_SELF_LIT_OBJECT: return 0;
 		default:
-#ifdef	DEBUG
-		LOG_ERROR("Wrong type (%d) for is_alpha_3d_object!", type);
-#endif
 			return 0;
 	}
 }
@@ -504,9 +490,6 @@ static __inline__ Uint32 is_self_lit_3d_object(Uint32 type)
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_SELF_LIT_OBJECT: return 1;
 		case TYPE_3D_NO_BLEND_NO_GROUND_NO_ALPHA_NO_SELF_LIT_OBJECT: return 0;
 		default:
-#ifdef	DEBUG
-		LOG_ERROR("Wrong type (%d) for is_self_lit_3d_object!", type);
-#endif
 			return 0;
 	}
 }
@@ -562,9 +545,6 @@ static __inline__ Uint32 get_type_mask_from_type(Uint32 type)
 		case TYPE_REFLECTIV_WATER:
 			return TYPE_MASK_REFLECTIV_WATER;
 		default:
-#ifdef	DEBUG
-		LOG_ERROR("Wrong type (%d) for get_type_mask_from_type!", type);
-#endif
 			return 0;
 	}
 }

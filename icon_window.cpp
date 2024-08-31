@@ -190,7 +190,6 @@ namespace IconWindow
 			std::string key_name;
 	};
 
-#ifdef FR_VERSION
 	class Espace_Icon : public Basic_Icon
 	{
 		public:
@@ -200,7 +199,6 @@ namespace IconWindow
 			}
 			~Espace_Icon(void) {}
 	};
-#endif //FR_VERSION
 
 	//	Implements cursor action mode icons.
 	//
@@ -341,13 +339,8 @@ namespace IconWindow
 		: help_message(help_str), cq(0), cm_menu_id(CM_INIT_VALUE)
 	{
 		has_highlight = false;
-#ifdef	NEW_TEXTURES
 		u[0] = 32.0 * (float)(icon_id % 8)/256.0;
 		u[1] = 32.0 * (float)(coloured_icon_id % 8)/256.0;
-#else
-		u[0] = 1.0 - (32.0 * (float)(icon_id % 8))/256.0;
-		u[1] = 1.0 - (32.0 * (float)(coloured_icon_id % 8))/256.0;
-#endif
 		v[0] = 32.0 * (float)(icon_id >> 3)/256.0;
 		v[1] = 32.0 * (float)(coloured_icon_id >> 3)/256.0;
 		flashing = 0;
@@ -395,20 +388,13 @@ namespace IconWindow
 		if ((mouse_over_icon >= 0) && ((size_t)mouse_over_icon < icon_list.size()))
 			icon_list[mouse_over_icon]->set_highlight(true);
 		float uoffset = 31.0/256.0, voffset = 31.0/256.0;
-#ifdef	NEW_TEXTURES
 		bind_texture(icons_text);
-#else	/* NEW_TEXTURES */
-		get_and_set_texture_id(icons_text);
-		voffset *= -1;
-#endif	/* NEW_TEXTURES */
 		glColor3f(1.0f,1.0f,1.0f);
 		glBegin(GL_QUADS);
 		for (size_t i=0; i<icon_list.size(); ++i)
 		{
 			std::pair<float, float> uv = icon_list[i]->get_uv();
-#ifdef FR_VERSION
 			if (uv.first > -0.0001)
-#endif //FR_VERSION
 			draw_2d_thing( uv.first, uv.second, uv.first+uoffset, uv.second+voffset, i*get_icon_size(), 0, i*get_icon_size()+(get_icon_size()-1), get_icon_size() );
 		}
 		glEnd();
@@ -486,15 +472,6 @@ namespace IconWindow
 			}
 		}
 
-#ifndef FR_VERSION
-		if (the_type.empty() || (image_id<0) || (alt_image_id<0) ||
-			(help_name.empty() && help_text.empty()) || param_name.empty())
-		{
-			LOG_ERROR("icon window factory: xml field error type=[%s] image_id=[%d] alt_image_id=[%d] help_name=[%s] help_text=[%s] param_name=[%s]\n",
-				the_type.c_str(), image_id, alt_image_id, help_name.c_str(), help_text.c_str(), param_name.c_str() );
-			return 0;
-		}
-#endif //FR_VERSION
 
 		if (!help_text.empty())
 			help_str = help_text.c_str();
@@ -509,10 +486,8 @@ namespace IconWindow
 			return new Actionmode_Icon(image_id, alt_image_id, help_str, param_name.c_str(), menu_lines_ptr);
 		else if (the_type == "#command")
 			return new Command_Icon(image_id, alt_image_id, help_str, param_name.c_str(), menu_lines_ptr);
-#ifdef FR_VERSION
 		else if (the_type == "espace")
 			return new Espace_Icon(-1, -1, "", "");
-#endif //FR_VERSION
 		return 0;
 	}
 
@@ -603,10 +578,6 @@ namespace IconWindow
 	{
 		if (icon_mode == NEW_CHARACTER_ICONS)
 		{
-#ifndef NEW_NEW_CHAR_WINDOW
-			icon_list.push_back(new Window_Icon(0, 18, get_named_string("tooltips", "name_pass"), "name_pass"));
-			icon_list.push_back(new Window_Icon(2, 20, get_named_string("tooltips", "customize"), "customize"));
-#endif
 			icon_list.push_back(new Window_Icon(39, 38, get_named_string("tooltips", "help"), "help"));
 			icon_list.push_back(new Window_Icon(14, 34, get_named_string("tooltips", "opts"), "opts"));
 			LOG_ERROR("%s : Using default new character icons\n", __PRETTY_FUNCTION__ );

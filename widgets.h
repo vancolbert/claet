@@ -109,13 +109,11 @@ typedef struct wl{
 #define WIDGET_CLICK_TRANSPARENT 0x100
 /*! \} */
 
-#ifdef NEW_NEW_CHAR_WINDOW
 /*!
  * \name	Flags for the buttons
  */
 /*! \{ */
 #define BUTTON_ACTIVE 0x400
-#endif
 
 /*!
  * \name	Flags for the text field
@@ -172,9 +170,7 @@ typedef struct
 	int scroll_id;
 	int scrollbar_width;
 	int line_offset;
-#ifdef FR_VERSION
 	int font_num;
-#endif //FR_VERSION
 	text_message *buffer;
 	Uint8 chan_nr;
 	Uint16 x_space, y_space;
@@ -195,7 +191,6 @@ typedef struct {
 
 // Common widget functions
 
-#ifdef NEW_NEW_CHAR_WINDOW
 /*!
  * \ingroup	widgets
  * \brief 	Creates a widget and adds it to the given window
@@ -222,7 +217,6 @@ typedef struct {
 Uint32 widget_add (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y,
 	Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b,
 	const struct WIDGET_TYPE *type, void *T, void *S);
-#endif
 
 /*!
  * \ingroup	widgets
@@ -1331,11 +1325,7 @@ int text_field_add (int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 l
  *
  * \sa text_field_add
  */
-#ifdef FR_VERSION
 int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, int font, float r, float g, float b, text_message *buf, int buf_size, Uint8 chan_filt, int x_space, int y_space);
-#else //FR_VERSION
-int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, text_message *buf, int buf_size, Uint8 chan_filt, int x_space, int y_space);
-#endif //FR_VERSION
 
 /*!
  * \ingroup	textfields

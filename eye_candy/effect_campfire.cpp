@@ -1,9 +1,5 @@
 // I N C L U D E S ////////////////////////////////////////////////////////////
 
-#ifdef DEBUG_POINT_PARTICLES
-#include <iostream>
-#include <sstream>
-#endif
 
 #include "eye_candy.h"
 #include "math_cache.h"
@@ -62,9 +58,6 @@ namespace ec
 		if (state)
 			size *= 0.7;
 
-#ifdef DEBUG_POINT_PARTICLES
-		size = 10.0f;
-#endif
 	}
 
 	bool CampfireParticle::idle(const Uint64 delta_t)
@@ -72,19 +65,6 @@ namespace ec
 		if (effect->recall)
 			return false;
 
-#ifdef DEBUG_POINT_PARTICLES
-		coord_t tempsize = base->temp_sprite_scalar * size * invsqrt(square(pos.x - base->camera.x) + square(pos.y - base->camera.y) + square(pos.z - base->camera.z));
-		tempsize *= flare();
-		std::stringstream strstr;
-		strstr << "Position: " << pos << "; Camera: " << base->camera << "; Distance: " << (pos - base->camera).magnitude() << "; Size: " << size << "; Draw size: " << tempsize << "; Base sprite scalar: " << base->temp_sprite_scalar;
-		char buffer[1024];
-		strstr.get(buffer, sizeof(buffer));
-		buffer[sizeof(buffer) - 1] = '\0';
-		std::string s(buffer);
-		std::cout << s << std::endl;
-		log_warning(s);
-		return true;
-#endif
 
 		if (alpha < 0.12 - LOD * 0.01)
 			return false;
@@ -108,7 +88,6 @@ namespace ec
 		return true;
 	}
 
-#ifdef	NEW_TEXTURES
 	Uint32 CampfireParticle::get_texture()
 	{
 		if (state == 0)
@@ -132,29 +111,6 @@ namespace ec
 			return 0.0f;
 		}
 	}
-#else	/* NEW_TEXTURES */
-	GLuint CampfireParticle::get_texture(const Uint16 res_index)
-	{
-		if (state == 0)
-			return base->TexFlare.get_texture(res_index);
-		else
-			return base->TexSimple.get_texture(res_index);
-	}
-
-	void CampfireParticle::draw(const Uint64 usec)
-	{
-		if (state == 0)
-		{
-			Particle::draw(usec);
-		}
-		else
-		{
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			Particle::draw(usec);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		}
-	}
-#endif	/* NEW_TEXTURES */
 
 	CampfireBigParticle::CampfireBigParticle(Effect* _effect,
 		ParticleMover* _mover, const Vec3 _pos, const Vec3 _velocity,
@@ -192,17 +148,10 @@ namespace ec
 		return true;
 	}
 
-#ifdef	NEW_TEXTURES
 	Uint32 CampfireBigParticle::get_texture()
 	{
 		return base->get_texture(EC_FLARE);
 	}
-#else	/* NEW_TEXTURES */
-	GLuint CampfireBigParticle::get_texture(const Uint16 res_index)
-	{
-		return base->TexFlare.get_texture(res_index);
-	}
-#endif	/* NEW_TEXTURES */
 
 	CampfireEffect::CampfireEffect(EyeCandy* _base, bool* _dead, Vec3* _pos,
 		std::vector<ec::Obstruction*>* _obstructions, const color_t _hue_adjust,
@@ -222,11 +171,7 @@ namespace ec
 		LOD = base->last_forced_LOD;
 		desired_LOD = _LOD;
 		bounds = NULL;
-#ifdef DEBUG_POINT_PARTICLES
-		mover = new ParticleMover(this);
-#else
 		mover = new SmokeMover(this);
-#endif
 		stationary = new ParticleMover(this);
 		spawner = new FilledSphereSpawner(0.15 * sqrt_scale);
 		active = true;
@@ -242,11 +187,6 @@ namespace ec
 		 break;
 		 }
 		 */
-#ifdef DEBUG_POINT_PARTICLES
-		Particle* p = new CampfireParticle(this, mover, *pos + Vec3(0.0, 0.2, 0.0), Vec3(0.0, 0.0, 0.0), hue_adjust, saturation_adjust, 10.0, sqrt(10.0), 0, 10);
-		base->push_back_particle(p);
-#else
-#ifndef MAP_EDITOR
 		big_particles = 0;
 		for (int i = 0; i < 20; i++)
 		{
@@ -259,8 +199,6 @@ namespace ec
 				break;
 			big_particles++;
 		}
-#endif
-#endif
 	}
 
 	CampfireEffect::~CampfireEffect()
@@ -278,9 +216,6 @@ namespace ec
 		if ((recall) && (particles.size() == 0))
 			return false;
 
-#ifdef DEBUG_POINT_PARTICLES
-		return true;
-#endif
 
 		if (recall)
 			return true;

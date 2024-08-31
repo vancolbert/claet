@@ -1,4 +1,3 @@
-#ifdef CLUSTER_INSIDES
 
 #ifndef CLUSTER_H
 #define CLUSTER_H
@@ -8,18 +7,8 @@
 #include "e3d.h"
 #include "lights.h"
 #include "particles.h"
-#ifdef MAP_EDITOR
-#ifdef ENGLISH
-#include "map_editor/2d_objects.h"
-#include "map_editor/3d_objects.h"
-#else //ENGLISH
-#include "../editeur_sources/2d_objects.h"
-#include "../editeur_sources/3d_objects.h"
-#endif //ENGLISH
-#else
 #include "2d_objects.h"
 #include "3d_objects.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -122,9 +111,6 @@ static __inline__ void update_occupied_with_3d (char* occupied, int id)
 	const e3d_object* obj;
 	int i;
 	AABBOX box;
-#ifdef MAP_EDITOR
-	MATRIX4x4 matrix;
-#endif
 
 	if (id < 0 || id >= MAX_OBJ_3D || !objects_list[id])
 		return;
@@ -141,15 +127,7 @@ static __inline__ void update_occupied_with_3d (char* occupied, int id)
 		box.bbmax[X] = obj->materials[i].max_x;
 		box.bbmax[Y] = obj->materials[i].max_y;
 		box.bbmax[Z] = obj->materials[i].max_z;
-#ifdef MAP_EDITOR
-		// the map editor doesn't store the object transformation matrices
-		calc_rotation_and_translation_matrix (matrix,
-		                                      objects_list[id]->x_pos, objects_list[id]->y_pos, objects_list[id]->z_pos,
-		                                      objects_list[id]->x_rot, objects_list[id]->y_rot, objects_list[id]->z_rot);
-		matrix_mul_aabb (&box, matrix);
-#else
 		matrix_mul_aabb (&box, objects_list[id]->matrix);
-#endif
 
 		update_occupied_with_bbox (occupied, &box);
 	}
@@ -230,21 +208,6 @@ static __inline__ void update_occupied_with_particle_system (char* occupied, int
  */
 void set_clusters (const char* data);
 
-#ifdef MAP_EDITOR
-/*!
- * \ingroup maps
- * \brief Get file data for the cluster map
- *
- *	Serialize the cluster map data, and return it through
- *	character array \a data of length \a len.
- *
- * \param data Address where to store the pointer to the data
- * \param len  The length of the data in bytes
- * \note The array in \a *data will be dynamically allocated, and should
- *       be \c free'd by the caller.
- */
-void get_clusters (char** data, int *len);
-#endif
 
 /*!
  * \ingroup maps
@@ -283,7 +246,6 @@ short get_cluster (int x, int y);
  */
 void destroy_clusters_array ();
 
-#ifndef MAP_EDITOR
 /*!
  * \ingroup maps
  * \brief Get the cluster where the actor is currently on
@@ -294,7 +256,6 @@ void destroy_clusters_array ();
  * \retval short The number of the actor's current visibility cluster
  */
 short get_actor_cluster ();
-#endif
 
 extern short current_cluster;
 
@@ -304,4 +265,3 @@ extern short current_cluster;
 
 #endif // CLUSTER_H
 
-#endif // CLUSTER_INSIDES

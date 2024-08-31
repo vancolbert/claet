@@ -2,9 +2,6 @@
 #define __BAGS_H__
 
 #include <SDL_types.h>
-#ifdef ONGOING_BAG_EFFECT
-#include "eye_candy_types.h"
-#endif // ONGOING_BAG_EFFECT
 
 
 #ifdef __cplusplus
@@ -19,9 +16,6 @@ typedef struct
 	int x;
 	int y;
 	int obj_3d_id;
-#ifdef ONGOING_BAG_EFFECT
-	ec_reference ongoing_bag_effect_reference;
-#endif // ONGOING_BAG_EFFECT
 } bag;
 
 typedef struct
@@ -152,10 +146,8 @@ void remove_all_bags();
  * \bug Uses a fixed upper limit to search \ref bag_list. We should use a defined constant instead.
  */
 void open_bag(int object_id);
-#ifdef FR_VERSION
 float get_bag_tilt(float pos_x, float pos_y, int bag_id, int map_x, int map_y);
 float get_bag_rotation(float pos_x, float pos_y, int bag_id, int map_x, int map_y);
-#endif //FR_VERSION
 
 /*!
  * \ingroup item

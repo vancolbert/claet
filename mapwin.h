@@ -44,13 +44,11 @@ extern marking temp_marks[MAX_USER_MARKS]; /*!< a global array of temporary mark
 extern int curmark_r,curmark_g,curmark_b; //current mark color
 
 extern int reload_tab_map; /*!< flag that indicates the tabmap needs to be reloaded */
-#ifdef FR_VERSION
 extern char inspect_map_name[128]; /*!< current inspected map name (used for marks edition) */
 extern int inspect_tile_map_size_x; /*!< The tile map size in the x direction for the inspected map */
 extern int inspect_tile_map_size_y; /*!< The tile map size in the y direction for the inspected map */
 // Fonction identique à pf_get_mouse_position mais utilisant les dimensions des cartes observées
 int map_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py);
-#endif //FR_VERSION
 /*!
  * \ingroup interface_map
  * \brief Creates the map window

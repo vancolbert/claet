@@ -61,19 +61,11 @@ namespace eternal_lands
 			switch (log_level)
 			{
 				case llt_error:
-#ifdef FR_VERSION
 					return "Erreur ";
-#else //FR_VERSION
-					return "Error";
-#endif //FR_VERSION
 				case llt_warning:
 					return "Warning";
 				case llt_info:
-#ifdef FR_VERSION
 					return "Info ";
-#else //FR_VERSION
-					return "Info";
-#endif //FR_VERSION
 				case llt_debug:
 				case llt_debug_verbose:
 					return "Debug";
@@ -119,22 +111,10 @@ namespace eternal_lands
 					log_stream << __LINE__;
 				}
 
-#ifdef FR_VERSION
 				log_stream << ", ";
 				log_stream << "dernier message répété ";
 				log_stream << thread.m_last_message_count;
 				log_stream << " fois]";
-#else //FR_VERSION
-				log_stream << "] ";
-				log_stream << "Last message repeated ";
-				log_stream << thread.m_last_message_count;
-				log_stream << " time";
-
-				if (thread.m_last_message_count > 1)
-				{
-					log_stream << "s";
-				}
-#endif //FR_VERSION
 
 				log_stream << "\n";
 			}

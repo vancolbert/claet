@@ -10,16 +10,6 @@
 extern "C" {
 #endif
 
-#ifdef MAP_EDITOR2
-typedef struct
-{
-	char * img;
-	int x;
-	int y;
-} img_struct;
-
-extern img_struct map_tiles[256];
-#endif
 
 extern unsigned char *tile_map;     /*!< The tile-map is an unsigned char array of map_tile_size_x*map_tile_size_y */
 extern unsigned char *height_map;   /*!< The height-map is an unsigned char array of (map_tile_size_x*6)*(map_tile_size_y*6) - each tile has 36 heightmap blocks */
@@ -38,7 +28,6 @@ extern int ground_detail_text;      /*!< The texture for ground details (clouds 
  */
 void draw_tile_map();
 
-#ifdef	NEW_TEXTURES
 /*!
  * \ingroup	tile
  * \brief 	Draw quad tiles.
@@ -49,7 +38,6 @@ void draw_tile_map();
  */
 void draw_quad_tiles(const unsigned int start, const unsigned int stop,
 	unsigned int idx, const unsigned int zero_id);
-#endif	/* NEW_TEXTURES */
 
 /*!
  * \ingroup 	maps
@@ -61,7 +49,6 @@ void draw_quad_tiles(const unsigned int start, const unsigned int stop,
  */
 void load_map_tiles();
 
-#ifdef NEW_SOUND
 /*!
  * \ingroup 	tile
  * \brief 	Returns the tile for input coordinates
@@ -73,7 +60,6 @@ void load_map_tiles();
  * \callgraph
  */
 int get_tile_type(int x, int y);
-#endif // NEW_SOUND
 
 /*!
  * \ingroup 	tile

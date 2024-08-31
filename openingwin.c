@@ -15,9 +15,7 @@
 #include "tabs.h"
 #include "text.h"
 #include "widgets.h"
-#ifdef FR_VERSION
 #include "font.h"
-#endif //FR_VERSION
 
 int opening_root_win = -1;
 
@@ -54,12 +52,8 @@ int display_opening_handler ()
 
 void switch_to_login ()
 {
-#ifdef MAP_EDITOR2
-	show_window (game_root_win);
-#else
 	// bring up the login screen
 	show_window (login_root_win);
-#endif
 
 	// destroy ourselves, we're no longer needed
 	destroy_window (opening_root_win);
@@ -74,10 +68,8 @@ int click_opening_handler ()
 
 int keypress_opening_handler (window_info *win, int mx, int my, Uint32 key, Uint32 unikey)
 {
-#ifndef MAP_EDITOR2
 	int alt_on = key & ELW_ALT;
 	int ctrl_on = key & ELW_CTRL;
-#endif
 
 	if(check_quit_or_fullscreen(key))
 	{
@@ -87,22 +79,18 @@ int keypress_opening_handler (window_info *win, int mx, int my, Uint32 key, Uint
 	{
 		switch_to_login();
 	}
-#ifndef MAP_EDITOR2
 	else if (!alt_on && !ctrl_on)
 	{
 		connect_to_server();
 	}
-#endif
 
 	return 1;
 }
 
 int show_opening_handler (window_info *win) {
-#ifndef MAP_EDITOR2
 	hide_window(book_win);
 	hide_window(paper_win);
 	hide_window(color_race_win);
-#endif
 	hide_window(elconfig_win);
 	hide_window(tab_help_win);
 	return 1;
@@ -119,11 +107,7 @@ void create_opening_root_window (int width, int height)
 		set_window_handler (opening_root_win, ELW_HANDLER_CLICK, &click_opening_handler);
 		set_window_handler (opening_root_win, ELW_HANDLER_SHOW, &show_opening_handler);
 
-#ifdef FR_VERSION
 		opening_out_id = text_field_add_extended (opening_root_win, opening_out_id, NULL, 0, 0, width, height, 0, chat_zoom, chat_font, -1.0f, -1.0f, -1.0f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, 0, 0);
-#else //FR_VERSION
-		opening_out_id = text_field_add_extended (opening_root_win, opening_out_id, NULL, 0, 0, width, height, 0, chat_zoom, -1.0f, -1.0f, -1.0f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, 0, 0);
-#endif //FR_VERSION
 
 		nr_opening_lines = height / (18 * chat_zoom);
 		opening_win_text_width = width;

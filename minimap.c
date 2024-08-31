@@ -17,9 +17,6 @@
 #include "hud.h"
 #include "init.h"
 #include "interface.h"
-#ifdef MINES
-#include "mines.h"
-#endif // MINES
 #include "misc.h"
 #include "named_colours.h"
 #include "spells.h"
@@ -32,9 +29,7 @@
 #include "io/elfilewrapper.h"
 #include "mapwin.h"
 #include "map.h"
-#ifdef	NEW_TEXTURES
 #include "image_loading.h"
-#endif	/* NEW_TEXTURES */
 
 
 int minimap_size;
@@ -150,10 +145,8 @@ static __inline__ void draw_actor_points(float zoom_multip, float px, float py)
 		if (actors_list[i])
 		{
 			a = actors_list[i];
-#ifdef ATTACHED_ACTORS
 			if (a->attached_actor != -1 && a->actor_id == -1)
 				continue;
-#endif // ATTACHED_ACTORS
 			x = a->x_tile_pos * size_x;
 			y = float_minimap_size - (a->y_tile_pos * size_y);
 
@@ -187,12 +180,6 @@ static __inline__ void draw_actor_points(float zoom_multip, float px, float py)
 				else // alive
 					elglColourN("minimap.creature");
 			}
-#ifdef ENGLISH
-			else
-			{
-				elglColourN("minimap.otherplayer");
-			}
-#else //ENGLISH
 			else if (a->kind_of_actor == 6 && a->is_enhanced_model)
 			{
 				glColor3f(0.5f, 0.0f, 1.0f); // violet pour les PNJ mouvants
@@ -205,29 +192,12 @@ static __inline__ void draw_actor_points(float zoom_multip, float px, float py)
 			{
 				glColor3f(0.5f, 0.5f, 0.5f); // gris pour ce qui pourrait rester
 			}
-#endif //ENGLISH
 
 			// Draw it!
 			glVertex2f(x, y);
 		}
 	}
 
-#ifdef MINES
-	// mines
-	for (i = 0; i < NUM_MINES; i++)
-	{
-		mine *m = &mine_list[i];
-		if (m->obj_3d_id != -1)
-		{
-			x = m->x * size_x;
-			y = float_minimap_size - (m->y * size_y);
-			if(is_within_radius(x,y,px,py,zoom_multip*(minimap_size/2-15)))
-			{
-				elglColourN("minimap.mine");
-			glVertex2f(x, y);
-		}
-	}
-#endif //MINES
 
 	glEnd();//GL_POINTS
 	glDisable(GL_BLEND);
@@ -305,7 +275,6 @@ static __inline__ void draw_compass()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#ifdef	NEW_TEXTURES
 	bind_texture(compass_tex);
 
 	glBegin(GL_QUADS);
@@ -318,20 +287,6 @@ static __inline__ void draw_compass()
 		glTexCoord2f(1.0f, 1.0f);
 		glVertex2f(-float_minimap_size/2, -float_minimap_size/2);
 	glEnd();
-#else	/* NEW_TEXTURES */
-	bind_texture_id(compass_tex);
-
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex2f(-float_minimap_size/2, float_minimap_size/2);
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(float_minimap_size/2, float_minimap_size/2);
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(float_minimap_size/2, -float_minimap_size/2);
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(-float_minimap_size/2, -float_minimap_size/2);
-	glEnd();
-#endif	/* NEW_TEXTURES */
 
 	glDisable(GL_ALPHA_TEST);
 	glDisable( GL_BLEND );
@@ -379,16 +334,11 @@ static __inline__ void draw_map(window_info *win,float zoom_multip, float px, fl
 	glEnable(GL_TEXTURE_2D);
 
 	//draw the map
-#ifdef	NEW_TEXTURES
 	bind_texture(minimap_texture);
-#else	/* NEW_TEXTURES */
-	bind_texture_id(minimap_texture);
-#endif	/* NEW_TEXTURES */
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 
 	rotate_at_player(zoom_multip,px,py);
 	glBegin(GL_QUADS);
-#ifdef	NEW_TEXTURES
 		glTexCoord2f(0.0f, 1.0f);
 		glVertex2f(-float_minimap_size/2, float_minimap_size/2);
 		glTexCoord2f(1.0f, 1.0f);
@@ -397,16 +347,6 @@ static __inline__ void draw_map(window_info *win,float zoom_multip, float px, fl
 		glVertex2f(float_minimap_size/2, -float_minimap_size/2);
 		glTexCoord2f(0.0f, 0.0f);
 		glVertex2f(-float_minimap_size/2, -float_minimap_size/2);
-#else	/* NEW_TEXTURES */
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex2f(-float_minimap_size/2, float_minimap_size/2);
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(float_minimap_size/2, float_minimap_size/2);
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(float_minimap_size/2, -float_minimap_size/2);
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(-float_minimap_size/2, -float_minimap_size/2);
-#endif	/* NEW_TEXTURES */
 	glEnd();
 
 	glDisable(GL_STENCIL_TEST);
@@ -421,7 +361,6 @@ static __inline__ void draw_map(window_info *win,float zoom_multip, float px, fl
 
 void draw_minimap_title_bar(window_info *win)
 {
-#ifdef	NEW_TEXTURES
 	float u_first_start= (float)31/255;
 	float u_first_end = 0.0f;
 	float v_first_start = (float)160/255;
@@ -431,17 +370,6 @@ void draw_minimap_title_bar(window_info *win)
 	float u_last_end = (float)31/255;
 	float v_last_start = (float)160/255;
 	float v_last_end = (float)175/255;
-#else	/* NEW_TEXTURES */
-	float u_first_start= (float)31/255;
-	float u_first_end= 0;
-	float v_first_start= 1.0f-(float)160/255;
-	float v_first_end= 1.0f-(float)175/255;
-
-	float u_last_start= 0;
-	float u_last_end= (float)31/255;
-	float v_last_start= 1.0f-(float)160/255;
-	float v_last_end= 1.0f-(float)175/255;
-#endif	/* NEW_TEXTURES */
 
 	int close_button_x = win->len_x/2 + 32 - 1;
 
@@ -449,11 +377,7 @@ void draw_minimap_title_bar(window_info *win)
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-#ifdef	NEW_TEXTURES
 	bind_texture(icons_text);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(icons_text);
-#endif	/* NEW_TEXTURES */
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.03f);
 	glEnable(GL_TEXTURE_2D);
@@ -511,9 +435,6 @@ void draw_minimap_title_bar(window_info *win)
 	glLineWidth(1.0f);
 
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int display_minimap_handler(window_info *win)
@@ -589,9 +510,6 @@ int display_minimap_handler(window_info *win)
 	draw_actor_points(zoom_multip, px, py);
 
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 0;
 }
@@ -626,13 +544,8 @@ static int minimap_walkto(int mx, int my)
 static void increase_zoom()
 {
 	minimap_tiles_distance -=8;
-#ifdef ENGLISH
-	if(minimap_tiles_distance < 48)
-		minimap_tiles_distance = 48;
-#else //ENGLISH
 	if(minimap_tiles_distance < 24)
 		minimap_tiles_distance = 24;
-#endif //ENGLISH
 }
 
 static void decrease_zoom()
@@ -780,18 +693,11 @@ void save_exploration_map()
 
 void change_minimap(){
 	char minimap_file_name[256];
-#ifndef	NEW_TEXTURES
-	texture_cache_struct tex;
-#ifndef ENGLISH
-    char map_map_file_name_png[256];
-#endif //ENGLISH
-#endif	/* NEW_TEXTURES */
 
 	if(minimap_win < 0)
 		return;
 	//save_exploration_map();
 
-#ifdef	NEW_TEXTURES
 	//unload all textures
 	if(exploration_texture)
 		glDeleteTextures(1,&exploration_texture);
@@ -803,60 +709,10 @@ void change_minimap(){
 	}
 	else
 	{
-#ifdef FR_VERSION
 		minimap_texture = load_texture_cached("./textures/console.bmp", tt_image);
-#else //FR_VERSION
-		minimap_texture = 0;
-#endif //FR_VERSION
 	}
 
 	compass_tex = load_texture_cached("./textures/compass", tt_gui);
-#else	/* NEW_TEXTURES */
-	//unload all textures
-	if(minimap_texture)
-		glDeleteTextures(1,&minimap_texture);
-	if(compass_tex)
-		glDeleteTextures(1,&compass_tex);
-	if(exploration_texture)
-		glDeleteTextures(1,&exploration_texture);
-
-	//make filename
-#ifndef ENGLISH
-    // --- Utilisation de la fonction de chargement de MAP de type PNG
-    my_strcp(map_map_file_name_png , map_file_name);
-    map_map_file_name_png[strlen(map_map_file_name_png)-4] = '\0';
-    strcat(map_map_file_name_png, ".png");
-
-    // --- si le fichier existe on prefere celui-ci sinon on continue en bmp
-    if( file_exists( map_map_file_name_png) )
-    {
-        my_strcp(minimap_file_name, map_map_file_name_png);
-        minimap_texture = loadPNGTexture (minimap_file_name);
-    }
-    else
-    {
-#endif
-        my_strcp(minimap_file_name,map_file_name);
-        minimap_file_name[strlen(minimap_file_name)-4] = '\0';
-        strcat(minimap_file_name, ".bmp");
-
-        //load textures
-#ifndef ENGLISH
-        if (!el_file_exists(minimap_file_name)) my_strcp(minimap_file_name, "./textures/console.bmp");
-#endif //ENGLISH
-        my_strcp(tex.file_name, minimap_file_name);
-        if (!el_file_exists(minimap_file_name))
-            minimap_texture = 0;
-        else
-            minimap_texture = load_bmp8_fixed_alpha(&tex,128);
-
-#ifndef ENGLISH
-    }
-#endif //ENGLISH
-
-	my_strcp(tex.file_name, "./textures/compass.bmp");
-	compass_tex = load_bmp8_fixed_alpha_with_transparent_color(&tex,255,0,0,0);
-#endif	/* NEW_TEXTURES */
 
 	glGenTextures(1, &exploration_texture);
 	bind_texture_id(exploration_texture);
@@ -864,9 +720,6 @@ void change_minimap(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	//load_exploration_map();
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int mouseover_minimap_handler(window_info * win, int mx, int my, Uint32 flags)

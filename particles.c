@@ -17,28 +17,14 @@
 #include "tiles.h"
 #include "translate.h"
 #include "vmath.h"
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif
 #include "eye_candy_wrapper.h"
 #include "translate.h"
 #include "io/elpathwrapper.h"
 #include "io/elfilewrapper.h"
-#ifdef MAP_EDITOR
-#ifdef ENGLISH
-#include "map_editor/3d_objects.h"
-#include "map_editor/lights.h"
-#else //ENGLISH
-#include "../editeur_sources/3d_objects.h"
-#include "../editeur_sources/lights.h"
-#endif //ENGLISH
-#else
 #include "3d_objects.h"
 #include "lights.h"
-#endif
-#ifdef	NEW_TEXTURES
 #include "image_loading.h"
-#endif	/* NEW_TEXTURES */
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -46,9 +32,7 @@
  * void dump_part_sys_info();
  */
 
-#ifdef NEW_SOUND
 int real_add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos, unsigned int dynamic);
-#endif // NEW_SOUND
 
 #define TELEPORTER_PARTICLE_SYS 0
 #define TELEPORT_PARTICLE_SYS 1
@@ -64,11 +48,7 @@ int real_add_particle_sys (const char *file_name, float x_pos, float y_pos, floa
 
 #define MAX_PARTICLE_TEXTURES 16 // The maximum number of textures used for particle systems
 
-#ifdef ELC
 int use_point_particles = 1;
-#else
-int use_point_particles = 0;
-#endif
 int particles_percentage=100;
 int enable_blood = 0;
 SDL_mutex *particles_list_mutex;	//used for locking between the timer and main threads
@@ -173,17 +153,11 @@ particle_sys_def *load_particle_def(const char *filename)
 	if (!fscanf_error && fscanf(f,"%i\n",&def->use_light) != 1) fscanf_error = 20;
 	if (!fscanf_error && fscanf(f,"%f,%f,%f\n",&def->lightx,&def->lighty,&def->lightz) != 3) fscanf_error = 21;
 	if (!fscanf_error && fscanf(f,"%f,%f,%f\n",&def->lightr,&def->lightg,&def->lightb) != 3) fscanf_error = 22;
-#ifdef NEW_SOUND
 	if (!fscanf_error && fscanf (f, "%d\n", &def->sound_nr) != 3) fscanf_error = 23;
-#endif	//NEW_SOUND
 
 	// Most particale files lack the last few lines and so always fail the test - only report really bad ones.
 	if (fscanf_error != 0 && fscanf_error < 20)
 		LOG_ERROR("%s(): fscanf error file=[%s] line %d\n", __FUNCTION__, filename, fscanf_error);
-#if DEBUG
-	if (fscanf_error != 0)
-		printf("%s(): fscanf error file=[%s] line %d\n", __FUNCTION__, filename, fscanf_error);
-#endif
 
 	if(def->total_particle_no>MAX_PARTICLES)
 		{
@@ -418,16 +392,13 @@ void calc_bounding_box_for_particle_sys(AABBOX* bbox, particle_sys *system_id)
 	bbox->bbmax[Z] += system_id->z_pos;
 }
 
-#ifndef MAP_EDITOR
 static __inline__ void destroy_partice_sys_without_lock(int i)
 {
 	if ((i < 0) || (i >= MAX_PARTICLE_SYSTEMS)) return;
 	if (particles_list[i] == NULL) return;
 	if(particles_list[i]->def && particles_list[i]->def->use_light && lights_list[particles_list[i]->light])
 		destroy_light(particles_list[i]->light);
-#ifdef NEW_SOUND
 	stop_sound_at_location(particles_list[i]->x_pos, particles_list[i]->y_pos);
-#endif // NEW_SOUND
 	delete_particle_from_abt(main_bbox_tree, i);
 	free(particles_list[i]);
 	particles_list[i] = NULL;
@@ -440,61 +411,8 @@ static __inline__ void destroy_partice_sys_without_lock(int i)
 //	UNLOCK_PARTICLES_LIST();
 //}
 
-#endif // !MAP_EDITOR
 
-#ifdef MAP_EDITOR2
-#define MAP_EDITOR
-#endif
 
-#ifdef MAP_EDITOR
-int save_particle_def(particle_sys_def *def)
-{
-	char cleanpath[128];
-	FILE *f=NULL;
-
-	clean_file_name(cleanpath, def->file_name, sizeof(cleanpath));
-
-	f=open_file_data(cleanpath,"w");
-	if(f == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, cleanpath, strerror(errno));
-		return 0;
-	}
-
-	fprintf(f,"%i\n",PARTICLE_DEF_VERSION);
-
-	// System info
-	fprintf(f,"%i\n",def->part_sys_type);
-	fprintf(f,"%x,%x\n",def->sblend,def->dblend);
-	fprintf(f,"%i\n",def->total_particle_no);
-	fprintf(f,"%i\n",def->ttl);
-	fprintf(f,"%i\n",def->part_texture);
-	fprintf(f,"%f\n",def->part_size);
-	fprintf(f,"%i\n",def->random_func);
-	// Particle creation info
-	fprintf(f,"%f,%f,%f\n",def->minx,def->miny,def->minz);
-	fprintf(f,"%f,%f,%f\n",def->maxx,def->maxy,def->maxz);
-	fprintf(f,"%f\n",def->constrain_rad_sq);
-	fprintf(f,"%f,%f,%f\n",def->vel_minx,def->vel_miny,def->vel_minz);
-	fprintf(f,"%f,%f,%f\n",def->vel_maxx,def->vel_maxy,def->vel_maxz);
-	fprintf(f,"%f,%f,%f,%f\n",def->minr,def->ming,def->minb,def->mina);
-	fprintf(f,"%f,%f,%f,%f\n",def->maxr,def->maxg,def->maxb,def->maxa);
-	// Particle update info
-	fprintf(f,"%f,%f,%f\n",def->acc_minx,def->acc_miny,def->acc_minz);
-	fprintf(f,"%f,%f,%f\n",def->acc_maxx,def->acc_maxy,def->acc_maxz);
-	fprintf(f,"%f,%f,%f,%f\n",def->mindr,def->mindg,def->mindb,def->minda);
-	fprintf(f,"%f,%f,%f,%f\n",def->maxdr,def->maxdg,def->maxdb,def->maxda);
-	// Particle light info
-	fprintf(f,"%i\n",def->use_light);
-	fprintf(f,"%f,%f,%f\n",def->lightx,def->lighty,def->lightz);
-	fprintf(f,"%f,%f,%f\n",def->lightr,def->lightg,def->lightb);
-
-	fclose(f);
-	return 1;
-}
-#endif
-#ifdef MAP_EDITOR2
-#undef MAP_EDITOR
-#endif
 
 /*******************************************************************
  *            INITIALIZATION AND CLEANUP FUNCTIONS                 *
@@ -506,7 +424,6 @@ void init_particles ()
 
 	for (i = 0; i < MAX_PARTICLE_TEXTURES; i++)
 	{
-#ifdef	NEW_TEXTURES
 		char buffer[256], filename[256];
 
 		safe_snprintf (filename, sizeof(filename), "./textures/particle%d", i);
@@ -519,15 +436,6 @@ void init_particles ()
 		{
 			particle_textures[i] = -1;
 		}
-#else	/* NEW_TEXTURES */
-		char buffer[256];
-
-		safe_snprintf (buffer, sizeof(buffer), "./textures/particle%d.bmp", i);
-		if (el_file_exists (buffer))
-			particle_textures[i] = load_texture_cache_deferred (buffer, 0);
-		else
-			particle_textures[i] = -1;
-#endif	/* NEW_TEXTURES */
         }
 
 	particles_list_mutex = SDL_CreateMutex();
@@ -568,53 +476,34 @@ void destroy_all_particles()
 	LOCK_PARTICLES_LIST();
 	for(i=0;i<MAX_PARTICLE_SYSTEMS;i++)
 		{
-#ifndef	MAP_EDITOR
 			destroy_partice_sys_without_lock(i);
-#else
-			if(!particles_list[i])continue;
-			if(particles_list[i]->def && particles_list[i]->def->use_light && lights_list[particles_list[i]->light]) {
-				free(lights_list[particles_list[i]->light]);
-				lights_list[particles_list[i]->light]=NULL;
-			}
-			free(particles_list[i]);
-			particles_list[i]=0;
-#endif
 		}
 	UNLOCK_PARTICLES_LIST();
 
 }
-#ifndef MAP_EDITOR
 void add_fire_at_tile (int kind, Uint16 x_tile, Uint16 y_tile)
 {
 	float x = 0.5f * x_tile + 0.25f;
 	float y = 0.5f * y_tile + 0.25f;
 	float z = 0.0;
-#ifdef NEW_SOUND
 	int snd;
-#endif // NEW_SOUND
 
 	switch (kind)
 	{
 		case 2:
 			ec_create_campfire(x, y, z, 0.0, 1.0, (poor_man ? 6 : 10), 3.1);
-#ifdef NEW_SOUND
 			snd = get_sound_index_for_particle_file_name("./particles/fire_big.part");
-#endif // NEW_SOUND
 			break;
 		case 1:
 		default:
 			ec_create_campfire(x, y, z, 0.0, 1.0, (poor_man ? 6 : 10), 2.4);
-#ifdef NEW_SOUND
 			snd = get_sound_index_for_particle_file_name("./particles/fire_small.part");
-#endif // NEW_SOUND
 			break;
 	}
-#ifdef NEW_SOUND
 	if (sound_on && snd >= 0)
 	{
 		add_particle_sound(snd, x_tile, y_tile);
 	}
-#endif // NEW_SOUND
 }
 
 void remove_fire_at_tile (Uint16 x_tile, Uint16 y_tile)
@@ -623,16 +512,12 @@ void remove_fire_at_tile (Uint16 x_tile, Uint16 y_tile)
 	float y = 0.5f * y_tile + 0.25f;
 
 	ec_delete_effect_loc_type(x, y, EC_CAMPFIRE);
-#ifdef NEW_SOUND
 	stop_sound_at_location(x_tile, y_tile);
-#endif // NEW_SOUND
 	return;
 }
-#endif // !MAPEDITOR
 /*********************************************************************
  *          CREATION OF NEW PARTICLES AND SYSTEMS                    *
  *********************************************************************/
-#ifndef	MAP_EDITOR
 
 void rotate_vector3f(float *vector, float x, float y, float z)
 {
@@ -712,7 +597,6 @@ void add_ec_effect_to_e3d(object3d* e3d)
 	ec_free_bounds_list(bounds);
 }
 
-#ifdef NEW_SOUND
 // Wrapper for map sounds (checks for existing sounds in similar location for multi-particle-system effects)
 int add_map_particle_sys(const char *file_name, float x_pos, float y_pos, float z_pos, unsigned int dynamic)
 {
@@ -746,14 +630,7 @@ int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_p
 }
 
 int real_add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos, unsigned int dynamic)
-#else
-int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos, unsigned int dynamic)
-#endif // NEW_SOUND
-#else // !MAP_EDITOR
-int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos)
-#endif
 {
-#ifndef MAP_EDITOR
 
 	if (use_eye_candy)
 	{
@@ -802,27 +679,17 @@ int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_p
 				particle_sys_def *def = load_particle_def(file_name);
 				if (!def) return -1;
 
-  #ifndef	MAP_EDITOR
 				return create_particle_sys (def, x_pos, y_pos, z_pos, dynamic);
-  #else
-				return create_particle_sys (def, x_pos, y_pos, z_pos);
-  #endif
 			}
 		}
 		else if (!strncmp("can", file_name + 12, 3))
 			ec_create_candle(x_pos, y_pos, z_pos, 0.0, 1.0, 0.7, (poor_man ? 6 : 10));
 		else
 		{
-#endif //!MAP_EDITOR
 			particle_sys_def *def = load_particle_def(file_name);
 			if (!def) return -1;
 
- #ifndef	MAP_EDITOR
 			return create_particle_sys (def, x_pos, y_pos, z_pos, dynamic);
- #else
-			return create_particle_sys (def, x_pos, y_pos, z_pos);
- #endif
-#ifndef MAP_EDITOR
 		}
 	}
 	else
@@ -830,13 +697,8 @@ int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_p
 		particle_sys_def *def = load_particle_def(file_name);
 		if (!def) return -1;
 
- #ifndef	MAP_EDITOR
 		return create_particle_sys (def, x_pos, y_pos, z_pos, dynamic);
- #else
-		return create_particle_sys (def, x_pos, y_pos, z_pos);
- #endif
 	}
-#endif //!MAP_EDITOR
 
 	// If we got here, the eye candy system handled this particle
 	// system. Return an invalid particle ID to signal that nothing
@@ -845,20 +707,12 @@ int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_p
 	return -2;
 }
 
-#ifndef	MAP_EDITOR
 int add_particle_sys_at_tile (const char *file_name, int x_tile, int y_tile, unsigned int dynamic)
-#else
-int add_particle_sys_at_tile (const char *file_name, int x_tile, int y_tile)
-#endif
 {
 	float z;
 
 	z = get_tile_height(x_tile, y_tile);
-#ifndef	MAP_EDITOR
 	return add_particle_sys (file_name, (float) x_tile / 2.0 + 0.25f, (float) y_tile / 2.0 + 0.25f, z, dynamic);
-#else
-	return add_particle_sys (file_name, (float) x_tile / 2.0 + 0.25f, (float) y_tile / 2.0 + 0.25f, z);
-#endif
 }
 
 void create_particle(particle_sys *sys,particle *result)
@@ -902,19 +756,13 @@ void create_particle(particle_sys *sys,particle *result)
 	result->free=0;
 }
 
-#ifndef	MAP_EDITOR
 int create_particle_sys (particle_sys_def *def, float x, float y, float z, unsigned int dynamic)
-#else
-int create_particle_sys (particle_sys_def *def, float x, float y, float z)
-#endif
 {
 	int	i,psys;
 	particle_sys *system_id;
 	particle *p;
-#ifndef	MAP_EDITOR
 	AABBOX bbox;
 	memset(&bbox, '\0', sizeof(bbox));
-#endif
 
 	if(!def)return -1;
 
@@ -946,26 +794,18 @@ int create_particle_sys (particle_sys_def *def, float x, float y, float z)
 	system_id->ttl=def->ttl;
 
 	if(def->use_light) {
-#ifndef MAP_EDITOR
 		system_id->light=add_light(def->lightx+x, def->lighty+y, def->lightz+z, def->lightr, def->lightg, def->lightb,1.0f, dynamic);
-#else
-		system_id->light=add_light(def->lightx+x, def->lighty+y, def->lightz+z, def->lightr, def->lightg, def->lightb,1.0f,1);
-#endif
 	}
 
 	for(i=0,p=&system_id->particles[0];i<def->total_particle_no;i++,p++)create_particle(system_id,p);
 
-#ifdef CLUSTER_INSIDES
 	system_id->cluster = get_cluster ((int)(x/0.5f), (int)(y/0.5f));
 	current_cluster = system_id->cluster;
-#endif
 
-#ifndef	MAP_EDITOR
 	calc_bounding_box_for_particle_sys(&bbox, system_id);
 
 	if ((main_bbox_tree_items != NULL) && (dynamic == 0)) add_particle_sys_to_list(main_bbox_tree_items, psys, bbox, def->sblend, def->dblend);
 	else add_particle_to_abt(main_bbox_tree, psys, bbox, def->sblend, def->dblend, dynamic);
-#endif
 
 	UNLOCK_PARTICLES_LIST();
 
@@ -986,11 +826,7 @@ void draw_text_particle_sys(particle_sys *system_id)
 	LOCK_PARTICLES_LIST();	//lock it to avoid timing issues
 
 	CHECK_GL_ERRORS();
-#ifdef	NEW_TEXTURES
 	bind_texture(particle_textures[system_id->def->part_texture]);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(particle_textures[system_id->def->part_texture]);
-#endif	/* NEW_TEXTURES */
 
 	for(i=0,p=&system_id->particles[0];i<system_id->def->total_particle_no;i=i+5,p=p+5)
 		{
@@ -1023,7 +859,6 @@ void draw_text_particle_sys(particle_sys *system_id)
 
 void draw_point_particle_sys(particle_sys *system_id)
 {
-#ifdef ELC
 	int i;
 	particle *p;
 
@@ -1031,11 +866,7 @@ void draw_point_particle_sys(particle_sys *system_id)
 	glEnable(GL_POINT_SPRITE_NV);
 	glTexEnvf(GL_POINT_SPRITE_NV,GL_COORD_REPLACE_NV,GL_TRUE);
 	glPointSize(system_id->def->part_size*(5.5f-zoom_level)*4.4f);
-#ifdef	NEW_TEXTURES
 	bind_texture(particle_textures[system_id->def->part_texture]);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(particle_textures[system_id->def->part_texture]);
-#endif	/* NEW_TEXTURES */
 #if 0
 	//#ifdef USE_VERTEX_ARRAYS
 	// This might be useful if we allow more particles per system.
@@ -1073,37 +904,18 @@ void draw_point_particle_sys(particle_sys *system_id)
  }
 	glDisable(GL_POINT_SPRITE_NV);
 	CHECK_GL_ERRORS();
-#endif
 }
 
-#ifndef ELC
-int have_point_sprite=0;
-#endif
 
 void display_particles()
 {
 
-#ifdef	MAP_EDITOR
-	int i;
-#endif
-#if defined(SIMPLE_LOD) || defined(MAP_EDITOR)
-	int x,y;
-#endif  //SIMPLE_LOD || MAP_EDITOR
 	GLenum sblend=GL_SRC_ALPHA,dblend=GL_ONE;
-#ifndef	MAP_EDITOR
 	unsigned int i, l, start, stop;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-#endif
-#endif // !MAP_EDITOR
 
 	if(!particles_percentage)
 	  return;
 
-#if defined(SIMPLE_LOD) || defined(MAP_EDITOR)
-	x=-camera_x;
-	y=-camera_y;
-#endif  //SIMPLE_LOD || MAP_EDITOR
 
 	CHECK_GL_ERRORS();
 	glPushAttrib(GL_ENABLE_BIT|GL_DEPTH_BUFFER_BIT);
@@ -1116,28 +928,14 @@ void display_particles()
 
 	LOCK_PARTICLES_LIST();
 	// Perhaps we should have a depth sort here..?
-#ifndef	MAP_EDITOR
 	get_intersect_start_stop(main_bbox_tree, TYPE_PARTICLE_SYSTEM, &start, &stop);
 	for (i = start; i < stop; i++)
 	{
 		l = get_intersect_item_ID(main_bbox_tree, i);
 		if (!particles_list[l])
 		{
-#ifdef EXTRA_DEBUG
-			ERR();
-#endif
 			continue;
 		}
-#ifdef CLUSTER_INSIDES_OLD
-		if (particles_list[l]->cluster && particles_list[l]->cluster != cluster)
-			continue;
-#endif
-#ifdef  SIMPLE_LOD
-		// last final check for a distance limit
-		if(((x-particles_list[l]->x_pos)*(x-particles_list[l]->x_pos) + (y-particles_list[l]->y_pos)*(y-particles_list[l]->y_pos)) >= PART_SYS_VISIBLE_DIST_SQ){
-			continue;
-		}
-#endif  //SIMPLE_LOD
 		if ((particles_list[l]->def->sblend != sblend) || (particles_list[l]->def->dblend != dblend))
 		{
 			sblend = particles_list[l]->def->sblend;
@@ -1147,33 +945,6 @@ void display_particles()
 		if (use_point_particles) draw_point_particle_sys(particles_list[l]);
 		else draw_text_particle_sys(particles_list[l]);
 	}
-#else	//MAP_EDITOR
-	for(i=0;i<MAX_PARTICLE_SYSTEMS;i++)
-	{
-		if(particles_list[i])
-		{
-			int dist1;
-			int dist2;
-
-			dist1=x-particles_list[i]->x_pos;
-			dist2=y-particles_list[i]->y_pos;
-			if(dist1*dist1+dist2*dist2<=PART_SYS_VISIBLE_DIST_SQ)
-			{
-				if(particles_list[i]->def->sblend!=sblend || particles_list[i]->def->dblend!=dblend)
-				{
-					sblend=particles_list[i]->def->sblend;
-					dblend=particles_list[i]->def->dblend;
-					glBlendFunc(sblend,dblend);
-				}
-				if(use_point_particles) {
-					draw_point_particle_sys(particles_list[i]);
-				} else {
-					draw_text_particle_sys(particles_list[i]);
-				}
-			}
-		}
-	}
-#endif	//MAP_EDITOR
 	UNLOCK_PARTICLES_LIST();
 	glDisable(GL_CULL_FACE); //Intel fix
 	glPopAttrib();
@@ -1511,20 +1282,12 @@ void update_bag_part_sys(particle_sys *system_id)
 }
 
 void update_particles() {
-#ifndef	MAP_EDITOR
 	unsigned int i, l, start, stop;
-#else
-	int i;
-#ifdef ELC
-	int x = -camera_x, y = -camera_y;
-#endif
-#endif
 
 	if(!particles_percentage){
 		return;
 	}
 	LOCK_PARTICLES_LIST();
-#ifndef	MAP_EDITOR
 	for (i = 0; i < MAX_PARTICLE_SYSTEMS; i++)
 	{
 		if (particles_list[i])
@@ -1565,9 +1328,6 @@ void update_particles() {
 		l = get_intersect_item_ID(main_bbox_tree, i);
 		if (!particles_list[l])
 		{
-#ifdef EXTRA_DEBUG
-			ERR();
-#endif
 			continue;
 		}
 		if (particles_list[l]->ttl > 0) continue;
@@ -1594,64 +1354,12 @@ void update_particles() {
 				break;
 		}
 	}
-#else
-	for(i=0;i<MAX_PARTICLE_SYSTEMS;i++)
-		{
-		if(particles_list[i])
-			{
-#ifdef ELC
-			int xdist=x-particles_list[i]->x_pos;
-			int ydist=y-particles_list[i]->y_pos;
-			// Systems with a TTL need to be updated, even if they are far away
-			// Though, if we're using the map editor we always want to update, otherwise the preview int the
-			// particles window won't update correctly...
-			if(particles_list[i]->ttl<0 && xdist*xdist+ydist*ydist>PART_SYS_VISIBLE_DIST_SQ){
-				continue;
-			}
-#endif
-			switch(particles_list[i]->def->part_sys_type)
-				{
-				case(TELEPORTER_PARTICLE_SYS):
-					update_teleporter_sys(particles_list[i]);
-					break;
-                     		case(TELEPORT_PARTICLE_SYS):
-					update_teleport_sys(particles_list[i]);
-					break;
-				case(BAG_PARTICLE_SYS):
-					update_bag_part_sys(particles_list[i]);
-					break;
-				case(BURST_PARTICLE_SYS):
-					update_burst_sys(particles_list[i]);
-					break;
-				case(FIRE_PARTICLE_SYS):
-					update_fire_sys(particles_list[i]);
-					break;
-				case(FOUNTAIN_PARTICLE_SYS):
-					update_fountain_sys(particles_list[i]);
-					break;
-				}
-			  if(particles_list[i]->ttl>0)particles_list[i]->ttl--;
-			  if(!particles_list[i]->ttl && !particles_list[i]->particle_count)
-			  //if there are no more particles to add, and the TTL expired, then kill this evil system
-				{
-					if(particles_list[i]->def->use_light && lights_list[particles_list[i]->light]) {
-						free(lights_list[particles_list[i]->light]);
-						lights_list[particles_list[i]->light]=NULL;
-					}
-					free(particles_list[i]);
-					particles_list[i]=0;
-				}
-
-			}
-		}
-#endif
 	UNLOCK_PARTICLES_LIST();
 }
 
 /******************************************************************************
  *                        MISC HELPER FUNCTIONS                               *
  ******************************************************************************/
-#ifdef ELC
 void add_teleporters_from_list (const Uint8 *teleport_list)
 {
 	Uint16 teleporters_no;
@@ -1682,29 +1390,12 @@ void add_teleporters_from_list (const Uint8 *teleport_list)
 			x=x+0.25f;
 			y=y+0.25f;
 
-#ifndef	MAP_EDITOR
 			add_particle_sys ("./particles/teleporter.part", x, y, z, 1);
-#ifdef OLD_MISC_OBJ_DIR
-			add_e3d("./3dobjects/misc_objects/portal1.e3d",x,y,z,0,0,0,1,0,1.0f,1.0f,1.0f, 1);
-#else
 			add_e3d("./3dobjects/portal1.e3d",x,y,z,0,0,0,1,0,1.0f,1.0f,1.0f, 1);
-#endif
-#else
-			add_particle_sys ("./particles/teleporter.part", x, y, z);
-#ifdef OLD_MISC_OBJ_DIR
-			sector_add_3do(add_e3d("./3dobjects/misc_objects/portal1.e3d",x,y,z,0,0,0,1,0,1.0f,1.0f,1.0f));
-#else
-			sector_add_3do(add_e3d("./3dobjects/portal1.e3d",x,y,z,0,0,0,1,0,1.0f,1.0f,1.0f));
-#endif
-#endif
 
 			//mark the teleporter as an unwalkable so that the pathfinder
 			//won't try to plot a path through it
-#if defined(MAP_EDITOR)
-#elif defined(MAP_EDITOR2)
-#else
 			pf_tile_map[teleport_y*tile_map_size_x*6+teleport_x].z = 0;
-#endif
 		}
 	UNLOCK_PARTICLES_LIST();
 
@@ -1742,15 +1433,4 @@ void dump_part_sys_info()
 	LOG_TO_CONSOLE(c_grey1,str);
 }
 */
-#endif // ELC
 
-#ifdef MAP_EDITOR
-void get_and_set_particle_texture_id (int i)
-{
-#ifdef	NEW_TEXTURES
-	bind_texture(particle_textures[i]);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(particle_textures[i]);
-#endif	/* NEW_TEXTURES */
-}
-#endif // MAP_EDITOR

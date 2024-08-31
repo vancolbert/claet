@@ -6,10 +6,8 @@
 #include "errors.h"
 #include "translate.h"
 #include "io/elfilewrapper.h"
-#ifdef FASTER_MAP_LOAD
 #include "io/elpathwrapper.h"
 #include "asc.h"
-#endif
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -31,21 +29,15 @@ int elwin_mouse=-1;
 
 struct cursors_struct cursors_array[MAX_CURSORS];
 
-#ifdef FASTER_MAP_LOAD
 static char harvestable_objects[MAX_HARVESTABLE_OBJECTS][OBJ_NAME_SIZE];
 static int nr_harvestable_objects;
 static char entrable_objects[MAX_ENTRABLE_OBJECTS][OBJ_NAME_SIZE];
 static int nr_entrable_objects;
-#else
-char harvestable_objects[300][80];
-char entrable_objects[300][80];
-#endif
 
 Uint8 *cursors_mem=NULL;
 int cursors_x_length;
 int cursors_y_length;
 
-#ifdef FASTER_MAP_LOAD
 void load_harvestable_list()
 {
 	FILE *f = NULL;
@@ -123,7 +115,6 @@ int is_entrable(const char* fname)
 	return bsearch(fname, entrable_objects, nr_entrable_objects,
 		OBJ_NAME_SIZE, (int(*)(const void*,const void*))strcmp) != NULL;
 }
-#endif // FASTER_MAP_LOAD
 
 void load_cursors()
 {
@@ -157,11 +148,7 @@ void load_cursors()
 
 	//ok, now transform the bitmap in cursors info
 	if(cursors_mem) free(cursors_mem);
-#ifdef FR_VERSION
 	cursors_mem = (Uint8 *)calloc ( cursors_x_length*cursors_y_length*2+32, sizeof(char));
-#else
-	cursors_mem = (Uint8 *)calloc ( cursors_x_length*cursors_y_length*2, sizeof(char));
-#endif
 
 	for(y=cursors_y_length-1;y>=0;y--)
 		{

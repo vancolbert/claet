@@ -172,7 +172,6 @@ void add_message_to_pm_log (char *message, int len, Uint8 channel)
         char *msg_pointer;
 
 		msg_pointer = strstr(mymsg, " ") - 1;
-#ifndef ENGLISH
         // On regarde si c'est un message local donnant une description,
         // c'est a dire commencant par ":". Pour cela on regarde si le
         // msg_pointer tombe sur ":" ou pas
@@ -184,9 +183,6 @@ void add_message_to_pm_log (char *message, int len, Uint8 channel)
         {
 		    *(msg_pointer+1) = 0;
         }
-#else //ENGLISH
-		*msg_pointer = 0;
-#endif //ENGLISH
 		safe_strncpy(last_msg_from, mymsg, sizeof(last_msg_from));
 		safe_strncpy(mymsg, msg_pointer+2, sizeof(mymsg));
 	} else {
@@ -237,12 +233,10 @@ int is_talking_about_me (const char *server_msg, int len, char everywhere)
 		return 0; //Only do local chat
 	}
 
-#ifdef FR_VERSION
 	if (nom_change == 1)
 	{
 		return 0;
 	}
-#endif //FR_VERSION
 
 	safe_snprintf (msg, sizeof(msg), "%.*s", len, server_msg);
 	my_tolower (msg);

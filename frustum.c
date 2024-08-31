@@ -344,9 +344,6 @@ void enable_reflection_clip_planes()
 	glLoadMatrixf(new_proj);
 	glMatrixMode(GL_MODELVIEW);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void disable_reflection_clip_planes()
@@ -354,9 +351,6 @@ void disable_reflection_clip_planes()
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void set_current_frustum(unsigned int intersect_type)

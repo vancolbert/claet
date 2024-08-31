@@ -233,11 +233,7 @@ static int resize_handler(window_info *win, int width, int height)
 	/* resize the text widget and rewrap the text as the size will have changed */
 	widget_resize(server_popup_win, textId, text_widget_width, text_widget_height);
 	if (!text_message_is_empty (&widget_text)) {
-#ifdef FR_VERSION
 		num_text_lines = rewrap_message(&widget_text, chat_zoom, chat_font, text_widget_width - 2*sep, NULL);
-#else //FR_VERSION
-		num_text_lines = rewrap_message(&widget_text, chat_zoom, text_widget_width - 2*sep, NULL);
-#endif //FR_VERSION
 	}
 
 	/* if we (only now) need a scroll bar, adjust again */
@@ -249,11 +245,7 @@ static int resize_handler(window_info *win, int width, int height)
 		widget_resize(server_popup_win, textId, text_widget_width, text_widget_height);
 		/* rewrap the text again as the available width is now less */
 		if (!text_message_is_empty (&widget_text))
-#ifdef FR_VERSION
 			num_text_lines = rewrap_message(&widget_text, chat_zoom, chat_font, text_widget_width - 2*sep, NULL);
-#else //FR_VERSION
-			num_text_lines = rewrap_message(&widget_text, chat_zoom, text_widget_width - 2*sep, NULL);
-#endif //FR_VERSION
 	}
 
 	/* if the text widget is really short, the scroll bar can extent beyond the height */
@@ -267,16 +259,10 @@ static int resize_handler(window_info *win, int width, int height)
 	/* create the scroll bar reusing any existing scroll position */
 	if (actual_scroll_width)
 	{
-#ifdef FR_VERSION
 		scroll_id = vscrollbar_add_extended( server_popup_win, scroll_id, NULL,
 		width - (scroll_width + sep), sep, scroll_width, text_widget_height,
 		0, (text_widget_height - 2*sep) / (DEFAULT_FONT_Y_LEN * chat_zoom),
 		0.77f, 0.57f, 0.39f, scroll_line, 1, num_text_lines);
-#else //FR_VERSION
-		scroll_id = vscrollbar_add_extended( server_popup_win, scroll_id, NULL,
-		width - (scroll_width + sep), sep, scroll_width, text_widget_height,
-		0, 1, 0.77f, 0.57f, 0.39f, scroll_line, 1, num_text_lines);
-#endif //FR_VERSION
 		widget_set_OnDrag(server_popup_win, scroll_id, scroll_drag);
 		widget_set_OnClick(server_popup_win, scroll_id, scroll_click);
 		set_text_line();
@@ -352,11 +338,7 @@ void display_server_popup_win(const char * const message)
 	/* do a pre-wrap of the text to the maximum screen width we can use
 		 this will avoid the later wrap (after the resize) changing the number of lines */
 	if (!text_message_is_empty (&widget_text)) {
-#ifdef FR_VERSION
 		num_text_lines = rewrap_message(&widget_text, chat_zoom, chat_font, (window_width - unusable_width) - 4*sep, NULL);
-#else //FR_VERSION
-		num_text_lines = rewrap_message(&widget_text, chat_zoom, (window_width - unusable_width) - 4*sep, NULL);
-#endif //FR_VERSION
 	}
 
 	if (server_popup_win < 0){
@@ -433,15 +415,9 @@ void display_server_popup_win(const char * const message)
 
 	/* create the text widget */
 	if ((!text_message_is_empty (&widget_text)) && (widget_find(server_popup_win, textId) == NULL)) {
-#ifdef FR_VERSION
 		textId = text_field_add_extended( server_popup_win, textId, NULL, sep, sep,
 			text_widget_width, text_widget_height, TEXT_FIELD_NO_KEYPRESS,
 			chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &widget_text, 1, FILTER_NONE, sep, sep);
-#else //FR_VERSION
-		textId = text_field_add_extended( server_popup_win, textId, NULL, sep, sep,
-			text_widget_width, text_widget_height, TEXT_FIELD_NO_KEYPRESS,
-			chat_zoom, 0.77f, 0.57f, 0.39f, &widget_text, 1, FILTER_NONE, sep, sep);
-#endif //FR_VERSION
 	}
 
 	/* resize the window now we have the required size */

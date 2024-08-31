@@ -16,11 +16,7 @@ extern "C" {
 
 #define MAX_TEXT_MESSAGE_LENGTH 160 /*!< The server will disconnect us when we send longer messages */
 #define MAX_CHAT_TABS		12	/*!< Size of the \see channels array */
-#ifdef ENGLISH
-#define MAX_ACTIVE_CHANNELS	10	/*!< Maximum number of channels in use */
-#else //ENGLISH
 #define MAX_ACTIVE_CHANNELS	12	/*!< Maximum number of channels in use */
-#endif //ENGLISH
 
 extern Uint32 active_channels[MAX_ACTIVE_CHANNELS];
 extern Uint8 current_channel;
@@ -239,11 +235,7 @@ typedef struct
 	char * description;
 } chat_tab;
 
-#ifdef ENGLISH
-#define SPEC_CHANS 12 //11 are currently in use. read channels.xml for the list
-#else //ENGLISH
 #define SPEC_CHANS 14
-#endif //ENGLISH
 
 typedef struct
 {
@@ -252,33 +244,23 @@ typedef struct
 	char * description;
 } chan_name;
 
-#ifndef ENGLISH
 extern chat_tab tabs_1[MAX_CHAT_TABS]; /*!< info about chat tabs */
 extern chat_tab tabs_2[MAX_CHAT_TABS]; /*!< info about chat tabs */
-#else //ENGLISH
-extern chat_tab tabs[MAX_CHAT_TABS]; /*!< info about chat tabs */
-#endif //ENGLISH
 extern int local_chat_separate;		/*!< if non-zero, show local chat in a separate tab */
 extern int personal_chat_separate;	/*!< if non-zero, show PMs in a different tab */
 extern int guild_chat_separate;		/*!< if non-zero, show GMs in a different tab */
 extern int server_chat_separate;	/*!< if non-zero, show game messages in a different tab */
 extern int mod_chat_separate;		/*!< for moderators and newbie helpers only: if non-zero, show mod chat in a different tab */
-#ifndef ENGLISH
 extern int dev_chat_separate;		/*!< for staff members only: if non-zero, show dev chat in a different tab */
 extern int coord_chat_separate;		/*!< for coord members only: if non-zero, show staff chat in a different tab */
-#endif //ENGLISH
 extern int tabs_in_use;
 extern int current_tab;
 
-#ifndef ENGLISH
 extern int tab_bar_win_1;
 extern int tab_bar_win_2;
 extern int current_bar;
 extern int nb_tab_button_1;
 extern int nb_tab_button_2;
-#else //ENGLISH
-extern int tab_bar_win;			 /*!< handler for the tab bar window */
-#endif //ENGLISH
 
 /*!
  * \ingroup chat_bar
@@ -290,11 +272,7 @@ extern int tab_bar_win;			 /*!< handler for the tab bar window */
  */
 void display_tab_bar (void);
 
-#ifdef ENGLISH
-void switch_to_tab(int id);
-#else //ENGLISH
 void switch_to_tab(int id, int niveau);
-#endif //ENGLISH
 
 void change_to_current_tab(const char *input);
 
@@ -352,12 +330,10 @@ int chat_input_key(widget_list *widget, int mx, int my, Uint32 key, Uint32 unike
 
 int resize_chat_handler(window_info *win, int width, int height);
 
-#ifndef ENGLISH
 extern int nb_ligne_tabs;
 extern int tab_bar_height;
 void create_tab_bar(void);
 void cleanup_chan_race_names();
-#endif //ENGLISH
 
 /*
  * \ingroup channel_colors

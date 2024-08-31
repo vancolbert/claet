@@ -33,9 +33,7 @@ extern int map_type; /**< id of the type of map we are currently using */
 extern GLfloat* water_tile_buffer;
 extern GLfloat* terrain_tile_buffer;
 
-#ifdef FR_VERSION
 extern Uint8 carte_modif;
-#endif //FR_VERSION
 
 /**
  * @ingroup maps

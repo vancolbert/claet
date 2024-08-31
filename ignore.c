@@ -17,20 +17,10 @@ int save_ignores=1;
 int use_global_ignores=1;
 
 //returns -1 if the name is already ignored, 1 on sucess, -2 if no more ignore slots
-#ifdef FR_VERSION
 int add_to_ignore_list(char *name, char save_name, char ignore_type)
-#else //FR_VERSION
-int add_to_ignore_list(char *name, char save_name)
-#endif //FR_VERSION
 {
 	int i;
 
-#ifdef ENGLISH
-	// never ignore uobeyuok, the rule bot
-	if(!strcasecmp(name, "uobeyuok")){
-		return(-1);
-	}
-#endif //ENGLISH
 	//see if this name is already on the list
 	for(i=0;i<MAX_IGNORES;i++)
 		{
@@ -53,18 +43,14 @@ int add_to_ignore_list(char *name, char save_name)
 								LOG_ERROR("%s: %s \"local_ignores.txt\": %s\n", reg_error_str, cant_open_file, strerror(errno));
 							} else {
 								fwrite(name, strlen(name), 1, f);
-#ifdef FR_VERSION
 								fwrite(" ", 1, 1, f);
 								fwrite(&ignore_type, 1, sizeof(char), f);
-#endif //FR_VERSION
 								fwrite("\n", 1, 1, f);
 								fclose(f);
 							}
 						}
 					ignore_list[i].used=1;//mark as used
-#ifdef FR_VERSION
 					ignore_list[i].ignore_type=ignore_type;
-#endif //FR_VERSION
 					ignored_so_far++;
 					return 1;
 				}
@@ -101,10 +87,8 @@ int remove_from_ignore_list(char *name)
 					if(ignore_list[i].used)
 						{
 							fwrite(ignore_list[i].name, strlen(ignore_list[i].name), 1, f);
-#ifdef FR_VERSION
 							fwrite(" ", 1, 1, f);
 							fwrite(&ignore_list[i].ignore_type , 1, sizeof(char), f);
-#endif //FR_VERSION
 							fwrite("\n", 1, 1, f);
 						}
 				}
@@ -118,18 +102,13 @@ int remove_from_ignore_list(char *name)
 
 
 //returns 1 if ignored, 0 if not ignored
-#ifdef FR_VERSION
 //type : '1' : MP, '2' : canal
 int check_if_ignored (const char *name, int type)
-#else //FR_VERSION
-int check_if_ignored (const char *name)
-#endif //FR_VERSION
 {
 	int i;
 
 	for (i = 0; i < MAX_IGNORES; i++)
 	{
-#ifdef FR_VERSION
 		//ALL
 		if(ignore_list[i].ignore_type == IGN_ALL)
 		{
@@ -148,10 +127,6 @@ int check_if_ignored (const char *name)
 			if (ignore_list[i].used && my_strcompare(ignore_list[i].name, name))
 				return 1;
 		}
-#else //FR_VERSION
-		if (ignore_list[i].used && my_strcompare(ignore_list[i].name, name))
-			return 1;	// yep, ignored
-#endif //FR_VERSION
 	}
 	return 0;	// nope
 }
@@ -210,9 +185,7 @@ int pre_check_if_ignored (const char *input_text, int len, Uint8 channel)
 {
 	int offset;
 	char name[MAX_USERNAME_LENGTH] = {0};
-#ifdef FR_VERSION
 	int type=IGN_ALL;
-#endif //FR_VERSION
 
 	if (channel == CHAT_MODPM)
 			{
@@ -255,10 +228,8 @@ int pre_check_if_ignored (const char *input_text, int len, Uint8 channel)
 		case CHAT_CHANNEL1:
 		case CHAT_CHANNEL2:
 		case CHAT_CHANNEL3:
-#ifndef ENGLISH
 		case CHAT_CHANNEL4:
 		case CHAT_CHANNEL5:
-#endif //ENGLISH
 			for (offset = 0; is_color (input_text[offset]); offset++);		// Ignore colours
 			if (input_text[offset] == '[')
 			{
@@ -297,12 +268,8 @@ int pre_check_if_ignored (const char *input_text, int len, Uint8 channel)
 		for (offset = 0; is_color (input_text[offset]); offset++);		// Ignore colours
 		get_name_from_text(input_text, len, 1, offset, name);	// Type 1 = ":", " " or is_color
 		}
-#ifdef FR_VERSION
 	type=(channel==CHAT_PERSONAL) ? IGN_MP : IGN_CANAUX;
 	if (!check_if_ignored (name, type))
-#else //FR_VERSION
-	if (!check_if_ignored (name))
-#endif //FR_VERSION
 	{
 		if (channel == CHAT_PERSONAL || channel == CHAT_MODPM)
 		{
@@ -327,9 +294,7 @@ void load_ignores_list(char * file_name)
 	char name[64];
 	Uint8 ch;
 	size_t ret;
-#ifdef FR_VERSION
 	char ignore_type=IGN_ALL;
-#endif //FR_VERSION
 
 	f = open_file_config(file_name, "rb");
 	if(f == NULL){return;}
@@ -360,18 +325,13 @@ void load_ignores_list(char * file_name)
 			ch=ignore_list_mem[i];
 			if(ch=='\n' || ch=='\r')
 				{
-#ifdef FR_VERSION
 					if(j && add_to_ignore_list(name,0, ignore_type) == -1) {
-#else //FR_VERSION
-					if(j && add_to_ignore_list(name,0) == -1) {
-#endif //FR_VERSION
 						return;//ignore list full
 					}
 					j=0;
 					i++;
 					continue;
 				}
-#ifdef FR_VERSION
 			else if(ch == ' ')
 			{
 				i++;
@@ -383,7 +343,6 @@ void load_ignores_list(char * file_name)
 				i++;
 				continue;
 			}
-#endif //FR_VERSION
 			else
 				{
 					name[j]=ch;
@@ -417,11 +376,7 @@ void load_ignores()
 int list_ignores()
 {
 	int i;
-#ifdef FR_VERSION
 	char str[MAX_IGNORES*27];
-#else //FR_VERSION
-	char str[MAX_IGNORES*19];
-#endif //FR_VERSION
 	if(!ignored_so_far)
 		{
 			LOG_TO_CONSOLE(c_grey1,no_ignores_str);
@@ -433,9 +388,7 @@ int list_ignores()
 			if(ignore_list[i].used)
 				{
 					safe_strcat (str, ignore_list[i].name, sizeof(str));
-#ifdef FR_VERSION
 					safe_strcat(str, (ignore_list[i].ignore_type == '1') ? "(MP)" : (ignore_list[i].ignore_type == '2') ? "(CANAUX)" : "(TOUT)", sizeof(str));
-#endif //FR_VERSION
 					safe_strcat (str, ", ", sizeof(str));
 				}
 		}

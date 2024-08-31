@@ -13,11 +13,7 @@ namespace ec
 	SwordParticle::SwordParticle(Effect* _effect, ParticleMover* _mover,
 		const Vec3 _pos, const Vec3 _velocity, const coord_t _size,
 		const alpha_t _alpha, const color_t red, const color_t green,
-#ifdef	NEW_TEXTURES
 		const color_t blue, TextureEnum _texture, const Uint16 _LOD) :
-#else	/* NEW_TEXTURES */
-		const color_t blue, Texture* _texture, const Uint16 _LOD) :
-#endif	/* NEW_TEXTURES */
 		Particle(_effect, _mover, _pos, _velocity,
 			std::min(1.0f, _size * (0.2f + randcoord())))
 	{
@@ -48,17 +44,10 @@ namespace ec
 		return true;
 	}
 
-#ifdef	NEW_TEXTURES
 	Uint32 SwordParticle::get_texture()
 	{
 		return base->get_texture(texture);
 	}
-#else	/* NEW_TEXTURES */
-	GLuint SwordParticle::get_texture(const Uint16 res_index)
-	{
-		return texture->get_texture(res_index);
-	}
-#endif	/* NEW_TEXTURES */
 
 	SwordEffect::SwordEffect(EyeCandy* _base, bool* _dead, Vec3* _start,
 		Vec3* _end, const SwordType _type, const Uint16 _LOD)
@@ -82,11 +71,7 @@ namespace ec
 				color[0] = 0.6;
 				color[1] = 0.8;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_VOID;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexVoid);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case CUTLASS:
@@ -94,11 +79,7 @@ namespace ec
 				color[0] = 1.0;
 				color[1] = 1.0;
 				color[2] = 1.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EMERALD_CLAYMORE:
@@ -106,11 +87,7 @@ namespace ec
 				color[0] = 0.3;
 				color[1] = 1.0;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SUNBREAKER:
@@ -118,11 +95,7 @@ namespace ec
 				color[0] = 1.0;
 				color[1] = 0.8;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_VOID;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexVoid);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case ORC_SLAYER:
@@ -130,11 +103,7 @@ namespace ec
 				color[0] = 1.0;
 				color[1] = 0.1;
 				color[2] = 0.1;
-#ifdef	NEW_TEXTURES
 				texture = EC_WATER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexWater);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EAGLE_WING:
@@ -142,11 +111,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 1.0;
 				color[2] = 1.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case JAGGED_SABER:
@@ -154,24 +119,15 @@ namespace ec
 				color[0] = 1.0;
 				color[1] = 0.3;
 				color[2] = 1.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_TWINFLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexTwinflare);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
-#ifdef FR_VERSION
 			case SWORD_OF_LIGHT:
 			{
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
                 texture = EC_SHIMMER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexShimmer);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SWORD_OF_FIRE:
@@ -179,11 +135,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
                 texture = EC_FLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexFlare);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SWORD_OF_ICE:
@@ -191,11 +143,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
                 texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SWORD_OF_MAGIC:
@@ -203,63 +151,16 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
                 texture = EC_SHIMMER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexShimmer);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
-#else //FR_VERSION
-			case SWORD_OF_FIRE:
-			{
-				color[0] = 1.0;
-				color[1] = 0.6;
-				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
-				texture = EC_FLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexFlare);
-#endif	/* NEW_TEXTURES */
-				break;
-			}
-			case SWORD_OF_ICE:
-			{
-				color[0] = 0.4;
-				color[1] = 0.5;
-				color[2] = 1.0;
-#ifdef	NEW_TEXTURES
-				texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
-				break;
-			}
-			case SWORD_OF_MAGIC:
-			{
-				color[0] = 0.7;
-				color[1] = 0.6;
-				color[2] = 0.4;
-#ifdef	NEW_TEXTURES
-				texture = EC_SHIMMER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexShimmer);
-#endif	/* NEW_TEXTURES */
-				break;
-			}
-#endif //FR_VERSION
 
-#ifdef NEW_EFFECT_ADA_SWORD
 			case EMERALD_CLAYMORE_F:
 			{
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EMERALD_CLAYMORE_G:
@@ -267,11 +168,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
 				texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EMERALD_CLAYMORE_A:
@@ -279,11 +176,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EMERALD_CLAYMORE_L:
@@ -291,11 +184,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_CRYSTAL;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexCrystal);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case CUTLASS_F:
@@ -303,11 +192,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case CUTLASS_G:
@@ -315,11 +200,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case CUTLASS_A:
@@ -327,11 +208,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case CUTLASS_L:
@@ -339,11 +216,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SUNBREAKER_F:
@@ -351,11 +224,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_VOID;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexVoid);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SUNBREAKER_G:
@@ -363,11 +232,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
 				texture = EC_VOID;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexVoid);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SUNBREAKER_A:
@@ -375,11 +240,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_VOID;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexVoid);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case SUNBREAKER_L:
@@ -387,11 +248,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_VOID;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexVoid);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case ORC_SLAYER_F:
@@ -399,11 +256,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_WATER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexWater);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case ORC_SLAYER_G:
@@ -411,11 +264,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
 				texture = EC_WATER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexWater);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case ORC_SLAYER_A:
@@ -423,11 +272,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_WATER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexWater);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case ORC_SLAYER_L:
@@ -435,11 +280,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_WATER;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexWater);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EAGLE_WING_F:
@@ -447,11 +288,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EAGLE_WING_G:
@@ -459,11 +296,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EAGLE_WING_A:
@@ -471,11 +304,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case EAGLE_WING_L:
@@ -483,11 +312,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_INVERSE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexInverse);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case JAGGED_SABER_F:
@@ -495,11 +320,7 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.4;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_TWINFLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexTwinflare);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case JAGGED_SABER_G:
@@ -507,11 +328,7 @@ namespace ec
 				color[0] = 0.0;
 				color[1] = 0.3;
 				color[2] = 0.9;
-#ifdef	NEW_TEXTURES
 				texture = EC_TWINFLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexTwinflare);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case JAGGED_SABER_A:
@@ -519,11 +336,7 @@ namespace ec
 				color[0] = 0.7;
 				color[1] = 0.6;
 				color[2] = 0.0;
-#ifdef	NEW_TEXTURES
 				texture = EC_TWINFLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexTwinflare);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 			case JAGGED_SABER_L:
@@ -531,15 +344,10 @@ namespace ec
 				color[0] = 0.9;
 				color[1] = 0.6;
 				color[2] = 0.3;
-#ifdef	NEW_TEXTURES
 				texture = EC_TWINFLARE;
-#else	/* NEW_TEXTURES */
-				texture = &(base->TexTwinflare);
-#endif	/* NEW_TEXTURES */
 				break;
 			}
 
-#endif //NEW_EFFECT_ADA_SWORD
 		}
 
 		old_end = *end;
@@ -574,85 +382,71 @@ namespace ec
 				break;
 			}
 			case CUTLASS:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case CUTLASS_F:
 			case CUTLASS_G:
 			case CUTLASS_A:
 			case CUTLASS_L:
-#endif //NEW_EFFECT_ADA_SWORD
 			{
 				alpha = 0.1;
 				size = 2.0;
 				break;
 			}
 			case EMERALD_CLAYMORE:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case EMERALD_CLAYMORE_F:
 			case EMERALD_CLAYMORE_G:
 			case EMERALD_CLAYMORE_A:
 			case EMERALD_CLAYMORE_L:
-#endif //NEW_EFFECT_ADA_SWORD
 			{
 				alpha = 0.55;
 				size = 0.75;
 				break;
 			}
 			case SUNBREAKER:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case SUNBREAKER_F:
 			case SUNBREAKER_G:
 			case SUNBREAKER_A:
 			case SUNBREAKER_L:
-#endif //NEW_EFFECT_ADA_SWORD
 			{
 				alpha = 0.7;
 				size = 1.1;
 				break;
 			}
 			case ORC_SLAYER:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case ORC_SLAYER_F:
 			case ORC_SLAYER_G:
 			case ORC_SLAYER_A:
 			case ORC_SLAYER_L:
-#endif //NEW_EFFECT_ADA_SWORD
 			{
 				alpha = 0.1;
 				size = 1.3;
 				break;
 			}
 			case EAGLE_WING:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case EAGLE_WING_F:
 			case EAGLE_WING_G:
 			case EAGLE_WING_A:
 			case EAGLE_WING_L:
-#endif //NEW_EFFECT_ADA_SWORD
 			{
 				alpha = 0.2;
 				size = 2.25;
 				break;
 			}
 			case JAGGED_SABER:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case JAGGED_SABER_F:
 			case JAGGED_SABER_G:
 			case JAGGED_SABER_A:
 			case JAGGED_SABER_L:
-#endif //NEW_EFFECT_ADA_SWORD
 			{
 				alpha = 0.4;
 				size = 2.25;
 				break;
 			}
-#ifdef FR_VERSION
 			case SWORD_OF_LIGHT:
 			{
 				alpha = 1.0;
 				size = 1.4;
 				break;
 			}
-#endif //FR_VERSION
 			case SWORD_OF_FIRE:
 			{
 				alpha = 1.0;
@@ -697,7 +491,6 @@ namespace ec
 			case ORC_SLAYER:
 			case EAGLE_WING:
 			case JAGGED_SABER:
-#ifdef NEW_EFFECT_ADA_SWORD
 			case EMERALD_CLAYMORE_F:
 			case EMERALD_CLAYMORE_G:
 			case EMERALD_CLAYMORE_A:
@@ -722,7 +515,6 @@ namespace ec
 			case JAGGED_SABER_G:
 			case JAGGED_SABER_A:
 			case JAGGED_SABER_L:
-#endif //NEW_EFFECT_ADA_SWORD			
 			{
 				bias = randfloat(0.33);
 				if (speed > 2.0)
@@ -730,9 +522,7 @@ namespace ec
 				else if (speed < 0.05)
 					speed = 0.05;
 			}
-#ifdef FR_VERSION
 			case SWORD_OF_LIGHT:
-#endif //FR_VERSION
 			case SWORD_OF_FIRE:
 			case SWORD_OF_ICE:
 			case SWORD_OF_MAGIC:
@@ -760,11 +550,7 @@ namespace ec
 			if (!base->push_back_particle(p))
 				break;
 			if (randfloat(2.0f) < 0.1f) {
-#ifdef	NEW_TEXTURES
 				p = new SwordParticle(this, mover, coords, velocity, 1.5, 1.0, 2.0, 2.0, 2.0, EC_TWINFLARE, LOD);
-#else	/* NEW_TEXTURES */
-				p = new SwordParticle(this, mover, coords, velocity, 1.5, 1.0, 2.0, 2.0, 2.0, &(base->TexTwinflare), LOD);
-#endif	/* NEW_TEXTURES */
 				base->push_back_particle(p);
 			}
 		}

@@ -24,11 +24,7 @@
 
 #undef DEBUG_ALIASES
 
-#ifdef DEBUG_ALIASES
-#define TADEBUG(x...) fprintf(stderr,x); fputc('\n',stderr)
-#else
 #define TADEBUG(x,...)
-#endif
 
 static char *numeric_aliases[100]; /* Stores the alias buffer */
 static int numeric_alias_sizes[100]; /* Stores the alias buffer size */
@@ -70,11 +66,7 @@ static int internal_bind_alias (int index, char *text, int len)
     char buf[128];
 
 	if ( len > 128 ) {
-#ifdef ENGLISH
-		sprintf (buf, "Alias %d too large (%d exceeds max len of %d).",index,len,128);
-#else //ENGLISH
 		sprintf (buf, "Alias %d trop long (%d dépasse la longueur maximum de %d).",index,len,128);
-#endif //ENGLISH
 		LOG_TO_CONSOLE (c_red1, buf);
         return -1;
 	}
@@ -99,11 +91,7 @@ int bind_alias (int index, char *text, int len)
 	if (seen < 0)
 		return -1;
 
-#ifdef ENGLISH
-	sprintf (buf, "Alias %d %s as '%s'", index, seen ? "rebound" : "bound", text);
-#else //ENGLISH
 	sprintf (buf, "Alias %d %s est '%s'", index, seen ? "relié à :" : "lié à :", text);
-#endif //ENGLISH
 
 	LOG_TO_CONSOLE (c_orange1, buf);
 	return 0;
@@ -118,11 +106,7 @@ int unbind_alias (int index, char *text, int len)
 		free(numeric_aliases[index]);
         numeric_aliases[index] = NULL;
 	}
-#ifdef ENGLISH
-	sprintf (buf, "Alias %d %s", index, seen ?  "unbound": "is not bound");
-#else //ENGLISH
 	sprintf (buf, "Alias %d %s", index, seen ?  "délié": "n'est pas lié");
-#endif //ENGLISH
 
 	LOG_TO_CONSOLE (c_orange1, buf);
 	return 0;
@@ -233,11 +217,9 @@ static dbuffer_t *expand_alias_parameters( char *parameters, const char *aliaste
 	dbuffer_t *return_text;
 
 	const char *cptr = aliastext;
-#ifndef ENGLISH
     // --- Correction du bug sur une fonction calc par exemple
     // --- le ctrl+fleche haut ne retourne pas tous les chiffres
 	char copie_parameters[strlen(parameters)+1];
-#endif
 	int argc = 0;
     int param_index;
 	char **argv = NULL;
@@ -249,9 +231,7 @@ static dbuffer_t *expand_alias_parameters( char *parameters, const char *aliaste
 
 	ENTER_DEBUG_MARK("expand text aliases");
 
-#ifndef ENGLISH
     my_strcp( copie_parameters, parameters);
-#endif
 
 	return_text = dbuffer_sized( alias_size );
 
@@ -281,26 +261,14 @@ static dbuffer_t *expand_alias_parameters( char *parameters, const char *aliaste
 				/* Ok, try to expand this */
 				param_index = ((unsigned char)(*cptr)) - '0';
 
-#ifdef ENGLISH
-				LOG_DEBUG("Index for expansion is %d, params %s", param_index, parameters);
-#else //ENGLISH
                 LOG_DEBUG("Index for expansion is %d, params %s", param_index, copie_parameters);
-#endif //ENGLISH
 
 				if (NULL==argv) {
-#ifdef ENGLISH
-					argc = makeargv( parameters, &argv);
-#else //ENGLISH
                     argc = makeargv( copie_parameters, &argv);
-#endif //ENGLISH
 
 					LOG_DEBUG("Argc is %d", argc);
 					if (NULL==argv || argc == 0) {
-#ifdef ENGLISH
-						LOG_TO_CONSOLE( c_orange1, "Text alias requires parameters, but none given");
-#else //ENGLISH
 						LOG_TO_CONSOLE( c_orange1, "L'alias requiert des paramètres, mais aucun n'est donné");
-#endif //ENGLISH
 						free( return_text );
                         return NULL;
 					}
@@ -310,11 +278,7 @@ static dbuffer_t *expand_alias_parameters( char *parameters, const char *aliaste
 
 
 				if ( param_index >= argc ) {
-#ifdef ENGLISH
-					LOG_TO_CONSOLE( c_orange1, "Text alias requires more parameters than given");
-#else //ENGLISH
 					LOG_TO_CONSOLE( c_orange1, "L'alias requiert plus de paramètres que donnés");
-#endif //ENGLISH
 					dbuffer_destroy( return_text );
 					if (NULL!=argv)
 						freemakeargv(argv);
@@ -334,11 +298,7 @@ static dbuffer_t *expand_alias_parameters( char *parameters, const char *aliaste
                 break;
 			}
 			// Invalid $ sequence
-#ifdef ENGLISH
-			LOG_TO_CONSOLE( c_orange1, "Invalid sequence found");
-#else //ENGLISH
 			LOG_TO_CONSOLE( c_orange1, "Séquence invalide trouvée");
-#endif //ENGLISH
             LOG_DEBUG("Invalid sequence");
 			dbuffer_destroy( return_text );
 			if (NULL!=argv)
@@ -457,11 +417,7 @@ static int handle_text_alias (int index, char *text, int len)
 		if (previously_expanded[index])
 		{
 			we_are_nested = 0;
-#ifdef ENGLISH
-			LOG_TO_CONSOLE (c_red2, "Error, you have infinitely recursive aliases");
-#else //ENGLISH
 			LOG_TO_CONSOLE (c_red2, "Erreur, tu as un alias récursif indéfiniment");
-#endif //ENGLISH
 			return 0;
 		}
 	}
@@ -481,11 +437,7 @@ static int handle_text_alias (int index, char *text, int len)
 	}
 	else
 	{
-#ifdef ENGLISH
-		sprintf (msg, "Invalid alias #%d", index);
-#else //ENGLISH
 		sprintf (msg, "Alias invalide #%d", index);
-#endif //ENGLISH
 		LOG_TO_CONSOLE (c_orange1, msg);
 	}
 
@@ -562,11 +514,7 @@ int alias_command (char *text, int len)
 {
 	if (*text != ' ')
 	{
-#ifdef ENGLISH
-		LOG_TO_CONSOLE (c_orange1, "Invalid syntax.");
-#else //ENGLISH
 		LOG_TO_CONSOLE (c_orange1, "Syntaxe invalide.");
-#endif //ENGLISH
 		return 1;
 	}
 	while (len > 0 && *text == ' ') {
@@ -595,11 +543,7 @@ int aliases_command ( char *text, int len)
 	char alias_temp[128+6]; /* 128 chars of alias + at most '#100 ' */
     size_t templen;
 
-#ifdef ENGLISH
-	LOG_TO_CONSOLE(c_green1, "List of current text aliases:");
-#else //ENGLISH
 	LOG_TO_CONSOLE(c_green1, "Liste des alias actuels :");
-#endif //ENGLISH
 	for (i=0; i<100; i++) {
 		if (NULL!=numeric_aliases[i]) {
 			sprintf(alias_temp, "#%d ", i);

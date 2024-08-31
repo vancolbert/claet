@@ -37,11 +37,7 @@ void put_roche_on_ground(int roche_x, int roche_y, int roche_id) /// stolen from
 	x = x + 0.25f;
 	y = y + 0.25f;
 
-#ifdef OLD_MISC_OBJ_DIR
-	obj_3d_id=add_e3d("./3dobjects/rocks/rock_small4.e3d", x, y, z,
-#else
 	obj_3d_id=add_e3d("./3dobjects/rock_small4.e3d", x, y, z,
-#endif
 		get_bag_tilt(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 0, /// we use bags funct, should rename function into "3D_tilt & 3D_rotation"
 		get_bag_rotation(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y),
 		1 ,0 ,1.0f ,1.0f, 1.0f, 1);
@@ -97,11 +93,7 @@ void add_roches_from_list (const Uint8 *data)
 			return;
 		}
 
-#ifdef OLD_MISC_OBJ_DIR
-		obj_3d_id = add_e3d("./3dobjects/rocks/rock_small4.e3d", x, y, z,
-#else
 		obj_3d_id = add_e3d("./3dobjects/rock_small4.e3d", x, y, z,
-#endif
 			get_bag_tilt(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), 0,
 			get_bag_rotation(roche_x, roche_y, roche_id, tile_map_size_x, tile_map_size_y), /// see put_roche_on_ground comment about theses functions
 			1, 0, 1.0f, 1.0f, 1.0f, 1);

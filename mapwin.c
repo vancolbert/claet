@@ -22,17 +22,12 @@
 #include "textures.h"
 #include "eye_candy_wrapper.h"
 #include "special_effects.h"
-#ifdef FR_VERSION
 #include "map.h"
 #include "io/elfilewrapper.h"
-#endif //FR_VERSION
 
 
 int map_root_win = -1;
 int showing_continent = 0;
-#ifdef DEBUG_MAP_SOUND
-extern int cur_tab_map;
-#endif // DEBUG_MAP_SOUND
 
 int mouse_over_minimap = 0;
 
@@ -40,28 +35,18 @@ int reload_tab_map = 0;
 
 int temp_tile_map_size_x = 0;
 int temp_tile_map_size_y = 0;
-#ifdef FR_VERSION
 /* Marques éditables sur les autres cartes :
  - chargées directement dans marks (pas de temp_marks à part)
  - nom de la carte inspectée mémorisé pour enegistrer ses marques
 */
 char inspect_map_name[128] = "";
-#else //FR_VERSION
-int max_temp_mark = 0;
-marking temp_marks[MAX_USER_MARKS];
-#endif //FR_VERSION
 
 #define MARK_FILTER_MAX_LEN 40
 int mark_filter_active = 0;
 char mark_filter_text[MARK_FILTER_MAX_LEN] = "";
 
-#ifdef FR_VERSION
 int curmark_r=255,curmark_g=255,curmark_b=255;
-#else //FR_VERSION
-int curmark_r=0,curmark_g=255,curmark_b=0;
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 // Convert mouse coordinates to map coordinates (stolen from pf_get_mouse_position())
 int map_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py)
 {
@@ -94,14 +79,11 @@ int map_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py)
 	}
 	return 1;
 }
-#endif //FR_VERSION
 
 
 int click_map_handler (window_info *win, int mx, int my, Uint32 flags)
 {
-#ifdef FR_VERSION
 	Uint32 shift_on = flags & ELW_SHIFT;
-#endif //FR_VERSION
 	Uint32 ctrl_on = flags & ELW_CTRL;
 	Uint32 left_click = flags & ELW_LEFT_MOUSE;
 	Uint32 right_click = flags & ELW_RIGHT_MOUSE;
@@ -111,49 +93,28 @@ int click_map_handler (window_info *win, int mx, int my, Uint32 flags)
 	if (left_click && mx > 0 && mx < 50*scale && my > 0 && my < 55*scale)
 	{
 		showing_continent = !showing_continent;
-#ifdef	NEW_TEXTURES
 		inspect_map_text = 0;
-#else	/* NEW_TEXTURES */
-		if(inspect_map_text != 0)
-		{
-			glDeleteTextures(1,&inspect_map_text);
-			inspect_map_text = 0;
-		}
-#endif	/* NEW_TEXTURES */
-#ifdef FR_VERSION
 		// retour sur la carte active : on recharge ses marques
 		if (!showing_continent) load_map_marks();
-#endif //FR_VERSION
 	}
 
 
-#ifdef FR_VERSION
 	// clic droit sur carte du continent : on passe sur l'autre continent
 	else if (right_click && mx > 0 && mx < 50*scale && my > 0 && my < 55*scale)
 	{
 		if (! showing_continent) switch_continent();
 	}
-#endif //FR_VERSION
 
 
-#ifdef FR_VERSION
 	// on rend possible l'édition des marques sur toutes les cartes
 	else if (!showing_continent)
-#else //FR_VERSION
-	else if (!showing_continent && inspect_map_text == 0)
-#endif //FR_VERSION
 	{
-#ifdef FR_VERSION
 		if (left_click && inspect_map_text == 0)
-#else //FR_VERSION
-		if (left_click)
-#endif //FR_VERSION
 		{
 			pf_move_to_mouse_position ();
 		}
 		else if (right_click)
 		{
-#ifdef FR_VERSION
 			// ajout possibilité d'édition avec ctrl
 			if (ctrl_on)
 				edit_mark_on_map_on_mouse_position ();
@@ -162,12 +123,6 @@ int click_map_handler (window_info *win, int mx, int my, Uint32 flags)
 				delete_mark_on_map_on_mouse_position ();
 			else
 				put_mark_on_map_on_mouse_position ();
-#else //FR_VERSION
-			if (!ctrl_on)
-				put_mark_on_map_on_mouse_position ();
-			else
-				delete_mark_on_map_on_mouse_position ();
-#endif //FR_VERSION
 		}
 	}
 
@@ -192,57 +147,22 @@ int click_map_handler (window_info *win, int mx, int my, Uint32 flags)
 
 			/* Check if we clicked on a map */
 			for(i = 0; continent_maps[i].name != NULL; i++) {
-#ifdef FR_VERSION
 				// les cartes inspectées peuvent être sur un autre continent
 				if(continent_maps[i].cont == cur_cont_map)
-#else //FR_VERSION
-				if(continent_maps[i].cont == continent_maps[cur_map].cont)
-#endif //FR_VERSION
 				{
 					if(m_px > continent_maps[i].x_start && m_px < continent_maps[i].x_end
 						&& m_py > continent_maps[i].y_start && m_py < continent_maps[i].y_end)
 					{
 						/* Load this map's bmp */
 						if(cur_map != i) {
-#ifdef	NEW_TEXTURES
 							inspect_map_text = load_texture_cached(continent_maps[i].name, tt_image);
-#else	/* NEW_TEXTURES */
-							texture_cache_struct tex;
-							size_t name_len;
-#ifndef ENGLISH
-							char map_map_file_name_png[256];
-#endif //ENGLISH
-							my_strcp(tex.file_name,continent_maps[i].name);
-							name_len = strlen(tex.file_name);
-#ifndef ENGLISH
-							// carte recherchée en png d'abord, bmp sinon
-							my_strcp( map_map_file_name_png,tex.file_name);
-							sprintf(map_map_file_name_png+name_len-3, "png");
-							if( file_exists(map_map_file_name_png) )
-								sprintf(tex.file_name+name_len-3, "png");
-							else
-								sprintf(tex.file_name+name_len-3, "bmp");
-#else //ENGLISH
-							sprintf(tex.file_name+name_len-3, "bmp");
-#endif //ENGLISH
-							inspect_map_text = load_bmp8_fixed_alpha(&tex, 128);
-#endif	/* NEW_TEXTURES */
-#ifdef FR_VERSION
 							// mémorisation du nom de la carte inspectée pour l'édition de ses marques
 							my_strcp(inspect_map_name, continent_maps[i].name);
-#endif //FR_VERSION
 						}
-#ifdef DEBUG_MAP_SOUND
-						cur_tab_map = i;
-#endif // DEBUG_MAP_SOUND
-#ifdef FR_VERSION
 						// marques de la carte inspectée chargées dans le buffer courant pour leur édition
 //						load_marks_to_buffer(continent_maps[i].name, marks, &max_mark);
 						// PS: traitement déporté directement dans la fonction générale load_map_marks()
 						load_map_marks();
-#else //FR_VERSION
-						load_marks_to_buffer(continent_maps[i].name, temp_marks, &max_temp_mark);
-#endif //FR_VERSION
 						get_tile_map_sizes(continent_maps[i].name, &temp_tile_map_size_x, &temp_tile_map_size_y);
 						showing_continent = !showing_continent;
 						break;
@@ -252,13 +172,11 @@ int click_map_handler (window_info *win, int mx, int my, Uint32 flags)
 		}
 
 
-#ifdef FR_VERSION
 		// clic droit sur carte du continent : on passe sur l'autre continent
 		else if (right_click)
 		{
 			switch_continent();
 		}
-#endif //FR_VERSION
 	}
 	
 	return 1;
@@ -293,9 +211,6 @@ int display_map_handler (window_info * win)
 
 	ec_idle();
 
-#ifdef MISSILES
-	missiles_update();
-#endif // MISSILES
     update_camera();
 
 	draw_delay = 20;
@@ -403,15 +318,11 @@ int show_map_handler (window_info *win)
 	hide_window(book_win);
 	hide_window(paper_win);
 	hide_window(color_race_win);
-#ifndef ENGLISH
 	hide_window(tab_bar_win_1);
     if (nb_ligne_tabs == 2)
     {
 	    hide_window(tab_bar_win_2);
     }
-#else //ENGLISH
-	hide_window(tab_bar_win);
-#endif //ENGLISH
 	return 1;
 }
 

@@ -140,9 +140,7 @@ int pf_get_mouse_position(int mouse_x, int mouse_y, int * px, int * py);
  */
 int pf_get_mouse_position_extended(int mouse_x, int mouse_y, int * px, int * py, int tile_x, int tile_y);
 
-#ifdef FR_VERSION
 void pf_move_to_position(int x_dest, int y_dest) ;
-#endif //FR_VERSION
 
 #ifdef __cplusplus
 } // extern "C"

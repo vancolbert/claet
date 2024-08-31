@@ -5,17 +5,12 @@
 #include "2d_objects.h"
 #include "3d_objects.h"
 #include "actor_scripts.h"
-#ifdef ACHIEVEMENTS
-#include "achievements.h"
-#endif
 #include "asc.h"
 #include "bags.h"
 #include "books.h"
 #include "buddy.h"
 #include "chat.h"
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif // CLUSTER_INSIDES
 #include "console.h"
 #include "consolewin.h"
 #include "context_menu.h"
@@ -56,41 +51,16 @@
 #include "translate.h"
 #include "url.h"
 #include "weather.h"
-#ifdef DEBUG
-#include "sound.h"
-#ifdef MINES
-#include "special_effects.h"
-#endif // MINES
-#endif
 #include "special_effects.h"
 #include "eye_candy_wrapper.h"
 #include "minimap.h"
 #include "notepad.h"
-#ifdef PAWN
-#include "pawn/elpawn.h"
-#endif
 #include "sky.h"
-#ifdef MISSILES
-#include "missiles.h"
-#endif
-#ifdef ECDEBUGWIN
-#include "eye_candy_debugwin.h"
-#endif
 #include "actor_init.h"
-#ifdef EMOTES
-#include "emotes.h"
-#endif
-#ifdef FR_VERSION
 #include "fr_quickitems.h"
-#endif //FR_VERSION
-#ifdef DEBUG_POPUP_AIDE_FR
-#include "popup.h"
-#endif //DEBUG_POPUP_AIDE_FR
-#ifdef FR_VERSION
 #include "roche.h"
 #include "errors.h"
 #include "sound.h"
-#endif //FR_VERSION
 
 int game_root_win = -1;
 int gamewin_in_id = 4442;
@@ -98,29 +68,13 @@ int use_old_clicker=0;
 float fps_average = 100.0;
 int include_use_cursor_on_animals = 0;
 int logo_click_to_url = 1;
-#ifdef ENGLISH
-char LOGO_URL_LINK[128] = "http://www.eternal-lands.com";
-#else //ENGLISH
 char LOGO_URL_LINK[128] = "http://www.landes-eternelles.com";
 float chat_alpha_background = 0.5;
-#endif //ENGLISH
 int have_mouse = 0;
 int just_released_mouse = 0;
 int keep_grabbing_mouse = 0;
-#ifdef NEW_CURSOR
-int cursors_tex;
-#endif // NEW_CURSOR
-#ifdef  DEBUG
-extern int e3d_count, e3d_total;    // LRNR:stats testing only
-#endif  //DEBUG
 int cm_banner_disabled = 0;
-#ifdef MISSILES
-int ranging_lock = 0;
-int auto_disable_ranging_lock = 1;
-#endif //MISSILES
-#ifdef WALK_AFTER_SPELL_FR
 int walk_after_spell=0;
-#endif
 
 void draw_special_cursors()
 {
@@ -132,11 +86,7 @@ void draw_special_cursors()
 	float ret_color[4];
 	float ret_out = 7.0;
 
-#ifdef NEW_CURSOR
-	if (!have_mouse && sdl_cursors) return;
-#else // NEW_CURSOR
 	if (!have_mouse) return;
-#endif // NEW_CURSOR
 
 	if(!(SDL_GetAppState() & SDL_APPMOUSEFOCUS)) return;
 
@@ -175,35 +125,11 @@ void draw_special_cursors()
 
 	glPushMatrix();
 	glTranslatef(mouse_x, mouse_y, 0.0);
-#ifdef NEW_CURSOR
-	glScalef(pointer_size, pointer_size, 1.0);
-#endif // NEW_CURSOR
 
 	//printf("mouse_x=%d mouse_y=%d\n", mouse_x, mouse_y);
 
 	if(have_mouse)
 	{
-#ifdef NEW_CURSOR
-		glColor4f(1,1,1,1);
-		get_and_set_texture_id(cursors_tex);
-		if (big_cursors /* && !sdl_cursors */) {
-			float x = (current_cursor%8)/8.0;
-			float y = (1-current_cursor/8 + 5)/8.0;
-			glBegin(GL_QUADS);
-			glTexCoord2f(x,y);					glVertex2f(0,32);
-			glTexCoord2f(x+0.125f,y);			glVertex2f(32,32);
-			glTexCoord2f(x+0.125f,y+0.125f);	glVertex2f(32,0);
-			glTexCoord2f(x,y+0.125f);			glVertex2f(0,0);
-			glEnd();
-		} else /* if (!sdl_cursors) */ {
-			glBegin(GL_QUADS);
-			glTexCoord2f(current_cursor/16.0,15.0/16.0);		glVertex2f(10,26);
-			glTexCoord2f((current_cursor+1.0)/16.0,15.0/16.0);	glVertex2f(26,26);
-			glTexCoord2f((current_cursor+1.0)/16.0,16.0/16.0);	glVertex2f(26,10);
-			glTexCoord2f(current_cursor/16.0,16.0/16.0);		glVertex2f(10,10);
-			glEnd();
-		}
-#endif // NEW_CURSOR
 
 		glRotatef(ret_spin, 0.0, 0.0, 1.0);
 		glColor4fv(ret_color);
@@ -289,58 +215,6 @@ void draw_special_cursors()
 		glEnd();
 		ret_y -= ret_zoom;
 	}
-#ifdef NEW_CURSOR
-	else
-#endif // NEW_CURSOR
-#ifdef NEW_CURSOR
-	{
-		if (current_cursor != CURSOR_ARROW){
-			glColor4fv(ret_color);
-			glRotatef(-135.0,0,0,1);
-			glDisable(GL_TEXTURE_2D);
-			glBegin(GL_TRIANGLES);
-			glVertex2f(ret_x,ret_y);
-			glVertex2f(ret_x-RET_LEN,ret_y-RET_WID);
-			glVertex2f(ret_x-ret_out,ret_y);
-
-			glVertex2f(ret_x,ret_y);
-			glVertex2f(ret_x-RET_LEN,ret_y+RET_WID);
-			glVertex2f(ret_x-ret_out,ret_y);
-			glEnd();
-
-			glColor4f(0.0,0.0,0.0,ret_alpha);
-
-			glBegin(GL_LINE_LOOP);
-			glVertex2f(ret_x,ret_y);
-			glVertex2f(ret_x-RET_LEN,ret_y-RET_WID);
-			glVertex2f(ret_x-ret_out,ret_y);
-			glVertex2f(ret_x-RET_LEN,ret_y+RET_WID);
-			glEnd();
-			glRotatef(135.0,0,0,1);
-			glEnable(GL_TEXTURE_2D);
-		}
-
-		glColor4f(1,1,1,1);
-		get_and_set_texture_id(cursors_tex);
-		if(big_cursors){
-			float x = (current_cursor%8)/8.0;
-			float y = (1-current_cursor/8 + 5)/8.0;
-			glBegin(GL_QUADS);
-			glTexCoord2f(x,y);					glVertex2f(0,32);
-			glTexCoord2f(x+0.125f,y);			glVertex2f(32,32);
-			glTexCoord2f(x+0.125f,y+0.125f);	glVertex2f(32,0);
-			glTexCoord2f(x,y+0.125f);			glVertex2f(0,0);
-			glEnd();
-		} else {
-			glBegin(GL_QUADS);
-			glTexCoord2f(current_cursor/16.0,14.0/16.0);		glVertex2f(0,16);
-			glTexCoord2f((current_cursor+1.0)/16.0,14.0/16.0);	glVertex2f(16,16);
-			glTexCoord2f((current_cursor+1.0)/16.0,15.0/16.0);	glVertex2f(16,0);
-			glTexCoord2f(current_cursor/16.0,15.0/16.0);		glVertex2f(0,0);
-			glEnd();
-		}
-	}
-#endif // NEW_CURSOR
 
 	glPopMatrix();
 	glPopAttrib();
@@ -352,27 +226,13 @@ void toggle_have_mouse()
 	have_mouse = !have_mouse;
 	if(have_mouse){
 		SDL_WM_GrabInput(SDL_GRAB_ON);
-#ifdef NEW_CURSOR
-		if (sdl_cursors)
-#endif // NEW_CURSOR
 			SDL_ShowCursor(0);
 		if (fol_cam) toggle_follow_cam(&fol_cam);
-#ifdef ENGLISH
-		LOG_TO_CONSOLE (c_red1, "Grab mode: press alt+g again to enter Normal mode.");
-#else //ENGLISH
 		LOG_TO_CONSOLE (c_red1, "Mode saisie : appuie sur alt+g une autre fois pour le mode normal.");
-#endif //ENGLISH
 	} else {
 		SDL_WM_GrabInput(SDL_GRAB_OFF);
-#ifdef NEW_CURSOR
-		if (sdl_cursors)
-#endif // NEW_CURSOR
 			SDL_ShowCursor(1);
-#ifdef ENGLISH
-		LOG_TO_CONSOLE (c_red1, "Normal mode: press alt+g again to enter Grab mode.");
-#else //ENGLISH
 		LOG_TO_CONSOLE (c_red1, "Mode normal : appuie sur alt+g une autre fois pour le mode saisie.");
-#endif //ENGLISH
 	}
 }
 
@@ -409,14 +269,6 @@ int mouseover_game_handler (window_info *win, int mx, int my)
 
 	else if (thing_under_the_mouse==UNDER_MOUSE_3D_OBJ && objects_list[object_under_mouse])
 	{
-#ifdef MISSILES
-		int range_weapon_equipped;
-		LOCK_ACTORS_LISTS();
-		range_weapon_equipped = (your_actor &&
-								 your_actor->cur_weapon >= BOW_LONG &&
-								 your_actor->cur_weapon <= BOW_CROSS);
-		UNLOCK_ACTORS_LISTS();
-#endif // MISSILES
 		if(action_mode==ACTION_LOOK)
 		{
 			elwin_mouse = CURSOR_EYE;
@@ -433,14 +285,6 @@ int mouseover_game_handler (window_info *win, int mx, int my)
 		{
 			elwin_mouse = CURSOR_USE_WITEM;
 		}
-#ifdef MISSILES
-        // allow to shoot at 3D objects
-		else if (range_weapon_equipped &&
-                 (action_mode == ACTION_ATTACK || (alt_on && ctrl_on)))
-		{
-			elwin_mouse = CURSOR_ATTACK;
-		}
-#endif // MISSILES
 		//see if the object is a harvestable resource.
 		else if(objects_list[object_under_mouse]->flags&OBJ_3D_HARVESTABLE)
 		{
@@ -486,11 +330,7 @@ int mouseover_game_handler (window_info *win, int mx, int my)
 		{
 			elwin_mouse = CURSOR_TRADE;
 		}
-#ifdef MISSILES
-		else if(alt_on || action_mode==ACTION_ATTACK || ranging_lock)
-#else //MISSILES
 		else if(alt_on || action_mode==ACTION_ATTACK)
-#endif //MISSILES
 		{
 			elwin_mouse = CURSOR_ATTACK;
 		}
@@ -514,12 +354,10 @@ int mouseover_game_handler (window_info *win, int mx, int my)
 		{
 			elwin_mouse = CURSOR_EYE;
 		}
-#ifdef FR_VERSION
 		else if(action_mode==ACTION_TRADE)
 		{
 			elwin_mouse = CURSOR_TRADE;
 		}
-#endif //FR_VERSION
 		else if(shift_on)
 		{
 			elwin_mouse = CURSOR_EYE;
@@ -528,11 +366,7 @@ int mouseover_game_handler (window_info *win, int mx, int my)
 		{
 			elwin_mouse = CURSOR_WAND;
 		}
-#ifdef MISSILES
-		else if(alt_on || action_mode==ACTION_ATTACK || ranging_lock || (actor_under_mouse && !actor_under_mouse->dead))
-#else //MISSILES
 		else if(alt_on || action_mode==ACTION_ATTACK || (actor_under_mouse && !actor_under_mouse->dead))
-#endif //MISSILES
 		{
 			elwin_mouse = CURSOR_ATTACK;
 		}
@@ -558,12 +392,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 	int flag_ctrl = flags & ELW_CTRL;
 	int flag_right = flags & ELW_RIGHT_MOUSE;
 	int force_walk = (flag_ctrl && flag_right && !flag_alt);
-#ifdef ENGLISH
-	int shift_on = flags & ELW_SHIFT;
-#endif //ENGLISH
-#ifdef MISSILES
-	int range_weapon_equipped;
-#endif // MISSILES
 	if ((flags & ELW_MOUSE_BUTTON_WHEEL) == ELW_MID_MOUSE)
 		// Don't handle middle button clicks
 		return 0;
@@ -597,13 +425,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 		return 1;
 	}
 
-#ifdef MISSILES
-	LOCK_ACTORS_LISTS();
-	range_weapon_equipped = (your_actor &&
-							 your_actor->cur_weapon >= BOW_LONG &&
-							 your_actor->cur_weapon <= BOW_CROSS);
-	UNLOCK_ACTORS_LISTS();
-#endif //MISSILES
 
 	if (!force_walk)
 	{
@@ -628,28 +449,11 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 						cm_bool_line(cm_id, 0, &view_names, NULL);
 						cm_bool_line(cm_id, 1, &view_health_bar, NULL);
 						cm_bool_line(cm_id, 2, &view_hp, NULL);
-#ifdef ENGLISH
-						cm_bool_line(cm_id, 3, &view_ether_bar, NULL);
-						cm_bool_line(cm_id, 4, &view_ether, NULL);
-						cm_bool_line(cm_id, 5, &view_mode_instance, "use_view_mode_instance");
-						cm_bool_line(cm_id, 6, &view_chat_text_as_overtext, NULL);
-						cm_bool_line(cm_id, 7, &use_alpha_banner, "use_alpha_banner");
-						cm_bool_line(cm_id, 8, &sit_lock, "sit_lock");
-						cm_bool_line(cm_id, 9, &ranging_lock, NULL);
-#else //ENGLISH
 						cm_bool_line(cm_id, 3, &view_chat_text_as_overtext, NULL);
 						cm_bool_line(cm_id, 4, &use_alpha_banner, "use_alpha_banner");
 						cm_bool_line(cm_id, 5, &sit_lock, "sit_lock");
-#ifdef MISSILES
-						cm_bool_line(cm_id, 6, &ranging_lock, NULL);
-						cm_bool_line(cm_id, 8, &cm_banner_disabled, "cm_banner_disabled");
-#else //MISSILES
 						cm_bool_line(cm_id, 6, &cm_banner_disabled, "cm_banner_disabled");
-#ifdef DISPLAY_MANAPOINT
                         cm_bool_line(cm_id, 7, &view_mp, NULL);
-#endif //DISPLAY_MANAPOINT
-#endif //MISSILES
-#endif //ENGLISH
 					}
 					cm_show_direct(cm_id, -1, -1);
 					reset_cursor_time = SDL_GetTicks();
@@ -675,14 +479,8 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 					else if (thing_under_the_mouse == UNDER_MOUSE_3D_OBJ){
                         action_mode = ACTION_USE;
 					}
-#ifdef ENGLISH
-					else if ((thing_under_the_mouse == UNDER_MOUSE_ANIMAL) && include_use_cursor_on_animals)
-						action_mode = ACTION_USE;
-#endif //ENGLISH
-#ifdef FR_VERSION
 					else if (thing_under_the_mouse == UNDER_MOUSE_ANIMAL)
 						action_mode = ACTION_TRADE;
-#endif //FR_VERSION
 					else
 						action_mode = ACTION_WALK;
 					break;
@@ -720,13 +518,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 						action_mode = ACTION_WALK;
 					break;
 				case CURSOR_USE:
-#ifdef MISSILES
-                    if (range_weapon_equipped)
-                        action_mode = ACTION_ATTACK;
-                    else
-                        action_mode = ACTION_WALK;
-                    break;
-#endif // MISSILES
 				case CURSOR_TALK:
 				case CURSOR_ARROW:
 				default:
@@ -749,9 +540,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			return 1;
 		}
 
-#ifndef ENGLISH
         item_quantity=quantities.quantity[quantities.selected].val;
-#endif //ENGLISH
 		str[0] = DROP_ITEM;
 		str[1] = item_list[item_dragged].pos;
 		*((Uint32 *) (str + 2)) = SDL_SwapLE32(item_quantity);
@@ -764,7 +553,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 		//TODO: Withdraw from storage, drop on ground...
 	}
 
-#ifdef WALK_AFTER_SPELL_FR
 	if (walk_after_spell == 1){
 		if (pf_follow_path && !((mx >= window_width-hud_x) || (my >= window_height-hud_y)) && !(thing_under_the_mouse == UNDER_MOUSE_PLAYER || thing_under_the_mouse == UNDER_MOUSE_NPC) && current_cursor != CURSOR_WAND)
 		{
@@ -776,13 +564,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			pf_destroy_path();
 		}
 	}
-#else //WALK_AFTER_SPELL_FR
-	// if we're following a path, stop now if the click was in the main window
-	if (pf_follow_path && !((mx >= window_width-hud_x) || (my >= window_height-hud_y)))
-	{
-		pf_destroy_path();
-	}
-#endif //WALK_AFTER_SPELL_FR
 
 	if (force_walk)
 	{
@@ -810,16 +591,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 
 			if (thing_under_the_mouse == UNDER_MOUSE_PLAYER || thing_under_the_mouse == UNDER_MOUSE_NPC || thing_under_the_mouse == UNDER_MOUSE_ANIMAL)
 			{
-#ifdef DEBUG
-				char log[100];
-
-				safe_snprintf(log,sizeof(log),"Actor id: %d",object_under_mouse);
-				LOG_TO_CONSOLE(c_green1, log);
-#endif
-#ifdef ACHIEVEMENTS
-				if (thing_under_the_mouse == UNDER_MOUSE_PLAYER)
-					achievements_requested(mouse_x, mouse_y, flag_ctrl);
-#endif
 				str[0] = GET_PLAYER_INFO;
 				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
@@ -827,12 +598,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			}
 			else if (thing_under_the_mouse == UNDER_MOUSE_3D_OBJ)
 			{
-#ifdef DEBUG
-				char log[100];
-
-				safe_snprintf(log,sizeof(log),"Object id: %d",object_under_mouse);
-				LOG_TO_CONSOLE(c_green1, log);
-#endif
 				str[0] = LOOK_AT_MAP_OBJECT;
 				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
@@ -888,11 +653,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 
 			if (object_under_mouse == -1)
 				return 1;
-#ifdef FR_VERSION
 			if (thing_under_the_mouse != UNDER_MOUSE_PLAYER && thing_under_the_mouse != UNDER_MOUSE_ANIMAL)
-#else //FR_VERSION
-			if (thing_under_the_mouse != UNDER_MOUSE_PLAYER)
-#endif //FR_VERSION
 				return 1;
 			str[0] = TRADE_WITH;
 			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
@@ -921,24 +682,13 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 						add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_ATTACK_TARGET);
 				}
 
-#ifdef FR_FAST_SPELL
 				if(selected_spell == -1) {
-#endif
 				  str[0] = ATTACK_SOMEONE;
 				  *((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
 				  my_tcp_send (my_socket, str, 5);
 				  return 1;
 
-#ifdef FR_FAST_SPELL
 				} else {
-#ifndef FR_MORE_MQB
-				  if(mqb_data[selected_spell]->spell_id != -1) {
-				    send_spell(mqb_data[selected_spell]->spell_str, mqb_data[selected_spell]->spell_str[1]+2);
-				    selected_spell_sent = 1;
-				    selected_spell_target = object_under_mouse;
-				  }
-				}
-#else //FR_MORE_MQB
 					switch (quickspell_mqb_selected)
 					{
 					case 0:
@@ -981,31 +731,16 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 						break;
 					}
 				}
-#endif //FR_MORE_MQB
-#endif
 			}
-#ifdef MISSILES
-			else if (range_weapon_equipped && thing_under_the_mouse == UNDER_MOUSE_3D_OBJ)
-			{
-				str[0] = FIRE_MISSILE_AT_OBJECT;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
-				my_tcp_send(my_socket, str, 5);
-			}
-#endif // MISSILES
 			break;
 		}
 
 		case CURSOR_ENTER:
-#ifndef ENGLISH
         // Ackak : modification pour que le personnage ne se leve pas, lorsque l'option
         // "rester assis" est actif et que l'on clique sur une porte.
 		{
 			Uint8 str[10];
 
-#ifdef MISSILES
-			if (flag_alt && range_weapon_equipped)
-				return 1;
-#endif // MISSILES
 			if (you_sit && sit_lock && !flag_ctrl)
             {
 				LOG_TO_CONSOLE(c_green1, no_walk_with_sitlock);
@@ -1045,7 +780,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 
 			break;
 		}
-#endif //ENGLISH
 
 		case CURSOR_USE:
 		case CURSOR_USE_WITEM:
@@ -1053,10 +787,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 		{
 			Uint8 str[10];
 
-#ifdef MISSILES
-			if (flag_alt && range_weapon_equipped)
-				return 1;
-#endif // MISSILES
 			if (object_under_mouse == -1)
 				return 1;
 			if (thing_under_the_mouse == UNDER_MOUSE_PLAYER || thing_under_the_mouse == UNDER_MOUSE_NPC || thing_under_the_mouse == UNDER_MOUSE_ANIMAL)
@@ -1077,16 +807,9 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			if (use_item != -1 && current_cursor == CURSOR_USE_WITEM)
 			{
 				*((int *)(str+5)) = SDL_SwapLE32((int)item_list[use_item].pos);
-#ifdef ENGLISH
-				if (!shift_on)
-				{
-#endif //ENGLISH
 				use_item = -1;
 				action_mode = ACTION_WALK;
 			}
-#ifdef ENGLISH
-			}
-#endif //ENGLISH
 			else
 			{
 				*((int *)(str+5)) = SDL_SwapLE32((int)-1);
@@ -1100,13 +823,8 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 
 		case CURSOR_PICK:
 		{
-#ifdef MISSILES
-			if (flag_alt && range_weapon_equipped)
-				return 1;
-#endif // MISSILES
 			if (object_under_mouse == -1)
                 return 1;
-#ifdef FR_VERSION
 			if (sit_lock && !flag_ctrl && you_sit)
             {
 				if (your_actor != NULL)
@@ -1115,7 +833,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
                 }
 				return 1;
             }
-#endif //FR_VERSION
 			if (thing_under_the_mouse == UNDER_MOUSE_3D_OBJ)
 			{
 				open_bag (object_under_mouse);
@@ -1128,16 +845,10 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 		{
 			Uint8 str[10];
 
-#ifdef MISSILES
-			if (flag_alt && range_weapon_equipped)
-				return 1;
-#endif // MISSILES
 			if (object_under_mouse == -1)
 				return 1;
-#ifdef FR_VERSION
             if (harvest_roche(object_under_mouse))
                 return 1;
-#endif //FR_VERSION
 			str[0] = HARVEST;
 			*((Uint16 *)(str+1)) = SDL_SwapLE16((Uint16)object_under_mouse);
 			my_tcp_send (my_socket, str, 3);
@@ -1154,15 +865,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			if ((mx >= window_width-hud_x) || (my >= window_height-hud_y))
 				return 1;
 
-#ifdef MISSILES
-			if (flag_alt && range_weapon_equipped)
-				return 1;
-			if (ranging_lock && range_weapon_equipped){
-				if(your_actor != NULL)
-					add_highlight(your_actor->x_tile_pos,your_actor->y_tile_pos, HIGHLIGHT_TYPE_LOCK);
-				return 1;
-			}
-#endif // MISSILES
 			if (you_sit && sit_lock && !flag_ctrl){
 				if(your_actor != NULL)
 					add_highlight(your_actor->x_tile_pos,your_actor->y_tile_pos, HIGHLIGHT_TYPE_LOCK);
@@ -1180,32 +882,6 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 
 			add_highlight(x, y, HIGHLIGHT_TYPE_WALKING_DESTINATION);
 
-#ifdef MISSILES_DEBUG // FOR DEBUG ONLY!
-            if (enable_client_aiming) {
-                if (flag_ctrl) {
-                    float target[3];
-
-                    target[0] = x * 0.5 + 0.25;
-                    target[1] = y * 0.5 + 0.25;
-                    target[2] = get_tile_height(x, y) + 1.2f;
-
-					missiles_aim_at_xyz(yourself, target);
-					add_command_to_actor(yourself, aim_mode_reload);
-					missiles_fire_a_to_xyz(yourself, target);
-                }
-                else {
-                    char in_aim_mode;
-                    actor *cur_actor = get_actor_ptr_from_id(yourself);
-                    LOCK_ACTORS_LISTS();
-                    in_aim_mode = cur_actor->in_aim_mode;
-                    UNLOCK_ACTORS_LISTS();
-                    if (in_aim_mode == 1)
-                        add_command_to_actor(yourself, leave_aim_mode);
-                    move_to(x, y, 1);
-                }
-            }
-            else
-#endif // DEBUG
 			move_to (x, y, 1);
 
 			return 1;
@@ -1241,9 +917,7 @@ int display_game_handler (window_info *win)
 	}
 	if(i > max_actors) return 1;//we still don't have ourselves
 
-#ifdef CLUSTER_INSIDES
 	current_cluster = get_actor_cluster();
-#endif // CLUSTER_INSIDES
 
 	main_count++;
 	last_count++;
@@ -1362,9 +1036,6 @@ int display_game_handler (window_info *win)
 		CHECK_GL_ERRORS ();
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-#ifdef MISSILES
-		missiles_update();
-#endif
 
 		if (!is_day)
 			weather_init_lightning_light();
@@ -1413,9 +1084,6 @@ int display_game_handler (window_info *win)
 		display_actors (1, DEFAULT_RENDER_PASS);	// we need to 'touch' all the actors even if not drawing to avoid problems
 	}
 	CHECK_GL_ERRORS ();
-#ifdef DEBUG_TIME
-	light_idle();
-#endif // DEBUG_TIME
 
 	ec_idle();
 
@@ -1447,10 +1115,6 @@ int display_game_handler (window_info *win)
 	ec_draw();
 	CHECK_GL_ERRORS();
 
-#ifdef MISSILES
-	missiles_draw();
-	CHECK_GL_ERRORS();
-#endif
 
 	last_texture = -1;
 
@@ -1513,67 +1177,16 @@ int display_game_handler (window_info *win)
 	}
 	if (show_fps)
 	{
-#ifdef	DEBUG
-		actor *me = get_our_actor ();
-
 		glColor3f (1.0f, 1.0f, 1.0f);
-		if(me){
- 			safe_snprintf((char*)str,sizeof(str),"Busy: %i",me->busy);
-	 		draw_string (400, 4, str, 1);
-			safe_snprintf((char*)str,sizeof(str),"Command: %i",me->last_command);
- 			draw_string (400, 20, str, 1);
-			safe_snprintf((char*)str,sizeof(str),"Coords: %-3i %3i",me->x_tile_pos, me->y_tile_pos);
- 			draw_string (550, 4, str, 1);
-			safe_snprintf((char*)str,sizeof(str),"Coords: %.3g %.3g",me->x_pos, me->y_pos);
- 			draw_string (550, 20, str, 1);
-		}
-		safe_snprintf ((char*)str, sizeof(str),"Lights: %i", show_lights);
-		draw_string (win->len_x-hud_x-105, 32, str, 1);
-
-		safe_snprintf((char*)str, sizeof(str), "lights: ambient=(%.2f,%.2f,%.2f,%.2f) diffuse=(%.2f,%.2f,%.2f,%.2f)",
-					  ambient_light[0], ambient_light[1], ambient_light[2], ambient_light[3],
-					  diffuse_light[0], diffuse_light[1], diffuse_light[2], diffuse_light[3]);
-		draw_string (0, win->len_y - hud_y - 65, str, 1);
-		safe_snprintf((char*)str, sizeof(str), "weather: drops=%d/%d/%d/%d/%d/%d, int=%f, dty=%f, fog=%f",
-					  weather_get_drops_count(1),
-					  weather_get_drops_count(2),
-					  weather_get_drops_count(3),
-					  weather_get_drops_count(4),
-					  weather_get_drops_count(5),
-					  weather_get_drops_count(6),
-					  weather_get_intensity(),
-					  weather_get_density(),
-					  skybox_fog_density);
-		draw_string (0, win->len_y - hud_y - 40, str, 1);
-#else	//DEBUG
-		glColor3f (1.0f, 1.0f, 1.0f);
-#endif	//DEBUG
-#ifdef ENGLISH
-		safe_snprintf ((char*)str, sizeof(str), "FPS: %i", fps[0]);
-		draw_string (win->len_x-hud_x-95, 4, str, 1);
-		safe_snprintf((char*)str, sizeof(str), "UVP: %d", use_animation_program);
-		draw_string (win->len_x-hud_x-95, 19, str, 1);
-#else //ENGLISH
 		safe_snprintf ((char*)str, sizeof(str), "FPS:%i", fps[0]);
 		draw_string_small_shadowed(win->len_x - HUD_MARGIN_X - 50, 4, str, 1, 0.8f,0.8f,0.8f, 0.0f,0.0f,0.0f);
-#endif //ENGLISH
-#ifdef DEBUG
-		//LRNR: stats testing
-		safe_snprintf((char*)str, sizeof(str), "E3D:%3d TOT:%3d", e3d_count, e3d_total);
-		draw_string (win->len_x-hud_x-183, 49, str, 1);
-		e3d_count= e3d_total= 0;
-#endif //DEBUG
 	}
-#ifdef ENGLISH
-	draw_spell_icon_strings();
-#endif //ENGLISH
 
 	CHECK_GL_ERRORS ();
 	/* Draw the chat text */
 	if (use_windowed_chat != 2)
 	{
 		int msg, offset, filter;
-#ifndef ENGLISH
         int ytext = 20;
         if (use_windowed_chat ==1)
         {
@@ -1586,14 +1199,10 @@ int display_game_handler (window_info *win)
                 ytext = 45;
             }
         }
-#endif //ENGLISH
 		filter = use_windowed_chat == 1 ? current_filter : FILTER_ALL;
 		if (find_last_lines_time (&msg, &offset, filter, console_text_width))
 		{
 			set_font(chat_font);	// switch to the chat font
-#ifdef ENGLISH
-			draw_messages (10, use_windowed_chat == 1 ? 25 : 20, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
-#else //ENGLISH
 			// Ajout d'un fond semi-transparent derrière les lignes d'historique
 			if (chat_alpha_background > 0)
 			{
@@ -1611,11 +1220,9 @@ int display_game_handler (window_info *win)
 				glEnable(GL_TEXTURE_2D);
 			}
 			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
-#endif //ENGLISH
 			set_font (0);	// switch to fixed
 		}
 
-#ifndef ENGLISH
 		// Ajout d'un fond semi-transparent derrière la ligne de saisie
 		if (chat_alpha_background && ((text_field*)input_widget->widget_info)->cursor)
 		{
@@ -1635,7 +1242,6 @@ int display_game_handler (window_info *win)
 			glEnable(GL_TEXTURE_2D);
 			set_font (0);	// switch to fixed
 		}
-#endif //ENGLISH
 	}
 
 	anything_under_the_mouse (0, UNDER_MOUSE_NO_CHANGE);
@@ -1657,9 +1263,6 @@ int display_game_handler (window_info *win)
 	// Return to 2D mode to draw the other windows
 	glPopMatrix ();	// restore the state
 	Enter2DMode ();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	if ((input_widget!= NULL) && (input_widget->window_id != win->window_id) && !get_show_window(chat_win))
 		input_widget_move_to_win(win->window_id);
@@ -1757,17 +1360,9 @@ void hide_all_windows(){
 	if (get_show_window(ground_items_win) > 0 || get_show_window(items_win) > 0 || get_show_window(buddy_win) > 0 ||
 		get_show_window(manufacture_win) > 0 || get_show_window(elconfig_win) > 0 || get_show_window(sigil_win) > 0 || get_show_window(tab_stats_win) > 0 || get_show_window(tab_help_win) > 0 || get_show_window(storage_win) > 0 ||
 
-#ifdef ENGLISH
-		get_show_window(dialogue_win) > 0 || get_show_window(questlog_win) > 0 || (get_show_window(minimap_win) > 0 && !pin_minimap)
-		|| get_show_window(tab_info_win) > 0 || get_show_window(emotes_win) > 0 || get_show_window(range_win) > 0
-#else //ENGLISH
 		get_show_window(dialogue_win) > 0
-#endif //ENGLISH
 		|| (get_show_window(minimap_win) > 0 && !pin_minimap)
 		|| get_show_window(tab_info_win) > 0
-#ifdef EMOTES
-		|| get_show_window(emotes_win) > 0
-#endif
 	){	//Okay, hide the open ones.
 		if (get_window_showable(ground_items_win) > 0){
 			unsigned char protocol_name;
@@ -1821,14 +1416,6 @@ void hide_all_windows(){
 		if (get_window_showable(dialogue_win) > 0){
 			hide_window (dialogue_win);
 		}
-#ifdef ENGLISH
-		if (get_window_showable(range_win)){
-			hide_window (range_win);
-			were_open |= 1<<7;
-		} else {
-			were_open &= ~(1<<7);
-		}
-#endif //ENGLISH
 		if (get_window_showable(minimap_win) > 0 && !pin_minimap){
 			hide_window (minimap_win);
 			were_open |= 1<<8;
@@ -1850,22 +1437,6 @@ void hide_all_windows(){
 		} else {
 			were_open &= ~(1<<10);
 		}
-#ifdef EMOTES
-		if (get_window_showable(emotes_win) > 0){
-			hide_window (emotes_win);
-			were_open |= 1<<11;
-		} else {
-			were_open &= ~(1<<11);
-		}
-#endif
-#ifdef ENGLISH
-		if (get_window_showable(questlog_win) > 0){
-			hide_window (questlog_win);
-			were_open |= 1<<12;
-		} else {
-			were_open &= ~(1<<12);
-		}
-#endif //ENGLISH
 	} else {	//None were open, restore the ones that were open last time the key was pressed
 		if (were_open & 1<<0){
 			show_window (items_win);
@@ -1888,11 +1459,6 @@ void hide_all_windows(){
 		if (were_open & 1<<6){
 			show_window (tab_help_win);
 		}
-#ifdef ENGLISH
-		if (were_open & 1<<7){
-			show_window (range_win);
-		}
-#endif //ENGLISH
 		if (were_open & 1<<8){
 			show_window (minimap_win );
 		}
@@ -1902,15 +1468,6 @@ void hide_all_windows(){
 		if (view_only_storage && (were_open & 1<<10)){
 			show_window (storage_win );
 		}
-#ifdef EMOTES
-		if (were_open & 1<<11){
-			show_window (emotes_win);
-		}
-#endif
-#ifdef ENGLISH
-		if (were_open & 1<<12){
-			show_window (questlog_win);
-#endif //ENGLISH
 	}
 }
 
@@ -1931,12 +1488,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	int alt_on = key & ELW_ALT;
 	int ctrl_on = key & ELW_CTRL;
 	Uint16 keysym = key & 0xffff;
-#ifdef DEBUG
-	int i;
-	Uint32 _cur_time= SDL_GetTicks();
-#endif
 
-#ifndef ENGLISH
      // le altgr ne fonctionnant pas sous windows nous utiliserons ctrl+shift+1 ....
      // a voir sous nux par la suite :)
      int shift_on = key & ELW_SHIFT;
@@ -1961,7 +1513,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
           }
      #endif
 
-#endif //ENGLISH
 
 	if(check_quit_or_fullscreen(key))
 	{
@@ -1988,148 +1539,10 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	{
 		connect_to_server();
 	}
-#ifdef ENGLISH
-	else if (key == K_PASTE)
-#else //ENGLISH
 	else if ((key == K_PASTE) || (key == K_PASTE_ALT))
-#endif //ENGLISH
 	{
 		start_paste(NULL);
 	}
-#ifdef DEBUG
-	else if((keysym == SDLK_LEFT) && shift_on && ctrl_on && !alt_on)
-	{
-		for (i=0; i<ITEM_WEAR_START;i++) {
-			item_list[i].cooldown_rate = 60000;
-			item_list[i].cooldown_time = _cur_time + 60000;
-		}
-	}
-	else if((keysym == SDLK_DOWN) && shift_on && ctrl_on && !alt_on)
-	{
-		for(i=0; i<ITEM_WEAR_START;i++) {
-			item_list[i].cooldown_time -= 1000;
-		}
-	}
-	else if((keysym == SDLK_UP) && shift_on && ctrl_on && !alt_on)
-	{
-		for(i=0; i<ITEM_WEAR_START;i++) {
-			item_list[i].cooldown_time += 1000;
-		}
-	}
-	else if((keysym == SDLK_t) && shift_on && ctrl_on && !alt_on)
-	{
-		weather_add_lightning(rand()%5, -camera_x-100+rand()%200, -camera_y-100+rand()%200);
-	}
-	else if((keysym == SDLK_w) && shift_on && ctrl_on && alt_on)
-	{
-		if(real_game_minute >= 355) real_game_minute -=355; else real_game_minute +=  5;
-		new_minute();
-	}
-	else if((keysym == SDLK_q) && shift_on && ctrl_on && alt_on)
-	{
-		if(real_game_minute < 5) real_game_minute +=355; else real_game_minute -=  5;
-		new_minute();
-	}
-	else if((keysym == SDLK_w) && !shift_on && ctrl_on && alt_on)
-	{
-		if(real_game_minute >= 359) real_game_minute -=359; else real_game_minute +=  1;
-		new_minute();
-	}
-	else if((keysym == SDLK_q) && !shift_on && ctrl_on && alt_on)
-	{
-		if(real_game_minute < 1) real_game_minute +=359; else real_game_minute -=  1;
-		new_minute();
-	}
-	else if((keysym == SDLK_s) && shift_on && ctrl_on && alt_on)
-	{
-		skybox_init_defs(NULL);
-	}
-	else if((keysym == SDLK_f) && shift_on && ctrl_on && alt_on)
-	{
-		freeze_time = !freeze_time;
-		if (freeze_time)
-			LOG_TO_CONSOLE(c_green2, "Time freezed!");
-		else
-		{
-			LOG_TO_CONSOLE(c_green2, "Time unfreezed!");
-			new_minute();
-			new_second();
-		}
-	}
-	else if((keysym == SDLK_HOME) && shift_on && ctrl_on && !alt_on)
-	{
-		weather_set_area(0, -camera_x, -camera_y, 100.0, 1, 1.0, 10);
-	}
-	else if ((keysym == SDLK_END) && shift_on && ctrl_on && !alt_on)
-	{
-		weather_set_area(1, -camera_x, -camera_y, 100.0, 2, 1.0, 10);
-	}
-#ifdef MINES
-	else if((keysym == SDLK_z) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_SMALL_MINE, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_x) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_MEDIUM_MINE, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_c) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_HIGH_EXPLOSIVE_MINE, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_v) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_TRAP, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_b) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_CALTROP, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_n) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_POISONED_CALTROP, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_m) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_MANA_BURNER, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_j) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_MANA_DRAINER, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_k) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_UNINVIZIBILIZER, (poor_man ? 6 : 10));
-	}
-	else if((keysym == SDLK_l) && shift_on && ctrl_on && !alt_on)
-	{
-		ec_create_mine_detonate(your_actor->x_pos + 0.25f, your_actor->y_pos + 0.25f, 0, MINE_TYPE_MAGIC_IMMUNITY_REMOVAL, (poor_man ? 6 : 10));
-	}
-#endif // MINES
-#endif
-#ifdef DEBUG
-    // scale the current actor
-	else if((keysym == SDLK_p) && shift_on && ctrl_on && !alt_on)
-	{
-		get_our_actor()->scale *= 1.05;
-	}
-	else if((keysym == SDLK_o) && shift_on && ctrl_on && !alt_on)
-	{
-		get_our_actor()->scale /= 1.05;
-	}
-#ifdef ATTACHED_ACTORS
-	else if((keysym == SDLK_h) && shift_on && ctrl_on && !alt_on)
-	{
-        if (get_our_actor())
-        {
-            if (get_our_actor()->attached_actor < 0)
-                add_actor_attachment(get_our_actor()->actor_id, 200);
-            else
-                remove_actor_attachment(get_our_actor()->actor_id);
-        }
-	}
-#endif // ATTACHED_ACTORS
-#endif // DEBUG
 	// use quickbar items & spells
 	else if (action_item_keys(key))
 	{
@@ -2164,15 +1577,10 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	}
 	else if (key == K_VIEWHP)
 	{
-#ifdef FR_VERSION
 		if (view_hp && voir_pdv) voir_pdv = 0;
 		else if (view_hp) view_hp = 0;
 		else view_hp = voir_pdv = 1;
-#else //FR_VERSION
-		view_hp = !view_hp;
-#endif //FR_VERSION
 	}
-#ifdef DISPLAY_MANAPOINT
     else if (key == K_VIEWMP)
 	{
 		view_mp = !view_mp;
@@ -2181,57 +1589,27 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	{
 		view_mana_bar = !view_mana_bar;
 	}
-#endif //DISPLAY_MANAPOINT
 	else if (key == K_SHADOWS)
 	{
 		clouds_shadows = !clouds_shadows;
 	}
-#ifdef MISSILES
-	else if (key == K_RANGINGLOCK)
-	{
-		ranging_lock = !ranging_lock;
-		if (ranging_lock)
-			LOG_TO_CONSOLE(c_green1, ranginglock_enabled_str);
-		else
-			LOG_TO_CONSOLE(c_green1, ranginglock_disabled_str);
-	}
-#endif //MISSILES
 	// open or close windows
-#ifdef ENGLISH
-	else if (key == K_STATS)
-#else //ENGLISH
 	else if ((key == K_STATS) || (unikey == K_STATS))
-#endif //ENGLISH
 	{
 		view_tab (&tab_stats_win, &tab_stats_collection_id, STATS_TAB_STATS);
 	}
 	else if (key == K_QUESTLOG)
 	{
-#ifdef ENGLISH
-		view_window (&questlog_win, 0);
-#else //ENGLISH
 		view_tab (&tab_stats_win, &tab_stats_collection_id, STATS_TAB_QUESTLOG);
-#endif //ENGLISH
 	}
-#ifdef ENGLISH
-	else if (key == K_SESSION)
-#else //ENGLISH
      else if ((key == K_SESSION) || (unikey == K_SESSION))
-#endif //ENGLISH
 	{
 		view_tab (&tab_stats_win, &tab_stats_collection_id, STATS_TAB_SESSION);
 	}
-#ifdef ENGLISH
-	else if (key == K_COUNTERS)
-	{
-		view_tab (&tab_stats_win, &tab_stats_collection_id, STATS_TAB_COUNTERS);
-	}
-#endif //ENGLISH
 	else if (key == K_OPTIONS)
 	{
 		view_window (&elconfig_win, 0);
 	}
-#ifdef FR_VERSION
     else if (key == K_FENETRE_MUSIQUE)
     {
         if (music_on == 1)
@@ -2243,7 +1621,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
             LOG_TO_CONSOLE(c_red2, "Il faut activer la musique pour afficher cette fenêtre.");
         }
     }
-#endif //FR_VERSION
 	else if (key == K_KNOWLEDGE)
 	{
 		view_tab (&tab_stats_win, &tab_stats_collection_id, STATS_TAB_KNOWLEDGE);
@@ -2256,12 +1633,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	{
 		view_tab(&tab_help_win, &tab_help_collection_id, HELP_TAB_HELP);
 	}
-#ifdef FR_VERSION
     else if (key == K_INCUNABLES)
-#else //FR_VERSION
-	else if (key == K_HELPSKILLS)
-#endif //FR_VERSION
-#ifdef FR_VERSION
     {
 		view_tab(&tab_help_win, &tab_help_collection_id, HELP_TAB_SKILLS);
     }
@@ -2281,7 +1653,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	{
 		voir_musique_carte = !voir_musique_carte;
 	}
-#endif //FR_VERSION
 	else if (key == K_NOTEPAD)
 	{
 		view_tab(&tab_info_win, &tab_info_collection_id, INFO_TAB_NOTEPAD);
@@ -2290,27 +1661,11 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	{
 		view_window (&minimap_win, 0);
 	}
-#ifdef ECDEBUGWIN
-	else if(key == K_ECDEBUGWIN)
-	{
-		view_window (&ecdebug_win, 0);
-	}
-#endif // ECDEBUGWIN
 	else if (key == K_SIGILS)
 	{
 		view_window (&sigil_win, -1);
 	}
-#ifdef EMOTES
-	else if (key == K_EMOTES)
-	{
-		view_window (&emotes_win, -1);
-	}
-#endif
-#ifdef ENGLISH
-	else if (key == K_MANUFACTURE)
-#else //ENGLISH
 	else if (unikey == K_MANUFACTURE)
-#endif //ENGLISH
 	{
 		view_window (&manufacture_win, -1);
 	}
@@ -2323,11 +1678,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		display_buddy();
 	}
 	// set action modes
-#ifdef ENGLISH
-	else if (key == K_WALK)
-#else //ENGLISH
 	else if (unikey == K_WALK)
-#endif //ENGLISH
 	{
 		item_action_mode = qb_action_mode = action_mode = ACTION_WALK;
 	}
@@ -2351,12 +1702,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 			go_ifk ();
 		}
 	}
-#ifdef ENGLISH
-	else if(key == K_RANGINGWIN)
-	{
-		view_window(&range_win, -1);
-	}
-#endif //ENGLISH
 	else if (key == K_SIT)
 	{
 		toggle_sit_stand ();
@@ -2372,11 +1717,9 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	else if (keysym == SDLK_ESCAPE)
 	{
 		root_key_to_input_field (key, unikey);
-#ifdef FR_VERSION
 		item_dragged = -1;
 		storage_item_dragged = -1;
 		fr_quickitem_dragged = -1;
-#endif //FR_VERSION
 	}
 	else if(key == K_NEXT_CHAT_TAB)
 	{
@@ -2386,7 +1729,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		switch(use_windowed_chat)
 		{
 			case 1: //Tabs
-#ifndef ENGLISH
                 if (current_bar == 1)
                 {
                     if (current_tab == nb_tab_button_1-1)
@@ -2421,17 +1763,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 				        switch_to_tab(next_tab,2);
                     }
                 }
-#else //ENGLISH
-				if(current_tab == tabs_in_use-1)
-				{
-					next_tab = 2;
-				}
-				else
-				{
-					next_tab = current_tab + 1;
-				}
-				switch_to_tab(next_tab);
-#endif //ENGLISH
 			break;
 			case 2: //Window
 				widget = widget_find(chat_win, chat_tabcollection_id);
@@ -2459,7 +1790,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		switch(use_windowed_chat)
 		{
 			case 1: //Tab
-#ifndef ENGLISH
                 if (current_bar == 1)
                 {
                     if (current_tab == 2)
@@ -2494,17 +1824,6 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 				        switch_to_tab(next_tab,2);
                     }
                 }
-#else //ENGLISH
-				if(current_tab == 2)
-				{
-					next_tab = tabs_in_use-1;
-				}
-				else
-				{
-					next_tab = current_tab-1;
-				}
-				switch_to_tab(next_tab);
-#endif //ENGLISH
 				break;
 			case 2: //Window
 				widget = widget_find(chat_win, chat_tabcollection_id);
@@ -2528,12 +1847,10 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	{
 		change_windows_on_top(&windows_on_top);
 	}
-#ifdef PNG_SCREENSHOT
 	else if (key == K_SCREENSHOT)
 	{
 		makeScreenShot();
 	}
-#endif
 	else if (key == K_OPAQUEWIN)
 	{
 		if (top_SWITCHABLE_OPAQUE_window_drawn != -1)
@@ -2719,22 +2036,8 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 			show_window (map_root_win);
 		}
 	}
-#ifdef DEBUG_POPUP_AIDE_FR
-    else if (keysym == SDLK_F6)
-    {
-        afficher_message_aide(1);
-    }
-#endif //DEBUG_POPUP_AIDE_FR
-#ifdef FR_DEBUG_LIVRES
-    // Ackak pour les tests actuels
-    else if (keysym == SDLK_F8)
-    {
-        lire_livre_local ("   books/Livres.xml\0", 22);
-    }
-#endif //FR_DEBUG_LIVRES
 	else if (keysym == SDLK_F6)
 	{
-#ifdef FR_VERSION
 		// on remonte/descend les barres rapides placées sur le hud sous le logo
 		if ((! quickbar_draggable) && (quickbar_dir==VERTICAL) && (quickbar_x<=HUD_MARGIN_X) && (quickbar_y==hud_x))
 		{
@@ -2746,7 +2049,6 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 			quickspell_y = (hud_x) ? 0 : HUD_MARGIN_X;
 			move_window(quickspell_win, -1, 0, window_width - quickspell_x, quickspell_y);
 		}
-#endif //FR_VERSION
 		if(!hud_x)
 		{
 			hud_x = HUD_MARGIN_X;
@@ -2771,96 +2073,11 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 	{
 		toggle_ext_cam(&ext_cam);
 	}
-#ifdef PAWN
-	else if (keysym == SDLK_F8)
-	{
-		if (object_under_mouse != -1 && thing_under_the_mouse == UNDER_MOUSE_3D_OBJ && objects_list[object_under_mouse])
-		{
-			run_pawn_map_function ("play_with_object_pos", "ii", object_under_mouse, key & ELW_SHIFT ? 1: 0);
-		}
-		else
-		{
-			run_pawn_server_function ("pawn_test", "s", "meep!");
-		}
-	}
-#endif
 	else if (keysym == SDLK_F9)
 	{
 		actor *me = get_actor_ptr_from_id (yourself);
 		ec_create_campfire(me->x_pos + 0.25f, me->y_pos + 0.25f, get_tile_height(me->x_tile_pos, me->y_tile_pos), 0.0, 1.0, (poor_man ? 6 : 10), 0.7);
 	}
-#ifdef FR_FENETRE_OPTIONS
-    else if (keysym == SDLK_F12)
-    {
-		view_window (&fenetre_options, 0);
-    }
-#endif //FR_FENETRE_OPTIONS
-#ifdef DEBUG
-	else if (keysym == SDLK_F10)
-	{
-		if (key & ELW_SHIFT)
-		{
-#ifdef NEW_SOUND
-			print_sound_types();
-			print_sound_samples();
-			print_sounds_list();
-			print_sound_sources();
-#endif //!NEW_SOUND
-		}
-		else if (key & ELW_ALT)
-		{
-			print_filter_list ();
-		}
-		else
-		{
-			int iwin;
-			widget_list *l;
-			for (iwin = 0; iwin < windows_list.num_windows; iwin++)
-			{
-				printf ("%s: id = %d, order = %d, parent = %d, pos = (%d, %d), cur_pos = (%d, %d), displayed = %d\n", windows_list.window[iwin].window_name, windows_list.window[iwin].window_id, windows_list.window[iwin].order, windows_list.window[iwin].pos_id, windows_list.window[iwin].pos_x, windows_list.window[iwin].pos_y, windows_list.window[iwin].cur_x, windows_list.window[iwin].cur_y, windows_list.window[iwin].displayed);
-				for (l = windows_list.window[iwin].widgetlist; l; l = l->next)
-					printf ("\t%d\n", l->id);
-			}
-		}
-	}
-	else if (keysym == SDLK_F11)
-	{
-#ifdef	NEW_TEXTURES
-		unload_texture_cache();
-#else	/* NEW_TEXTURES */
-		int i;
-
-		for (i = 0; i < TEXTURE_CACHE_MAX; i++)
-		{
-			if(texture_cache[i].file_name[0])
-			{
-				glDeleteTextures(1,(GLuint*)&texture_cache[i].texture_id);
-				texture_cache[i].texture_id = 0;
-				CHECK_GL_ERRORS();
-			}
-		}
-
-		//now, reload the textures
-		for (i=0; i < TEXTURE_CACHE_MAX; i++)
-		{
-			if(texture_cache[i].file_name[0] && !texture_cache[i].load_err)
-			{
-				int alpha = texture_cache[i].alpha;
-				if(alpha <= 0)
-					texture_cache[i].texture_id = load_bmp8_color_key (&(texture_cache[i]), alpha);
-				else
-					texture_cache[i].texture_id = load_bmp8_fixed_alpha (&(texture_cache[i]), alpha);
-			}
-		}
-#endif	/* NEW_TEXTURES */
-	}
-#ifdef	NEW_TEXTURES
-	else if (keysym == SDLK_F12)
-	{
-		dump_texture_cache();
-	}
-#endif	/* NEW_TEXTURES */
-#endif	/* DEBUG */
 	// END OF TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	else
 	{
@@ -2925,11 +2142,7 @@ void create_game_root_window (int width, int height)
 				set_text_message_color (&input_text_line, 0.16f, 0.16f, 0.16f);
 			else
 				set_text_message_color (&input_text_line, 1.0f, 1.0f, 1.0f);
-#ifdef FR_VERSION
 			id = text_field_add_extended(game_root_win, 42, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
-#else //FR_VERSION
-			id = text_field_add_extended(game_root_win, 42, NULL, 0, height-INPUT_HEIGHT-hud_y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_zoom, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
-#endif //FR_VERSION
 			input_widget = widget_find(game_root_win, id);
 			input_widget->OnResize = input_field_resize;
 		} else {

@@ -142,9 +142,7 @@ typedef struct
 
 	particle particles[MAX_PARTICLES]; /*!< an array of particles for this particle system */
 
-#ifdef CLUSTER_INSIDES
 	short cluster;
-#endif
 }particle_sys;
 
 extern SDL_mutex *particles_list_mutex;	/*!< used for locking between the timer and main threads */
@@ -257,16 +255,10 @@ void calc_bounding_box_for_particle_sys (AABBOX* bbox, particle_sys *system_id);
  *             index in particles_list otherwise
  * \callgraph
  */
-#ifndef	MAP_EDITOR
 int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos, unsigned int dynamic);
-#else
-int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos);
-#endif
 
-#ifdef NEW_SOUND
 // Wrapper function for map particles
 int add_map_particle_sys (const char *file_name, float x_pos, float y_pos, float z_pos, unsigned int dynamic);
-#endif // NEW_SOUND
 void add_ec_effect_to_e3d(object3d* e3d);
 
 /*!
@@ -282,19 +274,11 @@ void add_ec_effect_to_e3d(object3d* e3d);
  *             index in particles_list otherwise
  * \callgraph
  */
-#ifndef	MAP_EDITOR
 int add_particle_sys_at_tile (const char *file_name, int x_tile, int y_tile, unsigned int dynamic);
-#else
-int add_particle_sys_at_tile (const char *file_name, int x_tile, int y_tile);
-#endif
 
 // Grum: included here for the map editor
 void create_particle (particle_sys *sys, particle *result);
-#ifndef	MAP_EDITOR
 int create_particle_sys (particle_sys_def *def, float x, float y, float z, unsigned int dynamic);
-#else
-int create_particle_sys (particle_sys_def *def, float x, float y, float z);
-#endif
 
 //RENDERING FUNCTIONS
 
@@ -343,33 +327,7 @@ void add_teleporters_from_list (const Uint8 *teleport_list);
  * \retval int
  * \callgraph
  */
-#if defined(MAP_EDITOR)
-/*!
- * \brief Set the particle texture as the current texture
- *
- *	Set the particle texture \a i as the next texture to be drawn.
- * 
- * \param i The number of the texture file, \c part_texture field of the 
- *          particle system definition.
- */
-void get_and_set_particle_texture_id (int i);
 
-int save_particle_def(particle_sys_def *def);
-#elif defined(MAP_EDITOR2)
-int save_particle_def(particle_sys_def *def);
-#endif
-
-#ifdef MAP_EDITOR2
-void draw_text_particle_sys(particle_sys *system_id);
-void draw_point_particle_sys(particle_sys *system_id);
-
-void update_bag_part_sys(particle_sys *system_id);
-void update_teleport_sys(particle_sys *system_id);
-void update_teleporter_sys(particle_sys *system_id);
-void update_fire_sys(particle_sys *system_id);
-void update_burst_sys(particle_sys *system_id);
-void update_fountain_sys(particle_sys *system_id);
-#endif // MAP_EDITOR2
 
 extern int use_point_particles; /*!< specifies if we use point particles or not */
 extern int enable_blood; /*!< specifies whether or not to use the blood special effect in combat */

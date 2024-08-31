@@ -35,9 +35,6 @@
 #include "text.h"
 #include "translate.h"
 #include "url.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "sound.h"
 
 char browser_name[120];
@@ -124,10 +121,8 @@ void destroy_url_list(void)
 		list_destroy(newest_url);
 		saved_url_count = have_url_count = 0;
 		active_url = newest_url = NULL;
-#ifdef FR_VERSION
 		// mise à jour de la barre de défilement ici plutot que dans la fonction d'affichage
 		vscrollbar_set_bar_len(url_win, url_scroll_id, have_url_count);
-#endif //FR_VERSION
 	}
 }
 
@@ -174,15 +169,9 @@ int url_command(const char *text, int len)
 				out_str = (char *)malloc(new_len);
 				out_len = new_len;
 			}
-#ifdef ENGLISH
-			safe_snprintf(out_str, new_len, "%c %d) %s (seen %d time%s) (%s)", ((local_head==active_url) ?'>':' '),
-				 ++irl_num, ((URLDATA *)local_head->data)->text, ((URLDATA *)local_head->data)->seen_count,
-				 ((URLDATA *)local_head->data)->seen_count == 1?"":"s",  ((((URLDATA *)local_head->data)->visited) ?"visited":"unvisited"));
-#else //ENGLISH
 			safe_snprintf(out_str, new_len, "%c %d) %s (vu %d fois) (%s)", ((local_head==active_url) ?'>':' '),
 				 ++irl_num, ((URLDATA *)local_head->data)->text, ((URLDATA *)local_head->data)->seen_count,
 				 ((((URLDATA *)local_head->data)->visited) ?"visité":"non visité"));
-#endif //ENGLISH
 			LOG_TO_CONSOLE(line_colour, out_str);
 			local_head = local_head->prev;
 			line_colour = (line_colour==c_grey1) ?c_grey2 :c_grey1;
@@ -337,10 +326,8 @@ void find_all_url(const char *source_string, const int len)
 				list_push(&newest_url, new_node);
 				active_url = newest_url;
 				have_url_count++;
-#ifdef FR_VERSION
 				// mise à jour de la barre de défilement ici plutot que dans la fonction d'affichage
 				vscrollbar_set_bar_len(url_win, url_scroll_id, have_url_count);
-#endif //FR_VERSION
 			}
 
 		} /* end if url found */
@@ -419,9 +406,6 @@ void open_web_link(const char * url)
 /*  Access the caught url list and display in a scrollable window. */
 static int display_url_handler(window_info *win)
 {
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	url_win_hover_url = NULL;
 
@@ -451,9 +435,6 @@ CHECK_GL_ERRORS();
 		list_node_t *local_head = newest_url;
 		int currenty = url_win_text_start_y;
 		int start_url = 0;
-#ifndef FR_VERSION
-		int num_url_displayed = 0;
-#endif //FR_VERSION
 
 		/* don't scroll if everything will fit in the window, also catch if the list has been cleared via #url */
 		if (((url_win_line_step * have_url_count) <= url_win_text_len_y) || (url_win_top_line > have_url_count))
@@ -565,15 +546,9 @@ CHECK_GL_ERRORS();
 				glEnable(GL_TEXTURE_2D);
 
 				/* write the full url as help text at the bottom of the window */
-#ifdef ENGLISH
-				safe_snprintf(full_help_text, full_help_len, "%s (seen %d time%s) (%s)",
-					((URLDATA *)local_head->data)->text, ((URLDATA *)local_head->data)->seen_count,
-					((URLDATA *)local_head->data)->seen_count == 1?"":"s",  ((((URLDATA *)local_head->data)->visited)?"visited":"unvisited"));
-#else //ENGLISH
 				safe_snprintf(full_help_text, full_help_len, "%s (vu %d fois) (%s)",
 					((URLDATA *)local_head->data)->text, ((URLDATA *)local_head->data)->seen_count,
 					((((URLDATA *)local_head->data)->visited)?"visité":"non visité"));
-#endif //ENGLISH
 				thetext = full_help_text;
 				dsp_string_len = 0;
 				string_width = 0;
@@ -606,19 +581,11 @@ CHECK_GL_ERRORS();
 
 			} /* end if mouse over url */
 
-#ifdef ENGLISH
-			/* count how many displayed so we can set the scroll bar properly */
-			num_url_displayed++;
-#endif //ENGLISH
 
 			local_head = local_head->next;
 		}
 
 		// note: c'est vraiment trop laid de faire ça à chaque fois dans la fonction display !
-#ifdef ENGLISH
-		/* set the number of steps for the scroll bar */
-		vscrollbar_set_bar_len(url_win, url_scroll_id, have_url_count - num_url_displayed);
-#endif //ENGLISH
 
 	} /* end if have url */
 
@@ -631,9 +598,6 @@ CHECK_GL_ERRORS();
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 
@@ -662,10 +626,8 @@ static void delete_current_url(list_node_t *chosen_url)
 		free(chosen_url);
 			url_win_hover_url = NULL;
 			have_url_count--;
-#ifdef FR_VERSION
 			// mise à jour de la barre de défilement ici plutot que dans la fonction d'affichage
 			vscrollbar_set_bar_len(url_win, url_scroll_id, have_url_count);
-#endif //FR_VERSION
 	}
 }
 
@@ -805,11 +767,7 @@ void fill_url_window(void)
 
 		/* create the clear all button */
 		clear_all_button = button_add_extended (url_win, clear_all_button, NULL,
-#ifdef ENGLISH
-			url_win_sep, url_win_sep, 0, 0, 0, 0.75, 0.77f, 0.57f, 0.39f, "CLEAR ALL ");
-#else //ENGLISH
 			url_win_sep, url_win_sep, 0, 0, 0, 0.75, 0.77f, 0.57f, 0.39f, "Tout vider");
-#endif //ENGLISH
 		widget_set_OnClick(url_win, clear_all_button, url_win_click_clear_all);
 		widget = widget_find(url_win, clear_all_button);
 		widget_set_OnMouseover(url_win, clear_all_button, url_win_mouseover_clear_all);
@@ -825,15 +783,9 @@ void fill_url_window(void)
 		resize_window (url_win, url_win_x_len, url_win_y_len);
 
 		/* create the scroll bar */
-#ifdef FR_VERSION
 		url_scroll_id = vscrollbar_add_extended(url_win, url_scroll_id, NULL,
 			url_win_x_len - scroll_width, url_win_text_start_y, scroll_width,
 			url_win_text_len_y, 0, url_win_text_len_y/url_win_line_step, 0.77f, 0.57f, 0.39f, 0, 1, have_url_count);
-#else //FR_VERSION
-		url_scroll_id = vscrollbar_add_extended(url_win, url_scroll_id, NULL,
-			url_win_x_len - scroll_width, url_win_text_start_y, scroll_width,
-			url_win_text_len_y, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1, have_url_count);
-#endif //FR_VERSION
 		widget_set_OnDrag(url_win, url_scroll_id, url_win_scroll_drag);
 		widget_set_OnClick(url_win, url_scroll_id, url_win_scroll_click);
 }

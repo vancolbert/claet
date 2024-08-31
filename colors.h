@@ -32,11 +32,7 @@ typedef struct
 
 } color_rgb;
 
-#ifdef ENGLISH
-extern const color_rgb colors_list[]; /*!< the global list of colors we use */
-#else //ENGLISH
 extern color_rgb colors_list[]; /*!< the global list of colors we use */
-#endif //ENGLISH
 
 #ifdef __cplusplus
 } // extern "C"

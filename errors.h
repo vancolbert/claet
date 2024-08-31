@@ -33,26 +33,6 @@ void clear_conn_log();
  */
 void log_conn(const Uint8 *in_data, Uint16 data_length);
 
-#ifdef EXTRA_DEBUG
-/*! \name    ERR macro
- * @{ */
-#define ERR() log_func_err(__FILE__, __FUNCTION__, __LINE__); /*!< additional macro to log function error messages */
-/* @} */
-
-/*!
- * \ingroup misc_utils
- * \brief   logs error messages to the function_log.txt file.
- *
- *      Logs error mesages to the function_log.txt file. The \a file and \a function name as well as the \a line in the source file where the error occurred are reported.
- *
- * \param file      filename of the source file where the error occurred
- * \param func      function name where the error occurred
- * \param line      line in the source file where the error occurred
- *
- * \callgraph
- */
-void log_func_err(const char * file, const char * func, unsigned line);
-#endif
 
 #ifdef __cplusplus
 } // extern "C"

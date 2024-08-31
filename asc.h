@@ -15,10 +15,8 @@
 extern "C" {
 #endif
 
-#ifdef FR_VERSION
 char *trim (char *str);
 xmlChar *xmlTrim (xmlChar *str);
-#endif //FR_VERSION
 
 /*!
  * Check if a character is a color character
@@ -71,33 +69,6 @@ static __inline__ int is_printable (Uint8 c)
  */
 #define MY_XMLSTRCPY(d,s) my_xmlStrncopy(d,s,0)
 
-#ifndef FASTER_MAP_LOAD
-/*!
- * \ingroup	misc_utils
- * \brief	Gets an integer after the given string
- *
- * 		The function finds \a needle in \a haystack and returns the integer value after the string given after it.
- *
- * \param	needle The string you wish to find
- * \param	haystack The pointer to the char array you wish to find the string from
- * \param	max_len The maximum length it should check
- * \retval Sint32	Returns the integer behind the string or -1 on failure.
- */
-Sint32 get_integer_after_string (const char* needle, const char* haystack, Uint32 max_len);
-
-/*!
- * \ingroup	misc_utils
- * \brief	Gets a float after the given string
- *
- * 		The function finds \a needle in \a haystack and returns the floating point value after it.
- *
- * \param	needle The string you wish to find
- * \param	haystack The pointer to the char array you want to search for the string in.
- * \param	max_len The maximum length it should check
- * \retval float	Returns the float after the string or -1.0f on failure.
- */
-float get_float_after_string (const char* needle, const char* haystack, Uint32 max_len);
-#endif // FASTER_MAP_LOAD
 
 /*!
  * \ingroup	misc_utils
@@ -283,9 +254,7 @@ char *my_tolower (char *src);
  */
 char ** get_lines(char * str, int chars_per_line);
 
-#ifdef FR_VERSION
 char ** get_lines_dialogue(char * str, int chars_per_line);
-#endif //FR_VERSION
 
 /*!
  * \ingroup	misc_utils
@@ -346,11 +315,7 @@ void get_string_digest(const char*, Uint8[16]);
 
 // Element type and dictionaries for actor definitions
 typedef struct {
-#ifndef EXT_ACTOR_DICT
 	char *desc;
-#else
-	char desc[100];
-#endif
 	int index;
 } dict_elem;
 

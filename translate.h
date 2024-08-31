@@ -19,18 +19,10 @@ extern "C" {
 typedef struct
 {
 	unsigned char str[51];     /*!< str */
-#ifdef WRITE_XML
-	int saved_str;             /*!< saved_str */
-#endif
 	unsigned char desc[251];   /*!< desc */
-#ifdef WRITE_XML
-	int saved_desc;            /*!< saved_desc */
-#endif
 } dichar;
 
-#ifdef ELC
 #include "stats.h"
-#endif
 
 /*!
  * Defines a normal xml-node and a pointer to the variable the content should be saved to.
@@ -40,9 +32,6 @@ typedef struct
 	char xml_id[XML_ID_SIZE];
 	char * var;
 	int max_len;
-#ifdef WRITE_XML
-	int saved;
-#endif
 } string_item;
 
 /*!
@@ -52,24 +41,16 @@ typedef struct
 {
 	char xml_id[XML_ID_SIZE];
 	dichar * var;
-#ifdef WRITE_XML
-	int saved;
-#endif
 } distring_item;
 
 /*!
  * Defines a name xml-node (contains both \<name\> and \<shortname\>) used for i.e. stats.
  */
-#ifdef ELC
 typedef struct
 {
 	char xml_id[XML_ID_SIZE];
 	names * var;
-#ifdef WRITE_XML
-	int saved;
-#endif
 } statstring_item;
-#endif
 
 /*!
  * Defines an xml-group using string_item ID's.
@@ -79,9 +60,6 @@ typedef struct
 	char xml_id[XML_ID_SIZE];
 	int no;
 	string_item ** strings;
-#ifdef WRITE_XML
-	int saved;
-#endif
 } group_id;
 
 /*!
@@ -92,12 +70,8 @@ typedef struct
 	char xml_id[XML_ID_SIZE];
 	int no;
 	distring_item ** distrings;
-#ifdef WRITE_XML
-	int saved;
-#endif
 } group_id_di;
 
-#ifdef ELC
 /*!
  * Defines an xml-group using distring_item ID's
  */
@@ -106,11 +80,7 @@ typedef struct
 	char xml_id[XML_ID_SIZE];
 	int no;
 	statstring_item ** statstrings;
-#ifdef WRITE_XML
-	int saved;
-#endif
 } group_stat;
-#endif
 
 /*!
  * Defines an xml-structure with the root element and document - used when loading the file.
@@ -122,7 +92,6 @@ struct xml_struct
 };
 
 
-#ifdef ELC
 #ifndef DOXYGEN_SKIP_THIS
 //Options
 extern char	switch_video_mode[50];
@@ -143,9 +112,7 @@ extern dichar	opt_shadows,
 //Sigils
 extern char 	sig_too_few_sigs[50];
 #endif //DOXYGEN_SKIP_THIS
-#endif //ELF
 
-#ifdef ELC
 #ifndef DOXYGEN_SKIP_THIS
 extern dichar	sig_change,
 		sig_restore,
@@ -172,16 +139,10 @@ extern dichar	sig_change,
 		sig_remove,
 		sig_health,
 		sig_life,
-#ifdef ENGLISH
-		sig_death;
-#else //ENGLISH
 		sig_death,
         sig_chant;
-#endif //ENGLISH
 #endif  //DOXYGEN_SKIP_THIS
-#endif  //ELC
 
-#ifdef ELC
 #ifndef DOXYGEN_SKIP_THIS
 //Tooltips
 extern char 	tt_walk[30],
@@ -203,10 +164,8 @@ extern char 	tt_walk[30],
 		tt_console[30],
 		tt_buddy[40],
 		tt_options[32],
-#ifdef FR_VERSION
 		tt_music[30],
 		tt_quitter[30],
-#endif //FR_VERSION
 		tt_help[30],
 		tt_customize[60],
 		newchar_warning[50],
@@ -214,26 +173,14 @@ extern char 	tt_walk[30],
 		newchar_cred_help[100],
 		newchar_done_help[100],
 		tt_name[60],
-#ifdef FR_VERSION
 		tt_notepad[30],
 		tt_urlwin[30],
 		tt_info[32],
-#else //FR_VERSION
-		tt_info[30],
-#endif //FR_VERSION
-#ifdef EMOTES
-		tt_emotewin[30],
-#endif
-#ifdef MISSILES
-		tt_rangewin[30],
-#endif //MISSILES
 		tt_minimap[30];
 
 
 #endif  //DOXYGEN_SKIP_THIS
-#endif  //ELC
 
-#ifdef ELC
 #ifndef DOXYGEN_SKIP_THIS
 //Help messages
 extern char
@@ -253,14 +200,8 @@ extern char
 		buddy_long_delete_str[100],
 		buddy_wants_to_add_str[150],
 		buddy_add_to_list_str[180],
-#ifdef ENGLISH
-		buddy_logon_str[30],
-		buddy_online_str[30],
-		buddy_logoff_str[30],
-#else //ENGLISH
 		buddy_logon_str[31],
 		buddy_logoff_str[32],
-#endif //ENGLISH
 		buddy_white_str[10],
 		buddy_red_str[10],
 		buddy_green_str[10],
@@ -313,24 +254,16 @@ extern char
 		cmd_session_counters[20],
 		help_cmd_markpos_str[50],
 		location_info_str[40],
-#ifdef FR_VERSION
         connaissances_str[40],
         connaissances_acquises_str[40],
         connaissances_non_acquises_str[40],
-#else //FR_VERSION
-		knowledge_cmd_str[40],
-#endif //FR_VERSION
 		marked_str[30],
 		unmarked_str[30],
 		urlcmd_none_str[30],
 		urlcmd_list_str[30],
 		win_url_str[30],
 		urlcmd_invalid_str[30],
-#ifdef ENGLISH
-		urlcmd_afk_str[30],
-#else //ENGLISH
 		urlcmd_afk_str[40],
-#endif //ENGLISH
 		urlcmd_clear_str[30],
 		urlwin_open_str[50],
 		urlwin_clear_str[30],
@@ -341,11 +274,6 @@ extern char
 		/*filter.c*/
 		no_filters_str[50],
 		filters_str[50],
-#ifdef MISSILES
-		/*gamewin.c*/
-		ranginglock_enabled_str[100],
-		ranginglock_disabled_str[50],
-#endif //MISSILES
 		/*gl_init.c*/
 		window_size_adjusted_str[50],
 		/*hud.c*/
@@ -355,11 +283,6 @@ extern char
 		cm_action_points_str[30],
 		hud_timer_cm_str[100],
 		hud_timer_popup_title_str[25],
-#ifdef ENGLISH
-		day_indicator_str[40],
-		harvest_indicator_str[40],
-		poison_indicator_str[40],
-#endif //ENGLISH
 		/*ignore.c*/
 		no_ignores_str[50],
 		ignores_str[50],
@@ -377,23 +300,11 @@ extern char
 		auto_get_all_str[30],
 		item_list_but_str[35],
 		inv_keeprow_str[30],
-#ifdef FR_VERSION
 		unwear_all_to_inv_str[100],
 		unwear_all_to_sto_str[100],
-#endif //FR_VERSION
 		quantity_edit_str[100],
 		equip_here_str[100],
 		equip_str[20],
-#ifdef ENGLISH
-		mod_click_item_help_str[50],
-		multiuse_item_help_str[50],
-		stoall_help_str[50],
-		getall_help_str[50],
-		dcdrpall_help_str[50],
-		drpall_help_str[50],
-		mixoneall_help_str[50],
-		itmlst_help_str[50],
-#else //ENGLISH
 		pick_item_help_str[150],
 		stoall_help_str[70],
 		getall_help_str[70],
@@ -401,19 +312,12 @@ extern char
 		drpall_help_str[70],
 		mixoneall_help_str[70],
 		itmlst_help_str[70],
-#endif //ENGLISH
 		items_stack_str[100],
 		mixbut_empty_str[80],
 		mix_empty_str[50],
 		click_clear_str[50],
 		double_click_clear_str[50],
-#ifdef ENGLISH
-		recipe_select_str[50],
-		recipe_load_str[50],
-		recipe_find_str[50],
-#else //ENGLISH
 		recipe_select_str[100],
-#endif //ENGLISH
 		recipe_show_hide_str[70],
 		recipe_save_str[70],
 		/*knowledge.c*/
@@ -427,9 +331,6 @@ extern char
 		minutes_str[15],
 		minute_str[15],
 		idle_str[15],
-#ifdef ENGLISH
-		knowledge_read_book[15],
-#endif //ENGLISH
 		knowledge_param_read[15],
 		knowledge_param_unread[15],
 		knowledge_param_total[15],
@@ -438,16 +339,11 @@ extern char
 		know_highlight_prompt_str[20],
 		know_highlight_cm_str[70],
 		/*manufacture.c*/
-#ifdef ENGLISH
-		mix_str[5],
-		mixall_str[10],
-#else //ENGLISH
 		mix_str[20],
 		mixall_str[20],
 		mixclear_help_str[40],
 		dc_mixclear_help_str[45],
 		dc_warning_str[50],
-#endif //ENGLISH
 		clear_str[6],
 		reset_str[6],
 		manu_add_str[60],
@@ -460,9 +356,6 @@ extern char
 		/*new_character.c*/
 		skin_str[15],
 		hair_str[15],
-#ifdef NEW_EYES
-		eyes_str[15],
-#endif //NEW_EYES
 		shirt_str[15],
 		pants_str[15],
 		boots_str[15],
@@ -471,15 +364,10 @@ extern char
 		male_str[15],
 		female_str[15],
 		race_str[15],
-#ifdef FR_VERSION
         eldo_str[15],
         sinan_str[15],
         haut_elfe_str[15],
         elfe_noir_str[15],
-#else //FR_VERSION
-		human_str[15],
-		elf_str[15],
-#endif //FR_VERSION
 		dwarf_str[15],
 		gnome_str[15],
 		orchan_str[15],
@@ -496,15 +384,10 @@ extern char
 		passwords_match[30],
 		remember_change_appearance[200],
 		appearance_str[15],
-#ifdef FR_VERSION
         about_eldo[30],
         about_sinan[30],
         about_haut_elfe[30],
         about_elfe_noir[30],
-#else //FR_VERSION
-		about_human[30],
-		about_elves[30],
-#endif //FR_VERSION
 		about_dwarfs[30],
 		about_gnomes[30],
 		about_orchans[30],
@@ -525,26 +408,14 @@ extern char
 		afk_names[15],
 		afk_messages[25],
 		afk_print_help[150],
-#ifndef ENGLISH
 		/* spells.c */
 		click_to_add_str[100],
-#endif //ENGLISH
 		/*text.c*/
 		pm_from_str[10],
 		gm_from_str[10],
 		ig_from_str[10],
 		mc_from_str[20],
 		mod_pm_from_str[15],
-#ifdef MISSILES
-		/* ranging window */
-		ranging_win_title_str[20],
-		ranging_total_shots_str[40],
-		ranging_sucessful_shots_str[40],
-		ranging_missed_shots_str[40],
-		ranging_success_rate_str[40],
-		ranging_critical_rate_str[40],
-		ranging_exp_per_arrow_str[40],
-#endif //MISSILES
 		/* storage */
 		storage_filter_prompt_str[15],
 		storage_filter_help_str[40],
@@ -558,91 +429,41 @@ extern char
 		/*update.c*/
 		update_complete_str[40],
 		video_restart_str[80],
-#ifdef ENGLISH
-		rotate_chat_log_restart_str[80],
-#endif //ENGLISH
 		client_restart_countdown_str[40],
 		client_restarting_str[20],
 		restart_now_label[20],
 		/* context menu strings */
-#ifdef FR_VERSION
 		cm_quickspellwin_menu_str[100],
 		cm_quickspell_menu_str[100],
 		cm_textedit_menu_str[50],
 		cm_quickbar_menu_str[400],
 		cm_hud_menu_str[300],
-#else //FR_VERSION
-		cm_quickspell_menu_str[50],
-		cm_textedit_menu_str[100],
-		cm_quickbar_menu_str[150],
-		cm_hud_menu_str[270],
-#endif //FR_VERSION
 		cm_banner_menu_str[240],
 		cm_title_menu_str[150],
 		cm_title_help_str[50],
-#ifdef FR_VERSION
 		cm_items_menu_str[300],
 		cm_storage_menu_str[150],
 		cm_stoall_menu_str[150],
 		cm_dropall_menu_str[150],
-#else //FR_VERSION
-		cm_items_menu_str[150],
-		cm_storage_menu_str[90],
-		cm_astro_menu_str[80],
-#endif //FR_VERSION
 		cm_astro_menu_str[50],
-#ifdef MISSILES
-		cm_ranging_menu_str[50],
-#endif //MISSILES
 		cm_dialog_options_str[80],
 		cm_dialog_menu_str[60],
 		cm_url_menu_str[150],
-#ifdef FR_VERSION
 		cm_counters_menu_str[100],
-#else //FR_VERSION
-		cm_counters_menu_str[90],
-#endif //FR_VERSION
 		cm_help_options_str[50],
 		cm_npcname_menu_str[60],
 		cm_dialog_copy_menu_str[50],
-#ifdef FR_VERSION
 		cm_minimap_menu_str[65],
-#else //FR_VERSION
-		cm_minimap_menu_str[60],
-#endif //FR_VERSION
 		cm_user_menu_str[150],
-#ifdef ENGLISH
-		cm_stats_bar_base_str[30],
-		cm_recipe_menu_str[100],
-		cm_manuwin_menu_str[50],
-#else //ENGLISH
 		cm_stats_bar_base_str[35],
-#endif //ENGLISH
 		cm_encycl_base_str[150],
-#ifndef ENGLISH
 		cm_manufacture_menu_str[150],
 		cm_listrecipe_menu_str[160],
-#endif //ENGLISH
 		/* user_menus.cpp */
 		um_invalid_command_str[50],
 		um_invalid_line_str[50],
 		um_no_menus_str[50],
 		um_window_title_str[50],
-#ifdef NEW_QUESTLOG
-		/* quest_log.cpp */
-		cm_questlog_menu_str[400],
-		cm_questlist_menu_str[150],
-		questlog_find_prompt_str[30],
-		questlog_add_npc_prompt_str[20],
-		questlog_add_text_prompt_str[20],
-		questlog_npc_filter_title_str[20],
-		questlist_filter_title_str[20],
-		questlist_showall_str[20],
-		questlog_cm_help_str[50],
-		questlog_deldupe_start_str[50],
-		questlog_deldupe_end_str[75],
-		questlog_deleted_str[20],
-#endif
 		/* item lists */
 		cm_item_list_selected_str[40],
 		cm_item_list_names_str[110],
@@ -658,7 +479,6 @@ extern char
 		/* new_character.c */
 		use_appropriate_name[500];
 #endif  //DOXYGEN_SKIP_THIS
-#endif  //ELC
 
 #ifndef DOXYGEN_SKIP_THIS
 //Errors
@@ -666,18 +486,13 @@ extern char	reg_error_str[15],
 		file_write_error_str[20],
 		/*3d_objects.c*/
 		cant_load_2d_object[30],
-#ifdef ENGLISH
-		cant_open_file[30], //2d_objects.c
-#else //ENGLISH
         cant_open_file[35],
-#endif //ENGLISH
 		object_error_str[30],
 		nasty_error_str[50],
 		corrupted_object[100],
 		bad_object[30],
 		multiple_material_same_texture[100],
 		invalid_map[40],
-#ifdef ELC
 		/*actors.c*/
 		cant_load_actor[30],
 		cant_find_frame[30],
@@ -720,18 +535,14 @@ extern char	reg_error_str[15],
 		supported_extensions_str[30],
 		help_request_str[20],
 		help_cmd_str[10],
-#ifndef ENGLISH
 		am_cmd_str[10],
-#endif //ENGLISH
 		char_cmd_str[2],
 		char_at_str[2],
 		char_slash_str[2],
 		gm_cmd_str[5],
 		mod_cmd_str[5],
-#ifndef ENGLISH
 		dev_cmd_str[5],
 		coord_cmd_str[5],
-#endif //ENGLISH
 		bc_cmd_str[5],
 		msg_accept_buddy_str[55],
 		date_format[100],
@@ -745,7 +556,6 @@ extern char	reg_error_str[15],
 		dialogue_repeat_str[20],
 		open_storage_str[20],
 		reopen_storage_str[50],
-#endif
 		/*XML and channel list errors from chat.c*/
 		xml_bad_node[80],
 		xml_bad_root_node[50],
@@ -754,13 +564,8 @@ extern char	reg_error_str[15],
 		using_eng_chanlist[120],
 		/*font.c*/
 		cant_load_font[30],
-#ifdef ELC
 		/*gamewin.c*/
-#ifdef ENGLISH
-		no_walk_with_sitlock[100],
-#else //ENGLISH
 		no_walk_with_sitlock[101],
-#endif //ENGLISH
 		/*gl_init.c*/
 		no_stencil_str[150],
 		safemode_str[150],
@@ -775,11 +580,7 @@ extern char	reg_error_str[15],
 		gl_ext_found_not_used[100],
 		gl_ext_not_found[100],
 		gl_ext_no_multitexture[150],
-#ifdef ENGLISH
-		disabled_shadow_mapping[50],
-#else //ENGLISH
 		disabled_shadow_mapping[60],
-#endif //ENGLISH
 		shadow_map_size_not_supported_str[100],
 		disabled_framebuffer[50],
 		/* framebuffer.c */
@@ -822,9 +623,6 @@ extern char	reg_error_str[15],
 		init_audio_str[35],
 		load_icons_str[35],
 		load_textures_str[35],
-#ifdef PAWN
-		init_pawn_str[35],
-#endif // PAWN
 		init_network_str[35],
 		init_timers_str[35],
 		load_encyc_str[35],
@@ -841,15 +639,8 @@ extern char	reg_error_str[15],
 		load_particles_str[35],
 		bld_sectors_str[35],
 		init_done_str[35],
-#ifdef MINES
-		/* mines.c */
-		mines_config_open_err_str[50],
-		mines_config_error[50],
-#endif // MINES
 		/* misc.c */
-#ifdef PNG_SCREENSHOT
 		max_screenshots_warning_str[200],
-#endif //PNG_SCREENSHOT
 		/*multiplayer.c*/
 		failed_resolve[150],
 		failed_connect[100],
@@ -878,7 +669,6 @@ extern char	reg_error_str[15],
 		item_list_cat_format_error_str[50],
 		item_list_version_error_str[70],
 		item_list_empty_list_str[50],
-#endif  // ELC
 		/*particles.c*/
 		particles_filever_wrong[100],
 		particle_system_overrun[100],
@@ -890,7 +680,6 @@ extern char	reg_error_str[15],
 		definitions_str[20],
 		part_sys_str[20],
 		part_part_str[20]
-#ifdef ELC
 		/*paste.c*/
 		,not_ascii[20],
 		/*sound.c*/
@@ -927,11 +716,7 @@ extern char	reg_error_str[15],
 		timer_lagging_behind[100], //timers.c
 		/*spells.c*/
 		cast_str[20],
-#ifdef ENGLISH
-		invalid_spell_str[20],
-#else //ENGLISH
 		invalid_spell_str[30],
-#endif //ENGLISH
 		/*rules.c*/
 		you_can_proceed[50],
 		accepted_rules[80],
@@ -954,32 +739,19 @@ extern char	reg_error_str[15],
 		dc_note_remove[50],
 		note_saved[50],
 		note_save_failed[50];
-#else
-		;
-#endif  // ELC
 
 #endif  //DOXYGEN_SKIP_THIS
 
-#ifdef ELC
 #ifndef DOXYGEN_SKIP_THIS
 // window/widget titles
 extern char	win_notepad[20],
 		win_prompt[10],
 		win_statistics[20],
-#ifdef FR_VERSION
 		win_sigils[20],
-#else //FR_VERSION
-		win_sigils[10],
-#endif //FR_VERSION
 		win_help[10],
 		win_buddy[10],
-#ifdef FR_VERSION
 		win_configuration[25],
 		win_manufacture[25],
-#else //FR_VERSION
-		win_configuration[20],
-		win_manufacture[20],
-#endif //FR_VERSION
 		win_astrology[20],
 		win_principal[20],
 		win_storage[10],
@@ -1024,14 +796,9 @@ extern char	win_notepad[20],
 		game_version_str[60],
 		label_note_name[20],
 		label_cursor_coords[17],
-#ifdef ENGLISH
-		label_mark_filter[13],
-#else //ENGLISH
 		label_mark_filter[15],
-#endif //ENGLISH
 		button_send[10];
 #endif  // DOXYGEN_SKIP_THIS
-#endif  // ELC
 
 /*!
  * \ingroup	translation

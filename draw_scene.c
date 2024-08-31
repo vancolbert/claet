@@ -22,18 +22,13 @@
 #include "shadows.h"
 #include "skeletons.h"
 #include "sky.h"
-#ifdef ENGLISH
-#include "spells.h"
-#endif //ENGLISH
 #include "sound.h"
 #include "storage.h"
 #include "text.h"
 #include "tiles.h"
 #include "weather.h"
-#ifdef FR_VERSION
 #include "fr_quickitems.h"
 #include "spells.h"
-#endif //FR_VERSION
 
 static char have_display = 0;
 
@@ -46,9 +41,7 @@ float rz=45;
 float terrain_scale=2.0f;
 float zoom_level=3.0f;
 float name_zoom=1.0f;
-#ifdef FR_VERSION
 float titre_zoom = 1.0f;
-#endif //FR_VERSION
 #define MAX(a,b) ( ((a)>(b)) ? (a):(b))
 //First Person Camera mode state
 int first_person = 0;
@@ -130,7 +123,6 @@ void draw_scene()
 	if (!have_display)
 	{
 		new_zoom_level = zoom_level;	// No scrolling when switching modes...
-#ifdef FR_VERSION
 		if (! quickbar_on_top && ! quickbar_draggable && (quickbar_win >= 0))
 		{
 			if (quickbar_dir == VERTICAL)
@@ -153,13 +145,6 @@ void draw_scene()
 				if (quickspell_y + quickspell_y_len < window_height - HUD_MARGIN_Y) hide_window(quickspell_win);
 			}
 		}
-#else //FR_VERSION
-		if (quickbar_relocatable && quickbar_win >= 0) // Hack
-		{
-			if (get_show_window (quickbar_win) && windows_list.window[quickbar_win].cur_x < window_width - hud_x && window_height - windows_list.window[quickbar_win].cur_y > hud_y)
-				hide_window (quickbar_win);
-		}
-#endif //FR_VERSION
 	}
 
 	glLoadIdentity ();	// Reset The Matrix
@@ -176,13 +161,8 @@ void draw_scene()
 		drag_item (use_item, 0, 1);
 	else if (storage_item_dragged != -1)
 		drag_item (storage_item_dragged, 1, 0);
-#ifdef FR_VERSION
 	else if (fr_quickitem_dragged != -1)
 		drag_quickitem(fr_quickitem_dragged);
-#endif //FR_VERSION
-#ifdef NEW_CURSOR
-	draw_special_cursors();
-#endif // NEW_CURSOR
 
 	Leave2DMode ();
 
@@ -209,18 +189,10 @@ void draw_scene()
 		{
 	/* start or stop the harvesting effect depending on harvesting state */
 	check_harvesting_effect();
-#ifdef ENGLISH
-			/* check for and possibly do auto save */
-			auto_save_local_and_server();
-#endif //ENGLISH
 			/* action on afk state changes */
 			check_afk_state();
 			/* the timer in the hud */
 			update_hud_timer();
-#ifdef ENGLISH
-			/* check if we need to do buff duration requests */
-			check_then_do_buff_duration_request();
-#endif //ENGLISH
 			/* until next time */
 			last_half_second_timer = current_time;
 		}
@@ -259,14 +231,10 @@ void move_camera ()
         // the camera position corresponds to the head position
 		z = get_tile_height(me->x_tile_pos, me->y_tile_pos);
 		// z += (head_pos[2]+0.1)*get_actor_scale(me);
-#ifdef ATTACHED_ACTORS
 		//attachment_props *att_props = get_attachment_props_if_held(me);
 		//z += (me->sitting ? 0.7 : 1.5) * get_actor_scale(me);
 		if (me->attached_actor>=0) z+=me->z_pos + me->attachment_shift[Z]+2.0*get_actor_scale(me);
 		else z += (me->sitting ? 0.7 : 1.5) * get_actor_scale(me);
-#else //ATTACHED_ACTORS
-		z += (me->sitting ? 0.7 : 1.5) * get_actor_scale(me);
-#endif //ATTACHED_ACTORS
 	} else {
 		z = get_tile_height(me->x_tile_pos, me->y_tile_pos) + sitting;
 	}

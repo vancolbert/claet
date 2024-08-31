@@ -148,29 +148,12 @@ int remove_from_filter_list (const char *name)
 	return -1;
 }
 
-#ifdef DEBUG
-void print_filter_list ()
-{
-	int i;
-
-	printf ("filter:\n");
-	for (i = 0; i < MAX_FILTERS; i++)
-	{
-		if (filter_list[i].len > 0)
-		{
-			printf ("%d: name = %.*s, len = %d, replacement = %.*s, rlen = %d, type = %d\n", i, filter_list[i].len, filter_list[i].name, filter_list[i].len, filter_list[i].rlen, filter_list[i].replacement, filter_list[i].rlen, filter_list[i].wildcard_type);
-		}
-	}
-}
-#endif
 
 //returns length to be filtered, 0 if not filtered
 int check_if_filtered (const char *name)
 {
 	int t, i, l;
-#ifndef ENGLISH
     char caractere[5];
-#endif //ENGLISH
 
 	for (i = 0; i < MAX_FILTERS; i++)
 	{
@@ -181,12 +164,8 @@ int check_if_filtered (const char *name)
 				/* no wildcard, normal compare */
 				if (my_strncompare (filter_list[i].name, name, filter_list[i].len))
 				{
-#ifndef ENGLISH
                     sprintf(caractere, "%c", name[filter_list[i].len]);
 					if (!isalpha (name[filter_list[i].len]) && (strcmp("è", caractere) && strcmp("é", caractere) && strcmp("à", caractere)  && strcmp("ü", caractere) && strcmp("â", caractere) && strcmp("ê", caractere)) && strcmp("ë", caractere) && strcmp("ï", caractere) && strcmp("ô", caractere) && strcmp("ù", caractere))
-#else //ENGLISH
-					if (!isalpha (name[filter_list[i].len]))
-#endif //ENGLISH
 				   	{
 						/* fits with end of word? */
 						return i; // yep, filtered

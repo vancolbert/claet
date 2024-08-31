@@ -23,106 +23,12 @@ int buff_icon_size = 32;
 void update_actor_buffs(int actor_id, Uint32 in_buffs)
 {
 	actor *act;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 	act = get_actor_ptr_from_id(actor_id);
 
 	if(!act){
 		//if we got here, it means we don't have this actor, so get it from the server...
 	} else {
-#ifdef VARIABLE_SPEED
-		if (in_buffs & BUFF_DOUBLE_SPEED)
-			act->step_duration = actors_defs[act->actor_type].step_duration / 2;
-		else
-			act->step_duration = actors_defs[act->actor_type].step_duration;
-#ifdef ATTACHED_ACTORS
-		if (act->attached_actor >= 0)
-		{
-			actors_list[act->attached_actor]->buffs = in_buffs & BUFF_DOUBLE_SPEED;
-			actors_list[act->attached_actor]->step_duration = act->step_duration;
-		}
-#endif // ATTACHED_ACTORS
-#endif // VARIABLE_SPEED
 		act->buffs = in_buffs;
-#ifdef BUFF_DEBUG
-		{
-			int i, num_buffs = 0;
-			for (i = 0; i < NUM_BUFFS; i++)
-			{
-				if (act->buffs & ((Uint32)pow(2, i))) {
-					num_buffs++;
-				}
-			}
-			printf("update_actor_buffs: name %s id %i num buffs: %i\n", act->actor_name, act->actor_id, num_buffs);
-		}
-		if (in_buffs & BUFF_INVISIBILITY) {
-			printf(" invisibility ON\n");
-		}
-//		else {
-//			printf(" invisibility off\n");
-//		}
-		if (in_buffs & BUFF_MAGIC_IMMUNITY) {
-			printf(" magic immunity ON\n");
-		}
-//		else {
-//			printf(" magic immunity off\n");
-//		}
-		if (in_buffs & BUFF_MAGIC_PROTECTION) {
-			printf(" magic protection ON\n");
-		}
-//		else {
-//			printf(" magic protection off\n");
-//		}
-		if (in_buffs & BUFF_COLD_SHIELD) {
-			printf(" cold shield ON\n");
-		}
-//		else {
-//			printf(" cold shield off\n");
-//		}
-		if (in_buffs & BUFF_HEAT_SHIELD) {
-			printf(" heat shield ON\n");
-		}
-//		else {
-//			printf(" heat shield off\n");
-//		}
-		if (in_buffs & BUFF_RADIATION_SHIELD) {
-			printf(" radiation shield ON\n");
-		}
-//		else {
-//			printf(" radiation shield off\n");
-//		}
-		if (in_buffs & BUFF_SHIELD) {
-			printf(" shield ON\n");
-		}
-//		else {
-//			printf(" shield off\n");
-//		}
-		if (in_buffs & BUFF_TRUE_SIGHT) {
-			printf(" true sight ON\n");
-		}
-//		else {
-//			printf(" true sight off\n");
-//		}
-		if (in_buffs & BUFF_ACCURACY) {
-			printf(" accuracy ON\n");
-		}
-//		else {
-//			printf(" accuracy off\n");
-//		}
-		if (in_buffs & BUFF_EVASION) {
-			printf(" evasion ON\n");
-		}
-//		else {
-//			printf(" evasion off\n");
-//		}
-		if (in_buffs & BUFF_DOUBLE_SPEED) {
-			printf(" double speed ON\n");
-		}
-//		else {
-//			printf(" double speed off\n");
-//		}
-#endif // BUFF_DEBUG
 		update_buff_eye_candy(actor_id);
 	}
 }
@@ -182,11 +88,7 @@ void draw_buffs(int actor_id, float x, float y,float z)
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 		glColor3f(1.0f,1.0f,1.0f);
-#ifdef	NEW_TEXTURES
 		bind_texture(sigils_text);
-#else	/* NEW_TEXTURES */
-		get_and_set_texture_id(sigils_text);
-#endif	/* NEW_TEXTURES */
 		// keep in sync with client_serv.h !!!
 		if (act->buffs & BUFF_SHIELD) {
 			texture_ids[num_buffs] = 32;
@@ -226,17 +128,10 @@ void draw_buffs(int actor_id, float x, float y,float z)
 		{
 			cur_tex = texture_ids[i];
 			//now get the texture coordinates, copied from spells.c
-#ifdef	NEW_TEXTURES
 			u_start = 0.125f * (cur_tex % 8);
 			u_end = u_start + 0.125f;
 			v_start = 0.125f * (cur_tex / 8);
 			v_end = v_start + 0.125f;
-#else	/* NEW_TEXTURES */
-			u_start=0.125f*(cur_tex%8);
-			u_end=u_start+0.125f;
-			v_start=1.0f-(0.125f*(cur_tex/8));
-			v_end=v_start-0.125f;
-#endif	/* NEW_TEXTURES */
 			x_off = (int)(-1.0 * ((float)num_buffs * buff_icon_size) / 2.0f + (buff_icon_size * i));
 			// draw the spell icon
 			glBegin(GL_QUADS);
@@ -255,8 +150,5 @@ void draw_buffs(int actor_id, float x, float y,float z)
 		}
 		glDisable(GL_BLEND);
 		glDisable(GL_ALPHA_TEST);
-	#ifdef OPENGL_TRACE
-		CHECK_GL_ERRORS();
-	#endif //OPENGL_TRACE
 	}
 }

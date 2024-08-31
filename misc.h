@@ -91,7 +91,6 @@ off_t get_file_size(const char *fname);
 int file_exists(const char *fname);
 int gzfile_exists(const char *fname);
 
-#ifdef PNG_SCREENSHOT
 /*!
  * \ingroup misc
  * \brief Takes a screenshot
@@ -100,7 +99,6 @@ int gzfile_exists(const char *fname);
  *
  */
 void makeScreenShot ();
-#endif
 
 /*!
  * \ingroup misc_utils

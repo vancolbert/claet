@@ -114,14 +114,6 @@ typedef struct
 
 	int quantity_selected;
 
-#ifdef ENGLISH
-	/*!
-	 * \name Banner settings configured via banner popup menu
-	 */
-	/*! @{ */
-	int banner_settings;
-	/*! @} */
-#endif //ENGLISH
 
 	/*!
 	 * \name Item lists - active list index.
@@ -129,18 +121,11 @@ typedef struct
 	/*! @{ */
 	unsigned int active_item_list;
 
-#ifdef ENGLISH
-	int unused_01;
-#endif //ENGLISH
 
-#ifndef ENGLISH
 	int view_health_bar;
 	int view_names;
 	int view_hp;
-#endif //ENGLISH
-#ifdef FR_VERSION
     int voir_pdv;
-#endif //FR_VERSION
 
     /*!
      * \name quest log window position
@@ -216,11 +201,7 @@ typedef struct
     /*! @} */
 
 	//!!!!!!!If you add any new FLOAT option, decrement the reserved thingy accordingly!!!!!!
-#ifdef EMOTES
-#define NUM_RESERVED 2
-#else
 #define NUM_RESERVED 4
-#endif
 
 	/*!
 	 * \name do spells start minimized?
@@ -228,29 +209,13 @@ typedef struct
 	/*! @{ */
 	int start_mini_spells;
 	/*! @} */
-#ifdef EMOTES
-	int emotes_menu_x;
-	int emotes_menu_y;
-#endif
 	int watch_this_stats[5];
 	unsigned int floating_counter_flags;
 	unsigned int questlog_flags;
 
-#ifdef FR_VERSION
     int voir_musique_carte;
-#endif //FR_VERSION
 
-#ifdef MISSILES
-   /*!
-     * \name Ranging window loc
-	 */
-	/*! @{ */
-	int ranging_win_x;
-	int ranging_win_y;
-    /*! @} */
-#endif //MISSILES
 
-#ifdef FR_VERSION
 	int fr_quickitems_options;
 	int allow_wheel_quantity;
 	int items_all_nocolrow;
@@ -261,20 +226,12 @@ typedef struct
 	int quickspell_x;
 	int quickspell_y;
 	int quickspell_flags;
-#endif //FR_VERSION
 }bin_cfg;
 
 extern int auto_update; /*!<this flags signals whether or not autoupdates are performed at startup, or not. It requires a restart to have an effect. */
-#ifdef  CUSTOM_UPDATE
-extern int custom_update; /*!<this flags signals whether or not autoupdates of custom looks is permitted. */
-extern int custom_clothing; /*!<this flags signals whether or not custom is displayed. */
-#endif  //CUSTOM_UPDATE
 
 extern int poor_man; /*!< this flag, if set to true, indicates we are running on a really poor machine */
 extern int show_reflection; /*!< flag that indicates whether to display reflections or not */
-#ifdef ANTI_ALIAS
-extern int anti_alias; /*!< flag indicating whether anti-aliasing should be enabled */
-#endif
 extern int special_effects; /*!< flag indicating whether pretty spell effects should be enabled */
 extern int isometric; /*!< use isometric instead of perspective view */
 extern int mouse_limit;
@@ -282,12 +239,6 @@ extern int show_fps; /*!< flag that indicates whether to display FPS or not */
 #ifdef OSX
 extern int square_buttons; /* flag to overcome intel opengl issues on early MacBooks*/
 extern int emulate3buttonmouse;
-#endif
-#ifdef DEBUG
-extern int render_skeleton;
-extern int render_mesh;
-extern int render_bones_id;
-extern int render_bones_orientation;
 #endif
 extern int limit_fps; /*!< contains the max FPS number we should use. If this is 0, the highest possible number will be used. */
 extern int item_window_on_drop;
@@ -309,9 +260,7 @@ extern char lang[10]; /*!< contains the identifier for the current language. \to
 
 extern int video_mode_set;
 
-#ifdef FR_VERSION
 extern int nom_change;
-#endif //FR_VERSION
 
 /*!
  * \ingroup loadsave

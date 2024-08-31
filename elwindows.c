@@ -20,12 +20,7 @@
 #include "trade.h"
 #include "widgets.h"
 #include "sound.h"
-#ifdef FR_VERSION
 #include "themes.h"
-#endif //FR_VERSION
-#ifdef FR_DIALOGUE
-#include "io/elfilewrapper.h"
-#endif //FR_DIALOGUE
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -669,9 +664,6 @@ int	create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int p
 	int	win_id=-1;
 	int	i;
 	int isold = 1;
-#ifdef FR_DIALOGUE
-    texture_cache_struct texture_fond;
-#endif //FR_DIALOGUE
 
 	// verify that we are setup and space allocated
 	if (windows_list.window == NULL)
@@ -742,26 +734,7 @@ int	create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int p
 			win->displayed = (property_flags & ELW_SHOW) ? 1 : 0;
 			win->reinstate = 0;
 		}
-#ifdef FR_DIALOGUE
-        if (win->flags&ELW_IMAGE_FOND)
-        {
-            safe_snprintf(texture_fond.file_name, sizeof(texture_fond.file_name), "./textures/%s.bmp", name);
-            if (el_file_exists(texture_fond.file_name))
-            {
-                win->image_fond = load_bmp8_fixed_alpha(&texture_fond, 0);
-            }
-            else
-            {
-                win->image_fond = -1;
-            }
-        }
-        else
-        {
-            win->image_fond = -1;
-        }
-#endif //FR_DIALOGUE
 
-#ifdef FR_VERSION
 		win->back_color[0] = couleur_fond_fenetre.rouge;
 		win->back_color[1] = couleur_fond_fenetre.vert;
 		win->back_color[2] = couleur_fond_fenetre.bleu;
@@ -774,20 +747,6 @@ int	create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int p
 		win->line_color[1] = couleur_ligne_fenetre.vert;
 		win->line_color[2] = couleur_ligne_fenetre.bleu;
 		win->line_color[3] = couleur_ligne_fenetre.alpha;
-#else //FR_VERSION
-		win->back_color[0] = 0.0f;
-		win->back_color[1] = 0.0f;
-		win->back_color[2] = 0.0f;
-		win->back_color[3] = 0.4f;
-		win->border_color[0] = 0.77f;
-		win->border_color[1] = 0.57f;
-		win->border_color[2] = 0.39f;
-		win->border_color[3] = 0.0f;
-		win->line_color[0] = 0.77f;
-		win->line_color[1] = 0.57f;
-		win->line_color[2] = 0.39f;
-		win->line_color[3] = 0.0f;
-#endif //FR_VERSION
 
 		win->init_handler = NULL;
 		win->display_handler = NULL;
@@ -990,7 +949,6 @@ int	move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y)
 
 int	draw_window_title(window_info *win)
 {
-#ifdef	NEW_TEXTURES
 	float u_first_start = (float)31/255;
 	float u_first_end = 0;
 	float v_first_start = (float)160/255;
@@ -1005,22 +963,6 @@ int	draw_window_title(window_info *win)
 	float u_last_end = (float)31/255;
 	float v_last_start = (float)160/255;
 	float v_last_end = (float)175/255;
-#else	/* NEW_TEXTURES */
-	float u_first_start= (float)31/255;
-	float u_first_end= 0;
-	float v_first_start= 1.0f-(float)160/255;
-	float v_first_end= 1.0f-(float)175/255;
-
-	float u_middle_start= (float)32/255;
-	float u_middle_end= (float)63/255;
-	float v_middle_start= 1.0f-(float)160/255;
-	float v_middle_end= 1.0f-(float)175/255;
-
-	float u_last_start= 0;
-	float u_last_end= (float)31/255;
-	float v_last_start= 1.0f-(float)160/255;
-	float v_last_end= 1.0f-(float)175/255;
-#endif	/* NEW_TEXTURES */
 
 	if((win->flags&ELW_TITLE_BAR) == ELW_TITLE_NONE)	return 0;
 
@@ -1033,11 +975,7 @@ int	draw_window_title(window_info *win)
 	glColor3f(1.0f,1.0f,1.0f);
 	//ok, now draw that shit...
 
-#ifdef	NEW_TEXTURES
 	bind_texture(icons_text);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(icons_text);
-#endif	/* NEW_TEXTURES */
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.03f);
 	glBegin(GL_QUADS);
@@ -1133,9 +1071,6 @@ int	draw_window_title(window_info *win)
 			// center text
 			draw_string_small((win->len_x-len)/2, 1-ELW_TITLE_HEIGHT, (unsigned char*)win->window_name, 1);
 		}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -1202,7 +1137,6 @@ int	draw_window_border(window_info *win)
 	{
 		//draw the corner, with the X in
 		glColor3f(win->border_color[0],win->border_color[1],win->border_color[2]);
-#ifdef FR_VERSION
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth(1.0f);
 		glBegin(GL_LINES);
@@ -1212,27 +1146,10 @@ int	draw_window_border(window_info *win)
 			glVertex2i(win->len_x-ELW_BOX_SIZE+5, ELW_BOX_SIZE-5);
 		glEnd();
 		glDisable(GL_LINE_SMOOTH);
-#else //FR_VERSION
-		glBegin(GL_LINE_STRIP);
-			glVertex3i(win->len_x, ELW_BOX_SIZE, 0);
-			glVertex3i(win->len_x-ELW_BOX_SIZE, ELW_BOX_SIZE, 0);
-			glVertex3i(win->len_x-ELW_BOX_SIZE, 0, 0);
-		glEnd();
-		glLineWidth(2.0f);
-		glBegin(GL_LINES);
-			glVertex2i(win->len_x-ELW_BOX_SIZE+3, 3);
-			glVertex2i(win->len_x-3, ELW_BOX_SIZE-3);
-			glVertex2i(win->len_x-3, 3);
-			glVertex2i(win->len_x-ELW_BOX_SIZE+3, ELW_BOX_SIZE-3);
-		glEnd();
-#endif //FR_VERSION
 		glLineWidth(1.0f);
 	}
 
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -1242,9 +1159,6 @@ int	draw_window(window_info *win)
 	int	ret_val=0;
 	widget_list *W = NULL;
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	if(win == NULL || win->window_id < 0)
 		return -1;
 
@@ -1273,31 +1187,9 @@ CHECK_GL_ERRORS();
 	}
 	// now normal display processing
 	glPushMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	glTranslatef((float)win->cur_x, (float)win->cur_y, 0.0f);
-#ifdef FR_DIALOGUE
-    if (win->image_fond != -1)
-    {
-        bind_texture_id(win->image_fond);
-
-        glEnable(GL_ALPHA_TEST);
-        glBegin(GL_QUADS);
-        draw_2d_thing(0.0f, 0.7f, 1.0f, 1.0f, 0.0f, 0.0f, win->len_x, win->len_y);
-        glEnd();
-        glDisable(GL_ALPHA_TEST);
-    }
-#endif //FR_DIALOGUE
 	draw_window_title(win);
-#ifdef FR_DIALOGUE
-    if (win->image_fond == -1)
-    {
-	    draw_window_border(win);
-    }
-#else //FR_DIALOGUE
 	draw_window_border(win);
-#endif //FR_DIALOGUE
 	glColor3f(1.0f, 1.0f, 1.0f);
 	if(win->pre_display_handler)
 		(*win->pre_display_handler)(win);
@@ -1316,9 +1208,6 @@ CHECK_GL_ERRORS();
 	{
 		ret_val=(*win->display_handler)(win);
 //the window's own display handler can cause OpenGL errors
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	}
 	else
 	{
@@ -1349,9 +1238,6 @@ CHECK_GL_ERRORS();
 		glDisable(GL_SCISSOR_TEST);
 	}
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return(ret_val);
 }
@@ -1442,9 +1328,7 @@ static void resize_scrollbar(window_info *win)
 		sblen -= ELW_BOX_SIZE;
 	widget_resize(win->window_id, win->scroll_id,
 		widget_get_width(win->window_id, win->scroll_id), sblen);
-#ifdef FR_VERSION
 	widget_set_size(win->window_id, win->scroll_id, win->len_y);
-#endif //FR_VERSION
 }
 
 void resize_window (int win_id, int new_width, int new_height)
@@ -1472,9 +1356,6 @@ void resize_window (int win_id, int new_width, int new_height)
 		(*win->resize_handler) (win, new_width, new_height);
 		glPopMatrix  ();
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int	get_show_window(int win_id)
@@ -1554,7 +1435,6 @@ int	click_in_window(int win_id, int x, int y, Uint32 flags)
 				// but don't close storage if trade is open
 				if(win_id != storage_win || trade_win < 0 || !windows_list.window[trade_win].displayed){
 					hide_window(win_id);
-#ifndef	OLD_CLOSE_BAG
 					if(win_id == ground_items_win){	// are we closing the ground item/bag window?
 						// we need to tell the server we closed the bag
 						unsigned char protocol_name;
@@ -1562,7 +1442,6 @@ int	click_in_window(int win_id, int x, int y, Uint32 flags)
   	                    protocol_name= S_CLOSE_BAG;
   	                    my_tcp_send(my_socket,&protocol_name,1);
 					}
-#endif	//OLD_CLOSE_BAG
 				}
 				if (win->close_handler != NULL)
 					win->close_handler (win);
@@ -1619,9 +1498,6 @@ int	click_in_window(int win_id, int x, int y, Uint32 flags)
 		}
 		return	1;	// click is handled
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 0;
 }
@@ -1706,9 +1582,6 @@ int	drag_in_window(int win_id, int x, int y, Uint32 flags, int dx, int dy)
 		}
 		return	1;	// drag has been processed
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 0;
 }
@@ -1764,13 +1637,8 @@ int	mouseover_window (int win_id, int x, int y)
 			glPopMatrix();
 
 		}
-#ifdef	ELC
 		if (!ret_val)
 			elwin_mouse = CURSOR_ARROW;
-#endif	//ELC
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 		return 1;
 	}
@@ -1816,9 +1684,6 @@ int	keypress_in_window(int win_id, int x, int y, Uint32 key, Uint32 unikey)
 					{
 						// widget handled it
 						glPopMatrix ();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 						return 1;
 					}
 				}
@@ -1836,16 +1701,10 @@ CHECK_GL_ERRORS();
 			glTranslatef((float)win->cur_x, (float)win->cur_y, 0.0f);
 			ret_val = (*win->keypress_handler) (win, mx, my, key, unikey);
 			glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 			return ret_val; // keypresses are fall-through
 		}
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 0;
 }

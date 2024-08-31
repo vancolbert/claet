@@ -9,15 +9,7 @@
 #include "errors.h"
 #include "md5.h"
 #include "io/elfilewrapper.h"
-#ifdef MAP_EDITOR
-#ifdef ENGLISH
-# include "map_editor/misc.h"
-#else //ENGLISH
-# include "../editeur_sources/misc.h"
-#endif //ENGLISH
-#else
 # include "misc.h"
-#endif //MAP_EDITOR
 
 /* NOTE: This file contains implementations of the following, currently unused and commented functions:
  *          Look at the end of the file.
@@ -27,7 +19,6 @@
 
 int my_UTF8Toisolat1(char **dest, size_t * lu, char **src, size_t * len);
 
-#ifdef FR_VERSION
 // http://www.developpez.net/forums/d8335/c-cpp/c/equivalent-fonction-trim/
 char *trim (char *str)
 {
@@ -60,7 +51,6 @@ xmlChar *xmlTrim (xmlChar *str)
 	}
 	return (str);
 }
-#endif //FR_VERSION
 
 // find the first occurance of needle in haystack, and return the distance to
 // that string. If beggining is 1, it returns the offset to the beginning of
@@ -68,42 +58,6 @@ xmlChar *xmlTrim (xmlChar *str)
 // must be null-terminated. hyastack need not be, but must be at least max_len
 // bytes long
 
-#ifdef ENGLISH
-Sint32 get_string_occurance (const char* needle, const char* haystack, const Uint32 max_len, const char beginning)
-{
-	const Uint32 n_len = strlen(needle);
-	Uint32 istart, i;
-	Uint32 search_len;
-
-	if (max_len < n_len) {
-		return -1;
-	}
-
-	for (istart = 0, search_len = max_len - n_len; istart <= search_len; istart++)
-	{
-		for (i = 0; i < n_len; i++)
-		{
-			if (tolower(haystack[istart+i]) != tolower(needle[i])) {
-				break;
-			}
-		}
-		if (i >= n_len)
-		{
-			// We found the string. return the beginning if asked
-			if (beginning) {
-				return istart;
-			}
-			// return the end of the string occurence, but skip
-			// space and equal signs
-			while ((istart+i < max_len) && (haystack[istart+i] == ' ' || haystack[istart+i] == '=')) {
-				i++;
-			}
-			return istart+i;
-		}
-	}
-	return -1;
-}
-#else //ENGLISH
 Sint32 get_string_occurance (const char* needle, const char* haystack, const Uint32 max_len, const char beginning)
 {
    int i;
@@ -134,81 +88,7 @@ Sint32 get_string_occurance (const char* needle, const char* haystack, const Uin
    }
    return -1;
 }
-#endif //ENGLISH
 
-#ifndef FASTER_MAP_LOAD
-// This function returns an integer, after the needle in the haystack
-// string. If the string is not found, after max_len, the function returns -1.
-// The function is NOT case sensitive
-Sint32 get_integer_after_string (const char *needle, const char *haystack, Uint32 max_len)
-{
-	Sint32 n_end = get_string_occurance (needle, haystack, max_len, 0);
-	Uint32 istart;
-
-	if (n_end < 0)
-	{
-		// needle not found
-		return -1;
-	}
-
-	istart = n_end;
-	while (istart < max_len)
-	{
-		if (haystack[istart] == '\n')
-			// no integer on this line
-			return -1;
-		if (isdigit (haystack[istart]) || haystack[istart] == '+' || haystack[istart] == '-'){
-			// we've probably found a number
-			//return atoi (&haystack[istart]);
-			char temp[1<<sizeof(int)];	//Wasteful, but it will reserve enough space for MAX_INT as a string. If we change to atol or similar, use sizeof(long) instead
-			int len = min2i(max_len-istart, (1<<sizeof(int))-1);
-			memcpy(temp, &haystack[istart], len-1);
-			temp[len] = '\0';
-			return atoi (temp);
-		}
-		istart++;
-	}
-
-	// no integer after needle
-	return -1;
-}
-
-// This function returns a float, after the source string in the destination
-// string. If the string is not found, after max_len, the function returns
-// -1.0f. The function is NOT case sensitive
-float get_float_after_string (const char *needle, const char *haystack, Uint32 max_len)
-{
-	Sint32 n_end = get_string_occurance (needle, haystack, max_len, 0);
-	Uint32 istart;
-
-	if (n_end < 0)
-	{
-		// needle not found
-		return -1.0f;
-	}
-
-	istart = n_end;
-	while (istart < max_len)
-	{
-		if (haystack[istart] == '\n')
-			// no number on this line
-			return -1.0f;
-		if (isdigit (haystack[istart]) || haystack[istart] == '+' || haystack[istart] == '-' || haystack[istart] == '.'){
-			// we've probably found a number
-			//return atof (&haystack[istart]);
-			//char temp[max_len-istart+1];	//Wasteful, if the float doesn't go to the end of the line, but it will reserve enough space
-			char temp[200];	//It'd be better not to use an arbitrary constant, but we can't use run-time size on compilers like MSVC
-			memcpy(temp, &haystack[istart], min2i(max_len-istart, sizeof(temp)));
-			temp[min2i(max_len-istart, sizeof(temp))] = '\0';
-			return atof (temp);
-		}
-		istart++;
-	}
-
-	// no number after needle
-	return -1.0f;
-}
-#endif // FASTER_MAP_LOAD
 
 char* safe_strncpy(char *dest, const char * source, const size_t len)
 {
@@ -376,7 +256,6 @@ char *my_tolower (char *src)
 
 /*Wraps the lines*/
 
-#ifdef FR_VERSION
 char ** get_lines_dialogue(char * str, int chars_per_line)
 {
 	char ** my_str=NULL;
@@ -442,7 +321,6 @@ char ** get_lines_dialogue(char * str, int chars_per_line)
 	}
 	return my_str;
 }
-#endif //FR_VERSION
 
 char ** get_lines(char * str, int chars_per_line)
 {
@@ -450,9 +328,7 @@ char ** get_lines(char * str, int chars_per_line)
 	char * cur=NULL;
 	int lines=0;
 	int i=0;
-#ifdef FR_VERSION
     int j;
-#endif //FR_VERSION
 	if(str){
 		for(lines = 0; *str; lines++) {
 			my_str=(char **)realloc(my_str,(lines+2)*sizeof(char *));
@@ -467,12 +343,9 @@ char ** get_lines(char * str, int chars_per_line)
 				cur[i]=str[i];
 			}
 			if(i >= chars_per_line){//Wrap it
-#ifdef FR_VERSION
                 j = i;
-#endif //FR_VERSION
 				//go back to the last space
 				while(i){
-#ifdef FR_VERSION
                     if ( i + 1 <= j)
                     {
 					    if(str[i]=='/' || str[i]=='-' || str[i]=='?' || str[i]=='!' || (str[i]==' ' && (str[i+1]!=':' && str[i+1]!=';' && str[i+1]!='?' && str[i+1]!='!' && str[i+1]!='"')) || str[i]=='\n' || str[i]=='\r')
@@ -487,9 +360,6 @@ char ** get_lines(char * str, int chars_per_line)
                             break;
                         }
                     }
-#else //FR_VERSION
-					if(str[i]=='/' || str[i]=='-' || str[i]=='?' || str[i]=='!' || str[i]==' ' || str[i]=='\n' || str[i]=='\r') break;
-#endif //FR_VERSION
 					i--;
 				}
 				if(i){
@@ -728,17 +598,11 @@ int get_bool_value(const xmlNode *node)
 	if (!node->children)
 		return 0;
 
-#ifdef FR_VERSION
 	tval = xmlTrim(node->children->content);
-#else //FR_VERSION
-	tval = node->children->content;
-#endif //FR_VERSION
 	return (xmlStrcasecmp(tval, (xmlChar*)"yes") == 0) ||
 		(xmlStrcasecmp(tval, (xmlChar*)"true") == 0) ||
-#ifdef FR_VERSION
 		(xmlStrcasecmp(tval, (xmlChar*)"oui") == 0) ||
 		(xmlStrcasecmp(tval, (xmlChar*)"vrai") == 0) ||
-#endif //FR_VERSION
 		(xmlStrcasecmp(tval, (xmlChar*)"1") == 0);
 }
 
@@ -832,18 +696,10 @@ const char *get_string_property(const xmlNode *node, const char *prop)
 		if (attr->type == XML_ATTRIBUTE_NODE &&
 			xmlStrcasecmp (attr->name, (xmlChar *)prop) == 0)
 		{
-#ifdef ENGLISH
-			return (const char*)attr->children->content;
-#else //ENGLISH
 			return fromUTF8(attr->children->content, strlen((const char*)attr->children->content));
-#endif //ENGLISH
 		}
 	}
 
-#ifdef	DEBUG_XML
-	// don't normally report this, or optional properties will report errors
-	LOG_ERROR("Unable to find property %s in node %s\n", prop, node->name);
-#endif	//DEBUG_XML
 	return "";
 }
 

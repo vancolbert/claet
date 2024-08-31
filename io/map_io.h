@@ -213,11 +213,7 @@ typedef struct
 	int particles_offset; /**< offset of the current particle */
     /** @} */
     
-#ifdef CLUSTER_INSIDES
 	int clusters_offset;
-#else
-	int reserved_8;
-#endif
     /** @name Reserved for future use 
      * @{ */
 	int version_number; /**< Version number of the map file. */

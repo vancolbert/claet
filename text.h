@@ -33,12 +33,10 @@ extern "C" {
 #define FILTER_CHANNEL3	CHAT_CHANNEL3
 #define FILTER_ALL	CHAT_ALL
 #define FILTER_NONE	CHAT_NONE
-#ifndef ENGLISH
 #define FILTER_CHANNEL4	CHAT_CHANNEL4
 #define FILTER_CHANNEL5	CHAT_CHANNEL5
 #define FILTER_DEV  	CHAT_DEV
 #define FILTER_COORD	CHAT_COORD
-#endif //ENGLISH
 
 #define LOG_NONE				0
 #define LOG_CHAT				1
@@ -53,9 +51,7 @@ typedef struct
 	char *data;
 	Uint16 wrap_width;
 	float wrap_zoom;
-#ifdef FR_VERSION
 	Uint8 wrap_font;
-#endif //FR_VERSION
 	Uint8 wrap_lines;
 	Uint8 deleted;
 	float max_line_width;
@@ -87,14 +83,9 @@ extern int current_text_width; /*!< Current wrapping width for text buffers */
 
 extern ec_reference harvesting_effect_reference;
 
-#ifdef EMOTES
-extern int emote_filter; //used to ignore text lines of emotes only
-#endif
 
 extern int summoning_filter; //used to ignore text lines of summoning messages
-#ifndef ENGLISH
 void close_chat_log();
-#endif //ENGLISH
 
 /*!
  * \brief Allocate the character buffer for a text_message
@@ -203,9 +194,7 @@ static __inline__ void init_text_message (text_message *msg, Uint16 size)
 	alloc_text_message_data (msg, size);
 	msg->wrap_width = 0;
 	msg->wrap_zoom = 1.0f;
-#ifdef FR_VERSION
 	msg->wrap_font = 0;
-#endif //FR_VERSION
 	msg->wrap_lines = 0;
 	msg->deleted = 0;
 	msg->max_line_width = 0.0f;
@@ -428,11 +417,7 @@ void clear_display_text_buffer ();
  * \param cursor cursor passed to \sa reset_soft_breaks
  * \retval       the number of lines after wrapping
  */
-#ifdef FR_VERSION
 int rewrap_message(text_message * msg, float zoom, int font, int width, int * cursor);
-#else //FR_VERSION
-int rewrap_message(text_message * buf, float zoom, int width, int * cursor);
-#endif //FR_VERSION
 
 void cleanup_text_buffers(void);
 
@@ -449,33 +434,6 @@ void cleanup_text_buffers(void);
  */
 void check_harvesting_effect(void);
 
-#ifdef ENGLISH
-/*!
- * \ingroup text_font
- * \brief return special day status
- *
- * \retval       true is today is special
- *
- * \callgraph
- */
-int today_is_special_day(void);
-
-/*!
- * \ingroup text_font
- * \brief set is special day
- *
- * \callgraph
- */
-void set_today_is_special_day(void);
-
-/*!
- * \ingroup text_font
- * \brief clear is special day
- *
- * \callgraph
- */
-void clear_today_is_special_day(void);
-#endif //ENGLISH
 
 
 #define LOG_TO_CONSOLE(color,buffer)	put_colored_text_in_buffer(color,CHAT_SERVER,(const Uint8*)buffer,-1) /*!< logs the text in buffer with the specified color to the console. */

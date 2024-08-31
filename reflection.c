@@ -18,16 +18,11 @@
 #include "textures.h"
 #include "tiles.h"
 #include "weather.h"
-#ifdef CLUSTER_INSIDES_OLD
-#include "cluster.h"
-#endif
 #include "shadows.h"
 #include "global.h"
 #include "shader/shader.h"
 #include "sky.h"
-#ifdef FSAA
 #include "fsaa/fsaa.h"
-#endif /* FSAA */
 
 typedef struct
 {
@@ -152,10 +147,6 @@ static __inline__ void build_water_buffer()
 {
 	unsigned int i, j, l, x, y, start, stop;
 	float x_scaled,y_scaled;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-	short tile_cluster;
-#endif
 
 	if (get_bbox_intersect_flag(main_bbox_tree, TYPE_REFLECTIV_WATER, ide_changed) ||
 		get_bbox_intersect_flag(main_bbox_tree, TYPE_NO_REFLECTIV_WATER, ide_changed))
@@ -178,11 +169,6 @@ static __inline__ void build_water_buffer()
 		x = get_terrain_x (l);
 		y = get_terrain_y (l);
 
-#ifdef CLUSTER_INSIDES_OLD
-		tile_cluster = get_cluster (6*x, 6*y);
-		if (tile_cluster && tile_cluster != cluster)
-			continue;
-#endif
 
 		x_scaled = x * 3.0f;
 		y_scaled = y * 3.0f;
@@ -230,11 +216,6 @@ static __inline__ void build_water_buffer()
 		x = get_terrain_x (l);
 		y = get_terrain_y (l);
 
-#ifdef CLUSTER_INSIDES_OLD
-		tile_cluster = get_cluster (6*x, 6*y);
-		if (tile_cluster && tile_cluster != cluster)
-			continue;
-#endif
 
 		x_scaled = x * 3.0f;
 		y_scaled = y * 3.0f;
@@ -317,9 +298,6 @@ static __inline__ void init_depth()
 	glDepthRange(0.0f, 1.0f);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 //if there is any reflecting tile, returns 1, otherwise 0
@@ -401,9 +379,6 @@ static __inline__ void init_texturing()
 	glTranslatef(0.0f, 0.0f, water_depth_offset);
 	glGetFloatv(GL_MODELVIEW_MATRIX, reflect_texgen_mat);
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void setup_water_fbo_texgen()
@@ -446,9 +421,6 @@ static __inline__ void setup_water_fbo_texgen()
 
 	ELglActiveTextureARB(base_unit);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void setup_water_texgen()
@@ -471,9 +443,6 @@ static __inline__ void setup_water_texgen()
 	plane[3] = water_movement_v;
 	glTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void setup_noise_texgen()
@@ -500,9 +469,6 @@ static __inline__ void setup_noise_texgen()
 
 	ELglActiveTextureARB(base_unit);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void disable_water_fbo_texgen()
@@ -516,9 +482,6 @@ static __inline__ void disable_water_fbo_texgen()
 
 	ELglActiveTextureARB(base_unit);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void disable_water_texgen()
@@ -526,9 +489,6 @@ static __inline__ void disable_water_texgen()
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 #if 0
@@ -542,9 +502,6 @@ static __inline__ void disable_noise_texgen()
 
 	ELglActiveTextureARB(base_unit);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 #endif
 
@@ -665,15 +622,10 @@ void display_3d_reflection()
 //	display_2d_objects();
 	display_objects();
 	display_ground_objects();
-#ifndef MAP_EDITOR2
 	display_actors(0, REFLECTION_RENDER_PASS);
-#endif
 	display_alpha_objects();
 //	display_blended_objects();
 	set_cur_intersect_type(main_bbox_tree, cur_intersect_type);
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -710,12 +662,8 @@ void display_3d_reflection()
 	glLightfv(GL_LIGHT7, GL_POSITION, sun_position);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
-#ifndef MAP_EDITOR2
 void blend_reflection_fog()
 {
 	static GLfloat blendColor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
@@ -777,58 +725,8 @@ void blend_reflection_fog()
 	glPopMatrix();
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
-#endif
 
-#ifndef	NEW_TEXTURES
-void draw_water_quad_tiles(unsigned int start, unsigned int stop, unsigned int idx, int water_id)
-{
-	unsigned int i, l, size;
-	int x, y, cur_texture;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-	short tile_cluster;
-#endif
-
-	size = 0;
-	cur_texture = last_texture;
-
-	for (i = start; i < stop; i++)
-	{
-		l = get_intersect_item_ID(main_bbox_tree, i);
-		x = get_terrain_x(l);
-		y = get_terrain_y(l);
-
-#ifdef CLUSTER_INSIDES_OLD
-		tile_cluster = get_cluster (6*x, 6*y);
-		if (tile_cluster && tile_cluster != cluster)
-			continue;
-#endif
-
-		if (!tile_map[y * tile_map_size_x + x])
-		{
-			cur_texture = get_texture_id(water_id);
-		}
-		else
-		{
-			cur_texture = get_texture_id(tile_list[tile_map[y * tile_map_size_x + x]]);
-		}
-		if (cur_texture != last_texture)
-		{
-			glDrawArrays(GL_QUADS, idx * 4, size * 4);
-			bind_texture_id(cur_texture);
-			cur_texture = last_texture;
-			idx += size;
-			size = 0;
-		}
-		size++;
-	}
-	glDrawArrays(GL_QUADS, idx * 4, size * 4);
-}
-#endif	/* NEW_TEXTURES */
 
 void draw_lake_tiles()
 {
@@ -901,23 +799,15 @@ void draw_lake_tiles()
 	}
 
 	get_intersect_start_stop(main_bbox_tree, TYPE_NO_REFLECTIV_WATER, &start, &stop);
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
-#ifdef	NEW_TEXTURES
 	draw_quad_tiles(start, stop, 0, water_id);
-#else	/* NEW_TEXTURES */
-	draw_water_quad_tiles(start, stop, 0, water_id);
-#endif	/* NEW_TEXTURES */
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glDisable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 
 	if (use_frame_buffer && (water_shader_quality > 0) && show_reflection)
 	{
@@ -995,23 +885,15 @@ void draw_lake_tiles()
 	}
 
 	get_intersect_start_stop(main_bbox_tree, TYPE_REFLECTIV_WATER, &start, &stop);
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
-#ifdef	NEW_TEXTURES
 	draw_quad_tiles(start, stop, water_buffer_reflectiv_index, water_id);
-#else	/* NEW_TEXTURES */
-	draw_water_quad_tiles(start, stop, water_buffer_reflectiv_index, water_id);
-#endif	/* NEW_TEXTURES */
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glDisable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 
 	if (use_frame_buffer && (water_shader_quality > 0) && show_reflection)
 	{
@@ -1059,20 +941,13 @@ void draw_lake_tiles()
 
 	disable_water_texgen();
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_sky_background()
 {
 	static GLfloat lights_c[4][3];
-#ifdef MAP_EDITOR2
-	int i;
-#else // MAP_EDITOR2
 	int i;
 	float weather_bias = (1.0-weather_get_density());
-#endif // MAP_EDITOR2
 	GLint view_port[4];
 
 	glDisable(GL_TEXTURE_2D);
@@ -1150,19 +1025,14 @@ void draw_sky_background()
 	}
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_dungeon_sky_background()
 {
 	static const GLfloat baseColor[3] = { 0.00f, 0.21f, 0.34f };
-#ifndef MAP_EDITOR2
 	static GLfloat color[3];
 	int i;
 	float weather_density = weather_get_density();
-#endif // MAP_EDITOR2
 	GLint view_port[4];
 
 	glDisable(GL_TEXTURE_2D);
@@ -1190,16 +1060,12 @@ void draw_dungeon_sky_background()
 		Enter2DMode();
 	}
 
-#ifdef MAP_EDITOR2
-	glColor3fv(baseColor);
-#else // MAP EDITOR 2
 
 	for (i=0; i<3; i++) {
 		color[i] = baseColor[i] * ((1.0 - weather_density) + weather_color[i]*weather_density);
 	}
 
 	glColor3fv(color);
-#endif // MAP_EDITOR
 	
 	glBegin(GL_QUADS);
 	//draw the sky background
@@ -1233,9 +1099,6 @@ void draw_dungeon_sky_background()
 	}
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_water_background()
@@ -1325,7 +1188,4 @@ void draw_water_background()
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }

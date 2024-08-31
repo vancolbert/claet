@@ -16,9 +16,6 @@
 #include "textures.h"
 #include "trade_log.h"
 #include "translate.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "sound.h"
 
 #define ITEM_INVENTORY 1
@@ -93,49 +90,6 @@ int display_trade_handler(window_info *win)
 
 	for(i=16; i>=0; --i){
 		if(your_trade_list[i].quantity){
-#ifdef ENGLISH
-			GLfloat u_start, v_start, u_end, v_end;
-			int x_start, x_end, y_start, y_end;
-			int cur_item;
-			GLuint this_texture;
-
-			cur_item=your_trade_list[i].image_id%25;
-#ifdef	NEW_TEXTURES
-			get_item_uv(cur_item, &u_start, &v_start, &u_end,
-				&v_end);
-#else	/* NEW_TEXTURES */
-			u_start=0.2f*(cur_item%5);
-			u_end=u_start+(float)50/255;
-			v_start=(1.0f+((float)50/255)/255.0f)-((float)50/255*(cur_item/5));
-			v_end=v_start-(float)50/255;
-#endif	/* NEW_TEXTURES */
-
-			this_texture=get_items_texture(your_trade_list[i].image_id/25);
-
-#ifdef	NEW_TEXTURES
-			if (this_texture != -1)
-			{
-				bind_texture(this_texture);
-			}
-#else	/* NEW_TEXTURES */
-			if(this_texture!=-1) get_and_set_texture_id(this_texture);
-#endif	/* NEW_TEXTURES */
-
-			x_start=(i%4)*33+10;
-			x_end=x_start+32;
-			y_start=(i/4)*33+30;
-			y_end=y_start+32;
-
-			glBegin(GL_QUADS);
-			draw_2d_thing(u_start,v_start,u_end,v_end,x_start,y_start,x_end,y_end);
-			glEnd();
-
-			safe_snprintf(str, sizeof(str), "%i",your_trade_list[i].quantity);
-			if ((mouse_over_your_trade_pos == i) && enlarge_text())
-				draw_string_shadowed(x_start,(i&1)?(y_end-12):(y_end-22),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-			else
-			draw_string_small_shadowed(x_start,(i&1)?(y_end-12):(y_end-22),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#else //ENGLISH
 			/* autant réutiliser la fonction draw_item */
 			int x_start, y_start;
 			x_start=(i%4)*33+10;
@@ -148,7 +102,6 @@ int display_trade_handler(window_info *win)
 				draw_string_shadowed(x_start, y_start + 32 - ((i&1)?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 			else
 				draw_string_small_shadowed(x_start, y_start + 32 - ((i&1)?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#endif //ENGLISH
 			//by doing the images in reverse, you can't cover up the digits>4
 			//also, by offsetting each one, numbers don't overwrite each other:
 			//before: 123456 in one box and 56 in the other could allow
@@ -162,49 +115,6 @@ int display_trade_handler(window_info *win)
 
 	for(i=16; i>=0; --i){
 		if(others_trade_list[i].quantity){
-#ifdef ENGLISH
-			GLfloat u_start, v_start, u_end, v_end;
-			int x_start, x_end, y_start, y_end;
-			int cur_item;
-			GLuint this_texture;
-
-			cur_item=others_trade_list[i].image_id%25;
-#ifdef	NEW_TEXTURES
-			get_item_uv(cur_item, &u_start, &v_start, &u_end,
-				&v_end);
-#else	/* NEW_TEXTURES */
-			u_start=0.2f*(cur_item%5);
-			u_end=u_start+(float)50/255;
-			v_start=(1.0f+((float)50/255)/255.0f)-((float)50/255*(cur_item/5));
-			v_end=v_start-(float)50/255;
-#endif	/* NEW_TEXTURES */
-
-			this_texture=get_items_texture(others_trade_list[i].image_id/25);
-
-#ifdef	NEW_TEXTURES
-			if (this_texture != -1)
-			{
-				bind_texture(this_texture);
-			}
-#else	/* NEW_TEXTURES */
-			if(this_texture!=-1) get_and_set_texture_id(this_texture);
-#endif	/* NEW_TEXTURES */
-
-			x_start=(i%4)*33+10+5*33;
-			x_end=x_start+32;
-			y_start=(i/4)*33+30;
-			y_end=y_start+32;
-
-			glBegin(GL_QUADS);
-			draw_2d_thing(u_start,v_start,u_end,v_end,x_start,y_start,x_end,y_end);
-			glEnd();
-
-			safe_snprintf(str, sizeof(str), "%i",others_trade_list[i].quantity);
-			if ((mouse_over_others_trade_pos == i) && enlarge_text())
-				draw_string_shadowed(x_start,(!(i&1))?(y_end-12):(y_end-22),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-			else
-			draw_string_small_shadowed(x_start,(!(i&1))?(y_end-12):(y_end-22),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#else //ENGLISH
 			/* autant réutiliser la fonction draw_item */
 			int x_start, y_start;
 			x_start=(i%4)*33+10+5*33;
@@ -217,18 +127,11 @@ int display_trade_handler(window_info *win)
 				draw_string_shadowed(x_start, y_start + 32 - ((i&1)?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 			else
 				draw_string_small_shadowed(x_start, y_start + 32 - ((i&1)?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#endif //ENGLISH
 
 			if(storage_available && others_trade_list[i].type==ITEM_BANK){
-#ifdef FR_VERSION
 				str[0]='d';
 				str[1]='e';
 				str[2]='p';
-#else //FR_VERSION
-				str[0]='s';
-				str[1]='t';
-				str[2]='o';
-#endif //FR_VERSION
 				str[3]=0;
 				draw_string_small_shadowed(x_start,y_start-1,(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 			}
@@ -289,9 +192,6 @@ int display_trade_handler(window_info *win)
 		tool_tip_str = NULL;
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -302,9 +202,7 @@ int click_trade_handler(window_info *win, int mx, int my, Uint32 flags)
 	Uint8 str[256];
 	int left_click = flags & ELW_LEFT_MOUSE;
 	int right_click = flags & ELW_RIGHT_MOUSE;
-#ifdef FR_VERSION
 	int trade_quantity_storage_offset = 3; /* Offset of trade quantity in packet. Can be 3 or 4 */
-#endif //FR_VERSION
 
 	if ( !(left_click || right_click) ) return 0;
 
@@ -324,7 +222,6 @@ int click_trade_handler(window_info *win, int mx, int my, Uint32 flags)
 	if(left_click && item_dragged!=-1){
 		str[0]=PUT_OBJECT_ON_TRADE;
 		str[1]=ITEM_INVENTORY;
-#ifdef FR_VERSION
         //
         //  Modification de la fonction cote server la position est toujours en uint16 maintenant
         //
@@ -332,31 +229,15 @@ int click_trade_handler(window_info *win, int mx, int my, Uint32 flags)
         trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
 		*((Uint32 *)(str+trade_quantity_storage_offset))= SDL_SwapLE32(item_quantity);
 		my_tcp_send(my_socket,str, 4 + trade_quantity_storage_offset );
-#else //FR_VERSION
-        str[2]=item_list[item_dragged].pos;
-		*((Uint32 *)(str+3))= SDL_SwapLE32(item_quantity);
-		my_tcp_send(my_socket,str,7);
-#endif //FR_VERSION
 		do_drop_item_sound();
 		return 1;
 	} else if(storage_available && left_click && storage_item_dragged!=-1){
 		str[0]=PUT_OBJECT_ON_TRADE;
 		str[1]=ITEM_BANK;
-#ifdef FR_VERSION
        	*((Uint16 *)(str+2))= SDL_SwapLE16(storage_items[storage_item_dragged].pos);
 			trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
 		*((Uint32 *)(str+trade_quantity_storage_offset))= SDL_SwapLE32(item_quantity);
 		my_tcp_send(my_socket,str, 4 + trade_quantity_storage_offset );
-#else //FR_VERSION
-		if ( storage_items[storage_item_dragged].pos > 255 ) {
-			*((Uint16 *)(str+2))= SDL_SwapLE16(storage_items[storage_item_dragged].pos);
-			trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
-		} else {
-			str[2]=storage_items[storage_item_dragged].pos;
-		}
-		*((Uint32 *)(str+trade_quantity_storage_offset))= SDL_SwapLE32(item_quantity);
-		my_tcp_send(my_socket,str, 4 + trade_quantity_storage_offset );
-#endif //FR_VERSION
 		do_drop_item_sound();
 		return 1;
 	} else if(mx>10 && mx<10+4*33 && my>30 && my<30+4*33){
@@ -522,17 +403,13 @@ void put_item_on_trade (const Uint8 *data)
 		others_trade_list[pos].quantity+=SDL_SwapLE32(*((Uint32 *)(data+2)));
 		others_trade_list[pos].type=data[6];
 		if (item_uid_enabled)
-#ifdef FR_VERSION
 		{
-#endif //FR_VERSION
 			others_trade_list[pos].id=SDL_SwapLE16(*((Uint16 *)(data+9)));
-#ifdef FR_VERSION
 			if (others_trade_list[pos].id == 981)
 			{
 				others_trade_list[pos].id = 20;
 			}
 		}
-#endif //FR_VERSION
 		else
 			others_trade_list[pos].id=unset_item_uid;
 	}

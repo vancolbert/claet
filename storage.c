@@ -20,12 +20,7 @@
 #include "textures.h"
 #include "translate.h"
 #include "widgets.h"
-#ifdef FR_VERSION
 #include "gl_init.h"
-#endif //FR_VERSION
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 
 #define STORAGE_CATEGORIES_SIZE 50
 #define STORAGE_CATEGORIES_DISPLAY 13
@@ -66,7 +61,6 @@ static char filter_item_text[40] = "";
 static size_t filter_item_text_size = 0;
 static Uint8 storage_items_filter[STORAGE_ITEMS_SIZE];
 
-#ifdef FR_VERSION
 int storage_items_cols = 6;
 int storage_items_rows = 6;
 int storage_items_size = 6*6;
@@ -75,7 +69,6 @@ int storage_textarea_size = 5 + 1*25 + 5;                    // =25
 int storage_categories_size = (6*32 - 2*3) / 13;             // =14
 int storage_win_x_len = 10 + 120 + 20 + 10 + 6*32 + 20 + 20; // =392
 int storage_win_y_len = 10 + 6*32 + 10 + 5+15+5 + 10;        // =247
-#endif //FR_VERSION
 
 //	Look though the category for the selected item, pick it up if found.
 //
@@ -171,7 +164,6 @@ void pickup_storage_item(int image_id, Uint16 item_id, int cat_id)
 		move_to_category(wanted_category);
 }
 
-#ifdef WITHDRAW_LIST
 void withdraw_active_storage_item(int qte_item)
 {
     if(active_storage_item != -1  && wanted_category == -1){
@@ -183,7 +175,6 @@ void withdraw_active_storage_item(int qte_item)
         do_drop_item_sound();
 	}
 }
-#endif //WITHDRAW_LIST
 
 
 void get_storage_text (const Uint8 *in_data, int len)
@@ -244,11 +235,7 @@ void get_storage_categories (const char *in_data, int len)
 	}
 
 	no_storage_categories = in_data[0];
-#ifdef FR_VERSION
 	if (storage_win > 0) vscrollbar_set_bar_len(storage_win, STORAGE_SCROLLBAR_CATEGORIES, no_storage_categories);
-#else //FR_VERSION
-	if (storage_win > 0) vscrollbar_set_bar_len(storage_win, STORAGE_SCROLLBAR_CATEGORIES, ( no_storage_categories - STORAGE_CATEGORIES_DISPLAY ) > 1 ? (no_storage_categories - STORAGE_CATEGORIES_DISPLAY) : 1);
-#endif //FR_VERSION
 
 	selected_category=-1;
 	active_storage_item=-1;
@@ -321,12 +308,10 @@ void get_storage_items (const Uint8 *in_data, int len)
 		// It's just an update - make sure we're in the right category
 		idx = 2;
 		active_storage_item = SDL_SwapLE16(*((Uint16*)(&in_data[idx+6])));
-#ifndef ENGLISH
       //@tosh : on change éventuellement de catégorie, lorsque l'on met
       //un objet au dépôt.
       cat = find_category(in_data[1]);
       move_to_category(cat);
-#endif //ENGLISH
 		for (i = 0; i < STORAGE_ITEMS_SIZE; i++)
 		{
 			if ((storage_items[i].pos == SDL_SwapLE16(*((Uint16*)(&in_data[idx+6])))) && (storage_items[i].quantity > 0))
@@ -391,21 +376,14 @@ void get_storage_items (const Uint8 *in_data, int len)
 
 	vscrollbar_set_pos(storage_win, STORAGE_SCROLLBAR_ITEMS, 0);
 
-#ifdef FR_VERSION
 	// on adapte la scrollbar au nombre d'objets dans la catégorie
 	vscrollbar_set_bar_len(storage_win, STORAGE_SCROLLBAR_ITEMS, (no_storage - 1) / storage_items_cols + 1);
-#endif //FR_VERSION
 
 	pos = vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES);
 	if (cat < pos) {
 		vscrollbar_set_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES, cat);
-#ifdef FR_VERSION
 	} else	if (cat >= pos + storage_categories_size) {
 		vscrollbar_set_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES, cat - storage_categories_size + 1);
-#else //FR_VERSION
-	} else	if (cat >= pos + STORAGE_CATEGORIES_DISPLAY) {
-		vscrollbar_set_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES, cat - STORAGE_CATEGORIES_DISPLAY + 1);
-#endif //FR_VERSION
 	}
 
 	if (selected_category != -1)
@@ -417,10 +395,6 @@ void get_storage_items (const Uint8 *in_data, int len)
 int storage_win=-1;
 int storage_win_x=100;
 int storage_win_y=100;
-#ifndef FR_VERSION
-int storage_win_x_len=400;
-int storage_win_y_len=272;
-#endif //FR_VERSION
 
 int cur_item_over=-1;
 int storage_item_dragged=-1;
@@ -436,106 +410,26 @@ int display_storage_handler(window_info * win)
 
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glEnable(GL_TEXTURE_2D);
-#ifdef FR_VERSION
 	for(i=pos=vscrollbar_get_pos(storage_win,STORAGE_SCROLLBAR_CATEGORIES); i<no_storage_categories && storage_categories[i].id!=-1 && i<pos+storage_categories_size; i++,n++){
 		draw_string_small(15, 10+3+n*13, (unsigned char*)storage_categories[i].name,1);
 	}
-#else //FR_VERSION
-	for(i=pos=vscrollbar_get_pos(storage_win,STORAGE_SCROLLBAR_CATEGORIES); i<no_storage_categories && storage_categories[i].id!=-1 && i<pos+STORAGE_CATEGORIES_DISPLAY; i++,n++){
-		draw_string_small(20, 20+n*13, (unsigned char*)storage_categories[i].name,1);
-	}
-#endif //FR_VERSION
 	if(storage_text[0]){
 		if (strcmp(storage_text, last_storage_text) != 0) {
 			safe_strncpy(last_storage_text, storage_text, sizeof(last_storage_text));
-#ifdef FR_VERSION
 			put_small_text_in_box ((Uint8 *)storage_text, strlen(storage_text), win->len_x - 15*2, wrapped_storage_text);
-#else //FR_VERSION
-			put_small_text_in_box ((Uint8 *)storage_text, strlen(storage_text), win->len_x - 18*2, wrapped_storage_text);
-#endif //FR_VERSION
 		}
-#ifdef FR_VERSION
 		draw_string_small(15, storage_win_y_len - 10 - storage_textarea_size + 5, (unsigned char*)wrapped_storage_text, storage_textarea_lines);
-#else //FR_VERSION
-		draw_string_small(18, 220, (unsigned char*)wrapped_storage_text, 2);
-#endif //FR_VERSION
 	}
 
 	glColor3f(1.0f,1.0f,1.0f);
-#ifdef FR_VERSION
 	for(i=pos=storage_items_cols*vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_ITEMS); i<pos+storage_items_size && i<no_storage;i++){
-#else //FR_VERSION
-	for(i=pos=6*vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_ITEMS); i<pos+36 && i<no_storage;i++){
-#endif //FR_VERSION
-#ifdef ENGLISH
-		GLfloat u_start, v_start, u_end, v_end;
-		int x_start, x_end, y_start, y_end;
-		int cur_item;
-		GLuint this_texture;
-
-		if(!storage_items[i].quantity)continue;
-		cur_item=storage_items[i].image_id%25;
-#ifdef	NEW_TEXTURES
-		get_item_uv(cur_item, &u_start, &v_start, &u_end, &v_end);
-#else	/* NEW_TEXTURES */
-		u_start=0.2f*(cur_item%5);
-		u_end=u_start+(float)50/255;
-		v_start=(1.0f+((float)50/255)/255.0f)-((float)50/255*(cur_item/5));
-		v_end=v_start-(float)50/255;
-#endif	/* NEW_TEXTURES */
-
-		this_texture=get_items_texture(storage_items[i].image_id/25);
-
-#ifdef	NEW_TEXTURES
-		if (this_texture != -1)
-		{
-			bind_texture(this_texture);
-		}
-#else	/* NEW_TEXTURES */
-		if(this_texture!=-1) get_and_set_texture_id(this_texture);
-#endif	/* NEW_TEXTURES */
-
-		x_start=(i%6)*32+281;
-		x_end=x_start+31;
-		y_start=((i-pos)/6)*32+10;
-		y_end=y_start+31;
-
-		glBegin(GL_QUADS);
-		draw_2d_thing(u_start,v_start,u_end,v_end,x_start,y_start,x_end,y_end);
-		glEnd();
-
-		if (!disable_storage_filter && filter_item_text_size && storage_items_filter[i])
-			gray_out(x_start,y_start,32);
-#else //ENGLISH
 		/* autant réutiliser la fonction draw_item */
 		if(!storage_items[i].quantity)continue;
-#ifdef FR_VERSION
 		draw_item(storage_items[i].image_id, (i%storage_items_cols)*32+281, ((i-pos)/storage_items_cols)*32+10, 32);
-#else //FR_VERSION
-		draw_item(storage_items[i].image_id, (i%6)*32+161, ((i-pos)/6)*32+10, 32);
-#endif //FR_VERSION
 		if (!disable_storage_filter && filter_item_text_size && storage_items_filter[i])
 			gray_out(i%storage_items_cols*31+281,((i-pos)/storage_items_cols)*31+10,32);
-#endif //ENGLISH
 	}
 
-#ifndef FR_VERSION
-	if(cur_item_over!=-1 && mouse_in_window(win->window_id, mouse_x, mouse_y) == 1){
-		char str[20];
-		Uint16 item_id = storage_items[cur_item_over].id;
-		int image_id = storage_items[cur_item_over].image_id;
-		if (show_item_desc_text && item_info_available() && (get_item_count(item_id, image_id) == 1))
-			show_help(get_item_description(item_id, image_id), 0, win->len_y + 10 + (help_text_line++) * SMALL_FONT_Y_LEN);
-
-		if (active_storage_item!=storage_items[cur_item_over].pos) {
-			safe_snprintf(str, sizeof(str), "%d",storage_items[cur_item_over].quantity);
-			if (enlarge_text())
-				show_sized_help(str, mouse_x-win->pos_x-(strlen(str)/2)*DEFAULT_FONT_X_LEN,mouse_y-win->pos_y-DEFAULT_FONT_Y_LEN-1, 1);
-			else
-				show_help(str,mouse_x-win->pos_x-(strlen(str)/2)*8,mouse_y-win->pos_y-14);
-		}
-	}
-#endif //FR_VERSION
 
 	// Render the grid *after* the images. It seems impossible to code
 	// it such that images are rendered exactly within the boxes on all
@@ -545,31 +439,17 @@ int display_storage_handler(window_info * win)
 	glColor3f(0.77f, 0.57f, 0.39f);
 
 	glBegin(GL_LINE_LOOP);
-#ifdef FR_VERSION
 		glVertex2i(10,       10);
 		glVertex2i(10,       storage_win_y_len - 10 - storage_textarea_size - 10);
 		glVertex2i(10 + 250, storage_win_y_len - 10 - storage_textarea_size - 10);
 		glVertex2i(10 + 250, 10);
-#else //FR_VERSION
-		glVertex2i(10,  10);
-		glVertex2i(10,  202);
-		glVertex2i(130, 202);
-		glVertex2i(130, 10);
-#endif //FR_VERSION
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
-#ifdef FR_VERSION
 		glVertex2i(10, storage_win_y_len - 10 - storage_textarea_size);
 		glVertex2i(10, storage_win_y_len - 10);
 		glVertex2i(storage_win_x_len - 10, storage_win_y_len - 10);
 		glVertex2i(storage_win_x_len - 10, storage_win_y_len - 10 - storage_textarea_size);
-#else //FR_VERSION
-		glVertex2i(10, 212);
-		glVertex2i(10, 262);
-		glVertex2i(392, 262);
-		glVertex2i(392, 212);
-#endif //FR_VERSION
 	glEnd();
 
 	if (view_only_storage)
@@ -583,26 +463,19 @@ int display_storage_handler(window_info * win)
 			glColor3f(0.37f, 0.37f, 0.39f);		/* otherwise draw greyed out */
 	}
 
-#ifdef FR_VERSION
 	rendergrid(storage_items_cols, storage_items_rows, 280, 10, 32, 32);
-#else //FR_VERSION
-	rendergrid(6, 6, 160, 10, 32, 32);
-#endif //FR_VERSION
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef FR_VERSION
 	// on dessine les quantités par dessus la grille !
 	if(cur_item_over!=-1 && mouse_in_window(win->window_id, mouse_x, mouse_y) == 1 && active_storage_item!=storage_items[cur_item_over].pos){
 		char str[20];
 		safe_snprintf(str, sizeof(str), "%d",storage_items[cur_item_over].quantity);
 		draw_string_small_shadowed(mouse_x-win->pos_x-(strlen(str)*0.5f)*8+8,mouse_y-win->pos_y+16, (unsigned char*)str, 1, 1.0f,1.0f,1.0f, 0.0f,0.0f,0.0f);
 	}
-#endif //FR_VERSION
 
 	glColor3f(1.0f,1.0f,1.0f);
 	if(active_storage_item >= 0) {
 		/* Draw the active item's quantity on top of everything else. */
-#ifdef FR_VERSION
 		for(i = pos = storage_items_cols*vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_ITEMS); i < pos+storage_items_size && i < no_storage; i++) {
 			if(storage_items[i].pos == active_storage_item) {
 				if (storage_items[i].quantity) {
@@ -613,26 +486,6 @@ int display_storage_handler(window_info * win)
 				break;
 			}
 		}
-#else //FR_VERSION
-		for(i = pos = 6*vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_ITEMS); i < pos+36 && i < no_storage; i++) {
-			if(storage_items[i].pos == active_storage_item) {
-				if (storage_items[i].quantity) {
-					char str[20];
-					int x = (i%6)*32+281;
-
-					safe_snprintf(str, sizeof(str), "%d", storage_items[i].quantity);
-					if(x > 353) {
-						x = 321;
-					}
-					if ((mouse_in_window(win->window_id, mouse_x, mouse_y) == 1) && enlarge_text())
-						show_sized_help(str, x, ((i-pos)/6)*32+18, 1);
-					else
-						show_help(str, x, ((i-pos)/6)*32+18);
-				}
-				break;
-			}
-		}
-#endif //FR_VERSION
 	}
 
 	if (!disable_storage_filter && !mouse_over_titlebar)
@@ -649,16 +502,12 @@ int display_storage_handler(window_info * win)
 
 	mouse_over_storage = mouse_over_titlebar = 0;
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
 
 int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 {
-#ifdef FR_VERSION
 	// modification de la quantité de l'objet en cours de drag avec la molette
 	if (flags & ELW_WHEEL)
 	{
@@ -675,26 +524,17 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 			return 1;
 		}
 	}
-#endif //FR_VERSION
 
 	if(flags&ELW_WHEEL_UP) {
 		if(mx>10 && mx<260) {
 			vscrollbar_scroll_up(storage_win, STORAGE_SCROLLBAR_CATEGORIES);
-#ifdef FR_VERSION
 		} else if(mx>280 && mx<280+32*storage_items_cols){
-#else //FR_VERSION
-		} else if(mx>150 && mx<352){
-#endif //FR_VERSION
 			vscrollbar_scroll_up(storage_win, STORAGE_SCROLLBAR_ITEMS);
 		}
 	} else if(flags&ELW_WHEEL_DOWN) {
 		if(mx>10 && mx<260) {
 			vscrollbar_scroll_down(storage_win, STORAGE_SCROLLBAR_CATEGORIES);
-#ifdef FR_VERSION
 		} else if(mx>280 && mx<280+32*storage_items_cols){
-#else //FR_VERSION
-		} else if(mx>150 && mx<352){
-#endif //FR_VERSION
 			vscrollbar_scroll_down(storage_win, STORAGE_SCROLLBAR_ITEMS);
 		}
 	}
@@ -702,31 +542,18 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 		return 0;
 	}
 	else {
-#ifdef FR_VERSION
 		if(my>10 && my<storage_win_y_len-10-storage_textarea_size-10){
-#else //FR_VERSION
-		if(my>10 && my<202){
-#endif //FR_VERSION
 			if(mx>10 && mx<230){
 				int cat=-1;
-#ifdef FR_VERSION
 				cat=(my-10-3)/13 + vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES);
-#else //FR_VERSION
-				cat=(my-20)/13 + vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_CATEGORIES);
-#endif //FR_VERSION
 				move_to_category(cat);
 				do_click_sound();
-#ifdef FR_VERSION
 			} else if(mx>280 && mx<280+32*storage_items_cols){
-#else //FR_VERSION
-			} else if(mx>150 && mx<352){
-#endif //FR_VERSION
 				if(view_only_storage && item_dragged!=-1 && left_click){
 					drop_fail_time = SDL_GetTicks();
 					do_alert1_sound();
 				} else if(!view_only_storage && item_dragged!=-1 && left_click){
 					Uint8 str[6];
-#ifdef FR_VERSION
 					// objet laché venant de l'inventaire
 					int i, temp_case = -1;
 					int temp_quantity = item_quantity;
@@ -766,11 +593,6 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 					str[0]=DEPOSITE_ITEM;
 					str[1]=item_list[item_dragged].pos;
 					*((Uint32*)(str+2))=SDL_SwapLE32(temp_quantity);
-#else //FR_VERSION
-					str[0]=DEPOSITE_ITEM;
-					str[1]=item_list[item_dragged].pos;
-					*((Uint32*)(str+2))=SDL_SwapLE32(item_quantity);
-#endif //FR_VERSION
 
 					my_tcp_send(my_socket, str, 6);
 					do_drop_item_sound();
@@ -791,7 +613,6 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 						active_storage_item=storage_items[cur_item_over].pos;
 						do_click_sound();
 					}
-#ifdef FR_VERSION
 				// ctrl+clic sur un objet : ajout d'un raccourci dans la barre rapide
 				// Note : mieux vaut éviter d'enregistrer un raccourci avec aussi peu d'info sur l'objet
 				// En particulier nous ne savons pas si un objet du dépôt est empilable ou non
@@ -816,9 +637,7 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 					}
 				}
 */
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 				}
 				// shift+clic sur un objet : on tente de l'équiper
 				else if (!view_only_storage && cur_item_over!=-1 && (flags & ELW_SHIFT))
@@ -869,7 +688,6 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 					my_tcp_send(my_socket, str, 7);
 					do_drop_item_sound();
 					if (storage_items[cur_item_over].quantity<=item_quantity) storage_item_dragged=-1;
-#endif //FR_VERSION
 				} else if(!view_only_storage && cur_item_over!=-1){
 					storage_item_dragged=cur_item_over;
 					active_storage_item=storage_items[cur_item_over].pos;
@@ -894,18 +712,10 @@ int mouseover_storage_handler(window_info *win, int mx, int my)
 	else
 		mouse_over_storage = 1;
 
-#ifdef FR_VERSION
 	if(my>10 && my<storage_win_y_len-10-storage_textarea_size-10){
-#else //FR_VERSION
-	if(my>10 && my<202){
-#endif //FR_VERSION
 		if(mx>10 && mx<130){
 			int i;
-#ifdef FR_VERSION
 			int pos=last_pos=(my-10-3)/13;
-#else //FR_VERSION
-			int pos=last_pos=(my-20)/13;
-#endif //FR_VERSION
 			int p;
 
 			for(i=p=vscrollbar_get_pos(storage_win,STORAGE_SCROLLBAR_CATEGORIES);i<no_storage_categories;i++){
@@ -918,25 +728,14 @@ int mouseover_storage_handler(window_info *win, int mx, int my)
 			}
 
 			return 0;
-#ifdef FR_VERSION
 		} else if (mx>280 && mx<280+storage_items_cols*32){
 			cur_item_over = get_mouse_pos_in_grid(mx, my, storage_items_cols, storage_items_rows, 280, 10, 32, 32)+vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_ITEMS)*storage_items_cols;
 			if(cur_item_over>=no_storage||cur_item_over<0||!storage_items[cur_item_over].quantity) cur_item_over=-1;
 		}
-#else //FR_VERSION
-		} else if (mx>150 && mx<352){
-			cur_item_over = get_mouse_pos_in_grid(mx, my, 6, 6, 160, 10, 32, 32)+vscrollbar_get_pos(storage_win, STORAGE_SCROLLBAR_ITEMS)*6;
-			if(cur_item_over>=no_storage||cur_item_over<0||!storage_items[cur_item_over].quantity) cur_item_over=-1;
-		}
-#endif //FR_VERSION
 	}
 
 	last_category = last_pos+vscrollbar_get_pos(storage_win,STORAGE_SCROLLBAR_CATEGORIES);
-#ifdef FR_VERSION
 	if(last_pos>=0 && last_category<STORAGE_CATEGORIES_SIZE && last_category!=selected_category) {
-#else //FR_VERSION
-	if(last_pos>=0 && last_pos<13 && last_category != selected_category) {
-#endif //FR_VERSION
 		storage_categories[last_category].name[0] = to_color_char (c_orange1);
 		last_pos=-1;
 	}
@@ -966,7 +765,6 @@ static int keypress_storage_handler(window_info *win, int mx, int my, Uint32 key
 	return 0;
 }
 
-#ifdef FR_VERSION
 static int resize_storage_handler(window_info *win)
 {
 	// contrôle sur la largeur max de la fenêtre (arbitrairement = écran - 100)
@@ -999,20 +797,14 @@ static int resize_storage_handler(window_info *win)
     widget_resize(storage_win, STORAGE_SCROLLBAR_CATEGORIES, 20, storage_win_y_len - storage_textarea_size - 3*10);
     widget_resize(storage_win, STORAGE_SCROLLBAR_ITEMS, 20, storage_items_rows*32);
     widget_move(storage_win, STORAGE_SCROLLBAR_ITEMS, 280+storage_items_cols*32, 10);
-#ifdef FR_VERSION
 	widget_set_size(storage_win, STORAGE_SCROLLBAR_CATEGORIES, storage_categories_size);
 	widget_set_size(storage_win, STORAGE_SCROLLBAR_ITEMS, storage_items_rows);
 	vscrollbar_set_bar_len(storage_win, STORAGE_SCROLLBAR_ITEMS, (no_storage - 1) / storage_items_cols + 1);
-#else //FR_VERSION
-	vscrollbar_set_bar_len(storage_win, STORAGE_SCROLLBAR_CATEGORIES, (no_storage_categories - storage_categories_size) > 0 ? (no_storage_categories - storage_categories_size) : 0);
-	vscrollbar_set_bar_len(storage_win, STORAGE_SCROLLBAR_ITEMS, (no_storage>storage_items_size)? (no_storage-storage_items_size-1)/storage_items_cols+1 : 0);
-#endif //FR_VERSION
 
 	// redécoupe le texte de l'inventaire en fonction de la largeur de la fenêtre
 	put_small_text_in_box((Uint8 *)storage_text, strlen(storage_text), storage_win_x_len - 15*2, wrapped_storage_text);
 	return 0;
 }
-#endif //FR_VERSION
 
 void print_items(void)
 {
@@ -1023,11 +815,7 @@ void print_items(void)
 	if (me)
 		if(me->fighting)
 		{
-#ifdef FR_VERSION
 			LOG_TO_CONSOLE(c_red1, "Impossible pendant un combat !");
-#else //FR_VERSION
-			LOG_TO_CONSOLE(c_red1, "You can't do this during combat!");
-#endif //FR_VERSION
 			return;
 		}
 
@@ -1053,19 +841,12 @@ static int context_storage_handler(window_info *win, int widget_id, int mx, int 
 		return cm_title_handler(win, widget_id, mx, my, option);
 	switch (option)
 	{
-#ifdef FR_VERSION
 		case ELW_CM_MENU_LEN+1:
-#ifdef FR_VERSION
 			win->len_x = 592;
 			win->len_y = 247;
 			resize_storage_handler(win);
-#endif //FR_VERSION
 			break;
 		case ELW_CM_MENU_LEN+2: print_items(); break;
-#else //FR_VERSION
-		case ELW_CM_MENU_LEN+1: print_items(); break;
-		case ELW_CM_MENU_LEN+2: safe_strncpy(storage_text, reopen_storage_str, MAX_DESCR_LEN) ; break;
-#endif //FR_VERSION
 	}
 	return 1;
 }
@@ -1090,44 +871,25 @@ void display_storage_menu()
 		if (!windows_on_top) {
 			our_root_win = game_root_win;
 		}
-#ifdef FR_VERSION
 		storage_win=create_window(win_storage, our_root_win, 0, storage_win_x, storage_win_y, storage_win_x_len, storage_win_y_len, ELW_WIN_DEFAULT|ELW_TITLE_NAME|ELW_RESIZEABLE);
 		set_window_handler(storage_win, ELW_HANDLER_RESIZE, &resize_storage_handler);
 		/* appel la fonction du resize pour valider les tailles & positions */
 		resize_storage_handler(&windows_list.window[storage_win]);
-#else //FR_VERSION
-		storage_win=create_window(win_storage, our_root_win, 0, storage_win_x, storage_win_y, storage_win_x_len, storage_win_y_len, ELW_WIN_DEFAULT|ELW_TITLE_NAME);
-#endif //FR_VERSION
 
 		set_window_handler(storage_win, ELW_HANDLER_DISPLAY, &display_storage_handler);
 		set_window_handler(storage_win, ELW_HANDLER_CLICK, &click_storage_handler);
 		set_window_handler(storage_win, ELW_HANDLER_MOUSEOVER, &mouseover_storage_handler);
 		set_window_handler(storage_win, ELW_HANDLER_KEYPRESS, &keypress_storage_handler );
 
-#ifdef FR_VERSION
 		vscrollbar_add_extended(storage_win, STORAGE_SCROLLBAR_CATEGORIES, NULL, 240, 10, 20, storage_win_y_len-storage_textarea_size-3*10, 0, storage_categories_size, 0.77f, 0.57f, 0.39f, 0, 1, no_storage_categories);
 		vscrollbar_add_extended(storage_win, STORAGE_SCROLLBAR_ITEMS, NULL, 280+storage_items_cols*32, 10, 20, storage_items_rows*32, 0, storage_items_rows, 0.77f, 0.57f, 0.39f, 0, 1, 0);
-#else //FR_VERSION
-		vscrollbar_add_extended(storage_win, STORAGE_SCROLLBAR_CATEGORIES, NULL, 130, 10, 20, 192, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1,
-				max2i(no_storage_categories - STORAGE_CATEGORIES_DISPLAY, 0));
-		vscrollbar_add_extended(storage_win, STORAGE_SCROLLBAR_ITEMS, NULL, 352, 10, 20, 192, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1, 28);
-
-		vscrollbar_add_extended(storage_win, STORAGE_SCROLLBAR_CATEGORIES, NULL, 130, 10, 20, 192, 0, STORAGE_CATEGORIES_DISPLAY, 0.77f, 0.57f, 0.39f, 0, 1, no_storage_categories);
-		vscrollbar_add_extended(storage_win, STORAGE_SCROLLBAR_ITEMS, NULL, 352, 10, 20, 192, 0, 6, 0.77f, 0.57f, 0.39f, 0, 1, 34);
-#endif //FR_VERSION
 
 		cm_add(windows_list.window[storage_win].cm_id, cm_storage_menu_str, context_storage_handler);
 		cm_add(windows_list.window[storage_win].cm_id, cm_dialog_options_str, context_storage_handler);
-#ifndef FR_VERSION
-		cm_bool_line(windows_list.window[storage_win].cm_id, ELW_CM_MENU_LEN+2, &sort_storage_categories, NULL);
-		cm_bool_line(windows_list.window[storage_win].cm_id, ELW_CM_MENU_LEN+3, &disable_storage_filter, NULL);
-		cm_bool_line(windows_list.window[storage_win].cm_id, ELW_CM_MENU_LEN+4, &autoclose_storage_dialogue, NULL);
-#else //FR_VERSION
 		// note : &sort_storage_categories et &autoclose_storage_dialogue inutiles (comportement par défaut du serveur)
 		cm_bool_line(windows_list.window[storage_win].cm_id, ELW_CM_MENU_LEN+4, &allow_wheel_quantity_drag, NULL);
 		cm_bool_line(windows_list.window[storage_win].cm_id, ELW_CM_MENU_LEN+5, &disable_storage_filter, NULL);
 		cm_bool_line(windows_list.window[storage_win].cm_id, ELW_CM_MENU_LEN+6, &auto_select_storage_option, NULL);
-#endif //FR_VERSION
 	} else {
 		no_storage=0;
 

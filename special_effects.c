@@ -5,13 +5,8 @@
 #include "global.h"
 #include "highlight.h"
 #include "init.h"
-#ifdef NEW_SOUND
 #include "sound.h"
-#endif // NEW_SOUND
 #include "text.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "eye_candy_wrapper.h"
 
 const float X_OFFSET = 0.25;
@@ -69,11 +64,7 @@ void add_sfx(special_effect_enum effect, Uint16 playerid, int caster)
 	special_effect *m = get_free_special_effect();
 	if (m == NULL)
 	{
-#ifdef ENGLISH
-		safe_snprintf ((char*)str, sizeof (str), "Could not add special effect.  Increase NUMBER_OF_SPECIAL_EFFECTS.");
-#else //ENGLISH
 		safe_snprintf ((char*)str, sizeof (str), "Impossible d'ajouté un effet spécial. Il faut augmenté la variable NUMBER_OF_SPECIAL_EFFECTS.");
-#endif //ENGLISH
 		LOG_TO_CONSOLE (c_purple2, str);
 		return;
 	}
@@ -111,10 +102,8 @@ void add_sfx(special_effect_enum effect, Uint16 playerid, int caster)
 		case SPECIAL_EFFECT_HEATSHIELD:
 		case SPECIAL_EFFECT_COLDSHIELD:
 		case SPECIAL_EFFECT_RADIATIONSHIELD:
-#ifdef ADD_SPELL_EFFECT_IMU_RESI_MAGIE
         case SPECIAL_EFFECT_MAGIC_IMMUNITY:
         case SPECIAL_EFFECT_MAGIC_PROTECTION:
-#endif //ADD_SPELL_EFFECT_IMU_RESI_MAGIE
 			m->timeleft = SPECIAL_EFFECT_SHIELD_LIFESPAN;
 			m->lifespan = SPECIAL_EFFECT_SHIELD_LIFESPAN;
 			break;
@@ -153,9 +142,6 @@ void do_shape_spikes(float x, float y, float z, float center_offset_x, float cen
 		}
 	//return to the world
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 //example halos moving in opposite directions, not yet optimized, and still just an example
@@ -190,9 +176,6 @@ void do_double_spikes(float x, float y, float z, float center_offset_x, float ce
 		}
 	//return to the world
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_heal_effect(float x, float y, float z, float age)
@@ -257,9 +240,6 @@ void draw_heal_effect(float x, float y, float z, float age)
 
 	//return to the world
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_restoration_effect(float x, float y, float z, float age)
@@ -326,9 +306,6 @@ void draw_restoration_effect(float x, float y, float z, float age)
 		}
 	//return to the world
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_teleport_effect(float x, float y, float z, float age)
@@ -416,9 +393,6 @@ void draw_teleport_effect(float x, float y, float z, float age)
 		glEndList();
 		glCallList(TorusDL);
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void display_special_effect(special_effect *marker) {
@@ -501,18 +475,12 @@ void display_special_effect(special_effect *marker) {
 		default: // for all the spells we have not gotten to yet
 			break;
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 }
 
 void display_special_effects(int do_render) {
 	int i;
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	if(do_render){
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_LIGHTING);
@@ -521,9 +489,6 @@ CHECK_GL_ERRORS();
 		glEnable(GL_ALPHA_TEST);
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	for(i = 0; i < NUMBER_OF_SPECIAL_EFFECTS; i++) {
 		if (sfx_markers[i].active) {
 			sfx_markers[i].timeleft -= (cur_time - sfx_markers[i].last_time); //use global cur_time
@@ -544,22 +509,14 @@ CHECK_GL_ERRORS();
 		glEnable(GL_LIGHTING);
 		glDisable(GL_BLEND);
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 //send server data packet to appropriate method depending on desired effect
 void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 {
-#ifdef DEBUG
-	Uint8 str[100];
-#endif
 	int offset = 0;
 	int need_target = 0;
-#ifdef NEW_SOUND
 	int sfx_sound = -1;
-#endif // NEW_SOUND
 	Uint16 var_a = 0, var_b = 0;
 	actor* caster = NULL;
 	actor* target = NULL;
@@ -578,10 +535,8 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 		case	SPECIAL_EFFECT_DECLOAK:
 		case	SPECIAL_EFFECT_HEAL_SUMMONED:
 		case	SPECIAL_EFFECT_HEAL:
-#ifdef ADD_SPELL_EFFECT_IMU_RESI_MAGIE
         case    SPECIAL_EFFECT_MAGIC_IMMUNITY:
         case    SPECIAL_EFFECT_MAGIC_PROTECTION:
-#endif //ADD_SPELL_EFFECT_IMU_RESI_MAGIE
 			{
 				if (!use_eye_candy)
 				{
@@ -602,18 +557,6 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 		case	SPECIAL_EFFECT_MANUFACTURE_TOOL_BREAKS:
 		case	SPECIAL_EFFECT_MANUFACTURE_RARE_ITEM:
 		case    SPECIAL_EFFECT_MAKE_PLAYER_GLOW:
-#ifdef MINES
-		case	SPECIAL_EFFECT_SMALL_MINE_GOES_BOOM:
-		case	SPECIAL_EFFECT_MEDIUM_MINE_GOES_BOOM:
-		case	SPECIAL_EFFECT_HIGH_EXPLOSIVE_MINE_GOES_BOOM:
-		case	SPECIAL_EFFECT_SNARE_GOES_BOOM:
-		case	SPECIAL_EFFECT_CALTROP_GOES_BOOM:
-		case	SPECIAL_EFFECT_POISONED_CALTROP_GOES_BOOM:
-		case	SPECIAL_EFFECT_MANA_DRAINER_GOES_BOOM:
-		case	SPECIAL_EFFECT_MANA_BURNER_GOES_BOOM:
-		case	SPECIAL_EFFECT_UNINVIZIBILIZER_GOES_BOOM:
-		case	SPECIAL_EFFECT_MAGIC_IMMUNITY_REMOVAL_GOES_BOOM:
-#endif // MINES
 			{
 			 	var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
 			}
@@ -683,17 +626,9 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 				var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
 				var_b = SDL_SwapLE16 (*((Uint16 *)(&data[offset+1])));
 				need_target = 1;
-#ifdef DEBUG
-				safe_snprintf ((char*)str, sizeof (str), "effect %d,  x pos=%d, y pos=%d",sfx,var_a,var_b);
-				LOG_TO_CONSOLE (c_purple2, str);
-#endif
 			}
 			break;
 		default:
-#ifdef DEBUG
-			safe_snprintf ((char*)str, sizeof (str), " SPECIAL_EFFECT_unknown:%d",sfx);
-			LOG_TO_CONSOLE (c_purple2, str);
-#endif
 			break;
 	}
 
@@ -701,7 +636,6 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 	if (caster == NULL)
 		return;
 
-#ifdef NEW_SOUND
 	// Link in the sfx sounds here. It might not be the best place, and baseing the sound around the first actor
 	// (caster) isn't ness the correct location, but it will do for now.
 	sfx_sound = get_sound_index_for_sfx(sfx);
@@ -712,7 +646,6 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 						(caster->y_pos - Y_OFFSET) * 2,
 						caster->actor_id == yourself ? 1 : 0);
 	}
-#endif //NEW_SOUND
 
 //	printf("%f,%f,%f | %f,%f | %d,%d\n", x / 2.0, y / 2.0, ec_get_z2((int)x, (int)y), caster->x_pos, caster->y_pos, caster->tmp.x_tile_pos, caster->tmp.y_tile_pos);
 // 	x = caster->x_pos;
@@ -742,14 +675,12 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 			case	SPECIAL_EFFECT_RESTORATION:
 				ec_create_selfmagic_restoration2(caster, (poor_man ? 6 : 10));
 				break;
-#ifdef ADD_SPELL_EFFECT_IMU_RESI_MAGIE
             case    SPECIAL_EFFECT_MAGIC_IMMUNITY:
                 ec_create_selfmagic_magic_immunity2(caster, (poor_man ? 6 : 10));
                 break;
             case    SPECIAL_EFFECT_MAGIC_PROTECTION:
                 ec_create_selfmagic_magic_protection2(caster, (poor_man ? 6 : 10));
                 break;
-#endif //ADD_SPELL_EFFECT_IMU_RESI_MAGIE
 			case	SPECIAL_EFFECT_SMITE_SUMMONINGS:
 				break;
 			case	SPECIAL_EFFECT_CLOAK:
@@ -927,53 +858,7 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 			case	SPECIAL_EFFECT_SUMMON_TIGER:
 				ec_create_summon_tiger(x / 2.0 + X_OFFSET, y / 2.0 + Y_OFFSET, ec_get_z2((int)x, (int)y), (poor_man ? 6 : 10));
 				break;
-#ifdef MINES
-			case	SPECIAL_EFFECT_SMALL_MINE_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_SMALL_MINE, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_SMALL_MINE, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_MEDIUM_MINE_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_MEDIUM_MINE, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_MEDIUM_MINE, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_HIGH_EXPLOSIVE_MINE_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_HIGH_EXPLOSIVE_MINE, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_HIGH_EXPLOSIVE_MINE, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_SNARE_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_TRAP, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_TRAP, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_CALTROP_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_CALTROP, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_CALTROP, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_POISONED_CALTROP_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_POISONED_CALTROP, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_POISONED_CALTROP, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_MANA_DRAINER_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_MANA_DRAINER, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_MANA_DRAINER, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_MANA_BURNER_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_MANA_BURNER, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_MANA_BURNER, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_UNINVIZIBILIZER_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_UNINVIZIBILIZER, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_UNINVIZIBILIZER, (poor_man ? 6 : 10));
-				break;
-			case	SPECIAL_EFFECT_MAGIC_IMMUNITY_REMOVAL_GOES_BOOM:
-				//ec_create_mine_detonate(caster->x_pos + X_OFFSET, caster->y_pos + Y_OFFSET, ec_get_z(caster), MINE_TYPE_MAGIC_IMMUNITY_REMOVAL, (poor_man ? 6 : 10));
-				ec_create_mine_detonate2(caster, MINE_TYPE_MAGIC_IMMUNITY_REMOVAL, (poor_man ? 6 : 10));
-				break;
-#endif // MINES
 			default:
-	 #ifdef DEBUG
-				safe_snprintf ((char*)str, sizeof (str), " SPECIAL_EFFECT_unknown:%d",sfx);
-				LOG_TO_CONSOLE (c_purple2, str);
-	 #endif
 				break;
 		} /* switch(sfx) */
 //			ec_create_selfmagic_magic_protection(49.0, 70.0, 0.0, (poor_man ? 6 : 10));
@@ -991,8 +876,5 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 //			ec_launch_targetmagic_smite_summoned(ref, caster, (poor_man ? 6 : 10));
 //			ec_create_targetmagic_life_drain(caster, target, (poor_man ? 6 : 10));
 	} /* if (use_eye_candy) */
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 

@@ -199,12 +199,8 @@ namespace ItemLists
 				num_show_names_list(6), names_list_height(SMALL_FONT_Y_LEN),
 				win_id(-1), selected_item_number(static_cast<size_t>(-1)),
 				name_under_mouse(static_cast<size_t>(-1)), clicked(false),
-#ifndef WITHDRAW_LIST
-				mouse_over_add_button(false), resizing(false),
-#else //WITHDRAW_LIST
                 mouse_over_add_button(false), mouse_over_get_button(false),
                 storage_moove_cat_called(false), last_time_storage_change(0), resizing(false),
-#endif //WITHDRAW_LIST
 				last_quantity_selected(0), num_grid_rows(min_grid_rows()),
 				last_key_time(0), last_items_list_on_left(-1), desc_str(0),
 				pickup_fail_time(0) {}
@@ -215,9 +211,7 @@ namespace ItemLists
 			static int min_grid_rows(void) { return 3; };
 			void show(window_info *win);
 			int draw(window_info *win);
-#ifdef WITHDRAW_LIST
             void process_withdraw_list(int last_item);
-#endif //WITHDRAW_LIST
 			void new_or_rename_list(bool is_new);
 			int mouseover(window_info *win, int mx, int my);
 			int click(window_info *win, int mx, int my, Uint32 flags);
@@ -248,12 +242,10 @@ namespace ItemLists
 			bool mouse_over_add_button;
 			int add_button_x;
 			int add_button_y;
-#ifdef WITHDRAW_LIST
             List withdraw_list_item;
             bool mouse_over_get_button;
             bool storage_moove_cat_called;
             Uint32 last_time_storage_change;
-#endif //WITHDRAW_LIST
 			bool resizing;
 			int last_quantity_selected;
 			INPUT_POPUP ipu_item_list_name;
@@ -1005,7 +997,6 @@ namespace ItemLists
 			}
 		}
 
-#ifdef WITHDRAW_LIST
 		// Drawn the new list button (+) with highlight when mouse over
 		if (mouse_over_add_button)
 			glColor3f(0.99f,0.77f,0.55f);
@@ -1019,15 +1010,6 @@ namespace ItemLists
         else
             glColor3f(0.77f,0.57f,0.39f);
         draw_string_zoomed(add_button_x, add_button_y+17, (unsigned const char*)">", 1, 2.0);
-#else
-        // Drawn the new list button (+) with highlight when mouse over
-		if (mouse_over_add_button)
-			glColor3f(0.99f,0.77f,0.55f);
-		else
-			glColor3f(0.77f,0.57f,0.39f);
-		draw_string_zoomed(add_button_x, add_button_y, (unsigned const char*)"+", 1, 2.0);
-
-#endif //WITHDRAW_LIST
 
 		// draw the item list names
 		glColor3f(1.0f,1.0f,1.0f);
@@ -1070,9 +1052,6 @@ namespace ItemLists
 			new_or_rename_list(true);
 		}
 		name_under_mouse = static_cast<size_t>(-1);
-#ifndef WITHDRAW_LIST
-		mouse_over_add_button = clicked = false;
-#else //WITHDRAW_LIST
         mouse_over_add_button = false;
 
         if (clicked && mouse_over_get_button && Vars::lists()->valid_active_list())
@@ -1096,15 +1075,10 @@ namespace ItemLists
 
         name_under_mouse = static_cast<size_t>(-1);
         mouse_over_get_button = clicked = false;
-#endif //WITHDRAW_LIST
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 		return 1;
 	}
 
-#ifdef WITHDRAW_LIST
 
     // Sequences pour tranférer la liste d'objet dans l'inventaire
     // si la liste ne contient plus qu'un item last_item=1
@@ -1139,7 +1113,6 @@ CHECK_GL_ERRORS();
             }
 	    }
 	}
-#endif //WITHDRAW_LIST
 
 	//	Prompt for the new list name, starting the process of adding a new list
 	//
@@ -1183,7 +1156,6 @@ CHECK_GL_ERRORS();
 				help_str.push_back(item_list_drag_help_str);
 		}
 
-#ifdef WITHDRAW_LIST
 		// check if over the add list button
 		if (my>add_button_y-17 && my<(add_button_y-17+2*DEFAULT_FONT_Y_LEN) && mx>add_button_x && mx<win->len_x)
 		{
@@ -1197,14 +1169,6 @@ CHECK_GL_ERRORS();
             //help_str.push_back(item_list_create_help_str);
             mouse_over_get_button = true;
         }
-#else //WITHDRAW_LIST
-		// check if over the add list button
-		if (my>add_button_y && my<(add_button_y+2*DEFAULT_FONT_Y_LEN) && mx>add_button_x && mx<win->len_x)
-		{
-			help_str.push_back(item_list_create_help_str);
-			mouse_over_add_button = true;
-		}
-#endif //WITHDRAW_LIST
 		// check if over the list names and get which name
 		int start_names = get_grid_size()*num_grid_rows;
 		if ((my > start_names) && (my < (start_names+get_names_size_y())))
@@ -1315,15 +1279,6 @@ CHECK_GL_ERRORS();
 					do_click_sound();
 				if (flags & ELW_LEFT_MOUSE)
 				{
-#ifdef ENGLISH
-					// randomly close the window
-					if (!(SDL_GetTicks() & 63))
-					{
-						hide_window(Vars::win()->get_id());
-						set_shown_string(c_red2, item_list_magic_str);
-						return 0;
-					}
-#endif //ENGLISH
 					storage_item_dragged = item_dragged = -1;
 					int image_id = Vars::lists()->get_list().get_image_id(selected_item_number);
 					Uint16 item_id = Vars::lists()->get_list().get_item_id(selected_item_number);
@@ -1511,11 +1466,7 @@ CHECK_GL_ERRORS();
 		}
 
 		// delete item, removing whole list if its now empty.  Save lists in any case.
-#ifdef ENGLISH
-		else if (option == 2)
-#else //ENGLISH
 		else if (option == 1)
-#endif //ENGLISH
 		{
 			Vars::lists()->del_item(item_under_mouse);
 			if (Vars::lists()->get_list().get_num_items()==0)
@@ -1637,7 +1588,5 @@ extern "C"
 		ItemLists::Vars::win()->reset_pickup_fail_time();
 	}
 
-#ifdef WITHDRAW_LIST
     int min_time_between_withdraw;
-#endif //WITHDRAW_LIST
 }

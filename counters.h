@@ -27,25 +27,16 @@ void reset_session_counters();
 void print_session_counters(const char *category);
 
 void increment_death_counter(actor *a);
-#ifdef FR_VERSION
 void increment_critfail_counter(char *name);
-#endif //FR_VERSION
 void increment_break_counter(char *name);
 void increment_harvest_counter(int quantity);
 void decrement_harvest_counter(int quantity);
 void increment_alchemy_counter();
 void increment_crafting_counter();
-#ifdef INGENIERIE
 void increment_engineering_counter();
-#endif //INGENIERIE
-#ifdef ENGLISH
-void increment_engineering_counter();
-#endif //ENGLISH
 
-#ifdef FR_VERSION
 void increment_combat_info_counter(char *str_type, int num);
 void set_max_combat_counter(char *str_type, int val);
-#endif //FR_VERSION
 
 void increment_tailoring_counter();
 void increment_potions_counter();
@@ -60,9 +51,7 @@ void counters_set_product_info(char *name, int count);
 void counters_set_spell_name(int spell_id, char *name, int len);
 int is_death_message (const char * RawText);
 
-#ifdef FR_VERSION
 char *strip_actor_name (const char *actor_name);
-#endif //FR_VERSION
 
 #ifdef __cplusplus
 } // extern "C"

@@ -22,9 +22,6 @@ extern "C" {
 #define OBJ_3D_ENTRABLE 	1
 #define OBJ_3D_HARVESTABLE 	1<<1
 #define OBJ_3D_BAG 			1<<2
-#ifdef MINES
- #define OBJ_3D_MINE			1<<3
-#endif // MINES
 
 //#define MAX_E3D_CACHE 1000 /* unused */
 /*! @} */
@@ -67,9 +64,7 @@ typedef struct
 	unsigned int flags; /*!< Flag determining whether this object is entrable/harvestable/bag */
 	VECTOR4 clouds_planes[2]; /**< Clouds s and t planes. */
 
-#ifdef CLUSTER_INSIDES
 	short cluster;
-#endif
 
 } object3d;
 

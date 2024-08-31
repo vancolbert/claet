@@ -10,9 +10,7 @@
 #define VER_MINOR	9
 #define VER_RELEASE	5
 #define VER_BUILD	0
-#ifdef FR_VERSION
     #define NOM_VERSION "Ingénierie"
-#endif //FR_VERSION
 #define NAME
 #define COMPANY_NAME	""
 #define FILE_VERSION	"1.9.5"

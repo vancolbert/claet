@@ -43,26 +43,17 @@
 #include "eye_candy/effect_wind.h"
 #include "eye_candy/effect_breath.h"
 #include "eye_candy/effect_mines.h"
-#ifdef MISSILES
-#include "eye_candy/effect_missile.h"
-#endif // MISSILES
 #endif
 
 #ifdef __cplusplus
 extern "C" int use_eye_candy;
 extern "C" int use_harvesting_eye_candy;
-#ifdef MAP_EDITOR
-extern ec::SmoothPolygonBoundingRange initial_bounds;
-#endif
 #else
 extern int use_eye_candy;
 extern int use_harvesting_eye_candy;
 extern int use_lamp_halo;
 extern float min_ec_framerate;
 extern float max_ec_framerate;
-#ifndef	NEW_TEXTURES
-extern int transparency_resolution_fix;
-#endif	/* NEW_TEXTURES */
 extern int light_columns_threshold;
 extern int use_fancy_smoke;
 extern int max_idle_cycles_per_second;
@@ -182,15 +173,9 @@ extern "C"
 	// EyeCandy wrapper functions declaration                                     //
 	////////////////////////////////////////////////////////////////////////////////
 
-#ifndef	NEW_TEXTURES
-	void ec_clear_textures();
-#endif	/* NEW_TEXTURES */
 	void ec_load_textures();
 	void ec_init();
 	void ec_add_light(GLenum light_id);
-#ifndef	NEW_TEXTURES
-	void ec_set_draw_method();
-#endif	/* NEW_TEXTURES */
 	float ec_get_z(actor* _actor);
 	float ec_get_z2(int x, int y);
 	void ec_idle(); //!< \callergraph
@@ -464,7 +449,6 @@ extern "C"
 	ec_reference ec_create_sword_orc_slayer(actor* _actor, int LOD);
 	ec_reference ec_create_sword_eagle_wing(actor* _actor, int LOD);
 	ec_reference ec_create_sword_jagged_saber(actor* _actor, int LOD);
-#ifdef NEW_EFFECT_ADA_SWORD
 	ec_reference ec_create_sword_emerald_claymore_feu(actor* _actor, int LOD);
 	ec_reference ec_create_sword_emerald_claymore_glace(actor* _actor, int LOD);
 	ec_reference ec_create_sword_emerald_claymore_arcane(actor* _actor, int LOD);
@@ -489,10 +473,7 @@ extern "C"
 	ec_reference ec_create_sword_jagged_saber_glace(actor* _actor, int LOD);
 	ec_reference ec_create_sword_jagged_saber_arcane(actor* _actor, int LOD);
 	ec_reference ec_create_sword_jagged_saber_lumiere(actor* _actor, int LOD);
-#endif //NEW_EFFECT_ADA_SWORD
-#ifdef FR_VERSION
 	ec_reference ec_create_sword_of_light(actor* _actor, int LOD);
-#endif //FR_VERSION
 	ec_reference ec_create_sword_of_fire(actor* _actor, int LOD);
 	ec_reference ec_create_sword_of_ice(actor* _actor, int LOD);
 	ec_reference ec_create_sword_of_magic(actor* _actor, int LOD);

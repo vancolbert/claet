@@ -18,11 +18,6 @@
 #include "weather.h"
 // G L O B A L S //////////////////////////////////////////////////////////////
 
-#ifdef MAP_EDITOR
-extern int day_shadows_on;
-
-ec::SmoothPolygonBoundingRange initial_bounds;
-#endif
 
 extern "C"
 {
@@ -31,9 +26,6 @@ extern "C"
 	int use_lamp_halo = 0;
 	float min_ec_framerate = 13.0;
 	float max_ec_framerate = 37.0;
-#ifndef	NEW_TEXTURES
-	int transparency_resolution_fix = 0;
-#endif	/* NEW_TEXTURES */
 	int light_columns_threshold = 5;
 	int use_fancy_smoke = 1;
 	int max_idle_cycles_per_second = 40;
@@ -71,12 +63,6 @@ void set_vec3_target_bone2(ec::Vec3& position, actor* _actor, int bone);
 void set_vec3_target_bone2(ec::Vec3& position, actor* _actor, int bone,
 	const ec::Vec3 shift);
 
-#ifndef	NEW_TEXTURES
-extern "C" void ec_clear_textures()
-{
-	eye_candy.clear_textures();
-}
-#endif	/* NEW_TEXTURES */
 
 extern "C" void ec_load_textures()
 {
@@ -88,15 +74,8 @@ extern "C" void ec_init()
 	eye_candy.load_textures();
 	ec_last_time = 0;
 	ec_cur_time = 0;
-#ifndef	NEW_TEXTURES
-	ec_set_draw_method();
-#endif	/* NEW_TEXTURES */
 	self_actor.obstruction = new ec::CappedSimpleCylinderObstruction(&(self_actor.center), 0.45, 3.0, self_actor.center.y, self_actor.center.y + 0.9);
 
-#ifdef MAP_EDITOR
-	ec::SmoothPolygonElement e(0.0, 25.0);
-	initial_bounds.elements.push_back(e);
-#endif
 }
 
 extern "C" void ec_add_light(GLenum light_id)
@@ -104,15 +83,6 @@ extern "C" void ec_add_light(GLenum light_id)
 	eye_candy.add_light(light_id);
 }
 
-#ifndef	NEW_TEXTURES
-extern "C" void ec_set_draw_method()
-{
-	if (use_point_particles)
-		eye_candy.draw_method = ec::EyeCandy::POINT_SPRITES;
-	else
-		eye_candy.draw_method = ec::EyeCandy::FAST_BILLBOARDS;
-}
-#endif	/* NEW_TEXTURES */
 
 float ec_get_z(actor* _actor)
 {
@@ -130,7 +100,6 @@ float ec_get_z2(int x, int y)
 {
 	return get_tile_height(x, y);
 }
-#ifndef MAP_EDITOR
 void set_vec3_actor_bone(ec::Vec3& position, actor* _actor, int bone,
 	const ec::Vec3 shift)
 {
@@ -238,7 +207,6 @@ extern "C" void get_staff_position(actor* _actor, ec::Vec3& tip)
 	transform_actor_local_position_to_absolute(_actor, tmp_pos, act_rot, pos);
 	tip.x = pos[0]; tip.y = pos[2]; tip.z = -pos[1];
 }
-#endif //!MAP_EDITOR
 extern "C" void ec_idle()
 {
 	if (idle_semaphore)
@@ -267,15 +235,8 @@ extern "C" void ec_idle()
 	//  const float y = rot_matrix[13];
 	//  const float z = rot_matrix[14];
 
-#ifndef	NEW_TEXTURES
-	eye_candy.poor_transparency_resolution = transparency_resolution_fix;
-#endif	/* NEW_TEXTURES */
 	if (poor_man)
-#ifdef ENGLISH
-		eye_candy.set_thresholds(3500, min_ec_framerate, max_ec_framerate); //Max particles, min framerate, max framerate
-#else
 		eye_candy.set_thresholds(150, min_ec_framerate, max_ec_framerate);
-#endif //ENGLISH
 
 	else
 		eye_candy.set_thresholds(15000, min_ec_framerate, max_ec_framerate);
@@ -298,9 +259,7 @@ extern "C" void ec_idle()
 	eye_candy.set_dimensions(window_width, window_height, powf(zoom_level, 0.1));
 
 	Uint64 new_time = ec::get_time();
-#if defined CLUSTER_INSIDES && !defined MAP_EDITOR
 	short cluster = get_actor_cluster ();
-#endif
 	for (int i = 0; i < (int)references.size(); )
 	{
 		std::vector<ec_internal_reference*>::iterator iter = references.begin() + i;
@@ -313,15 +272,12 @@ extern "C" void ec_idle()
 
 		if (use_eye_candy)
 		{
-#if defined CLUSTER_INSIDES && !defined MAP_EDITOR
 			if ((*iter)->effect && !(*iter)->effect->belongsToCluster (cluster))
 			{
 				(*iter)->effect->active = false;
 				i++;
 				continue;
 			}
-#endif
-#ifndef MAP_EDITOR
 			if ((*iter)->caster)
 			{
 				if ((*iter)->effect->get_type() == ec::EC_SWORD)
@@ -386,7 +342,6 @@ extern "C" void ec_idle()
 					set_vec3_target_bone2((*iter)->targets[j], (*iter)->target_actors[j], get_actor_bone_id((*iter)->target_actors[j], body_bottom_bone));
 				}
 			}
-#endif //!MAP_EDITOR
 			if ((*iter)->effect && ((*iter)->effect->get_type() == ec::EC_LAMP) && (!(*iter)->effect->recall))
 			{
 				ec::LampEffect* eff = (ec::LampEffect*)((*iter)->effect);
@@ -412,30 +367,10 @@ extern "C" void ec_idle()
 				|| ((*iter)->effect->get_type() == ec::EC_FIREFLY)
 				|| ((*iter)->effect->get_type() == ec::EC_WIND)))
 			{
-#ifndef MAP_EDITOR
 				// doesn't work, moves effects to -2.2 under the ground
 				// (*iter)->position.y = ec_get_z2(-(int)camera_x, -(int)camera_y); // Keep the effect level with the ground.
 				// std::cout << (-(int)camera_x) << ", " << (-(int)camera_y) << ": " << (*iter)->position.y << std::endl;
-#else //MAP_EDITOR
-				(*iter)->position.y = 0.0;
-#endif //!MAP_EDITOR
 			}
-#ifdef MISSILES
-#ifndef MAP_EDITOR
-			if ((*iter)->effect && (*iter)->effect->get_type() == ec::EC_MISSILE)
-			{
-				missile *mis = get_missile_ptr_from_id((*iter)->missile_id);
-				if (mis &&
-					mis->remaining_distance >= 0.0 &&
-					(*iter)->missile_id != -1)
-				{
-					(*iter)->position.x = mis->position[0];
-					(*iter)->position.y = mis->position[2];
-					(*iter)->position.z = -mis->position[1];
-				}
-			}
-#endif //!MAP_EDITOR
-#endif //MISSILES
 		}
 		i++;
 	}
@@ -451,9 +386,7 @@ extern "C" void ec_idle()
 	if (eye_candy.time_diff> 400000) // Don't want it to jump if it's been very long between frames.
 		eye_candy.time_diff = 400000;
 // 	average_framerate = average_framerate * 0.7 + 1000000.0 / eye_candy.time_diff * 0.3;
-#ifndef MAP_EDITOR
 	average_framerate = fps_average;
-#endif //!MAP_EDITOR
 	eye_candy.framerate = average_framerate;
 	ec_last_time = ec_cur_time;
 	ec_cur_time = new_time;
@@ -549,9 +482,7 @@ extern "C" void ec_draw()
 
 	if (use_eye_candy)
 	{
-#if defined CLUSTER_INSIDES && !defined MAP_EDITOR
 		short cluster = get_actor_cluster ();
-#endif
 
 		// Update firefly activity.
 		for (int i = 0; i < (int)references.size(); )
@@ -564,21 +495,14 @@ extern "C" void ec_draw()
 				continue;
 			}
 
-#ifdef MAP_EDITOR
-			//      if ((*iter)->effect->get_type() == ec::EC_FIREFLY)
-			//        (*iter)->effect->active = (!day_shadows_on);
-#else
 			if ((*iter)->effect && (*iter)->effect->get_type() == ec::EC_FIREFLY
-#ifdef CLUSTER_INSIDES
 				&& (*iter)->effect->belongsToCluster (cluster)
-#endif
 			)
 			{
 				(*iter)->effect->active = (!(is_day || dungeon
 					|| (weather_get_density() > 0.01f)
 				));
 			}
-#endif
 			i++;
 		}
 
@@ -960,56 +884,6 @@ extern "C" void ec_remove_weapon(actor* _actor)
 	}
 }
 
-#ifndef MAP_EDITOR
-#ifdef MISSILES
-extern "C" void ec_remove_missile(int missile_id)
-{
-	force_idle = true;
-	for (int i = 0; i < (int)references.size(); )
-	{
-		std::vector<ec_internal_reference*>::iterator iter = references.begin() + i;
-		if ((*iter)->dead)
-		{
-			delete *iter;
-			references.erase(iter);
-			continue;
-		}
-
-		i++;
-		if ((*iter)->effect->get_type() == ec::EC_MISSILE &&
-			(*iter)->missile_id == missile_id)
-		{
-			// don't recall the effect, let the particles glow
-			//(*iter)->effect->recall = true;
-			// update position one last time
-			missile *mis = get_missile_ptr_from_id(missile_id);
-			if (mis)
-			{
-				(*iter)->position.x = mis->position[0] + mis->direction[0] * mis->remaining_distance;
-				(*iter)->position.y = mis->position[2] + mis->direction[2] * mis->remaining_distance;
-				(*iter)->position.z = -(mis->position[1] + mis->direction[1] * mis->remaining_distance);
-			}
-			// set missile_id to -1 so the position of the effect is not updated anymore
-			(*iter)->missile_id = -1;
-			continue;
-		}
-	}
-}
-
-void ec_rename_missile(int old_id, int new_id)
-{
-	std::vector<ec_internal_reference*>::iterator it;
-	for (it = references.begin(); it != references.end(); ++it)
-	{
-		if ((*it)->effect->get_type() == ec::EC_MISSILE && (*it)->missile_id == old_id)
-		{
-			(*it)->missile_id = new_id;
-		}
-	}
-}
-
-#endif // MISSILES
-#endif //!MAP_EDITOR
 extern "C" void ec_add_effect(ec_effects effects, ec_reference ref)
 {
 	ec_internal_effects* cast_effects = (ec_internal_effects*)effects;
@@ -1277,7 +1151,6 @@ extern "C" ec_reference ec_create_breath_fire(float sx, float sy, float sz, floa
 	return (ec_reference)ret;
 }
 
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_breath_fire2(actor* caster, actor* target, int LOD, float scale)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::BreathEffect::get_max_end_time()))
@@ -1293,7 +1166,6 @@ extern "C" ec_reference ec_create_breath_fire2(actor* caster, actor* target, int
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_breath_ice(float sx, float sy, float sz, float tx, float ty, float tz, int LOD, float scale)
 {
 	if (!ec_in_range(sx, sy, sz, ec::BreathEffect::get_max_end_time()))
@@ -1306,7 +1178,6 @@ extern "C" ec_reference ec_create_breath_ice(float sx, float sy, float sz, float
 	return (ec_reference)ret;
 }
 
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_breath_ice2(actor* caster, actor* target, int LOD, float scale)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::BreathEffect::get_max_end_time()))
@@ -1322,7 +1193,6 @@ extern "C" ec_reference ec_create_breath_ice2(actor* caster, actor* target, int 
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_breath_poison(float sx, float sy, float sz, float tx, float ty, float tz, int LOD, float scale)
 {
 	if (!ec_in_range(sx, sy, sz, ec::BreathEffect::get_max_end_time()))
@@ -1334,7 +1204,6 @@ extern "C" ec_reference ec_create_breath_poison(float sx, float sy, float sz, fl
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_breath_poison2(actor* caster, actor* target, int LOD, float scale)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::BreathEffect::get_max_end_time()))
@@ -1350,7 +1219,6 @@ extern "C" ec_reference ec_create_breath_poison2(actor* caster, actor* target, i
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_breath_magic(float sx, float sy, float sz, float tx, float ty, float tz, int LOD, float scale)
 {
 	if (!ec_in_range(sx, sy, sz, ec::BreathEffect::get_max_end_time()))
@@ -1362,7 +1230,6 @@ extern "C" ec_reference ec_create_breath_magic(float sx, float sy, float sz, flo
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_breath_magic2(actor* caster, actor* target, int LOD, float scale)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::BreathEffect::get_max_end_time()))
@@ -1378,7 +1245,6 @@ extern "C" ec_reference ec_create_breath_magic2(actor* caster, actor* target, in
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_breath_lightning(float sx, float sy, float sz, float tx, float ty, float tz, int LOD, float scale)
 {
 	if (!ec_in_range(sx, sy, sz, ec::BreathEffect::get_max_end_time()))
@@ -1390,7 +1256,6 @@ extern "C" ec_reference ec_create_breath_lightning(float sx, float sy, float sz,
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_breath_lightning2(actor* caster, actor* target, int LOD, float scale)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::BreathEffect::get_max_end_time()))
@@ -1406,7 +1271,6 @@ extern "C" ec_reference ec_create_breath_lightning2(actor* caster, actor* target
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_breath_wind(float sx, float sy, float sz, float tx, float ty, float tz, int LOD, float scale)
 {
 	if (!ec_in_range(sx, sy, sz, ec::BreathEffect::get_max_end_time()))
@@ -1418,7 +1282,6 @@ extern "C" ec_reference ec_create_breath_wind(float sx, float sy, float sz, floa
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_breath_wind2(actor* caster, actor* target, int LOD, float scale)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::BreathEffect::get_max_end_time()))
@@ -1434,7 +1297,6 @@ extern "C" ec_reference ec_create_breath_wind2(actor* caster, actor* target, int
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //MAP_EDITOR
 extern "C" ec_reference ec_create_campfire(float x, float y, float z, float hue_adjust, float saturation_adjust, int LOD, float scale)
 {
 	ec_internal_reference* ret = (ec_internal_reference*)ec_create_generic();
@@ -1571,7 +1433,6 @@ extern "C" ec_reference ec_create_harvesting_bees(float x, float y, float z, int
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_harvesting_bees2(actor* caster, int LOD)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::HarvestingEffect::get_max_end_time()))
@@ -1944,7 +1805,6 @@ extern "C" ec_reference ec_create_glow_level_up_ran(actor* caster, int LOD)
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_impact_magic_protection(float x, float y, float z, float angle_x, float angle_y, float angle_z, int LOD, float strength)
 {
 	if (!ec_in_range(x, y, z, ec::ImpactEffect::get_max_end_time()))
@@ -2069,7 +1929,6 @@ extern "C" ec_reference ec_create_ongoing_poison(float x, float y, float z, floa
 	return (ec_reference)ret;
 }
 
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_ongoing_magic_protection2(actor *caster, float hue_adjust, float saturation_adjust, int LOD, float scale)
 {
 	ec_internal_reference* ret = (ec_internal_reference*)ec_create_generic();
@@ -2272,7 +2131,6 @@ extern "C" ec_reference ec_create_selfmagic_bones_to_gold2(actor* caster, int LO
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_selfmagic_teleport_to_the_portals_room(float x, float y, float z, int LOD)
 {
 	if (!ec_in_range(x, y, z, ec::SelfMagicEffect::get_max_end_time()))
@@ -2305,7 +2163,6 @@ extern "C" ec_reference ec_create_selfmagic_magic_immunity(float x, float y, flo
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_selfmagic_magic_immunity2(actor* caster, int LOD)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::SelfMagicEffect::get_max_end_time()))
@@ -2318,7 +2175,6 @@ extern "C" ec_reference ec_create_selfmagic_magic_immunity2(actor* caster, int L
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_alert(float x, float y, float z, int LOD)
 {
 	if (!ec_in_range(x, y, z, ec::SelfMagicEffect::get_max_end_time()))
@@ -3142,7 +2998,6 @@ extern "C" ec_reference ec_create_summon_tiger2(actor* caster, int LOD)
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_sword_serpent(actor* _actor, int LOD)
 {
 	ec_internal_reference* ret = (ec_internal_reference*)ec_create_generic();
@@ -3233,7 +3088,6 @@ extern "C" ec_reference ec_create_sword_jagged_saber(actor* _actor, int LOD)
 	return (ec_reference)ret;
 }
 
-#ifdef NEW_EFFECT_ADA_SWORD
 extern "C" ec_reference ec_create_sword_emerald_claymore_feu(actor* _actor, int LOD)
 {
 	ec_internal_reference* ret = (ec_internal_reference*)ec_create_generic();
@@ -3458,9 +3312,7 @@ extern "C" ec_reference ec_create_sword_jagged_saber_lumiere(actor* _actor, int 
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif
 
-#ifdef FR_VERSION
 extern "C" ec_reference ec_create_sword_of_light(actor* _actor, int LOD)
 {
 	ec_internal_reference* ret = (ec_internal_reference*)ec_create_generic();
@@ -3470,7 +3322,6 @@ extern "C" ec_reference ec_create_sword_of_light(actor* _actor, int LOD)
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //FR_VERSION
 
 extern "C" ec_reference ec_create_sword_of_fire(actor* _actor, int LOD)
 {
@@ -3501,7 +3352,6 @@ extern "C" ec_reference ec_create_sword_of_magic(actor* _actor, int LOD)
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_remote_heal(float start_x, float start_y, float start_z, float end_x, float end_y, float end_z, int LOD)
 {
 	if (!ec_in_range(start_x, start_y, start_z, ec::TargetMagicEffect::get_max_end_time()))
@@ -3513,7 +3363,6 @@ extern "C" ec_reference ec_create_targetmagic_remote_heal(float start_x, float s
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_remote_heal2(actor* caster, actor* target, int LOD)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::TargetMagicEffect::get_max_end_time()))
@@ -3529,7 +3378,6 @@ extern "C" ec_reference ec_create_targetmagic_remote_heal2(actor* caster, actor*
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_poison(float start_x, float start_y, float start_z, float end_x, float end_y, float end_z, int LOD)
 {
 	if (!ec_in_range(start_x, start_y, start_z, ec::TargetMagicEffect::get_max_end_time()))
@@ -3541,7 +3389,6 @@ extern "C" ec_reference ec_create_targetmagic_poison(float start_x, float start_
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_poison2(actor* caster, actor* target, int LOD)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::TargetMagicEffect::get_max_end_time()))
@@ -3556,7 +3403,6 @@ extern "C" ec_reference ec_create_targetmagic_poison2(actor* caster, actor* targ
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_teleport_to_range(float start_x, float start_y, float start_z, float end_x, float end_y, float end_z, int LOD)
 {
 	if (!ec_in_range(start_x, start_y, start_z, ec::TargetMagicEffect::get_max_end_time()))
@@ -3595,7 +3441,6 @@ extern "C" ec_reference ec_create_targetmagic_harm(float start_x, float start_y,
 	return (ec_reference)ret;
 }
 
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_harm2(actor* caster, actor* target, int LOD)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::TargetMagicEffect::get_max_end_time()))
@@ -3610,7 +3455,6 @@ extern "C" ec_reference ec_create_targetmagic_harm2(actor* caster, actor* target
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_life_drain(float start_x, float start_y, float start_z, float end_x, float end_y, float end_z, int LOD)
 {
 	if (!ec_in_range(start_x, start_y, start_z, ec::TargetMagicEffect::get_max_end_time()))
@@ -3622,7 +3466,6 @@ extern "C" ec_reference ec_create_targetmagic_life_drain(float start_x, float st
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_life_drain2(actor* caster, actor* target, int LOD)
 {
 	if (!ec_in_range(caster->x_pos, caster->y_pos, ec_get_z(caster), ec::TargetMagicEffect::get_max_end_time()))
@@ -3638,7 +3481,6 @@ extern "C" ec_reference ec_create_targetmagic_life_drain2(actor* caster, actor* 
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" void ec_launch_targetmagic_heal_summoned(ec_reference reference, float start_x, float start_y, float start_z, int LOD)
 {
 	ec_internal_reference* cast_reference = (ec_internal_reference*)reference;
@@ -3684,7 +3526,6 @@ extern "C" ec_reference ec_create_targetmagic_drain_mana(float start_x, float st
 	return (ec_reference)ret;
 }
 
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_targetmagic_drain_mana2(actor* caster, actor* target, int LOD)
 {
 	//std::cout << "Caster: ID: " << caster->actor_id << " Name: " << caster->actor_name << " X: " << caster->x_pos << " Y: " << caster->y_pos << std::endl;
@@ -3702,7 +3543,6 @@ extern "C" ec_reference ec_create_targetmagic_drain_mana2(actor* caster, actor* 
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#endif //!MAP_EDITOR
 extern "C" ec_reference ec_create_teleporter(float x, float y, float z, float hue_adjust, float saturation_adjust, float scale, int LOD)
 {
 	ec_internal_reference* ret = (ec_internal_reference*)ec_create_generic();
@@ -3740,7 +3580,6 @@ extern "C" void ec_add_wind_effect_list(ec_reference reference, ec_effects effec
 	ec_internal_effects* cast_effects = (ec_internal_effects*)effects;
 	((ec::WindEffect*)(cast_reference->effect))->set_pass_off(*cast_effects);
 }
-#ifndef MAP_EDITOR
 extern "C" ec_reference ec_create_mine_detonate(float x, float y, float z, int mine_type, int LOD)
 {
 	if (!ec_in_range(x, y, z, ec::MineEffect::get_max_end_time()))
@@ -3843,51 +3682,5 @@ extern "C" ec_reference ec_create_mine_detonate2(actor* caster, int mine_type, i
 	eye_candy.push_back_effect(ret->effect);
 	return (ec_reference)ret;
 }
-#ifdef MISSILE
-extern "C" ec_reference ec_create_missile_effect(int missile_id, int LOD, int hitOrMiss)
-{
-	missile *mis = get_missile_ptr_from_id(missile_id);
-	ec_internal_reference* ret;
-
-	if (mis == NULL ||
-		missiles_defs[mis->type].effect < MAGIC_MISSILE ||
-		missiles_defs[mis->type].effect> EXPLOSIVE_MISSILE
-	)
-		return NULL;
-
-	ret = (ec_internal_reference*)ec_create_generic();
-	ret->missile_id = missile_id;
-	ret->position.x = mis->position[0];
-	ret->position.y = mis->position[2];
-	ret->position.z = -mis->position[1];
-
-	switch(missiles_defs[mis->type].effect)
-	{
-		case MAGIC_MISSILE:
-			ret->effect = new ec::MissileEffect(&eye_candy, &ret->dead, &ret->position, ec::MissileEffect::MAGIC, LOD, hitOrMiss);
-			break;
-
-		case FIRE_MISSILE:
-			ret->effect = new ec::MissileEffect(&eye_candy, &ret->dead, &ret->position, ec::MissileEffect::FIRE, LOD, hitOrMiss);
-			break;
-
-		case ICE_MISSILE:
-			ret->effect = new ec::MissileEffect(&eye_candy, &ret->dead, &ret->position, ec::MissileEffect::ICE, LOD, hitOrMiss);
-			break;
-
-		case EXPLOSIVE_MISSILE:
-			ret->effect = new ec::MissileEffect(&eye_candy, &ret->dead, &ret->position, ec::MissileEffect::EXPLOSIVE, LOD, hitOrMiss);
-			break;
-
-		default:
-			delete ret;
-			return NULL;
-	}
-
-	eye_candy.push_back_effect(ret->effect);
-	return (ec_reference)ret;
-}
-#endif //MISSILE
-#endif //!MAP_EDITOR
 ///////////////////////////////////////////////////////////////////////////////
 

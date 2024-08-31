@@ -24,12 +24,6 @@ enum {
 	EVENT_UPDATE_PARTICLES,	 /*!< update the particles */
 	EVENT_UPDATES_DOWNLOADED,/*!< the event to send when the main updates.lst has been downloaded */
 	EVENT_DOWNLOAD_COMPLETE, /*!< the normal event to send when a download finishes */
-#ifdef PAWN
-	EVENT_PAWN_TIMER,        /*!< event for running Pawn timer callbacks */
-#endif
-#ifdef	CUSTOM_UPDATE
-	EVENT_CUSTOM_UPDATE_COMPLETE,  /*!< the event to send when custom updates are downloaded. */
-#endif	/* CUSTOM_UPDATE */
 };
 /*! @} */
 

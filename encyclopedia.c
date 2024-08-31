@@ -11,9 +11,6 @@
 #include "platform.h"
 #include "textures.h"
 #include "url.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "context_menu.h"
 #include "gamewin.h"
 #include "hud.h"
@@ -21,10 +18,8 @@
 #include "tabs.h"
 #include "translate.h"
 #include "text.h"
-#ifndef ENGLISH
 #include "help.h"
 #include "skills.h"
-#endif //ENGLISH
 
 int encyclopedia_win=-1;
 int encyclopedia_menu_x=100;
@@ -47,13 +42,8 @@ static char * last_search = NULL;
 static int repeat_search = 0;
 static int show_cm_help = 0;
 /* move to translate */
-#ifdef ENGLISH
-static const char* cm_encycl_help_str = "Right-click for search and bookmark options";
-#else //ENGLISH
 static const char* cm_encycl_help_str = "Clique-droit pour la recherche et marque-pages";
-#endif //ENGLISH
 
-#ifndef ENGLISH
 #define MAX_HISTO_PAGE 20
 typedef struct
 {
@@ -63,7 +53,6 @@ typedef struct
 
 static struct_historique Historique[MAX_HISTO_PAGE];
 static int maxhistoriquepage = 0, historiquepage = 0;
-#endif //ENGLISH
 
 int display_encyclopedia_handler(window_info *win)
 {
@@ -73,7 +62,6 @@ int display_encyclopedia_handler(window_info *win)
 
 	j=vscrollbar_get_pos(encyclopedia_win, encyclopedia_scroll_id);
 
-#ifndef ENGLISH
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f,0.57f,0.39f);
 	glBegin(GL_LINES);
@@ -125,27 +113,18 @@ int display_encyclopedia_handler(window_info *win)
 
 	if (Page[currentpage].I.id != 0) {
 		glColor3f(1.0f,1.0f,1.0f);
-#ifdef	NEW_TEXTURES
 			bind_texture(i->id);
-#else	/* NEW_TEXTURES */
-	    	get_and_set_texture_id(Page[currentpage].I.id);
-#endif	/* NEW_TEXTURES */
 		glBegin(GL_QUADS);
 		draw_2d_thing(0.0f, 0.0f, 1.0f, 1.0f, 0, 0, win->len_x, win->len_y);
 		glEnd();
 	}
-#endif //ENGLISH
 	while(t)
 	{
 		int ylen=(t->size)?18:15;
 		int xlen=strlen(t->text)*((t->size)?11:8);
 
 		// Bounds Check the Text
-#ifdef ENGLISH
-		if((t->y-j > 0) && (t->y-j < encyclopedia_menu_y_len-20 ))
-#else
 		if((t->y-j > 0) && (t->y-j < encyclopedia_menu_y_len-30 ))
-#endif //ENGLISH
 		{
 			if(t->ref)
 				{
@@ -157,9 +136,6 @@ int display_encyclopedia_handler(window_info *win)
 					glVertex3i(t->x+4+xlen-8,t->y+ylen-j,0);
 					glEnd();
 					glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 				}
 			if(t->size)
 				{
@@ -203,11 +179,7 @@ CHECK_GL_ERRORS();
 						i=i->Next;
 				}
 			}
-#ifdef	NEW_TEXTURES
 			bind_texture(i->id);
-#else	/* NEW_TEXTURES */
-			get_and_set_texture_id(i->id);
-#endif	/* NEW_TEXTURES */
 			glBegin(GL_QUADS);
 			draw_2d_thing(i->u, i->v, i->uend, i->vend,i->x, i->y-j,i->xend,i->yend-j);
 			glEnd();
@@ -234,7 +206,6 @@ int click_encyclopedia_handler(window_info *win, int mx, int my, Uint32 flags)
 {
 	_Text *t=Page[currentpage].T.Next;
 
-#ifndef ENGLISH
 	if(mx > win->len_x-(20*4) && my > win->len_y - 20 && my < win->len_y )
 	{
 		// Previous
@@ -300,7 +271,6 @@ int click_encyclopedia_handler(window_info *win, int mx, int my, Uint32 flags)
 	}
 	else
 	{
-#endif //ENGLISH
 	if(flags&ELW_WHEEL_UP) {
 		vscrollbar_scroll_up(encyclopedia_win, encyclopedia_scroll_id);
 	} else if(flags&ELW_WHEEL_DOWN) {
@@ -320,7 +290,6 @@ int click_encyclopedia_handler(window_info *win, int mx, int my, Uint32 flags)
 					for(i=0;i<numpage+1;i++){
 						if(!xmlStrcasecmp((xmlChar*)Page[i].Name,(xmlChar*)t->ref)){
 							currentpage=i;
-#ifndef ENGLISH
 							// store histopage
 							if (historiquepage+1 < MAX_HISTO_PAGE)
 							{
@@ -340,7 +309,6 @@ int click_encyclopedia_handler(window_info *win, int mx, int my, Uint32 flags)
 								Historique[historiquepage-1].pos_barre_defilement = vscrollbar_get_pos(encyclopedia_win, encyclopedia_scroll_id);
 							}
 							maxhistoriquepage=historiquepage;
-#endif //ENGLISH
 							vscrollbar_set_pos(encyclopedia_win, encyclopedia_scroll_id, 0);
 							vscrollbar_set_bar_len(encyclopedia_win, encyclopedia_scroll_id, Page[currentpage].max_y);
 							break;
@@ -352,9 +320,7 @@ int click_encyclopedia_handler(window_info *win, int mx, int my, Uint32 flags)
 			t=t->Next;
 		}
 	}
-#ifndef ENGLISH
 }
-#endif //ENGLISH
 
 	return 1;
 }
@@ -439,11 +405,7 @@ void ParseImage(xmlAttr *a_node)
 			}
 			//v=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"v")){
-#ifdef NEW_TEXTURES
 				v=1-(float)atof((char*)cur_attr->children->content);
-#else //NEW_TEXTURES
-				v=(float)atof((char*)cur_attr->children->content);
-#endif //NEW_TEXTURES
 			}
 			//uend=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"uend")){
@@ -451,11 +413,7 @@ void ParseImage(xmlAttr *a_node)
 			}
 			//vend=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"vend")){
-#ifdef NEW_TEXTURES
 				vend=1-(float)atof((char*)cur_attr->children->content);
-#else //NEW_TEXTURES
-				vend=(float)atof((char*)cur_attr->children->content);
-#endif //NEW_TEXTURES
 			}
 			//xend=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"xlen")){
@@ -467,11 +425,7 @@ void ParseImage(xmlAttr *a_node)
 			}
 			//name=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"name")){
-#ifdef	NEW_TEXTURES
 				id = load_texture_cached((char*)cur_attr->children->content, tt_gui);
-#else	/* NEW_TEXTURES */
-				id=load_texture_cache_deferred((char*)cur_attr->children->content,0);
-#endif	/* NEW_TEXTURES */
 			}
 			//x=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"x")){
@@ -505,11 +459,7 @@ void ParseSimage(xmlAttr *a_node)
 		if (cur_attr->type==XML_ATTRIBUTE_NODE){
 			//name=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"name")){
-#ifdef	NEW_TEXTURES
 				id = load_texture_cached((char*)cur_attr->children->content, tt_gui);
-#else	/* NEW_TEXTURES */
-				id=load_texture_cache_deferred((char*)cur_attr->children->content,0);
-#endif	/* NEW_TEXTURES */
 			}
 			//isize=""
 			if(!xmlStrcasecmp(cur_attr->name,(xmlChar*)"isize")){
@@ -724,17 +674,10 @@ void ReadCategoryXML(xmlNode * a_node)
 				xtile=tid%picsperrow;
 				ytile=tid/picsperrow;
 				ftsize=(float)tsize/isize;
-#ifdef	NEW_TEXTURES
 				u = ftsize * xtile;
 				v = ftsize * ytile;
 				uend = u + ftsize;
 				vend = v + ftsize;
-#else	/* NEW_TEXTURES */
-				u=ftsize*xtile;
-				v=-ftsize*ytile;
-				uend=u+ftsize;
-				vend=v-ftsize;
-#endif	/* NEW_TEXTURES */
 				I->mouseover=mouseover;
 				mouseover=0;
 
@@ -887,15 +830,11 @@ void ReadIndexXML(xmlNode * a_node)
 
 void ReadXML(const char *filename)
 {
-#ifndef FR_VERSION
-	int i;
-#endif //FR_VERSION
 
 	xmlDocPtr doc=xmlReadFile(filename, NULL, 0);
 	if (doc==NULL)
 		return;
 
-#ifndef ENGLISH
 	 num_category=0;
 	 numpage=-1;
 	 currentpage=0;
@@ -909,24 +848,11 @@ void ReadXML(const char *filename)
 
 	reset_help();
 	reset_skills();
-#endif //ENGLISH
 	ReadIndexXML(xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 
-#ifndef FR_VERSION
-	// Sanitize all of the page lengths.
-	for (i = 0; i < numpage+1; i++) {
-		if(Page[i].max_y > encyclopedia_menu_y_len - ENCYC_OFFSET)
-		{
-			Page[i].max_y -= encyclopedia_menu_y_len - ENCYC_OFFSET;
-		} else {
-			Page[i].max_y = 0;
-		}
-	}
-#endif //FR_VERSION
 }
 
-#ifndef ENGLISH
 void ReloadEncyclopedia ()
 {
  	 char temp[100];
@@ -937,7 +863,6 @@ void ReloadEncyclopedia ()
 	 snprintf(temp, sizeof(temp), "languages/%s/Encyclopedia/index.xml",lang);
 	 ReadXML(temp);
 }
-#endif //ENGLISH
 
 void FreeXML()
 {
@@ -1430,11 +1355,7 @@ void fill_encyclopedia_win ()
 	set_window_handler (encyclopedia_win, ELW_HANDLER_DISPLAY, &display_encyclopedia_handler);
 	set_window_handler (encyclopedia_win, ELW_HANDLER_CLICK, &click_encyclopedia_handler);
 
-#ifdef ENGLISH
-	encyclopedia_scroll_id = vscrollbar_add_extended(encyclopedia_win, encyclopedia_scroll_id, NULL, encyclopedia_menu_x_len-20, 0, 20, encyclopedia_menu_y_len, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 30, Page[currentpage].max_y);
-#else
 	encyclopedia_scroll_id = vscrollbar_add_extended(encyclopedia_win, encyclopedia_scroll_id, NULL, encyclopedia_menu_x_len-20, 0, 20, encyclopedia_menu_y_len-20, 0, encyclopedia_menu_y_len-30, 0.77f, 0.57f, 0.39f, 0, SMALL_FONT_Y_LEN, Page[currentpage].max_y);
-#endif //ENGLISH
 
 	if (numpage<=0)
 	{

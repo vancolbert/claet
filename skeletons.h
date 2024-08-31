@@ -38,11 +38,7 @@ typedef struct {
 	int cal_bones_id[MAX_MAIN_CAL_BONES]; /*!< The main bones IDs by their names */
 } skeleton_types;
 
-#ifdef FR_VERSION
 #define MAX_SKELETONS 40
-#else //FR_VERSION
-#define MAX_SKELETONS 20
-#endif //FR_VERSION
 
 /*!
  * \brief Array that contains all the main bones definitions for each existing skeleton

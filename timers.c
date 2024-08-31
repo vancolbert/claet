@@ -15,22 +15,10 @@
 #include "rules.h"
 #include "update.h"
 #include "weather.h"
-#ifdef NEW_SOUND
 #include "items.h"
 #include "sound.h"
-#endif
-#ifdef PAWN
-#include "pawn/elpawn.h"
-#endif
-#ifdef TIMER_CHECK
-#include "asc.h"
-#include "errors.h"
-#include "translate.h"
-#endif
-#ifdef FR_VERSION
 #include "asc.h"
 #include "elconfig.h"
-#endif //FR_VERSION
 
 #define	TIMER_RATE 20
 int	my_timer_adjust=0;
@@ -38,9 +26,6 @@ int	my_timer_clock=0;
 SDL_TimerID draw_scene_timer=0;
 int normal_animation_timer=0;
 
-#ifdef TIMER_CHECK
-static Uint32 last_my_timer=0;
-#endif
 
 Uint32 my_timer(Uint32 interval, void * data)
 {
@@ -48,10 +33,8 @@ Uint32 my_timer(Uint32 interval, void * data)
 	SDL_Event e;
 	static int normal_animation_loop_count = 2;
 
-#ifdef NEW_SOUND
 	update_sound(interval);
 	update_item_sound(interval);
-#endif	//NEW_SOUND
 
 	// adjust the timer clock
 	if(my_timer_clock == 0)
@@ -63,9 +46,6 @@ Uint32 my_timer(Uint32 interval, void * data)
 		my_timer_clock+=(TIMER_RATE-my_timer_adjust);
 	}
 
-#ifdef TIMER_CHECK
-	last_my_timer=SDL_GetTicks();
-#endif
 
 	e.type = SDL_USEREVENT;
 
@@ -92,9 +72,6 @@ Uint32 my_timer(Uint32 interval, void * data)
 	}
 	normal_animation_timer++;
 
-#ifdef PAWN
-	check_pawn_timers ();
-#endif
 
 	// find the new interval
 	new_time= TIMER_RATE-(SDL_GetTicks()-my_timer_clock);
@@ -136,17 +113,9 @@ Uint32 my_timer(Uint32 interval, void * data)
 that aren't too critical in here...*/
 
 SDL_TimerID misc_timer=0;
-#ifdef TIMER_CHECK
-static Uint32 misc_timer_clock=0;
-#endif
 Uint32 check_misc(Uint32 interval, void * data)
 {
-#ifdef TIMER_CHECK
-	misc_timer_clock=SDL_GetTicks();//This isn't accurate, but it's not needed here...
-#endif
-#ifdef FR_VERSION
     char str[256];
-#endif //FR_VERSION
 
 	//should we send the heart beat?
 	if(!disconnected && last_heart_beat+25 <= time(NULL))
@@ -154,7 +123,6 @@ Uint32 check_misc(Uint32 interval, void * data)
 		send_heart_beat();
 	}
 
-#ifdef FR_VERSION
     // On sauvegarde régulièrement les données sur le serveur
     if (!disconnected)
     {
@@ -166,7 +134,6 @@ Uint32 check_misc(Uint32 interval, void * data)
             derniere_sauvegarde = cur_time;
         }
     }
-#endif //FR_VERSION
 
 	if(countdown>0)
 	{
@@ -179,30 +146,3 @@ Uint32 check_misc(Uint32 interval, void * data)
 	return 500;
 }
 
-#ifdef TIMER_CHECK
-//Checks if any of the timers have suddenly stopped
-void check_timers()
-{
-	if((int)(cur_time-last_my_timer)>10000)//OK, too long has passed, this is most likely a timer failure! log it and restart the timer
-	{
-		char str[120];
-		safe_snprintf(str, sizeof(str), timer_lagging_behind, "draw_scene");
-		LOG_ERROR(str);
-		LOG_TO_CONSOLE(c_red2,str);
-		SDL_RemoveTimer(draw_scene_timer);
-		my_timer_clock=0;
-		draw_scene_timer = SDL_AddTimer (1000/(18*4), my_timer, NULL);
-		last_my_timer=SDL_GetTicks();
-	}
-	if((int)(cur_time-misc_timer_clock)>10000)
-	{
-		char str[120];
-		safe_snprintf(str, sizeof(str), timer_lagging_behind, "misc");
-		LOG_ERROR(str);
-		LOG_TO_CONSOLE(c_red2,str);
-		SDL_RemoveTimer(misc_timer);
-		misc_timer = SDL_AddTimer (500, check_misc, NULL);
-		misc_timer_clock=SDL_GetTicks();
-	}
-}
-#endif

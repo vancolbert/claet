@@ -15,9 +15,7 @@ extern "C" {
 #endif
 
 #define ENCYC_OFFSET	40
-#ifndef ENGLISH
 extern int show_am;
-#endif //ENGLISH
 
 /*!
  * defines the categories used in the encyclopedia
@@ -106,9 +104,7 @@ void ReadXML(const char *filename);
  */
 void FreeXML();
 
-#ifndef ENGLISH
 void ReloadEncyclopedia();
-#endif //ENGLISH
 
 #ifdef __cplusplus
 } // extern "C"

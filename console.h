@@ -16,15 +16,11 @@ extern "C" {
  #define DEF_INFO ""
 #endif
 
-#ifdef FR_VERSION
 int command_salut();
 int command_glinfo();
-    #ifdef FR_NEW_ANIM
         int command_danse();
         int command_salto();
         int command_roue();
-    #endif
-#endif //FR_VERSION
 
 typedef struct {
 	char command[64];
@@ -75,9 +71,6 @@ void history_destroy(void);
 void do_tab_complete(text_message *input);
 void reset_tab_completer(void);
 
-#ifdef ENGLISH
-void auto_save_local_and_server(void);
-#endif //ENGLISH
 int save_local_data(char * text, int len);
 
 int command_time(char *text, int len);
@@ -85,9 +78,7 @@ int command_date(char *text, int len);
 int command_mark(char *text, int len);
 int command_unmark_special(char *text, int len, int do_log);
 
-#ifdef FR_VERSION
 int command_quit(char *text, int len);
-#endif //FR_VERSION
 
 void new_minute_console(void);
 

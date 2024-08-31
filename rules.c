@@ -30,10 +30,8 @@
 #include "openingwin.h"
 #include "tabs.h"
 #include "translate.h"
-#ifdef FR_VERSION
 #include "textures.h"
 #include "console.h"
-#endif //FR_VERSION
 
 #define TITLE 	0
 #define RULE	1
@@ -78,9 +76,6 @@ int rules_root_accept_id = 0;
 int next_win_id;
 
 /* Colors */
-#ifndef FR_VERSION
-const float rules_winRGB[8][3] = {{1.0f,0.6f,0.0f},{1.0f,0.0f,0.0f},{0.0f,0.7f,1.0f},{0.9f,0.9f,0.9f},{0.6f,1.0f,1.2f},{0.4f,0.8f,1.0f},{0.8f,0.0f,0.0f},{1.0f,1.0f,1.0f}};
-#else //FR_VERSION
 const float rules_winRGB[8][3] = {
 	{1.0f,0.6f,0.0f},                                   // TITLE
 	{1.0f,0.0f,0.0f},{0.0f,0.7f,1.0f},{1.0f,1.0f,0.8f}, // RULE (highlight|mouseover|normal)
@@ -90,7 +85,6 @@ const float rules_winRGB[8][3] = {
 
 static int rules_text = -1;
 int rules_root_reject_id = 0;
-#endif //FR_VERSION
 
 /* Rule parser */
 static struct rules_struct rules = {0,{{NULL,0,NULL,0,0}}};
@@ -239,12 +233,8 @@ int display_rules_handler(window_info *win)
 
 void fill_rules_window()
 {
-#ifdef FR_VERSION
 	// peu importe les valeurs puisque calc_virt_win_len() redéfinira size/inc/bar_len comme il faut
 	rules_scroll_id = vscrollbar_add_extended (rules_win, rules_scroll_id, NULL, HELP_TAB_WIDTH-20, 0, 20, HELP_TAB_HEIGHT, 0, HELP_TAB_HEIGHT-20, 0.77f, 0.57f, 0.39f, 0, DEFAULT_FONT_Y_LEN, rules.no*DEFAULT_FONT_Y_LEN);
-#else //FR_VERSION
-	rules_scroll_id = vscrollbar_add_extended (rules_win, rules_scroll_id, NULL, HELP_TAB_WIDTH - 20, 0, 20, HELP_TAB_HEIGHT, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 3, rules.no-1);
-#endif //FR_VERSION
 
 	widget_set_OnClick (rules_win, rules_scroll_id, rules_scroll_handler);
 	widget_set_OnDrag (rules_win, rules_scroll_id, rules_scroll_handler);
@@ -455,9 +445,6 @@ void calc_virt_win_len(rule_string * rules_ptr, int win_heigth, float text_size)
 	int i, j;
 	float zoom = text_size;
 	int ydiff = 0;
-#ifndef FR_VERSION
-	int max_scroll_pos = 0;
-#endif //FR_VERSION
 
 	virt_win_len = 0;
 	recalc_virt_win_len = 0;
@@ -500,7 +487,6 @@ void calc_virt_win_len(rule_string * rules_ptr, int win_heigth, float text_size)
 		}
 	}
 
-#ifdef FR_VERSION
 	/* set the scroll bar lengths and increment values */
 	vscrollbar_set_bar_len(rules_root_win, rules_root_scroll_id, virt_win_len);
 	vscrollbar_set_pos_inc(rules_root_win, rules_root_scroll_id, 18*zoom);
@@ -508,16 +494,6 @@ void calc_virt_win_len(rule_string * rules_ptr, int win_heigth, float text_size)
 	vscrollbar_set_pos_inc(rules_win, rules_scroll_id, 18*zoom);
 	widget_set_size(rules_root_win, rules_root_scroll_id, win_heigth-18*zoom);
 	widget_set_size(rules_win, rules_scroll_id, win_heigth-18*zoom);
-#else //FR_VERSION
-	/* make sure the max scroll value leaves a mostly full screen */
-	max_scroll_pos = virt_win_len - win_heigth * 0.9;
-
-	/* set the scroll bar lengths and increment values */
-	vscrollbar_set_bar_len(rules_root_win, rules_root_scroll_id, max_scroll_pos);
-	vscrollbar_set_pos_inc(rules_root_win, rules_root_scroll_id, 18*zoom);
-	vscrollbar_set_bar_len(rules_win, rules_scroll_id, max_scroll_pos);
-	vscrollbar_set_pos_inc(rules_win, rules_scroll_id, 18*zoom);
-#endif //FR_VERSION
 
 	/* if we're been asked to start at a particular rule, set the scroll offset */
 	if (set_rule_offset >= 0)
@@ -528,19 +504,6 @@ void calc_virt_win_len(rule_string * rules_ptr, int win_heigth, float text_size)
 		vscrollbar_set_pos(rules_win, rules_scroll_id, virt_win_offset);
 	}
 
-#ifndef FR_VERSION
-	/* closing a rule could leave the offset past the end, so fix that if needed */
-	if (vscrollbar_get_pos(rules_root_win, rules_root_scroll_id) >= max_scroll_pos)
-	{
-		vscrollbar_set_pos(rules_root_win, rules_root_scroll_id, max_scroll_pos -1);
-		rules_root_scroll_handler();
-	}
-	if (vscrollbar_get_pos(rules_win, rules_scroll_id) >= max_scroll_pos)
-	{
-		vscrollbar_set_pos(rules_win, rules_scroll_id, max_scroll_pos -1);
-		rules_scroll_handler();
-	}
-#endif //FR_VERSION
 
 } /* end calc_virt_win_len() */
 
@@ -645,11 +608,7 @@ void init_rules_interface(float text_size, int count, int len_x, int len_y)
 			//We need to format the rules again..
 			if (display_rules)
 				free_rules (display_rules);
-#ifdef FR_VERSION
 			display_rules = get_interface_rules (570 / (12*text_size) - 1);
-#else //FR_VERSION
-			display_rules = get_interface_rules ((float)(len_y - 120 * len_y / 480.0f) / (12 * text_size) - 1);
-#endif //FR_VERSION
 		}
 		countdown = count;	// Countdown in 0.5 seconds...
 	}
@@ -662,10 +621,6 @@ void init_rules_interface(float text_size, int count, int len_x, int len_y)
 void draw_rules_interface (int len_x, int len_y)
 {
 	char str[200];
-#ifndef FR_VERSION
-	float diff = (float) (len_x - len_y) / 2;
-	float window_ratio = (float) len_y / 480.0f;
-#endif //FR_VERSION
 	float string_width, string_zoom;
 
 	if ((countdown <= 0) && (read_all_rules))
@@ -673,20 +628,13 @@ void draw_rules_interface (int len_x, int len_y)
 		widget_unset_flags (rules_root_win, rules_root_accept_id, WIDGET_DISABLED);
 	}
 
-#ifdef FR_VERSION
 	// utilisation du fond de console pour le cadre des règles
-#ifdef NEW_TEXTURES
 	bind_texture(cons_text);
-#else //NEW_TEXTURES
-	get_and_set_texture_id(cons_text);
-#endif //NEW_TEXTURES
 	glBegin (GL_QUADS);
 	draw_2d_thing(0.0f, 1.0f, 1.0f, 0.0f, len_x/2-310, 60, len_x/2+310, len_y-90);
 	glEnd();
-#endif //FR_VERSION
 
 	glDisable(GL_TEXTURE_2D);
-#ifdef FR_VERSION
 	/* Mais pourquoi s'embeter avec des ratio pour avoir une largeur ridicule
 	 * lorsque la hauteur est faible, ou à l'inverse inutilement trop grande.
 	 * Une largeur fixée à 600+20px est suffisante et passe partout.
@@ -697,54 +645,25 @@ void draw_rules_interface (int len_x, int len_y)
 	glVertex3i(len_x/2 + 310, 60, 0);
 	glVertex3i(len_x/2 + 310, len_y - 90, 0);
 	glVertex3i(len_x/2 - 310, len_y - 90, 0);
-#else //FR_VERSION
-	glColor3f(0.77f,0.57f,0.39f);
-	glBegin(GL_LINES);
-	glVertex3i(diff + 30 * window_ratio, 50 * window_ratio, 0);
-	glVertex3i(len_x - (diff + 30 * window_ratio) - 20, 50 * window_ratio, 0);
-	glVertex3i(diff + 30 * window_ratio, 50 * window_ratio, 0);
-	glVertex3i(diff + 30 * window_ratio, 370 * window_ratio, 0);
-	glVertex3i(diff + 30 * window_ratio, 370 * window_ratio, 0);
-	glVertex3i(len_x - (diff + 30 * window_ratio) - 20, 370 * window_ratio, 0);
-#endif //FR_VERSION
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef FR_VERSION
 	// ajout des images d'entête et de pied du cadre + bas de page
-#ifdef NEW_TEXTURES
 	bind_texture(rules_text);
-#else //NEW_TEXTURES
-	get_and_set_texture_id(rules_text);
-#endif //NEW_TEXTURES
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.03f);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-#ifdef NEW_TEXTURES
 	draw_2d_thing(0.0f, (float)1/512, 1.0f, (float)54/512, len_x/2-310, 2, len_x/2+310+1, 66);
-#else //NEW_TEXTURES
-	draw_2d_thing(0.0f, 1.0f, 1.0f, 1.0f-(float)54/512, len_x/2-310, 2, len_x/2+310+1, 66);
-#endif //NEW_TEXTURES
 	glEnd();
 	glBegin(GL_QUADS);
-#ifdef NEW_TEXTURES
 	draw_2d_thing(0.0f, (float)55/512, 1.0f, (float)83/512, len_x/2-310, len_y-100, len_x/2+310+1, len_y-60);
-#else //NEW_TEXTURES
-	draw_2d_thing(0.0f, 1.0f-(float)55/512, 1.0f, 1.0f-(float)83/512, len_x/2-310, len_y-100, len_x/2+310+1, len_y-60);
-#endif //NEW_TEXTURES
 	glEnd();
 	glBegin(GL_QUADS);
-#ifdef NEW_TEXTURES
 	draw_2d_thing(0.0f, (float)85/512, 1.0f, (float)120/512, 10, len_y-40, len_x-10, len_y);
-#else //NEW_TEXTURES
-	draw_2d_thing(0.0f, 1.0f-(float)85/512, 1.0f, 1.0f-(float)120/512, 10, len_y-40, len_x-10, len_y);
-#endif //NEW_TEXTURES
 	glEnd();
 	glDisable(GL_ALPHA_TEST);
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 	glColor3f (0.4f, 0.1f, 0.0f);
 
 	// affichage de la phrase explicative en toute circonstance
@@ -779,34 +698,10 @@ void draw_rules_interface (int len_x, int len_y)
 
 	set_font(0);
 	draw_rules (display_rules, len_x/2 - 310, 70, len_x/2 + 310, len_y - 110, 1.0f, rules_winRGB);
-#else //FR_VERSION
-	glColor3f (0.77f, 0.57f, 0.39f);
-
-	if (countdown != 0)
-		safe_snprintf (str, sizeof(str), you_can_proceed, countdown / 2);
-	else
-		safe_strncpy (str, accepted_rules, sizeof(str));
-
-	/* scale the string if it is too wide for the screen */
-	string_width = strlen (str) * DEFAULT_FONT_X_LEN;
-	string_zoom = 1;
-	if (string_width > len_x)
-	{
-		string_zoom = len_x/string_width;
-		string_width *= string_zoom;
-	}
-	draw_string_zoomed ((len_x - string_width) / 2, len_y - 40 * window_ratio, (unsigned char*)str, 0, string_zoom);
-
-	set_font(3);
-	draw_rules (display_rules, diff + 30 * window_ratio, 60 * window_ratio, len_y + diff / 2 - 50, 360 * window_ratio, 1.0f, rules_winRGB);
-#endif //FR_VERSION
 	set_font(0);
 
 	glDisable (GL_ALPHA_TEST);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int rules_root_win = -1;
@@ -816,11 +711,7 @@ int display_rules_root_handler (window_info *win)
 	if (SDL_GetAppState () & SDL_APPACTIVE)
 	{
 		if(virt_win_offset < 0) virt_win_offset=0;
-#ifdef FR_VERSION
 		draw_console_pic(login_text);
-#else //FR_VERSION
-		draw_console_pic (cons_text);
-#endif //FR_VERSION
 		draw_rules_interface (win->len_x, win->len_y);
 		CHECK_GL_ERRORS();
 	}
@@ -941,27 +832,14 @@ void create_rules_root_window (int width, int height, int next, int time)
 {
 	if (rules_root_win < 0)
 	{
-#ifndef FR_VERSION
-		float diff = (float) (width - height) / 2;
-		float window_ratio = (float) height / 480.0f;
-#endif //FR_VERSION
 		int accept_width = (strlen(accept_label) * 11) + 40;
 		int accept_height = 32;
 
 		rules_root_win = create_window (win_rules, -1, -1, 0, 0, width, height, ELW_TITLE_NONE|ELW_SHOW_LAST);
 
-#ifdef FR_VERSION
-	#ifdef FR_VERSION
 		rules_root_scroll_id = vscrollbar_add_extended (rules_root_win, rules_root_scroll_id, NULL, width/2+290, 60, 20, height-160, 0, height-180, 0.77f, 0.57f, 0.39f, 0, DEFAULT_FONT_Y_LEN, rules.no*DEFAULT_FONT_Y_LEN);
-	#else //FR_VERSION
-		rules_root_scroll_id = vscrollbar_add_extended (rules_root_win, rules_root_scroll_id, NULL, width/2+290, 60, 20, height-160, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 3, rules.no-1);
-	#endif //FR_VERSION
 		rules_root_accept_id = button_add_extended (rules_root_win, rules_root_scroll_id + 1, NULL, (width-accept_width)/2, height-95, accept_width, accept_height, WIDGET_DISABLED, 1.0f, 1.0f, 0.9f, 0.8f, accept_label);
 		rules_root_reject_id = button_add_extended (rules_root_win, rules_root_scroll_id + 2, NULL, width/2+200, 25, 90, 30, 0, 1.0f, 0.77f, 0.57f, 0.39f, "Quitter");
-#else //FR_VERSION
-		rules_root_scroll_id = vscrollbar_add_extended (rules_root_win, rules_root_scroll_id, NULL, width - (diff + 30 * window_ratio) - 20, 50 * window_ratio, 20, 320 * window_ratio, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 3, rules.no-1);
-		rules_root_accept_id = button_add_extended (rules_root_win, rules_root_scroll_id + 1, NULL, (width - accept_width) /2, height - 80 * window_ratio, accept_width, accept_height, WIDGET_DISABLED, 1.0f, 1.0f, 1.0f, 1.0f, accept_label);
-#endif //FR_VERSION
 
 		set_window_handler (rules_root_win, ELW_HANDLER_DISPLAY, &display_rules_root_handler);
 		set_window_handler (rules_root_win, ELW_HANDLER_MOUSEOVER, &mouseover_rules_root_handler);
@@ -971,21 +849,13 @@ void create_rules_root_window (int width, int height, int next, int time)
 		widget_set_OnClick (rules_root_win, rules_root_scroll_id, rules_root_scroll_handler);
 		widget_set_OnDrag (rules_root_win, rules_root_scroll_id, rules_root_scroll_handler);
 		widget_set_OnClick(rules_root_win, rules_root_accept_id, &click_rules_root_accept);
-#ifdef FR_VERSION
 		widget_set_OnClick(rules_root_win, rules_root_reject_id, &command_quit);
-#endif //FR_VERSION
 	}
 
-#ifdef FR_VERSION
 	if (rules_text < 0)
 	{
-#ifdef NEW_TEXTURES
 		rules_text = load_texture_cached("textures/rules_menu.dds", tt_gui);
-#else //NEW_TEXTURES
-		rules_text = load_texture_cache("./textures/rules_menu.bmp", 0);
-#endif //NEW_TEXTURES
 	}
-#endif //FR_VERSION
 
 	init_rules_interface (1.0, 2*time, width, height);
 	next_win_id = next;

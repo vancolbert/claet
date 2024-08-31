@@ -13,9 +13,6 @@
 extern "C" {
 #endif
 
-#ifdef FR_FENETRE_OPTIONS
-extern int fenetre_options; /*!< numero d'identification de la nouvelle fenetre de configuration*/
-#endif //FR_FENETRE_OPTION
 extern int elconfig_win;
 extern int elconfig_menu_x;
 extern int elconfig_menu_y;
@@ -23,14 +20,7 @@ extern float water_tiles_extension;
 extern int show_game_seconds;
 extern int skybox_update_delay;
 extern int skybox_local_weather;
-#ifdef NEW_CURSOR
-extern int big_cursors;
-extern int sdl_cursors;
-extern float pointer_size;
-#endif // NEW_CURSOR
-#ifdef	NEW_TEXTURES
 extern Uint32 max_actor_texture_handles;
-#endif	/* NEW_TEXTURES */
 
 extern int write_ini_on_exit; /*< variable that determines if el.ini file is rewritten on exit of the program */
 
@@ -53,49 +43,12 @@ typedef enum
 	OPT_FLOAT_F,       // Change float with functions that returns max and min values  func(float*,float*), max/min float func()
 	OPT_INT_F,         // Change int with functions that returns max and min values    func(int*,int), max/min int func()
 	OPT_BOOL_INI,      // Boolean value that is only read from and written to the ini file
-#ifdef ENGLISH
-	OPT_INT_INI	   // Int value that is only read from the ini file
-#else //ENGLISH
 	OPT_INT_INI,       // Int value that is only read from the ini file
 	OPT_STRING_INI,     // String value that is only read from the ini file
 	OPT_FLOAT_INI
-#endif //ENGLISH
 } option_type;
 
-#ifdef FR_FENETRE_OPTIONS
-/*!
- * Structure pour enregistres une option
- */
-typedef struct
-{
-    int id_depend;          /*!< Numero d'identification de l'option maitre. A -1 si pas de dependance */
-    option_type type;       /*!< Type de la variable */
-    char *nom;              /*!< Nom de la variable */
-    int longueur_nom;       /*!< Longueur de \a nom */
-    char *nom_court;        /*!< Nom court de la variable */
-    int longueur_nom_court; /*!< Longueur de \a nom_court */
-    void (*fonction)();     /*!< fonction appelee lors de l'activation/desactivation de la variable */
-    void *variable;         /*!< Donnee de la variable */
-    int longueur;           /*!< Longueur de la variable */
-    int sauve;              /*!< Variable sauvergardee ou non */
-    dichar affichage;       /*!< Description de la variable */
-    struct {
-        int onglet_id;      /*!< Numero d'identification de l'onglet */
-        int nom_id;         /*!< Le nom affichee dans la fenetre des options */
-        int widget_id;      /*!< Numero d'identification du widget */
-    } widgets;
-    queue_t *queue;         /*!< Contient les infos supplementaire pour certains widgets */
 
-} struct_variable;
-
-struct struct_variables
-{
-    int num;                            /*!< Numero de la variable */
-    struct_variable * variable[200];    /*!< structure qui contient l'information d'une variable */
-};
-#endif //FR_FENETRE_OPTIONS
-
-#ifndef ENGLISH
 /*!
  * var_struct stores the data for a single configuration entry.
  */
@@ -128,7 +81,6 @@ struct variables
 	int no; /*!< current number of allocated \see var_struct in \a var */
 	var_struct * var[200]; /*!< fixed array of \a no \see var_struct structures */
 };
-#endif //ENGLISH
 
 /*!
  * The type of variable name.
@@ -142,24 +94,13 @@ typedef enum
 } var_name_type;
 
 extern struct variables our_vars; /*!< global variable containing all defined variables */
-#ifdef FR_FENETRE_OPTIONS
-extern struct struct_variables liste_variables; /*!< Contient la liste de toutes les variables */
-#endif //FR_FENETRE_OPTIONS
 
-#ifdef FR_VERSION
 extern int delai_sauve_min;     /*!< Délai en minutes entre 2 sauvegardes */
 extern int delai_sauve_ms;      /*!< Délai en millisecondes entre 2 sauvegardes */
 extern int derniere_sauvegarde; /*!< Temps a laquelle a été faite le derniere sauvegarde */
-#endif //FR_VERSION
 
-#ifdef FR_FENETRE_OPTIONS
-void affiche_fenetre_options (void); /*!< Fonction qui permet d'afficher la fenetre des options */
-#endif //FR_FENETRE_OPTIONS
 void display_elconfig_win(void);
 
-#ifdef ENGLISH
-int get_rotate_chat_log(void);
-#endif //ENGLISH
 
 void change_language(const char *new_lang);
 
@@ -174,22 +115,7 @@ void change_language(const char *new_lang);
  * \callgraph
 */
 const char *get_option_description(const char *str, var_name_type type);
-#ifdef FR_FENETRE_OPTIONS
-
-/*!
- * \ingroup config
- * \brief Retourne le numero de la variable recherchee
- *
- *      Retourne le numero de la variable en donnant son nom et son type
- *
- * \param str       le nom de la variable
- * \param type      le type de la variable
- * \retval int      -1 si rien n'est trouve, sinon 0
- */
-int recherche_variable (const char *str, var_name_type type);
-#else //FR_FENETRE_OPTIONS
 int find_var (const char *str, var_name_type type);
-#endif //FR_FENETRE_OPTIONS
 
 /*!
  * \ingroup config
@@ -298,7 +224,6 @@ int set_var_unsaved(const char *str, var_name_type type);
  */
 int toggle_OPT_BOOL_by_name(const char *str);
 
-#ifdef	ELC
 /*!
  * \ingroup other
  * brief Sets the specfied OPT_INT variable's value.
@@ -307,7 +232,6 @@ int toggle_OPT_BOOL_by_name(const char *str);
  * \retval	1 if sucessfull, 0 if option not found
  */
 int set_var_OPT_INT(const char *str, int new_value);
-#endif
 
 void toggle_follow_cam(int * fc);
 void toggle_ext_cam(int * ec);

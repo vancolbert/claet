@@ -20,15 +20,8 @@
 #include "paste.h"
 #include "pm_log.h"
 #include "update.h"
-#ifdef PAWN
-#include "pawn/elpawn.h"
-#endif
-#ifdef	NEW_TEXTURES
 #include "textures.h"
-#endif	/* NEW_TEXTURES */
-#ifdef FR_VERSION
 #include "fr_quickitems.h"
-#endif //FR_VERSION
 
 #ifndef WINDOWS
 #include <SDL_syswm.h>
@@ -37,14 +30,12 @@
 int adding_mark = 0;
 int mark_x , mark_y;
 int max_mark = 0;
-#ifdef FR_CLIC_DROIT_LONG
 int right_click_long = 0;
 int init_time = 0; //nombre de millisecondes après un clic down droit
 int instant_time = 0;
 /* Merci à Hasdrubal qui a passé toute une soirée à compter des millisecondes */
 const int temps_long_clic = 550; //nombre de millisecondes après lesquelles on ne change pas le curseur
 const int temps_long_rotate = 200; //nombre de millisecondes après lesquelles on fait tourner la caméra
-#endif
 marking marks[MAX_MARKINGS];
 
 SDLMod  mod_key_status;
@@ -58,9 +49,7 @@ int meta_on;
 int osx_right_mouse_cam = 0;
 #endif
 
-#ifndef ENGLISH
 int circonflexe = 0;
-#endif
 
 
 void	quick_use(int use_id)
@@ -68,7 +57,6 @@ void	quick_use(int use_id)
 	Uint8 quick_use_str[3];
 	int	i;
 
-#ifdef FR_VERSION
 	// Vérifions si la quickbar contient un item utilisable
 	if ((use_id >= FR_QUICKITEMS_MAXSIZE) || (fr_quickitem_list[use_id].quantity < 1)) return;
 
@@ -87,9 +75,7 @@ void	quick_use(int use_id)
 			quick_use_str[0] = USE_INVENTORY_ITEM;
 			quick_use_str[1] = item_list[use_id].pos;
 			my_tcp_send(my_socket, quick_use_str, 2);
-#ifdef NEW_SOUND
 			item_list[use_id].action = USE_INVENTORY_ITEM;
-#endif // NEW_SOUND
 		}
 		// objet non utilisable : tentative d'équipement
 		else
@@ -101,22 +87,6 @@ void	quick_use(int use_id)
 		}
 		break;
 	}
-#else //FR_VERSION
-	for(i=0; i<ITEM_NUM_ITEMS; i++){
-		if(item_list[i].pos==use_id &&
-			item_list[i].quantity &&
-			item_list[i].use_with_inventory){
-				quick_use_str[0]= USE_INVENTORY_ITEM;
-				quick_use_str[1]= use_id;
-				quick_use_str[2]= i;
-				my_tcp_send(my_socket,quick_use_str,2);
-#ifdef NEW_SOUND
-				item_list[i].action = USE_INVENTORY_ITEM;
-#endif // NEW_SOUND
-				break;
-		}
-	}
-#endif //FR_VERSION
 }
 
 int HandleEvent (SDL_Event *event)
@@ -127,12 +97,10 @@ int HandleEvent (SDL_Event *event)
 	Uint32 key = 0;
 	Uint32 flags = 0;
 
-#ifdef FR_CLIC_DROIT_LONG
 	instant_time = SDL_GetTicks();
 	right_click = 0;
 	if(init_time != 0 && instant_time-init_time > temps_long_rotate)
 	     right_click_long = 1;
-#endif
 
 	if (event->type == SDL_NOEVENT) return 0;
 
@@ -142,9 +110,7 @@ int HandleEvent (SDL_Event *event)
 	else shift_on = 0;
 
 	//AltGR users still do not have AltGr working properly. Currently we have to accept only the left ALT key
-#ifdef FR_VERSION
 	if (mod_key_status & KMOD_ALT && !(mod_key_status & KMOD_MODE)) alt_on = 1;
-#endif
 	if (mod_key_status & KMOD_LALT) alt_on = 1;
 	else alt_on = 0;
 
@@ -171,19 +137,12 @@ int HandleEvent (SDL_Event *event)
 				break;  //don't have focus, so we shouldn't be getting keystrokes
 			}
 			key=(Uint16)event->key.keysym.sym;
-#ifdef FR_TRINITA_DEBUG
-               char msg[512];;
-               sprintf( msg, "key is : key %d Name %s Unicode %d", key, SDL_GetKeyName(event->key.keysym.sym), event->key.keysym.unicode && 0xA0 );
-               LOG_TO_CONSOLE(c_yellow1, msg);
-#endif
 
 			//use the modifiers that were on when the key was pressed, not when we go to check
 			if (event->key.keysym.mod & KMOD_SHIFT) key |= ELW_SHIFT;
 			if (event->key.keysym.mod & KMOD_CTRL) key |= ELW_CTRL;
 			//AltGR users still do not have AltGr working properly. Currently we have to accept only the left ALT key
-#ifdef FR_VERSION
 			if (event->key.keysym.mod & KMOD_ALT && !(event->key.keysym.mod & KMOD_MODE)) key |= ELW_ALT;
-#endif
 			if (event->key.keysym.mod & KMOD_LALT) key |= ELW_ALT;
 			if (event->key.keysym.mod & KMOD_META) key |= ELW_META;
 
@@ -202,7 +161,6 @@ int HandleEvent (SDL_Event *event)
             if (key == 264) event->key.keysym.unicode = 56; // Touche 8
             if (key == 265) event->key.keysym.unicode = 57; // Touche 9
 
-#ifndef ENGLISH
             // Gestion pour Linux des problêmes avec les lettres et les
             // accents circonflexes sous linux
 
@@ -257,7 +215,6 @@ int HandleEvent (SDL_Event *event)
             else if (circonflexe == 1){
                 circonflexe = 0;
             }
-#endif
 
 			/* any keypress forces any context menu to close */
 			cm_post_show_check(1);
@@ -323,15 +280,8 @@ int HandleEvent (SDL_Event *event)
 			}
 			else
 			{
-#ifdef NEW_CURSOR
-				if (sdl_cursors)
-				{
-#endif // NEW_CURSOR
 					mouse_x= event->button.x;
 					mouse_y= event->button.y;
-#ifdef NEW_CURSOR
-				}
-#endif // NEW_CURSOR
 				mouse_delta_x= mouse_delta_y= 0;
 			}
 
@@ -339,13 +289,8 @@ int HandleEvent (SDL_Event *event)
 			{
 				if (event->button.button == SDL_BUTTON_LEFT)
 					left_click++;
-#ifdef FR_CLIC_DROIT_LONG
                 else if (event->button.button == SDL_BUTTON_RIGHT)
                     init_time = SDL_GetTicks();
-#else
-				else if (event->button.button == SDL_BUTTON_RIGHT)
-					right_click++;
-#endif
 				else if (event->button.button == SDL_BUTTON_MIDDLE)
 					middle_click++;
 			}
@@ -363,9 +308,6 @@ int HandleEvent (SDL_Event *event)
 
 				if (event->type == SDL_MOUSEMOTION && (event->motion.state & SDL_BUTTON_RMASK)) //mouvement + bouton droit enfoncé
 				{
-#ifndef FR_CLIC_DROIT_LONG
-					right_click++;
-#endif
 #ifdef OSX
 					if (osx_right_mouse_cam)
 					{
@@ -375,14 +317,12 @@ int HandleEvent (SDL_Event *event)
 				}
 				else
 				{
-#ifdef FR_CLIC_DROIT_LONG
                     if(init_time != 0 && instant_time-init_time < temps_long_clic)
                         right_click++;
                     else
 					right_click = 0;
                     init_time = 0;
                     right_click_long = 0;
-#endif
 
 #ifdef OSX
 					if (osx_right_mouse_cam)
@@ -402,15 +342,7 @@ int HandleEvent (SDL_Event *event)
 				}
 			}
 
-#ifdef FR_CLIC_DROIT_LONG
             if ((SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_MMASK) || have_mouse || right_click_long)
-#else
-//#ifdef WINDOWS
-//			if ((SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_MMASK) || (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON( SDL_BUTTON_RIGHT ) ) || have_mouse)
-//#else //WINDOWS
-			if ((SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_MMASK) || have_mouse)
-//#endif //WINDOWS
-#endif
 			{
 				camera_rotation_speed = camera_rotation_speed*0.5 + normal_camera_rotation_speed * mouse_delta_x*0.00025;
 				camera_tilt_speed = camera_tilt_speed*0.5 + normal_camera_rotation_speed * mouse_delta_y*0.00025;
@@ -482,18 +414,6 @@ int HandleEvent (SDL_Event *event)
 				handle_file_download((struct http_get_struct *)event->user.data1);
 				break;
 
-#ifdef PAWN
-			case 	EVENT_PAWN_TIMER:
-				handle_pawn_timers ();
-				break;
-#endif
-#ifdef	CUSTOM_UPDATE
-			case    EVENT_CUSTOM_UPDATE_COMPLETE:
-#ifdef	NEW_TEXTURES
-				unload_actor_texture_cache();
-#endif	/* NEW_TEXTURES */
-				break;
-#endif	/* CUSTOM_UPDATE */
 			}
 	}
 

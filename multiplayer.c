@@ -6,9 +6,6 @@
 #include "asc.h"
 #include "actors.h"
 #include "actor_scripts.h"
-#ifdef ACHIEVEMENTS
-#include "achievements.h"
-#endif
 #include "books.h"
 #include "buddy.h"
 #include "buffs.h"
@@ -49,24 +46,15 @@
 #include "counters.h"
 #include "special_effects.h"
 #include "eye_candy_wrapper.h"
-#ifdef MINES
-#include "mines.h"
-#endif // MINES
 #include "sendvideoinfo.h"
 #include "servers.h"
 #include "popup.h"
-#ifdef MISSILES
-#include "missiles.h"
-#include "threads.h"
-#endif //MISSILES
-#ifdef FR_VERSION
 #include "encyclopedia.h"
 #include "tabs.h"
 #include "text.h"
 #include "fr_quickitems.h"
 #include "info_combat.h"
 #include "roche.h"
-#endif //FR_VERSION
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -75,34 +63,20 @@
  */
 SDL_mutex* tcp_out_data_mutex = 0;
 
-#ifdef ENGLISH
-const char * web_update_address= "http://www.eternal-lands.com/index.php?content=update";
-#else //ENGLISH
 const char * web_update_address= "http://jeu.landes-eternelles.com/~ale/downloads.html";
-#endif //ENGLISH
 int icon_in_spellbar= -1;
 int port= 2000;
 unsigned char server_address[60];
 TCPsocket my_socket= 0;
 SDLNet_SocketSet set= 0;
-#ifdef FR_VERSION
 #define MAX_TCP_BUFFER  32768
-#else //FR_VERSION
-#define MAX_TCP_BUFFER  8192
-#endif //FR_VERSION
 Uint8 tcp_in_data[MAX_TCP_BUFFER];
 Uint8 tcp_out_data[MAX_TCP_BUFFER];
 int in_data_used=0;
 int tcp_out_loc= 0;
 int previously_logged_in= 0;
 time_t last_heart_beat;
-#ifdef ENGLISH
-time_t last_save_time;
-#endif //ENGLISH
 int always_pathfinding = 0;
-#ifdef ENGLISH
-int mixed_message_filter = 0;
-#endif //ENGLISH
 char inventory_item_string[300] = {0};
 size_t inventory_item_string_id = 0;
 
@@ -130,27 +104,6 @@ Uint32 next_second_time = 0;
 short real_game_minute = 0;
 short real_game_second = 0;
 
-#ifdef ENGLISH
-/* real_game_second_valid set when we know the server seconds */
-static short real_game_second_valid = 0;
-int is_real_game_second_valid(void) { return real_game_second_valid; }
-void set_real_game_second_valid(void) { real_game_second_valid = 1; }
-
-/* get the current game time in seconds */
-Uint32 get_game_time_sec(void)
-{
-	return real_game_minute * 60 + real_game_second;
-}
-
-/* get the difference between the supplied time and current game time, allowing for wrap round */
-Uint32 diff_game_time_sec(Uint32 ref_time)
-{
-	Uint32 curr_game_time = get_game_time_sec();
-	if (ref_time > curr_game_time)
-		curr_game_time += 6 * 60 * 60;
-	return curr_game_time - ref_time;
-}
-#endif //ENGLISH
 
 /*
  *	Date handling code:
@@ -161,13 +114,8 @@ Uint32 diff_game_time_sec(Uint32 ref_time)
  * 	read.  The alternative would be for all clients to request the new date
  * 	just after the day changes.  This way lessens the load on the server.
  */
-#ifdef FR_VERSION
 static char the_date[40] = "<vide>";	/* do not read directly, use get_date() */
 static int need_new_date = 1;			/* the date string is not valid - needs a refresh*/
-#else //FR_VERSION
-static char the_date[20] = "<unset>";	/* do not read directly, use get_date() */
-static int need_new_date = 0;			/* the date string is not valid - needs a refresh*/
-#endif //FR_VERSION
 static int requested_date = 0;			/* a new date has been requested from the server */
 /* if not NULL the function to pass a new date string - one should do... */
 static void (*who_to_tell_callback)(const char *) = NULL;
@@ -203,11 +151,7 @@ const char *get_date(void (*callback)(const char *))
 
 	if (!requested_date)
 	{
-#ifdef FR_VERSION
 		unsigned char protocol_name = GET_DATE_2;
-#else //FR_VERSION
-		unsigned char protocol_name = GET_DATE;
-#endif //FR_VERSION
 		my_tcp_send(my_socket, &protocol_name, 1);
 		requested_date = 1;
 	}
@@ -238,24 +182,6 @@ void cleanup_tcp()
 	SDLNet_Quit();
 }
 
-#ifdef DEBUG
-void print_packet(const char *in_data, int len){
-	unsigned char buf[200];
-	int i;
-
-	printf("PACKET (%i)\n",len);
-	//make it printable
-	for(i=0;i<len;i++)
-		if(in_data[i]>=' '&&in_data[i]<='~') buf[i]=in_data[i];
-		else buf[i]='.';
-
-	for(i=0;i<len;i++) {
-		printf("%3i) %c %2x %3i\n",i,buf[i],(unsigned int)in_data[i],(int)in_data[i]);
-
-	}
-	printf("\n\n");
-}
-#endif
 
 
 void move_to (short int x, short int y, int try_pathfinder)
@@ -286,9 +212,6 @@ void send_heart_beat()
 	last_heart_beat= time(NULL);
 	command[0]= HEART_BEAT;
 	len= 1;
-#ifdef	OLC
-	len+= olc_heartbeat(command+len);
-#endif	//OLC
 	my_tcp_send(my_socket, command, len);
 }
 
@@ -311,15 +234,7 @@ static int my_locked_tcp_flush(TCPsocket my_socket)
 	}
 
 	// send all the data in the buffer
-#ifdef	OLC
-	ret= olc_tcp_send(my_socket, tcp_out_data, tcp_out_loc);
-	if (ret > 0)
-	{
-		ret= olc_tcp_flush();
-	}
-#else	//OLC
 	ret= SDLNet_TCP_Send(my_socket, tcp_out_data, tcp_out_loc);
-#endif	//OLC
 
 	// empty the buffer
 	tcp_out_loc= 0;
@@ -448,11 +363,7 @@ int my_tcp_send (TCPsocket my_socket, const Uint8 *str, int len)
 		return 1;
 	// copy the rest of the data
 	memcpy(&new_str[3], &str[1], len-1);
-#ifdef	OLC
-	return olc_tcp_send(my_socket, new_str, len+2);
-#else	//OLC
 	return SDLNet_TCP_Send(my_socket, new_str, len+2);
-#endif	//OLC
 }
 
 int my_tcp_flush(TCPsocket my_socket)
@@ -482,27 +393,14 @@ void send_version_to_server(IPaddress *ip)
 	str[7]= client_version_release;
 	str[8]= client_version_patch;
 
-#ifdef  EL_BIG_ENDIAN
-	// byte swapping needed for Macs despite what the docs say
-	str[9]= (ip->host >> 24)&0xFF;
-	str[10]= (ip->host >> 16)&0xFF;
-	str[11]= (ip->host >> 8)&0xFF;
-	str[12]= ip->host&0xFF;
-	str[13]= (ip->port >> 8)&0xFF;
-	str[14]= ip->port&0xFF;
-#else   //EL_BIG_ENDIAN
 	str[9]= ip->host&0xFF;
 	str[10]= (ip->host >> 8)&0xFF;
 	str[11]= (ip->host >> 16)&0xFF;
 	str[12]= (ip->host >> 24)&0xFF;
 	str[13]= ip->port&0xFF;
 	str[14]= (ip->port >> 8)&0xFF;
-#endif	//EL_BIG_ENDIAN
 	len= 15;
 
-#ifdef	OLC
-	len+= olc_version(str+len);
-#endif	//OLC
 	my_tcp_send(my_socket, str, len);
 }
 
@@ -584,12 +482,6 @@ void connect_to_server()
 		}
 
 	//clear out info
-#ifdef NEW_QUESTLOG
-	clear_waiting_for_questlog_entry();
-#endif //NEW_QUESTLOG
-#ifdef ENGLISH
-	clear_today_is_special_day();
-#endif //ENGLISH
 	clear_now_harvesting();
 	last_heart_beat= time(NULL);
 	send_heart_beat();	// prime the hearbeat to prevent some stray issues when there is lots of lag
@@ -634,12 +526,7 @@ void send_login_info()
 }
 
 
-#ifdef FR_VERSION
 void send_new_char(char * user_str, char * pass_str, char skin, char hair, char shirt, char pants, char boots,char head, char type, char scale)
-#else //FR_VERSION
-//NEW_EYES
-void send_new_char(char * user_str, char * pass_str, char skin, char hair, char eyes, char shirt, char pants, char boots,char head, char type)
-#endif //FR_VERSION
 {
 	int i,j,len;
 	unsigned char str[120];
@@ -660,18 +547,9 @@ void send_new_char(char * user_str, char * pass_str, char skin, char hair, char 
 	str[i+j+6]= boots;
 	str[i+j+7]= type;
 	str[i+j+8]= head;
-#ifdef FR_VERSION
 	str[i+j+9]= scale;
-#endif //FR_VERSION
-#ifdef NEW_EYES
-	str[i+j+9]= eyes;
-#endif //NEW_EYES
 
-#ifdef FR_VERSION
 	len= i+j+10;
-#else //FR_VERSION
-	len= i+j+9;
-#endif //FR_VERSION
 	if(my_tcp_send(my_socket,str,len)<len) {
 		//we got a nasty error, log it
 	}
@@ -718,18 +596,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 							display_server_popup_win((char*)text_buf);
 						else
 							put_text_in_buffer (in_data[3], text_buf, len);
-#ifdef NEW_QUESTLOG
-					// if we're expecting a quest entry, this will be it
-					if (waiting_for_questlog_entry())
-					{
-						char *cur_npc_name = (char *)malloc(sizeof(npc_name));
-						safe_strncpy2(cur_npc_name, (char *)npc_name, sizeof(npc_name), sizeof(npc_name));
-						safe_strncpy((char *)npc_name, "<None>", sizeof(npc_name));
-						add_questlog((char*)text_buf, len);
-						safe_strncpy2((char *)npc_name, cur_npc_name, sizeof(npc_name), sizeof(npc_name));
-						free(cur_npc_name);
-					}
-#endif
 					}
 
 				// for all other messages do filtering, ignoring and counters checking etc
@@ -744,9 +610,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case ADD_NEW_ACTOR:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 17)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged ADD_NEW_ACTOR packet received.\n");
@@ -758,9 +621,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case ADD_NEW_ENHANCED_ACTOR:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				//print_packet(in_data,data_length);
 				if (data_length <= 32)
 				{
@@ -773,9 +633,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case ADD_ACTOR_COMMAND:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				// allow for multiple packets in a row
 				while(data_length >= 6){
 					add_command_to_actor(SDL_SwapLE16(*((short *)(in_data+3))), in_data[5]);
@@ -784,26 +641,8 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 			}
 			break;
-#ifdef EMOTES
-		case ADD_ACTOR_ANIMATION:
-			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-				// allow for multiple packets in a row
-				while(data_length >= 7){
-					add_emote_to_actor(SDL_SwapLE16(*((short *)(in_data+3))),SDL_SwapLE16(*((short *)(in_data+5))));
-					in_data+= 4;
-					data_length-= 4;
-				}
-			}
-			break;
-#endif
 		case REMOVE_ACTOR:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				// allow for multiple packets in a row
 				while(data_length >= 5){
 					destroy_actor(SDL_SwapLE16(*((short *)(in_data+3))));
@@ -815,9 +654,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case KILL_ALL_ACTORS:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				destroy_all_actors();
 			}
 			break;
@@ -825,12 +661,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 		case NEW_MINUTE:
 			{
 				static short last_real_game_minute = -1;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-#ifdef DEBUG_TIME
-				return;
-#endif
 				if (data_length <= 4)
 				{
 					LOG_WARNING("CAUTION: Possibly forged NEW_MINUTE packet received.\n");
@@ -839,9 +669,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				real_game_minute= SDL_SwapLE16(*((short *)(in_data+3)));
 				real_game_minute %= 360;
 				real_game_second = 0;
-#ifdef ENGLISH
-				set_real_game_second_valid();
-#endif //ENGLISH
 				next_second_time = cur_time+1000;
 				if (real_game_minute < last_real_game_minute)
 					invalidate_date();
@@ -859,9 +686,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				login_root_win = -1;
 				if (newchar_root_win >= 0) {
 					destroy_window (newchar_root_win);
-#ifdef FR_VERSION
 					hud_x=HUD_MARGIN_X;
-#endif //FR_VERSION
 					hide_window( namepass_win );
 					hide_window( color_race_win );
 					hide_window( newchar_advice_win );
@@ -870,23 +695,14 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				if (!get_show_window(console_root_win))
 				show_window (game_root_win);
 
-#ifdef ENGLISH
-				safe_snprintf(str,sizeof(str),"(%s on %s) %s",username_str,get_server_name(),win_principal);
-				SDL_WM_SetCaption(str, "eternallands" );
-#else //ENGLISH
 				safe_snprintf(str,sizeof(str),"(%s sur %s) %s",username_str,get_server_name(),win_principal);
 				SDL_WM_SetCaption(str, "Landes Eternelles" );
-#endif //ENGLISH
 
-#if defined NEW_SOUND
 				// Try to turn on the music as it isn't needed up until now
 				if (music_on)
 					turn_music_on();
-#endif // NEW_SOUND
 
-#ifdef FR_VERSION
                 load_fr_quickitems();
-#endif //FR_VERSION
 				load_quickspells();
 				load_recipes();
 				load_server_markings();
@@ -895,18 +711,11 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				load_channel_colors();
 				send_video_info();
 				previously_logged_in=1;
-#ifdef ENGLISH
-				last_save_time= time(NULL);
-#endif //ENGLISH
 
 				// Print the game date cos its pretty (its also needed for SKY_FPV to set moons for signs, wonders, times and seasons)
 				command_date("", 0);
 				// print the game time in order to get the seconds for the SKY_FPV feature
 				command_time("", 0);
-#ifdef ENGLISH
-				safe_snprintf(str, sizeof(str), "%c#il", RAW_TEXT);
-				my_tcp_send(my_socket, (Uint8*)str, strlen(str+1)+1);
-#endif //ENGLISH
 				break;
 			}
 
@@ -917,11 +726,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged HERE_YOUR_STATS packet received.\n");
 				  break;
 				}
-#ifdef ENGLISH
-				get_the_stats((Sint16 *)(in_data+3), data_length-3);
-#else //ENGLISH
 				get_the_stats((Sint16 *)(in_data+3));
-#endif //ENGLISH
 				update_research_rate();
 			}
 			break;
@@ -979,23 +784,8 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 				items = in_data[3];
-#ifdef FR_VERSION
                 item_uid_enabled = 1;
 				plen = 10;
-#else //FR_VERSION
-				if (data_length - 4  == items * 8 )
-				{
-					item_uid_enabled = 0;
-					plen = 8;
-				}
-				else if (data_length - 4  == items * 10 )
-				{
-					item_uid_enabled = 1;
-					plen = 10;
-				}
-				else
-				plen = 8;
-#endif //FR_VERSION
 
 				if (data_length - 4 != items * plen)
 				{
@@ -1047,43 +837,27 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 
-#ifdef FR_VERSION
                 if(strncmp((const char*)&in_data[4], "Tu as cr", 8) || !items_mix_but_all || items_mix_but_all) {
-#endif
                   safe_strncpy2(inventory_item_string, (const char *)&in_data[3], sizeof(inventory_item_string)-1, data_length - 3);
                   inventory_item_string[sizeof(inventory_item_string)-1] = 0;
                   inventory_item_string_id++;
-#ifdef FR_VERSION
                 }
 
 		if(!(get_show_window(items_win)||get_show_window(manufacture_win)||get_show_window(trade_win)))
-#else //FR_VERSION
-		if(!(mixed_message_filter||get_show_window(items_win)||get_show_window(manufacture_win)||get_show_window(trade_win)))
-#endif //FR_VERSION
 					{
-#ifdef FR_VERSION
                       // évite le flood de l'histo avec des messages peu pertinents quand on fabrique
                       if (strncmp(inventory_item_string+1, "Tu commences à travailler en s", 30)
                           && strncmp(inventory_item_string+1, "Tu as créé", 10))
-#endif //FR_VERSION
 						put_text_in_buffer(CHAT_SERVER, &in_data[3], data_length-3);
 					}
 				// Start a new block, since C doesn't like variables declared in the middle of a block.
 				{
-#ifdef ENGLISH
-					char *teststring = "You successfully created ";
-#else //ENGLISH
 					char *teststring = "Tu as créé ";
-#endif //ENGLISH
 					int testlen = strlen(teststring);
 					if ( (data_length > testlen+4) && (!strncmp((char*)in_data+4, teststring, testlen)) )
 					{
 						char *restofstring = malloc(data_length - 4 - testlen + 1);
-#ifdef ENGLISH
-						safe_strncpy(restofstring, (char*)in_data + 4 + testlen, data_length - 4 - testlen + 1);
-#else //ENGLISH
 						safe_strncpy(restofstring, (char*)in_data + 4 + testlen, data_length - 4 - testlen + 1 - 13);
-#endif //ENGLISH
 						if (strlen(restofstring) > 0)
 						{
 							int product_count = atoi(restofstring);
@@ -1103,25 +877,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 						counters_set_product_info("",0);
 				}  // End successs counters block
 				/* You failed to create a[n] ..., and lost the ingredients */
-#ifdef ENGLISH
-				if (my_strncompare(inventory_item_string+1, "You failed to create a[n] ", 26))
-				{
-					size_t item_name_len = 0;
-					char item_name[128];
-					const char *item_string = &inventory_item_string[27];
-
-					/* look for the ending, if found use it to locate the item name */
-					char *located = strstr(item_string, ", and lost the ingredients");
-					if (located) item_name_len = (size_t)((located - item_string)/sizeof(char));
-
-					/* if there was no match then its not a crit fail string */
-					if (item_name_len)
-					{
-						safe_strncpy2(item_name, item_string, sizeof(item_name), item_name_len);
-						increment_critfail_counter(item_name);
-					}
-				}  // End critfail counters block
-#else //ENGLISH
 				if (my_strncompare(inventory_item_string+1, "Tu as échoué dans la création d'un ", 35))
 				{
 					size_t item_name_len = 0;
@@ -1196,7 +951,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 						increment_break_counter("Alambic");
 					}
 				}
-#endif //ENGLISH
 			}
 			break;
 		case SPELL_ITEM_TEXT:
@@ -1232,29 +986,15 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged CHANGE_MAP packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
                 carte_modif = in_data[3];
 				safe_strncpy2(mapname, (char*)in_data + 4, sizeof(mapname), data_length - 9);
 				change_map(mapname);
-#else //FR_VERSION
-				if(in_data[3] == '.' && in_data[4] == '/')
-				{
-				safe_strncpy2(mapname, (char*)in_data + 3, sizeof(mapname), data_length - 3);
-				} else
-				{
-					safe_snprintf(mapname, sizeof(mapname), "./%s", (char*)in_data + 3);
-				}
-				change_map(mapname);
-#endif //FR_VERSION
 			}
 			break;
 
 		case GET_TELEPORTERS_LIST:
 			{
 				Uint16 teleporters_no;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 4)
 				{
 					LOG_WARNING("CAUTION: Possibly forged GET_TELEPORTERS_LIST packet received.\n");
@@ -1272,11 +1012,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case PLAY_MUSIC:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-#ifdef NEW_SOUND
-#ifdef FR_VERSION
                 if (data_length <= 2)
                 {
                     LOG_ERROR("Attention : paquet perdu sur PLAY_MUSIC.\n");
@@ -1287,39 +1022,22 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
                 {
                     modif_playlist((int)in_data[3]);
                 }
-#else //FR_VERSION
-				if (data_length <= 4 )
-				{
-				  LOG_WARNING("CAUTION: Possibly forged PLAY_MUSIC packet received.\n");
-				  break;
-				}
-				if(music_on)play_music(SDL_SwapLE16(*((short *)(in_data+3))));
-#endif //FR_VERSION
-#endif // NEW_SOUND
 			}
 			break;
 
 		case PLAY_SOUND:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-#ifdef NEW_SOUND
 				if (data_length <= 8)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged PLAY_SOUND packet received.\n");
 				  break;
 				}
 				if (sound_on) add_server_sound(SDL_SwapLE16(*((short *)(in_data+3))), SDL_SwapLE16(*((short *)(in_data+5))), SDL_SwapLE16(*((short *)(in_data+7))), 1.0f);
-#endif // NEW_SOUND
 			}
 			break;
 
 		case TELEPORT_OUT:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 
 				if (data_length <= 6)
 				{
@@ -1332,9 +1050,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case TELEPORT_IN:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 
 				if (data_length <= 6)
 				{
@@ -1389,18 +1104,13 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case YOU_ARE:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 4)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged YOU_ARE packet received.\n");
 				  break;
 				}
-#ifndef ENGLISH
 				// fermeture du fichier de log pour prendre en compte un changement de pseudo
 				close_chat_log();
-#endif //ENGLISH
 				LOCK_ACTORS_LISTS();
 				yourself= SDL_SwapLE16(*((short *)(in_data+3)));
 				set_our_actor (get_actor_ptr_from_id (yourself));
@@ -1411,9 +1121,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 		case START_RAIN:
 			{
 				float severity;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 3)
 				{
 					LOG_WARNING("CAUTION: Possibly forged START_RAIN packet received.\n");
@@ -1427,39 +1134,25 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 				if (show_weather)
 				{
-#ifdef FR_VERSION
 					weather_set_area(0, tile_map_size_x*1.5, tile_map_size_y*1.5, 100000.0, in_data[5], severity, in_data[3]);
-#else //FR_VERSION
-					weather_set_area(0, tile_map_size_x*1.5, tile_map_size_y*1.5, 100000.0, 1, severity, in_data[3]);
-#endif //FR_VERSION
 				}
 			}
 			break;
 
 		case STOP_RAIN:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 3)
 				{
 					LOG_WARNING("CAUTION: Possibly forged STOP_RAIN packet received.\n");
 					break;
 				}
 
-#ifdef FR_VERSION
 				weather_set_area(0, tile_map_size_x*1.5, tile_map_size_y*1.5, 100000.0, in_data[5], 0.0, in_data[3]);
-#else //FR_VERSION
-				weather_set_area(0, tile_map_size_x*1.5, tile_map_size_y*1.5, 100000.0, 1, 0.0, in_data[3]);
-#endif //FR_VERSION
 			}
 			break;
 
 		case THUNDER:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 3)
 				{
 					LOG_WARNING("CAUTION: Possibly forged THUNDER packet received.\n");
@@ -1484,9 +1177,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case SYNC_CLOCK:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 6)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged SYNC_CLOCK packet received.\n");
@@ -1525,7 +1215,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				this_version_is_invalid=1;
 			}
 			break;
-#ifdef FR_VERSION
         case GET_NEW_ROCHE:
             {
                 if (data_length <= 7)
@@ -1553,12 +1242,8 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				add_roches_from_list(&in_data[3]);
             }
             break;
-#endif // FR_VERSION
 		case GET_NEW_BAG:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 7)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged GET_NEW_BAG packet received.\n");
@@ -1571,9 +1256,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 		case GET_BAGS_LIST:
 			{
 				Uint16 bags_no;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 3)
 				{
 					LOG_WARNING("CAUTION: Possibly forged GET_BAGS_LIST packet received.\n");
@@ -1591,9 +1273,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case SPAWN_BAG_PARTICLES:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 6)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged SPAWN_BAG_PARTICLES packet received.\n");
@@ -1605,9 +1284,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case FIRE_PARTICLES:
 			{
-#ifdef EXTRA_DEBUG
-				ERR();
-#endif
 				if (data_length <= 6)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged FIRE_PARTICLES packet received.\n");
@@ -1619,9 +1295,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case REMOVE_FIRE_AT:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 6)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged REMOVE_FIRE_AT packet received.\n");
@@ -1633,9 +1306,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case GET_NEW_GROUND_ITEM:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 6)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged GET_NEW_GROUND_ITEM packet received.\n");
@@ -1648,9 +1318,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 		case HERE_YOUR_GROUND_ITEMS:
 			{
 				int bags_no;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 3)
 				{
 					LOG_WARNING("CAUTION: Possibly forged HERE_YOUR_GROUND_ITEMS packet received.\n");
@@ -1668,18 +1335,12 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case CLOSE_BAG:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				hide_window(ground_items_win);
 			}
 			break;
 
 		case REMOVE_ITEM_FROM_GROUND:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 3)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged REMOVE_ITEM_FROM_GROUND packet received.\n");
@@ -1688,50 +1349,19 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				remove_item_from_ground(in_data[3]);
 			}
 			break;
-#ifdef FR_VERSION
         case DESTROY_ROCHE:
             {
                 remove_roche(in_data[3]);
             }
             break;
-#endif //FR_VERSION
 		case DESTROY_BAG:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				remove_bag(in_data[3]);
 			}
 			break;
 
 		case NPC_TEXT:
 			{
-#ifdef ENGLISH
-				if (data_length <= 4)
-				{
-				  LOG_WARNING("CAUTION: Possibly forged NPC_TEXT packet received.\n");
-				  break;
-				}
-				put_small_text_in_box(&in_data[3], data_length-3, dialogue_menu_x_len-70, (char*)dialogue_string);
-				display_dialogue();
-				if (is_color (in_data[3]) && is_color (in_data[4]))
-				{
-					// double color code, this text
-					// should be added to the quest log
-					safe_strncpy2((char*)text_buf, (char*)&in_data[4], sizeof(text_buf), data_length - 4);
-					add_questlog ((char*)text_buf, strlen((char*)text_buf));
-				}
-#ifdef NEW_QUESTLOG
-				// if we're expecting a quest entry, this will be it
-				else if (waiting_for_questlog_entry())
-				{
-					safe_strncpy2((char*)text_buf, (char*)&in_data[3], sizeof(text_buf), data_length - 3);
-					add_questlog ((char*)text_buf, strlen((char*)text_buf));
-#endif
-					memcpy (text_buf, &in_data[4], len);
-					text_buf[len] = '\0';
-					add_questlog ((char*)text_buf, len);
-#else //ENGLISH
 				// Traitement spécial pour le préfixage des Quêtes
 				if(in_data[3]>=127 && in_data[3]<=127+c_grey4 && in_data[4]>=127 && in_data[4]<=127+c_grey4)
 					{
@@ -1761,7 +1391,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 					{
 						put_small_text_in_box(&in_data[3],data_length-3,dialogue_menu_x_len-70,(char*)dialogue_string);
 						display_dialogue();
-#endif //ENGLISH
 				}
 			}
 			break;
@@ -1898,20 +1527,12 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case GET_ACTIVE_SPELL:
 			{
-#ifdef ENGLISH
-				if (data_length <= 4)
-#else
             if(data_length <= 6)
-#endif //ENGLISH
 				{
 				  LOG_WARNING("CAUTION: Possibly forged GET_ACTIVE_SPELL packet received.\n");
 				  break;
 				}
-#ifdef ENGLISH
-				get_active_spell(in_data[3],in_data[4]);
-#else
             get_active_spell(in_data[3], in_data[4], SDL_SwapLE16(*((Uint16 *)(in_data+5))));
-#endif //ENGLISH
 			}
 			break;
 
@@ -1928,11 +1549,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case GET_ACTIVE_SPELL_LIST:
 			{
-#ifdef ENGLISH
-				if (data_length <= 2+NUM_ACTIVE_SPELLS)
-#else
             if(data_length <= 2 + (NUM_ACTIVE_SPELLS*3))
-#endif //ENGLISH
 				{
 					LOG_WARNING("CAUTION: Possibly forged GET_ACTIVE_SPELL_LIST packet received.\n");
 					break;
@@ -1940,112 +1557,41 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				get_active_spell_list (in_data+3);
 			}
 			break;
-#ifdef FR_RCM_MAGIE
-        case GET_SPELL_ANSWER:
-        {
-            if (data_length <= 1){
-              LOG_WARNING("CAUTION: Possibly forged GET_SPELL_ANSWER packet received.\n");
-              break;
-            }
-
-            printf("TRINITA DEBUG spell_you_answer player_id: %d\n", in_data+1 );
-
-            spell_you_answer( in_data+1 );
-
-        }
-        break;
-#endif
 		case GET_ACTOR_HEALTH:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-#ifdef FR_VERSION
 				if (data_length <= 8)
-#else //FR_VERSION
-				if (data_length <= 6)
-#endif //FR_VERSION
 				{
 				  LOG_WARNING("CAUTION: Possibly forged GET_ACTOR_HEALTH packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
 				get_actor_health(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))), SDL_SwapLE16(*((Uint16*)(in_data+7))));
-#else //FR_VERSION
-				get_actor_health(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
-#endif //FR_VERSION
 			}
 			break;
 
 		case GET_ACTOR_DAMAGE:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-#ifdef FR_VERSION
 				if (data_length <= 8)
-#else //FR_VERSION
-#ifdef BANDWIDTH_SAVINGS
-				// allow for multiple packets in a row
-				while (data_length >= 7)
-				{
-					get_actor_damage(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
-					data_length -= 4;
-					in_data += 4;
-				}
-#else
-				if (data_length <= 6)
-#endif
-#endif //FR_VERSION
 				{
 				  LOG_WARNING("CAUTION: Possibly forged GET_ACTOR_DAMAGE packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
 				get_actor_damage(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))), SDL_SwapLE16(*((Uint16*)(in_data+7))));
-#else //FR_VERSION
-				get_actor_damage(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
-#endif //FR_VERSION
 			}
 			break;
 
 		case GET_ACTOR_HEAL:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-#ifdef FR_VERSION
 				if (data_length <= 8)
-#else //FR_VERSION
-#ifdef BANDWIDTH_SAVINGS
-				// allow for multiple packets in a row
-				while (data_length >= 7)
-				{
-					get_actor_heal(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
-					data_length -= 4;
-					in_data += 4;
-				}
-#else
-				if (data_length <= 6)
-#endif
-#endif //FR_VERSION
 				{
 				  LOG_WARNING("CAUTION: Possibly forged GET_ACTOR_HEAL packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
 				get_actor_heal(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))), SDL_SwapLE16(*((Uint16*)(in_data+7))));
-#else //FR_VERSION
-				get_actor_heal(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
-#endif //FR_VERSION
 			}
 			break;
 
 		case ACTOR_UNWEAR_ITEM:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 5)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged ACTOR_UNWEAR_ITEM packet received.\n");
@@ -2057,9 +1603,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case ACTOR_WEAR_ITEM:
 			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 				if (data_length <= 6)
 				{
 				  LOG_WARNING("CAUTION: Possibly forged ACTOR_WEAR_ITEM packet received.\n");
@@ -2085,17 +1628,8 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case PING_REQUEST:
 			{
-#ifdef	OLC
-				// add in the status information
-				char	buf[1024];
-				int	len= data_length;
-				memcpy(buf, in_data, data_length);
-				len+= olc_ping_request(buf+len);
-				my_tcp_send(my_socket, buf, len);
-#else	//OLC
 				// just send the pack back as it is
 				my_tcp_send(my_socket, in_data, data_length);
-#endif	//OLC
 			}
 			break;
 
@@ -2146,15 +1680,10 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged OPEN_BOOK packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
 				ouvre_livre(SDL_SwapLE16(*((Uint16*)(in_data+3))));
-#else //FR_VERSION
-				open_book(SDL_SwapLE16(*((Uint16*)(in_data+3))));
-#endif //FR_VERSION
 			}
 			break;
 
-#ifdef FR_VERSION
         case CHANGE_PAGE:
             {
                 if (data_length <= 7)
@@ -2175,7 +1704,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 				change_max_nutri(SDL_SwapLE16(*((Uint16*)(in_data+3))));
 			}
-#endif //FR_VERSION
 
 		case READ_BOOK:
 			{
@@ -2184,11 +1712,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged READ_BOOK packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
 			    lire_livre_reseau((char*)in_data+3, data_length-3);
-#else //FR_VERSION
-			    read_network_book((char*)in_data+3, data_length-3);
-#endif //FR_VERSION
 			}
 			break;
 
@@ -2199,11 +1723,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged CLOSE_BOOK packet received.\n");
 				  break;
 				}
-#ifdef FR_VERSION
 				ferme_livre(SDL_SwapLE16(*((Uint16*)(in_data+3))));
-#else //FR_VERSION
-				close_book(SDL_SwapLE16(*((Uint16*)(in_data+3))));
-#endif //FR_VERSION
 			}
 			break;
 		case STORAGE_LIST:
@@ -2213,9 +1733,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged STORAGE_LIST packet received.\n");
 				  break;
 				}
-#ifndef ENGLISH
 				close_dialogue();
-#endif //ENGLISH
 				get_storage_categories((char*)in_data+3, data_length-3);
 			}
 			break;
@@ -2346,7 +1864,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			get_items_cooldown (&in_data[3], data_length - 3);
 			break;
 
-#ifndef ENGLISH
 		case DISPLAY_COORD:
 			{
   			if (in_data[3] & drapeau_coord)
@@ -2370,29 +1887,13 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			   show_am=0;
 		    }
 			}
-#endif //ENGLISH
 
 		case SEND_BUFFS:
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 			if (data_length < 9)
 			{
 			  LOG_WARNING("CAUTION: Possibly forged SEND_BUFFS packet received.\n");
 			  break;
 			}
-#ifdef BUFF_DEBUG
-			{
-				int actor_id = SDL_SwapLE16(*((short *)(in_data+3)));
-				actor *act = get_actor_ptr_from_id(actor_id);
-				if(act){
-					printf("SEND_BUFFS received for actor %s\n", act->actor_name);
-				}
-				else {
-					printf("SEND_BUFFS received for actor ID %i\n", actor_id);
-				}
-			}
-#endif // BUFF_DEBUG
 			update_actor_buffs(SDL_SwapLE16(*((short *)(in_data+3))), SDL_SwapLE32(*((Uint32 *)(in_data+5))));
 			break;
 
@@ -2422,51 +1923,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 			break;
 
-#ifdef MINES
-		case REMOVE_MINE:
-			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-				remove_mine(in_data[3]);
-			}
-			break;
-
-		case GET_NEW_MINE:
-			{
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-				if (data_length <= 8)
-				{
-					LOG_WARNING("CAUTION: Possibly forged GET_NEW_MINE packet received.\n");
-					break;
-				}
-				put_mine_on_ground(SDL_SwapLE16(*((Uint16 *)(in_data+3))), SDL_SwapLE16(*((Uint16 *)(in_data+5))), in_data[8], in_data[7]);
-			}
-			break;
-
-		case GET_MINES_LIST:
-			{
-				Uint16 mines_no;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
-				if (data_length <= 3)
-				{
-				  LOG_WARNING("CAUTION: Possibly forged GET_MINES_LIST packet received.\n");
-				  break;
-				}
-				mines_no = in_data[3];
-				if (data_length <= mines_no * 6 + 3)
-				{
-				  LOG_WARNING("CAUTION(2): Possibly forged GET_MINES_LIST packet received.\n");
-				  break;
-				}
-				add_mines_from_list(&in_data[3]);
-			}
-			break;
-#endif // MINES
 		case DISPLAY_POPUP:
 			{
 				if (data_length <= 8) /* At least one char title and one char text */
@@ -2477,50 +1933,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				popup_create_from_network(&in_data[3], data_length - 3);
 			}
 			break;
-#ifdef MISSILES
-		case MISSILE_AIM_A_AT_B:
-			if (data_length >= 7)
-			{
-				missiles_aim_at_b(SDL_SwapLE16(*((short *)(in_data+3))),SDL_SwapLE16(*((short *)(in_data+5))));
-			}
-			break;
-		case MISSILE_AIM_A_AT_XYZ:
-			if (data_length >= 17)
-			{
-				float target[3];
-				target[0] = SwapLEFloat(*((float*)(in_data+5)));
-				target[1] = SwapLEFloat(*((float*)(in_data+9)));
-				target[2] = SwapLEFloat(*((float*)(in_data+13)));
-				missiles_aim_at_xyz(SDL_SwapLE16(*((short *)(in_data+3))),target);
-			}
-			break;
-		case MISSILE_FIRE_A_TO_B:
-			if (data_length >= 7)
-			{
-				missiles_fire_a_to_b(SDL_SwapLE16(*((short *)(in_data+3))),SDL_SwapLE16(*((short *)(in_data+5))));
-			}
-			break;
-		case MISSILE_FIRE_A_TO_XYZ:
-			if (data_length >= 17)
-			{
-				float target[3];
-				target[0] = SwapLEFloat(*((float*)(in_data+5)));
-				target[1] = SwapLEFloat(*((float*)(in_data+9)));
-				target[2] = SwapLEFloat(*((float*)(in_data+13)));
-				missiles_fire_a_to_xyz(SDL_SwapLE16(*((short *)(in_data+3))),target);
-			}
-			break;
-		case MISSILE_FIRE_XYZ_TO_B:
-			if (data_length >= 17)
-			{
-				float source[3];
-				source[0] = SwapLEFloat(*((float*)(in_data+5)));
-				source[1] = SwapLEFloat(*((float*)(in_data+9)));
-				source[2] = SwapLEFloat(*((float*)(in_data+13)));
-				missiles_fire_xyz_to_b(source,SDL_SwapLE16(*((short *)(in_data+3))));
-			}
-			break;
-#endif //MISSILES
 		case SEND_MAP_MARKER:
 			{
 			//in_data[3]=id
@@ -2566,68 +1978,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			load_map_marks();//load again, so the new marker is removed correctly.
 			break;
 			}
-#ifdef NEW_QUESTLOG
-		case NEXT_NPC_MESSAGE_IS_QUEST:
-			{
-				if (data_length <= 4)
-				{
-					LOG_WARNING("CAUTION: Possibly forged NEXT_NPC_MESSAGE_IS_QUEST packet received.\n");
-					break;
-				}
-				set_next_quest_entry_id(SDL_SwapLE16(*((short *)(in_data+3))));
-				break;
-			}
-		case HERE_IS_QUEST_ID:
-			{
-				if (data_length <= 3)
-				{
-					LOG_WARNING("CAUTION: Possibly forged HERE_IS_QUEST_ID packet received.\n");
-					break;
-				}
-				set_quest_title((const char *)&in_data[3], data_length - 3);
-				break;
-			}
-		case QUEST_FINISHED:
-			{
-				if (data_length <= 4)
-				{
-					LOG_WARNING("CAUTION: Possibly forged QUEST_FINISHED packet received.\n");
-					break;
-				}
-				set_quest_finished(SDL_SwapLE16(*((short *)(in_data+3))));
-				break;
-			}
-#endif // NEW_QUESTLOG
-#ifdef ACHIEVEMENTS
-		case SEND_ACHIEVEMENTS:
-			{
-				Uint32 *achievement_data = NULL;
-				size_t word_count = (data_length-3) / sizeof(Uint32);
-				size_t i;
-				if ((word_count < 1) && (word_count < MAX_ACHIEVEMENTS/32))
-				{
-					LOG_WARNING("CAUTION: Possibly forged SEND_ACHIEVEMENTS packet received.\n");
-					break;
-				}
-				achievement_data = (Uint32 *)calloc(word_count, sizeof(Uint32));
-				for (i=0; i<word_count; ++i)
-					achievement_data[i] = SDL_SwapLE32(*((Uint32 *)(in_data+3+i*sizeof(Uint32))));
-				achievements_data(achievement_data, word_count);
-				free(achievement_data);
-			}
-			break;
-#endif // ACHIEVEMENTS
-#ifdef ENGLISH
-		case SEND_BUFF_DURATION:
-			{
-				if (data_length <= 3)
-					LOG_WARNING("CAUTION: Possibly forged/invalid SEND_BUFF_DURATION packet received.\n");
-				else
-					here_is_a_buff_duration((Uint8)in_data[3]);
-				break;
-			}
-#endif //ENGLISH
-#ifdef FR_VERSION
 		case COMBAT_INFO:
 			if(data_length <= 11)
 			{
@@ -2636,8 +1986,6 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			}
 			combat_info_type(*(in_data+3), SDL_SwapLE16(*((Uint16 *)(in_data+4))), SDL_SwapLE16(*((Uint16*)(in_data+6))), SDL_SwapLE32(*((Sint32 *)(in_data+8))));
 		break;
-#endif //FR_VERSION
-#ifdef FR_VERSION
         case GET_ACTOR_TITRE:
         {
             if (data_length <= 3)
@@ -2664,14 +2012,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			}
 			set_date((char*)(in_data+3));
 		}
-#endif //FR_VERSION
 		default:
 			{
 				// Unknown packet type??
-#ifdef	OLC
-				// do OL specific packet handling
-				olc_packet_handler(in_data, data_length);
-#endif	//OLC
 			}
 			break;
 		}
@@ -2717,10 +2060,8 @@ static void process_data_from_server(queue_t *queue)
 				LOG_ERROR ("Packet overrun, protocol = %d, size = %u\n", pData[0], size);
 				in_data_used = 0;
 				disconnected = 1;
-#ifdef NEW_SOUND
 				stop_all_sounds();
 				do_disconnect_sound();
-#endif // NEW_SOUND
 				disconnect_time = SDL_GetTicks();
 			}
 		} while (3 <= in_data_used);
@@ -2766,10 +2107,8 @@ int get_message_from_server(void *thread_args)
 			LOG_TO_CONSOLE(c_red2, alt_x_quit);
 			in_data_used = 0;
 			disconnected = 1;
-#ifdef NEW_SOUND
 			stop_all_sounds();
 			do_disconnect_sound();
-#endif // NEW_SOUND
 			disconnect_time = SDL_GetTicks();
 		}
 	}

@@ -369,16 +369,12 @@ int affect_fr_quickitems(int pos)
 	{
 		fr_quickitem_list[id_quick] = item_list[pos];
 		fr_quickitem_list[id_quick].pos = id_quick;
-#ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
-#endif // NEW_SOUND
 		build_fr_quickitems(0);
 		return 1;
 	}
 
-#ifdef NEW_SOUND
 	add_sound_object(get_index_for_sound_type_name("alert1"), 0, 0, 1);
-#endif // NEW_SOUND
 	return 0;
 }
 
@@ -585,9 +581,6 @@ int display_fr_quickitems_handler(window_info *win)
 	}
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -820,18 +813,14 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 			// enregistrement du raccourci pour l'item du drag
 			fr_quickitem_list[id_quick] = item_list[item_dragged];
 			fr_quickitem_list[id_quick].pos = item_dragged;
-#ifdef NEW_SOUND
 			add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
-#endif // NEW_SOUND
 			build_fr_quickitems(0);
 			item_dragged = -1;
 			return 1;
 		}
 
 		// sinon ? (case occupée par un autre raccourci n'ayant pu être déplacé)
-#ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("alert1"), 0, 0, 1);
-#endif // NEW_SOUND
 		return 0;
 	}
 
@@ -882,18 +871,14 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 		{
 			// enregistrement du raccourci pour l'item du drag
 			fr_quickitem_list[id_quick] = temp_item;
-#ifdef NEW_SOUND
 			add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
-#endif // NEW_SOUND
 			if (fr_quickitems_autocompress) compress_fr_quickitems();
 			fr_quickitem_dragged = -1;
 			return 1;
 		}
 
 		// sinon ? (case occupée par un autre raccourci n'ayant pu être déplacé)
-#ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("alert1"), 0, 0, 1);
-#endif // NEW_SOUND
 		return 0;
 	}
 
@@ -901,9 +886,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
     if (shift_on && !ctrl_on && (fr_quickitem_list[id_quick].quantity >= 0))
 	{
 		fr_quickitem_list[id_quick].quantity = -1;
-#ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("Button Click"), 0, 0, 1);
-#endif // NEW_SOUND
 		if (fr_quickitems_autocompress) compress_fr_quickitems();
 		return 1;
 	}
@@ -945,9 +928,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 		str[1] = item_list[id_item].pos;
 		*((Uint32 *)(str+2)) = SDL_SwapLE32(fr_quickitem_list[id_quick].quantity);
 		my_tcp_send(my_socket, str, 4);
-#ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
-#endif // NEW_SOUND
 		return 1;
 	}
 
@@ -959,9 +940,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 		str[1] = item_list[id_item].pos;
 		*((Uint32 *)(str+2)) = SDL_SwapLE32(fr_quickitem_list[id_quick].quantity);
 		my_tcp_send(my_socket, str, 6);
-#ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
-#endif // NEW_SOUND
 		return 1;
 	}
 
@@ -981,9 +960,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 				str[0] = USE_INVENTORY_ITEM;
 				str[1] = item_list[id_item].pos;
 				my_tcp_send(my_socket, str, 2);
-#ifdef NEW_SOUND
 				item_list[id_item].action = USE_INVENTORY_ITEM;
-#endif // NEW_SOUND
 			}
 			// objet non utilisable : tentative d'équipement
 			else
@@ -1006,10 +983,8 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 			str[1] = item_list[use_item].pos;
 			str[2] = item_list[id_item].pos;
 			my_tcp_send(my_socket,str,3);
-#ifdef NEW_SOUND
 			item_list[use_item].action = ITEM_ON_ITEM;
 			item_list[id_item].action = ITEM_ON_ITEM;
-#endif // NEW_SOUND
 			use_item = -1;
 			return 1;
 
@@ -1036,9 +1011,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 				}
 				else item_dragged_max_quantity = item_list[id_item].quantity;
 				item_dragged = id_item;
-#ifdef NEW_SOUND
 				add_sound_object(get_index_for_sound_type_name("Drag Item"), 0, 0, 1);
-#endif // NEW_SOUND
 			}
 	}
 

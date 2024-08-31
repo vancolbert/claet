@@ -64,43 +64,21 @@
 #include "update.h"
 #include "url.h"
 #include "weather.h"
-#ifdef MEMORY_DEBUG
-#include "elmemory.h"
-#endif
-#ifdef PAWN
-#include "pawn/elpawn.h"
-#endif
-#ifdef	CUSTOM_UPDATE
-#include "custom_update.h"
-#endif	/* CUSTOM_UPDATE */
-#ifdef	FSAA
 #include "fsaa/fsaa.h"
-#endif	/* FSAA */
-#ifdef FR_VERSION
 #include "font.h"
-#endif //FR_VERSION
 
 Uint32 cur_time=0, last_time=0;//for FPS
 
-#ifdef FR_VERSION
 char nom_version[]=NOM_VERSION;
-#endif //FR_VERSION
 char version_string[]=VER_STRING;
 int	client_version_major=VER_MAJOR;
 int client_version_minor=VER_MINOR;
 int client_version_release=VER_RELEASE;
 int	client_version_patch=VER_BUILD;
-#ifdef ENGLISH
-int version_first_digit=10;	//protocol/game version sent to server
-int version_second_digit=26;
-#else //ENGLISH
 int version_first_digit=50;	//protocol/game version sent to server
 int version_second_digit=75;	//45
-#endif //ENGLISH
-#ifndef ENGLISH
 // peut-on afficher l'Al Manakh?
 int show_am=0;
-#endif //ENGLISH
 
 
 int gargc;
@@ -130,9 +108,7 @@ void cleanup_mem(void)
 	cache_e3d->free_item = &destroy_e3d;
 	cache_delete(cache_e3d);
 	cache_e3d = NULL;
-#ifdef NEW_TEXTURES
 	free_texture_cache();
-#endif
 	// This should be fixed now  Sir_Odie
 	cache_delete(cache_system);
 	cache_system = NULL;
@@ -203,9 +179,6 @@ int start_rendering()
 					free(message);
 				}
 			}
-#ifdef	OLC
-			olc_process();
-#endif	//OLC
 			my_tcp_flush(my_socket);    // make sure the tcp output buffer is set
 
 			if (have_a_map && cur_time > last_frame_and_command_update + 60) {
@@ -223,9 +196,7 @@ int start_rendering()
 				next_second_time += 1000;
 			}
 
-#ifdef NEW_SOUND
 			weather_sound_control();
-#endif	//NEW_SOUND
 
 			if(!limit_fps || (cur_time-last_time && 1000/(cur_time-last_time) <= limit_fps))
 			{
@@ -240,10 +211,6 @@ int start_rendering()
 				SDL_Delay(1);//give up timeslice for anyone else
 			}
 
-#ifdef TIMER_CHECK
-			//Check the timers to make sure that they are all still alive...
-			check_timers();
-#endif
 
 			//cache handling
 			if(cache_system)cache_system_maint();
@@ -264,14 +231,9 @@ int start_rendering()
 	//save all local data
 	save_local_data(NULL, 0);
 
-#ifdef PAWN
-	cleanup_pawn ();
-#endif
 
-#ifdef NEW_SOUND
 	destroy_sound();		// Cleans up physical elements of the sound system and the streams thread
 	clear_sound_data();		// Cleans up the config data
-#endif // NEW_SOUND
 	ec_destroy_all_effects();
 	if (have_a_map)
 	{
@@ -280,15 +242,8 @@ int start_rendering()
 	}
 	unload_questlog();
 	save_item_lists();
-#ifdef EMOTES
-	free_emotes();
-#endif // EMOTES
 	free_actor_defs();
-#ifdef FR_VERSION
     libere_memoire_livres();
-#else //FR_VERSION
-	free_books();
-#endif //FR_VERSION
 	free_vars();
 	cleanup_rules();
 	save_exploration_map();
@@ -315,12 +270,7 @@ int start_rendering()
 	}
 #endif  //WINDOWS
 */
-#ifdef NEW_SOUND
 	final_sound_exit();
-#endif
-#ifdef	CUSTOM_UPDATE
-	stopp_custom_update();
-#endif	/* CUSTOM_UPDATE */
 	clear_zip_archives();
 	clean_update();
 
@@ -460,24 +410,16 @@ int Main(int argc, char **argv)
 int main(int argc, char **argv)
 #endif
 {
-#ifdef MEMORY_DEBUG
-	elm_init();
-#endif //MEMORY_DEBUG
 	gargc=argc;
 	gargv=argv;
 
 	// do basic initialization
-#ifdef	OLC
-	olc_init();
-#endif	//OLC
 	init_logging("log");
 
 	check_log_level_on_command_line();
 	create_tcp_out_mutex();
 	init_translatables();
-#ifdef	FSAA
 	init_fsaa_modes();
-#endif	/* FSAA */
 	init_vars();
 
 	ENTER_DEBUG_MARK("init stuff");
@@ -487,12 +429,6 @@ int main(int argc, char **argv)
 	LEAVE_DEBUG_MARK("init stuff");
 
 	start_rendering();
-#ifdef MEMORY_DEBUG
-	elm_cleanup();
-#endif //MEMORY_DEBUG
-#ifdef	OLC
-	olc_shutdown();
-#endif	//OLC
 
 #ifndef WINDOWS
 	// attempt to restart if requested

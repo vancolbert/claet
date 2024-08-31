@@ -34,9 +34,7 @@ int skills_menu_y_len=200;
  */
 void fill_skills_win ();
 
-#ifndef ENGLISH
 void reset_skills();
-#endif //ENGLISH
 
 #ifdef __cplusplus
 } // extern "C"

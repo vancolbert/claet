@@ -6,15 +6,7 @@
 #ifndef	_E3D_IO_H_
 #define _E3D_IO_H_
 
-#ifdef	MAP_EDITOR
-#ifdef ENGLISH
- #include "../map_editor/gl_init.h"
-#else //ENGLISH
- #include "../../editeur_sources/gl_init.h"
-#endif //ENGLISH
-#else
  #include "../gl_init.h"
-#endif
 #include "elc_io.h"
 #include "../e3d_object.h"
 

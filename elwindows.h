@@ -57,9 +57,6 @@ typedef	struct	{
 	int		opaque;		/*!< if non-zero, window is drawn opaque */
 	char	owner_drawn_title_bar; /*the title bar is drawn by the window itself*/
 	size_t	cm_id; 				/*!< optional context menu activated by right-clicking title */
-#ifdef FR_DIALOGUE
-    GLuint image_fond;
-#endif //FR_DIALOGUE
 
     /*!
 	 * \name the handlers
@@ -126,10 +123,6 @@ typedef	struct	{
 #define	ELW_WIN_INVISIBLE	(ELW_TITLE_NONE|ELW_SHOW)
 /*! @} */
 
-#ifdef FR_DIALOGUE
-#define ELW_IMAGE_FOND    0x0800
-#define ELW_DIALOGUE (ELW_WIN_DEFAULT|ELW_IMAGE_FOND)
-#endif //FR_DIALOGUE
 /*!
  * \name window position flags
  */

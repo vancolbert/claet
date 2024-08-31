@@ -2,9 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include "map.h"
-#ifdef FR_VERSION
 #include "roche.h"
-#endif //FR_VERSION
 #include "2d_objects.h"
 #include "3d_objects.h"
 #include "asc.h"
@@ -32,16 +30,11 @@
 #include "tiles.h"
 #include "translate.h"
 #include "weather.h"
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif
 #include "counters.h"
 #include "eye_candy_wrapper.h"
 #include "minimap.h"
 #include "io/elpathwrapper.h"
-#ifdef PAWN
-#include "pawn/elpawn.h"
-#endif
 #include "sky.h"
 #include "mines.h"
 #include "highlight.h"
@@ -49,9 +42,7 @@
 int map_type=1;
 Uint32 map_flags=0;
 
-#ifdef FR_VERSION
 Uint8 carte_modif = 0;
-#endif //FR_VERSION
 
 hash_table *server_marks=NULL;
 
@@ -59,9 +50,6 @@ hash_table *server_marks=NULL;
 void destroy_map()
 {
 	int i;
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 
 	have_a_map = 0;
 
@@ -81,7 +69,6 @@ void destroy_map()
 		height_map = NULL;
 	}
 
-#ifndef MAP_EDITOR2
 	///kill the pathfinding tile map
 	if(pf_tile_map)
 	{
@@ -91,7 +78,6 @@ void destroy_map()
 		if (pf_follow_path)
 			pf_destroy_path();
 	}
-#endif
 
 	//kill the 3d objects links
 	destroy_all_3d_objects();
@@ -110,12 +96,9 @@ void destroy_map()
 		}
 	num_lights= 0;
 
-#ifdef CLUSTER_INSIDES
 	destroy_clusters_array ();
-#endif
 }
 
-#ifndef MAP_EDITOR2
 int get_cur_map (const char * file_name)
 {
 	int i;
@@ -130,11 +113,9 @@ int get_cur_map (const char * file_name)
 
 	return -1;
 }
-#endif
 
 static void init_map_loading(const char *file_name)
 {
-#ifdef FR_VERSION
     // On remplace le nom du fichier pour que la carte du continent
     // s'affiche correctement
     char copie_nom_carte[128];
@@ -169,23 +150,6 @@ static void init_map_loading(const char *file_name)
         cur_map = get_cur_map (file_name);
     }
 
-#else //FR_VERSION
-	destroy_map();
-	/*
-	 * Grum: the below is wrong: it never sets cur_map for the new map
-	 * when you're leaving an inside map. Perhaps it would be useful not
-	 * to set cur_map if you're *entering* an indide map, but we don't
-	 * know that at this point.
-	 *
-	 * I wonder why we souldn't want to set it anyway...
-	 */
-	/*
-	//Otherwise we pretend that we don't know where we are - if anyone wants to do the work and input all coordinates it's fine by me however :o)
-	if (!dungeon) cur_map = get_cur_map (file_name);
-	else cur_map=-1;
-	*/
-	cur_map = get_cur_map (file_name);
-#endif //FR_VERSION
 
 	create_loading_win(window_width, window_height, 1);
 	show_window(loading_win);
@@ -254,11 +218,7 @@ static int el_load_map(const char * file_name)
 
 void change_map (const char *mapname)
 {
-#ifdef FR_VERSION
     int i;
-#endif //FR_VERSION
-#ifndef	MAP_EDITOR
-#ifdef FR_VERSION
     char nom_carte[256];
     char nom_carte_modif[256];
 
@@ -278,33 +238,16 @@ void change_map (const char *mapname)
 	}
 	// on annule l'inspection de carte, retour sur la carte courante
 	inspect_map_text = 0;
-#endif //FR_VERSION
 	remove_all_bags();
-#ifdef MINES
-	remove_all_mines();
-#endif // MINES
-#endif	//MAP_EDITOR
-#ifdef FR_VERSION
 	remove_all_roches();
-#endif //FR_VERSION
 
 	set_all_intersect_update_needed(main_bbox_tree);
 	object_under_mouse=-1;//to prevent a nasty crash, while looking for bags, when we change the map
-#ifndef MAP_EDITOR2
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 	close_dialogue();	// close the dialogue window if open
 	close_storagewin(); //if storage is open, close it
 	destroy_all_particles();
 	ec_delete_all_effects();
-#ifdef NEW_SOUND
 	stop_all_sounds();
-#endif	//NEW_SOUND
-#ifdef MISSILES
-	missiles_clear();
-#endif // MISSILES
-#ifdef FR_VERSION
     // On demande une carte avec neige
     if (carte_modif == 1)
     {
@@ -367,9 +310,6 @@ void change_map (const char *mapname)
     // On demande une carte normale
     else if (!el_load_map(nom_carte))
     {
-#else //FR_VERSION
-	if (!el_load_map(mapname)) {
-#endif //FR_VERSION
 		char error[255];
 		safe_snprintf(error, sizeof(error), cant_change_map, mapname);
 		LOG_TO_CONSOLE(c_red4, error);
@@ -381,11 +321,8 @@ void change_map (const char *mapname)
 	}
 	load_map_marks();
 
-#ifdef NEW_SOUND
 	get_map_playlist();
 	setup_map_sounds(get_cur_map(mapname));
-#endif // NEW_SOUND
-#ifdef FR_VERSION
     if (!musique_carte)
     {
         for (i = 0; i < MAX_NOMBRE_MUSIQUE ; i++)
@@ -397,7 +334,6 @@ void change_map (const char *mapname)
             }
         }
     }
-#endif //FR_VERSION
 	have_a_map=1;
 	//also, stop the rain
 	weather_clear();
@@ -408,42 +344,14 @@ void change_map (const char *mapname)
 		switch_from_game_map ();
 		show_window(game_root_win);
 	}
-#else // !MAP_EDITOR2
-	destroy_all_particles();
-#ifdef NEW_SOUND
-	stop_all_sounds();
-#endif	//NEW_SOUND
-	if (!load_map(mapname)) {
-		char error[255];
-		safe_snprintf(error, sizeof(error), cant_change_map, mapname);
-		LOG_TO_CONSOLE(c_red4, error);
-		LOG_TO_CONSOLE(c_red4, empty_map_str);
-		LOG_ERROR(cant_change_map, mapname);
-		load_empty_map();
-	}
-
-#ifdef NEW_SOUND
-	get_map_playlist();
-	setup_map_sounds(get_cur_map(mapname));
-#endif // NEW_SOUND
-	have_a_map=1;
-#endif  //MAP_EDITOR2
 	change_minimap();
 
-#ifdef PAWN
-	run_pawn_map_function ("change_map", "s", mapname);
-#endif
 }
 
 int load_empty_map()
 {
-#ifdef FR_VERSION
 	if (!el_load_map("./maps/0_vide.elm"))
-#else //FR_VERSION
-	if (!el_load_map("./maps/nomap.elm"))
-#endif //FR_VERSION
 	{
-#ifndef MAP_EDITOR2
 		locked_to_console = 1;
 		hide_window (game_root_win);
 		show_window (console_root_win);
@@ -451,19 +359,12 @@ int load_empty_map()
 		LOG_ERROR(cant_change_map, "./maps/nomap.elm");
 		SDLNet_TCP_Close(my_socket);
 		disconnected = 1;
-#ifdef NEW_SOUND
 		stop_all_sounds();
-#endif // NEW_SOUND
 		disconnect_time = SDL_GetTicks();
 		SDLNet_Quit();
 		LOG_TO_CONSOLE(c_red3, disconnected_from_server);
 		//Fake a map to make sure we don't get any crashes.
-#endif
-#ifdef FR_VERSION
 		safe_snprintf(map_file_name, sizeof(map_file_name), "./maps/0_vide.elm");
-#else //FR_VERSION
-		safe_snprintf(map_file_name, sizeof(map_file_name), "./maps/nomap.elm");
-#endif //FR_VERSION
 		tile_map_size_y = 256;
 		tile_map_size_x = 256;
 		dungeon = 0;
@@ -472,9 +373,7 @@ int load_empty_map()
 		ambient_b = 0;
 		tile_map = calloc(tile_map_size_x*tile_map_size_y, sizeof(char));
 		height_map = calloc(tile_map_size_x*tile_map_size_y*6*6, sizeof(char));
-#ifndef MAP_EDITOR2
 		pf_tile_map = calloc(tile_map_size_x*tile_map_size_y*6*6, sizeof(char));
-#endif
 		return 0;
 	}
 	return 1;
@@ -492,11 +391,7 @@ void add_server_markers(){
 	hash_entry *he;
 	server_mark *sm;
 	int i,l;
-#ifdef FR_VERSION
 	char *mapname = (inspect_map_text)?inspect_map_name:map_file_name;
-#else //FR_VERSION
-	char *mapname = map_file_name;
-#endif //FR_VERSION
 
 	//find the slot to add server marks
 	for(i=0;i<max_mark;i++)
@@ -546,18 +441,10 @@ void load_marks_to_buffer(char* mapname, marking* buffer, int* max)
 		if (strlen (text) > 1) {
 			int r,g,b;
 			sscanf (text, "%d %d", &buffer[*max].x, &buffer[*max].y);
-#ifdef FR_VERSION
 			//scanning mark color. It can be optional -> default=white
 			if(sscanf(text,"%*d %*d|%d,%d,%d|",&r,&g,&b)<3) { //NO SPACES in RGB format string!
 				r=g=b=255;
 			}
-#else //FR_VERSION
-			//scanning mark color. It can be optional -> default=green
-			if(sscanf(text,"%*d %*d|%d,%d,%d|",&r,&g,&b)<3) { //NO SPACES in RGB format string!
-				r=b=0;
-				g=255;
-			}
-#endif //FR_VERSION
 			buffer[*max].server_side=0;
 			text[strlen(text)-1] = '\0'; //remove the newline
 			if ((strstr(text, " ") == NULL) || (strstr(strstr(text, " ")+1, " ") == NULL)) {
@@ -583,12 +470,8 @@ void load_marks_to_buffer(char* mapname, marking* buffer, int* max)
 void load_map_marks()
 {
 	//load user markers
-#ifdef FR_VERSION
 	// charge les marques de la carte en cours d'inspection
 	load_marks_to_buffer((inspect_map_text)?inspect_map_name:map_file_name, marks, &max_mark);
-#else //FR_VERSION
-	load_marks_to_buffer(map_file_name, marks, &max_mark);
-#endif //FR_VERSION
 
 	//load server markers on this map
 	add_server_markers();
@@ -601,12 +484,8 @@ void save_markings()
       char marks_file[256];
       int i;
 
-#ifdef FR_VERSION
 	// ne pas utiliser le nom de la carte courante si édition des marques d'une carte inspectée !
 	safe_snprintf (marks_file, sizeof (marks_file), "maps/%s.txt", strrchr ((inspect_map_text)?inspect_map_name:map_file_name,'/') + 1);
-#else //FR_VERSION
-	safe_snprintf (marks_file, sizeof (marks_file), "maps/%s.txt", strrchr (map_file_name,'/') + 1);
-#endif //FR_VERSION
 
 	fp = open_file_config(marks_file,"w");
 	if ( fp == NULL ){
@@ -916,9 +795,7 @@ void display_map_markers() {
 	ax = me->x_pos;
 	ay = me->y_pos;
 
-#ifndef ENGLISH
     set_font(name_font); // to variable length
-#endif //ENGLISH
 
 	glGetDoublev(GL_MODELVIEW_MATRIX, model);
 	glGetDoublev(GL_PROJECTION_MATRIX, proj);
@@ -963,9 +840,7 @@ void display_map_markers() {
 	//glEnable(GL_LIGHTING);
 	glDepthFunc(GL_LESS);
 
-#ifndef ENGLISH
     set_font(0); // to variable length
-#endif //ENGLISH
 
 }
 

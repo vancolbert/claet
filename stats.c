@@ -14,15 +14,9 @@
 #include "counters.h"
 #include "eye_candy_wrapper.h"
 #include "spells.h"
-#ifndef ENGLISH
 #include "chat.h"
 #include "hud.h"
-#endif //ENGLISH
-#ifdef POPUP_AIDE_FR
-#include "popup.h"
-#endif
 
-#ifndef ENGLISH
 const char* religions[] =
 {
 	"Erreur",
@@ -34,13 +28,10 @@ const char* religions[] =
 	"Terre",
 	"Aucune"
 };
-#endif //ENGLISH
 
-#ifdef FR_FENETRE_STATS
 const char* tab_nexus[] = {"Ignorant", "Initié", "Compagnon", "Expert", "Expert", "Maître", "Maître", "Error"};
 const char* tab_nexus_malus[] = {"Ignorant-", "Initié-", "Compagnon-", "Compagnon-", "Expert-", "Expert-", "Maître-", "Error-"};
 ///const char* tab_nexus_malus[] = {"Ignorant", "Initié", "Compagnon", "Compagnon", "Expert", "Expert", "Maître", "Error-"};
-#endif //FR_FENETRE_STATS
 
 int	stats_win= -1;
 player_attribs your_info;
@@ -52,9 +43,7 @@ int attrib_menu_x_len=STATS_TAB_WIDTH;
 int attrib_menu_y_len=STATS_TAB_HEIGHT;
 //int attrib_menu_dragged=0;
 
-#ifndef ENGLISH
 int max_disp_stats=1;  // default to only 1 displayable stat
-#endif //ENGLISH
 int check_grid_y_top=0;
 int check_grid_x_left=0;
 
@@ -84,20 +73,13 @@ void floatingmessages_compare_stat(int actor_id, int value, int new_value, const
 void draw_stat_final(int len, int x, int y, const unsigned char * name, const char * value);
 
 
-#ifdef ENGLISH
-void get_the_stats(Sint16 *stats, size_t len_in_bytes)
-#else //ENGLISH
 void get_the_stats(Sint16 *stats)
-#endif //ENGLISH
 {
 	have_stats=1;
 
 	memset(&your_info, 0, sizeof(your_info));	// failsafe incase structure changes
 
 	//initiate the function pointers
-    #ifndef FR_ATTRIBUTS_SECONDAIRE
-        init_attribf();
-	#endif
 
 	your_info.phy.cur=SDL_SwapLE16(stats[0]);
 	your_info.phy.base=SDL_SwapLE16(stats[1]);
@@ -111,12 +93,7 @@ void get_the_stats(Sint16 *stats)
 	your_info.ins.base=SDL_SwapLE16(stats[9]);
 	your_info.vit.cur=SDL_SwapLE16(stats[10]);
 	your_info.vit.base=SDL_SwapLE16(stats[11]);
- #ifdef FR_RCM_WRAITH
-	your_info.sangf.cur=SDL_SwapLE16(stats[99]);
-	your_info.sangf.base=SDL_SwapLE16(stats[100]);
- #endif
 
-#ifdef FR_NEXUS
 	your_info.defense_nexus.cur=SDL_SwapLE16(stats[12]);
 	your_info.defense_nexus.base=SDL_SwapLE16(stats[13]);
 
@@ -137,20 +114,6 @@ void get_the_stats(Sint16 *stats)
     // new value add see to end
 
 
-#else
-    your_info.human_nex.cur=SDL_SwapLE16(stats[12]);
-	your_info.human_nex.base=SDL_SwapLE16(stats[13]);
-	your_info.animal_nex.cur=SDL_SwapLE16(stats[14]);
-	your_info.animal_nex.base=SDL_SwapLE16(stats[15]);
-	your_info.vegetal_nex.cur=SDL_SwapLE16(stats[16]);
-	your_info.vegetal_nex.base=SDL_SwapLE16(stats[17]);
-	your_info.inorganic_nex.cur=SDL_SwapLE16(stats[18]);
-	your_info.inorganic_nex.base=SDL_SwapLE16(stats[19]);
-	your_info.artificial_nex.cur=SDL_SwapLE16(stats[20]);
-	your_info.artificial_nex.base=SDL_SwapLE16(stats[21]);
-	your_info.magic_nex.cur=SDL_SwapLE16(stats[22]);
-	your_info.magic_nex.base=SDL_SwapLE16(stats[23]);
-#endif
 
 	your_info.manufacturing_skill.cur=SDL_SwapLE16(stats[24]);
 	your_info.manufacturing_skill.base=SDL_SwapLE16(stats[25]);
@@ -201,38 +164,20 @@ void get_the_stats(Sint16 *stats)
 	your_info.crafting_skill.base=SDL_SwapLE16(stats[90]);
 	your_info.crafting_exp=SDL_SwapLE32(*((Uint32 *)(stats+91)));
 	your_info.crafting_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+93)));
-#ifdef ENGLISH
-	your_info.engineering_skill.cur=SDL_SwapLE16(stats[95]);
-	your_info.engineering_skill.base=SDL_SwapLE16(stats[96]);
-	your_info.engineering_exp=SDL_SwapLE32(*((Uint32 *)(stats+97)));
-	your_info.engineering_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+99)));
-	your_info.tailoring_skill.cur=SDL_SwapLE16(stats[101]);
-	your_info.tailoring_skill.base=SDL_SwapLE16(stats[102]);
-	your_info.tailoring_exp=SDL_SwapLE32(*((Uint32 *)(stats+103)));
-	your_info.tailoring_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+105)));
-	your_info.ranging_skill.cur=SDL_SwapLE16(stats[107]);
-	your_info.ranging_skill.base=SDL_SwapLE16(stats[108]);
-	your_info.ranging_exp=SDL_SwapLE32(*((Uint32 *)(stats+109)));
-	your_info.ranging_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+111)));
-#else //ENGLISH
 	your_info.notoriete=SDL_SwapLE16(stats[95]);
 	your_info.religion=SDL_SwapLE16(stats[96]);
 	your_info.niv_rel=SDL_SwapLE16(stats[97]);
 	your_info.race=SDL_SwapLE16(stats[98]);
-#endif //ENGLISH
 	your_info.research_completed=SDL_SwapLE16(stats[47]);
 	your_info.researching=SDL_SwapLE16(stats[81]);
 	your_info.research_total=SDL_SwapLE16(stats[82]);
 
-#ifdef FR_NEXUS
     your_info.magie_nexus.cur=SDL_SwapLE16(stats[101]);
 	your_info.magie_nexus.base=SDL_SwapLE16(stats[102]);
 
 	your_info.alchimie_nexus.cur=SDL_SwapLE16(stats[103]);
 	your_info.alchimie_nexus.base=SDL_SwapLE16(stats[104]);
-#endif
 
-#ifdef FR_ATTRIBUTS_SECONDAIRE
     your_info.might.base=SDL_SwapLE16( stats[105]);
     your_info.might.cur = SDL_SwapLE16( stats[106] );
 
@@ -260,29 +205,16 @@ void get_the_stats(Sint16 *stats)
     your_info.eth.base=SDL_SwapLE16(stats[121]);
     your_info.eth.cur=SDL_SwapLE16(stats[122]);
 
-#endif
 
-#ifdef INGENIERIE
 	your_info.engineering_skill.cur=SDL_SwapLE16(stats[123]);
 	your_info.engineering_skill.base=SDL_SwapLE16(stats[124]);
 	your_info.engineering_exp=SDL_SwapLE32(*((Uint32 *)(stats+125)));
 	your_info.engineering_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+127)));
 	your_info.ingenierie_nexus.cur=SDL_SwapLE16(stats[129]);
 	your_info.ingenierie_nexus.base=SDL_SwapLE16(stats[130]);
-#endif
 
     check_book_known();
 
-#ifdef ENGLISH
-        // can be removed test when we change protocol number for 1.9.2
-        if (len_in_bytes <= 2*114){
-            your_info.action_points.cur=0;
-            your_info.action_points.base=0;
-        } else {
-            your_info.action_points.cur=SDL_SwapLE16(stats[113]);
-            your_info.action_points.base=SDL_SwapLE16(stats[114]);
-        }
-#endif //ENGLISH
 
 	init_session();
         check_castability();
@@ -316,14 +248,7 @@ void get_partial_stat(Uint8 name,Sint32 value)
 			your_info.vit.cur=value;break;
 		case VIT_BASE:
 			your_info.vit.base=value;break;
-#ifdef FR_RCM_WRAITH
-		case SANGF_CUR:
-			your_info.sangf.cur=value;break;
-		case SANGF_BASE:
-			your_info.sangf.base=value;break;
-#endif
 
-#ifdef FR_ATTRIBUTS_SECONDAIRE
     case MIGHT_CUR:
         ///printf("DEBUG TRINITA your_info.might.cur: %i\n", value );
         your_info.might.cur=value;break;
@@ -370,9 +295,7 @@ void get_partial_stat(Uint8 name,Sint32 value)
     case ETHEREALITY_BASE:
 			your_info.eth.base=value;break;
 
-#endif
 
-#ifdef FR_NEXUS
         case DEFENSE_N_CUR:
 			your_info.defense_nexus.cur=value;break;
         case DEFENSE_N_BASE:
@@ -413,38 +336,10 @@ void get_partial_stat(Uint8 name,Sint32 value)
         case ALCHIMIE_N_BASE:
 			your_info.alchimie_nexus.base=value;break;
 
-#ifdef INGENIERIE
 		case ENGINEER_N_CUR:
 			your_info.ingenierie_nexus.cur=value;break;
         case ENGINEER_N_BASE:
 			your_info.ingenierie_nexus.base=value;break;
-#endif //INGENIERIE
-#else
-		case HUMAN_CUR:
-			your_info.human_nex.cur=value;break;
-		case HUMAN_BASE:
-			your_info.human_nex.base=value;break;
-		case ANIMAL_CUR:
-			your_info.animal_nex.cur=value;break;
-		case ANIMAL_BASE:
-			your_info.animal_nex.base=value;break;
-		case VEGETAL_CUR:
-			your_info.vegetal_nex.cur=value;break;
-		case VEGETAL_BASE:
-			your_info.vegetal_nex.base=value;break;
-		case INORG_CUR:
-			your_info.inorganic_nex.cur=value;break;
-		case INORG_BASE:
-			your_info.inorganic_nex.base=value;break;
-		case ARTIF_CUR:
-			your_info.artificial_nex.cur=value;break;
-		case ARTIF_BASE:
-			your_info.artificial_nex.base=value;break;
-		case MAGIC_CUR:
-			your_info.magic_nex.cur=value;break;
-		case MAGIC_BASE:
-			your_info.magic_nex.base=value;break;
-#endif
 		case MAN_S_CUR:
 			your_info.manufacturing_skill.cur=value;break;
 		case MAN_S_BASE:
@@ -494,20 +389,6 @@ void get_partial_stat(Uint8 name,Sint32 value)
                   	          ec_create_glow_level_up_oa(_actor, (poor_man ? 6 : 10));
                             }
                         }
-                        #ifdef POPUP_AIDE_FR
-                        if (your_info.overall_skill.base == 5 && your_info.defense_skill.base < 6 && fullsession_start_time > 10000)
-                        {
-                            afficher_message_aide(1);
-                        }
-                        if (your_info.overall_skill.base == 6 && your_info.defense_skill.base < 7 && fullsession_start_time > 10000)
-                        {
-                            afficher_message_aide(4);
-                        }
-                        if (your_info.overall_skill.base == 29 && fullsession_start_time > 10000)
-                        {
-                            afficher_message_aide(5);
-                        }
-                        #endif
 			your_info.overall_skill.base=value;break;
 		case ATT_S_CUR:
 			your_info.attack_skill.cur=value;break;
@@ -577,18 +458,6 @@ void get_partial_stat(Uint8 name,Sint32 value)
 			}
 		case ETH_POINT_BASE:
 			your_info.ethereal_points.base=value;break;
-#ifdef ENGLISH
-                case ACTION_POINTS_CUR:
-                        {
-                                char str[5];
-                                safe_snprintf(str, sizeof(str), "%d", value-your_info.action_points.cur);
-                                add_floating_message(yourself, str, FLOATINGMESSAGE_MIDDLE, 1.0, 0.0, 1.0, 2500);
-                                your_info.action_points.cur=value;
-                                break;
-                        }
-                case ACTION_POINTS_BASE:
-                        your_info.action_points.base=value;break;
-#endif //ENGLISH
 		case FOOD_LEV:
 			your_info.food_level=value;break;
 		case MAN_EXP:
@@ -689,7 +558,6 @@ void get_partial_stat(Uint8 name,Sint32 value)
                             }
                         }
 			your_info.crafting_skill.base=value;break;
-#ifdef INGENIERIE
 		case ENG_EXP:
             set_last_skill_exp(SI_ENG, value-your_info.engineering_exp);
 			floatingmessages_compare_stat(yourself, your_info.engineering_exp, value, attributes.engineering_skill.shortname);
@@ -711,72 +579,6 @@ void get_partial_stat(Uint8 name,Sint32 value)
 				}
 			}
 			your_info.engineering_skill.base=value;break;
-#endif
-#ifdef ENGLISH
-		case ENG_EXP:
-                        set_last_skill_exp(SI_ENG, value-your_info.engineering_exp);
-			floatingmessages_compare_stat(yourself, your_info.engineering_exp, value, attributes.engineering_skill.shortname);
-			increment_engineering_counter();
-			your_info.engineering_exp=value;
-			break;
-		case ENG_EXP_NEXT:
-			your_info.engineering_exp_next_lev=value;break;
-		case ENG_S_CUR:
-			your_info.engineering_skill.cur=value;break;
-		case ENG_S_BASE:
-                        floatingmessages_add_level(yourself, value, attributes.engineering_skill.name);
-                        {
-                            actor *_actor = get_actor_ptr_from_id(yourself);
-                            if (use_eye_candy == 1 && _actor != NULL) {
-                  	          ec_create_glow_level_up_default(_actor, (poor_man ? 6 : 10));
-                  	          ec_create_glow_level_up_eng_left(_actor, (poor_man ? 6 : 10));
-                  	          ec_create_glow_level_up_eng_right(_actor, (poor_man ? 6 : 10));
-                            }
-                        }
-                        your_info.engineering_skill.base=value;break;
-                case TAIL_EXP:
-                        set_last_skill_exp(SI_TAI, value-your_info.tailoring_exp);
-                        floatingmessages_compare_stat(yourself, your_info.tailoring_exp, value, attributes.tailoring_skill.shortname);
-                        increment_tailoring_counter();
-                        your_info.tailoring_exp=value;
-                        break;
-                case TAIL_EXP_NEXT:
-                        your_info.tailoring_exp_next_lev=value;break;
-                case TAIL_S_CUR:
-                        your_info.tailoring_skill.cur=value;break;
-                case TAIL_S_BASE:
-                        floatingmessages_add_level(yourself, value, attributes.tailoring_skill.name);
-                        {
-                            actor *_actor = get_actor_ptr_from_id(yourself);
-                            if (use_eye_candy == 1 && _actor != NULL) {
-                  	          ec_create_glow_level_up_default(_actor, (poor_man ? 6 : 10));
-                  	          ec_create_glow_level_up_tai_left(_actor, (poor_man ? 6 : 10));
-                  	          ec_create_glow_level_up_tai_right(_actor, (poor_man ? 6 : 10));
-                            }
-                        }
-                        your_info.tailoring_skill.base=value;break;
-
-        case RANG_EXP:
-                        set_last_skill_exp(SI_RAN, value-your_info.ranging_exp);
-			floatingmessages_compare_stat(yourself, your_info.ranging_exp, value, attributes.ranging_skill.shortname);
-			your_info.ranging_exp=value;
-			break;
-		case RANG_EXP_NEXT:
-			your_info.ranging_exp_next_lev=value;break;
-		case RANG_S_CUR:
-			your_info.ranging_skill.cur=value;break;
-		case RANG_S_BASE:
-                        floatingmessages_add_level(yourself, value, attributes.ranging_skill.name);
-                        {
-                            actor *_actor = get_actor_ptr_from_id(yourself);
-                            if (use_eye_candy == 1 && _actor != NULL) {
-                  	          ec_create_glow_level_up_default(_actor, (poor_man ? 6 : 10));
-                  	          ec_create_glow_level_up_ran(_actor, (poor_man ? 6 : 10));
-                            }
-                        }
-			your_info.ranging_skill.base=value;break;
-
-#else //ENGLISH
 		case NOTORIETE:
 			your_info.notoriete=value;break;
 		case RELIGION:
@@ -788,25 +590,12 @@ void get_partial_stat(Uint8 name,Sint32 value)
 			init_channel_names();
             cleanup_chan_race_names();
             break;
-#endif //ENGLISH
 		case RESEARCHING:
-#ifdef ENGLISH
-                        your_info.researching=value; check_book_known(); break;
-#else //ENGLISH
 			your_info.researching=value;break;
-#endif //ENGLISH
 		case RESEARCH_COMPLETED:
-#ifdef ENGLISH
-                        your_info.research_completed=value; check_book_known(); break;
-#else //ENGLISH
 			your_info.research_completed=value;break;
-#endif //ENGLISH
 		case RESEARCH_TOTAL:
-#ifdef ENGLISH
-                        your_info.research_total=value; check_book_known(); break;
-#else //ENGLISH
 			your_info.research_total=value;break;
-#endif //ENGLISH
 		default:
                         LOG_ERROR("Server sent invalid stat number\n");
 		}
@@ -817,7 +606,6 @@ void get_partial_stat(Uint8 name,Sint32 value)
 
 }
 
-#ifndef FR_RCM_WRAITH
 
 Sint16 get_base_might() { return (your_info.phy.base+your_info.coo.base)/2;}
 Sint16 get_cur_might() { return (your_info.phy.cur+your_info.coo.cur)/2;}
@@ -845,36 +633,6 @@ Sint16 get_cur_dext() { return (your_info.coo.cur+your_info.rea.cur)/2;}
 
 Sint16 get_base_eth() { return (your_info.wil.base+your_info.vit.base)/2;}
 Sint16 get_cur_eth() { return (your_info.wil.cur+your_info.vit.cur)/2;}
-#else
-    //NOTE TRINITA - puff les calculs sont refaire pour l'affichage c'est nul !
-Sint16 get_base_might() { return (your_info.phy.base+your_info.sangf.base)/2;}  // Force + Sang Froid
-Sint16 get_cur_might() { return (your_info.phy.cur+your_info.sangf.cur)/2;}
-
-Sint16 get_base_matter() { return (your_info.coo.base+your_info.wil.base+your_info.ins.base)/2;}   // Vitalité + Volonté + Instinct
-Sint16 get_cur_matter() { return (your_info.coo.cur+your_info.wil.cur+your_info.ins.cur)/2;}
-
-Sint16 get_base_tough() { return (your_info.phy.base+your_info.wil.base+your_info.vit.base)/2;}    // Force + Volonté + Aura
-Sint16 get_cur_tough() { return (your_info.phy.cur+your_info.wil.cur+your_info.vit.cur)/2;}
-
-Sint16 get_base_charm() { return (your_info.ins.base+your_info.vit.base)/2;}    // aura + instinct
-Sint16 get_cur_charm() { return (your_info.ins.cur+your_info.vit.cur)/2;}
-
-Sint16 get_base_react() { return (your_info.phy.base+your_info.coo.base)/2;}    // Force + Agilité
-Sint16 get_cur_react() { return (your_info.phy.cur+your_info.coo.cur)/2;}
-
-Sint16 get_base_perc() { return (your_info.ins.base+your_info.rea.base)/2;}     // Intelligence + Instinct
-Sint16 get_cur_perc() { return (your_info.ins.cur+your_info.rea.cur)/2;}
-
-Sint16 get_base_rat() { return (your_info.sangf.base+your_info.wil.base+your_info.rea.base)/2;}      // Sang froid + Volonté + Intelligence
-Sint16 get_cur_rat() { return (your_info.sangf.cur+your_info.wil.cur+your_info.rea.cur)/2;}
-
-Sint16 get_base_dext() { return (your_info.coo.base+your_info.sangf.base)/2;}     // Agilité + Sang froid
-Sint16 get_cur_dext() { return (your_info.coo.cur+your_info.sangf.cur)/2;}
-
-Sint16 get_base_eth() { return (your_info.rea.base+your_info.vit.base)/2;}      // Intelligence + Aura
-Sint16 get_cur_eth() { return (your_info.rea.cur+your_info.vit.cur)/2;}
-
-#endif
 
 /* store references to the skills info in an easy to use array */
 void init_statsinfo_array(void)
@@ -924,29 +682,11 @@ void init_statsinfo_array(void)
 	statsinfo[SI_CRA].skillattr = &your_info.crafting_skill;
 	statsinfo[SI_CRA].skillnames = &attributes.crafting_skill;
 
-#ifdef INGENIERIE
-	statsinfo[SI_ENG].exp = &your_info.engineering_exp;
-	statsinfo[SI_ENG].next_lev = &your_info.engineering_exp_next_lev;
-	statsinfo[SI_ENG].skillattr = &your_info.engineering_skill;
-	statsinfo[SI_ENG].skillnames = &attributes.engineering_skill;
-#endif
-
-#ifdef ENGLISH
 	statsinfo[SI_ENG].exp = &your_info.engineering_exp;
 	statsinfo[SI_ENG].next_lev = &your_info.engineering_exp_next_lev;
 	statsinfo[SI_ENG].skillattr = &your_info.engineering_skill;
 	statsinfo[SI_ENG].skillnames = &attributes.engineering_skill;
 
-	statsinfo[SI_TAI].exp = &your_info.tailoring_exp;
-	statsinfo[SI_TAI].next_lev = &your_info.tailoring_exp_next_lev;
-	statsinfo[SI_TAI].skillattr = &your_info.tailoring_skill;
-	statsinfo[SI_TAI].skillnames = &attributes.tailoring_skill;
-
-	statsinfo[SI_RAN].exp = &your_info.ranging_exp;
-	statsinfo[SI_RAN].next_lev = &your_info.ranging_exp_next_lev;
-	statsinfo[SI_RAN].skillattr = &your_info.ranging_skill;
-	statsinfo[SI_RAN].skillnames = &attributes.ranging_skill;
-#endif //ENGLISH
 
 	/* always make last as special case for skills modifiers - and best displayed last anyway */
 	statsinfo[SI_ALL].exp = &your_info.overall_exp;
@@ -955,45 +695,15 @@ void init_statsinfo_array(void)
 	statsinfo[SI_ALL].skillnames = &attributes.overall_skill;
 }
 
-#ifndef FR_ATTRIBUTS_SECONDAIRE
-void init_attribf()
-{
-	your_info.might.base=get_base_might;
-	your_info.might.cur=get_cur_might;
-	your_info.matter.base=get_base_matter;
-	your_info.matter.cur=get_cur_matter;
-	your_info.tough.base=get_base_tough;
-	your_info.tough.cur=get_cur_tough;
-	your_info.charm.base=get_base_charm;
-	your_info.charm.cur=get_cur_charm;
-	your_info.react.base=get_base_react;
-	your_info.react.cur=get_cur_react;
-	your_info.perc.base=get_base_perc;
-	your_info.perc.cur=get_cur_perc;
-	your_info.ration.base=get_base_rat;
-	your_info.ration.cur=get_cur_rat;
-	your_info.dext.base=get_base_dext;
-	your_info.dext.cur=get_cur_dext;
-	your_info.eth.base=get_base_eth;
-	your_info.eth.cur=get_cur_eth;
-}
-#endif
 
 void draw_stat(int len, int x, int y, attrib_16 * var, names * name)
 {
-#ifdef ENGLISH
-	char str[9];
-	safe_snprintf(str,sizeof(str),"%2i/%-2i",var->cur,var->base);
-	str[8]=0;
-#else //ENGLISH
 	char str[10];
 	safe_snprintf(str,sizeof(str),"%4i/%-4i",var->cur,var->base);
 	str[9]=0;
-#endif //ENGLISH
 	draw_stat_final(len,x,y,name->name,str);
 }
 
-#ifdef FR_FENETRE_STATS
 /**
     len,
     x,
@@ -1032,55 +742,23 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, in
 
 	return difference;
 }
-#else //FR_FENETRE_STATS
-void draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, int exp_next)
-{
-	char str[37];
-	char lvlstr[9];
-	char expstr[25];
-
-#ifdef ENGLISH
-	safe_snprintf(lvlstr, sizeof(lvlstr), "%2i/%-2i", lvl->cur, lvl->base);
-	safe_snprintf(expstr,sizeof(expstr),"[%2i/%-2i]", exp, exp_next);
-	safe_snprintf(str, sizeof(str), "%-7s %-22s", lvlstr, expstr);
-#else
-	int pourcent = (exp_lev[lvl->base] == exp_next) ? 100 : round(((exp-exp_lev[lvl->base])*100)/(exp_next-exp_lev[lvl->base]));
-	safe_snprintf(lvlstr, sizeof(lvlstr), "%3i/%-3i", lvl->cur, lvl->base);
-	safe_snprintf(expstr, sizeof(expstr), "[%9i/%-9i]", exp, exp_next);
-	safe_snprintf(str, sizeof(str), "%-7s %-21s%3i%%", lvlstr, expstr, pourcent);
-#endif
-	draw_stat_final(len, x, y, name->name, str);
-}
-#endif //FR_FENETRE_STATS
 
 void draw_statf(int len, int x, int y, attrib_16f * var, names * name)
 {
-#ifdef ENGLISH
-	char str[9];
-
-	safe_snprintf(str,sizeof(str),"%2i/%-2i",var->cur(),var->base());
-	str[8]=0;
-#else //ENGLISH
 	char str[10];
 
 	safe_snprintf(str,sizeof(str),"%4i/%-4i",var->cur(),var->base());
 	str[9]=0;
-#endif //ENGLISH
 	draw_stat_final(len,x,y,name->name,str);
 }
 
 void draw_stat_final(int len, int x, int y, const unsigned char * name, const char * value)
 {
 	char str[80];
-#ifdef ENGLISH
-	safe_snprintf(str,sizeof(str),"%-15s %s",name,value);
-#else //ENGLISH
     safe_snprintf(str,sizeof(str),"%-*s %s",len,name,value);
-#endif //ENGLISH
 	draw_string_small(x, y, (unsigned char*)str, 1);
 }
 
-#ifdef FR_FENETRE_STATS
 int display_stats_handler(window_info *win) {
 	player_attribs cur_stats = your_info;
 	char str[20];
@@ -1111,10 +789,6 @@ int display_stats_handler(window_info *win) {
 	y+=14;
 	draw_stat(12,x,y,&(cur_stats.vit),&(attributes.vit));
 
-#ifdef FR_RCM_WRAITH
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.sangf),&(attributes.sangf));
-#endif
 	//cross attributes
 	glColor3f(1.0f,1.0f,0.0f);
 	x+=170;
@@ -1123,33 +797,6 @@ int display_stats_handler(window_info *win) {
 	draw_string_small(x,y,attributes.cross,1);
 	y+=19;
 	x+=0;
-#ifndef FR_ATTRIBUTS_SECONDAIRE
-	draw_statf(11,x,y,&(cur_stats.might),&(attributes.might));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.matter),&(attributes.matter));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.tough),&(attributes.tough));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.charm),&(attributes.charm));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.react),&(attributes.react));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.perc),&(attributes.perc));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.ration),&(attributes.ration));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.dext),&(attributes.dext));
-
-	y+=14;
-	draw_statf(11,x,y,&(cur_stats.eth),&(attributes.eth));
-#else
     draw_stat(11,x,y,&(cur_stats.might),&(attributes.might));
 
 	y+=14;
@@ -1175,7 +822,6 @@ int display_stats_handler(window_info *win) {
 
 	y+=14;
 	draw_stat(11,x,y,&(cur_stats.eth),&(attributes.eth));
-#endif
 	glColor3f(0.5f,0.5f,1.0f);
 	y+=14;	// blank lines for spacing
 
@@ -1239,94 +885,48 @@ int display_stats_handler(window_info *win) {
 	check_grid_y_top=y;
 
     statsinfo[0].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
     difference += draw_skill(12,x,y,&(cur_stats.attack_skill),&(attributes.attack_skill),cur_stats.attack_exp,cur_stats.attack_exp_next_lev, cur_stats.defense_nexus.cur, cur_stats.defense_nexus.base);
-#else
-	draw_skill(12,x,y,&(cur_stats.attack_skill),&(attributes.attack_skill),cur_stats.attack_exp,cur_stats.attack_exp_next_lev, -1);
-#endif
 
 	y+=14;
     statsinfo[1].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
 
-#ifdef FR_NEXUS
     difference += draw_skill(12,x,y,&(cur_stats.defense_skill),&(attributes.defense_skill),cur_stats.defense_exp,cur_stats.defense_exp_next_lev, cur_stats.defense_nexus.cur, cur_stats.defense_nexus.base);
-#else
-    draw_skill(12,x,y,&(cur_stats.defense_skill),&(attributes.defense_skill),cur_stats.defense_exp,cur_stats.defense_exp_next_lev, cur_stats.human_nex.cur);
-#endif
 
 	y+=14;
     statsinfo[2].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference =+ draw_skill(12,x,y,&(cur_stats.harvesting_skill),&(attributes.harvesting_skill),cur_stats.harvesting_exp,cur_stats.harvesting_exp_next_lev, cur_stats.recolte_nexus.cur, cur_stats.recolte_nexus.base);
-#else
-	draw_skill(12,x,y,&(cur_stats.harvesting_skill),&(attributes.harvesting_skill),cur_stats.harvesting_exp,cur_stats.harvesting_exp_next_lev, cur_stats.inorganic_nex.cur);
-#endif
 
 	y+=14;
     statsinfo[3].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.alchemy_skill),&(attributes.alchemy_skill),cur_stats.alchemy_exp,cur_stats.alchemy_exp_next_lev, cur_stats.alchimie_nexus.cur, cur_stats.alchimie_nexus.base);
-#else
-    draw_skill(12,x,y,&(cur_stats.alchemy_skill),&(attributes.alchemy_skill),cur_stats.alchemy_exp,cur_stats.alchemy_exp_next_lev, -1);
-#endif
 
 	y+=14;
     statsinfo[4].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.magic_skill),&(attributes.magic_skill),cur_stats.magic_exp,cur_stats.magic_exp_next_lev, cur_stats.magie_nexus.cur,  cur_stats.magie_nexus.base );
-#else
-    draw_skill(12,x,y,&(cur_stats.magic_skill),&(attributes.magic_skill),cur_stats.magic_exp,cur_stats.magic_exp_next_lev, -1);
-#endif
 
 	y+=14;
     statsinfo[5].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.potion_skill),&(attributes.potion_skill),cur_stats.potion_exp,cur_stats.potion_exp_next_lev, cur_stats.potion_nexus.cur, cur_stats.potion_nexus.base);
-#else
-    draw_skill(12,x,y,&(cur_stats.potion_skill),&(attributes.potion_skill),cur_stats.potion_exp,cur_stats.potion_exp_next_lev, cur_stats.vegetal_nex.cur);
-#endif
 
 	y+=14;
     statsinfo[6].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.summoning_skill),&(attributes.summoning_skill),cur_stats.summoning_exp,cur_stats.summoning_exp_next_lev, cur_stats.necro_nexus.cur, cur_stats.necro_nexus.base);
-#else
-    draw_skill(12,x,y,&(cur_stats.summoning_skill),&(attributes.summoning_skill),cur_stats.summoning_exp,cur_stats.summoning_exp_next_lev, cur_stats.animal_nex.cur);
-#endif
 
 	y+=14;
     statsinfo[7].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.manufacturing_skill),&(attributes.manufacturing_skill),cur_stats.manufacturing_exp,cur_stats.manufacturing_exp_next_lev, cur_stats.fabrication_nexus.cur,  cur_stats.fabrication_nexus.base);
-#else
-    draw_skill(12,x,y,&(cur_stats.manufacturing_skill),&(attributes.manufacturing_skill),cur_stats.manufacturing_exp,cur_stats.manufacturing_exp_next_lev, cur_stats.artificial_nex.cur);
-#endif
 
 	y+=14;
     statsinfo[8].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.crafting_skill),&(attributes.crafting_skill),cur_stats.crafting_exp,cur_stats.crafting_exp_next_lev, cur_stats.artisanat_nexus.cur, cur_stats.artisanat_nexus.base);
-#else
-    draw_skill(12,x,y,&(cur_stats.crafting_skill),&(attributes.crafting_skill),cur_stats.crafting_exp,cur_stats.crafting_exp_next_lev, cur_stats.magic_nex.cur);
-#endif
 
-#ifdef INGENIERIE
 	y+=14;
     statsinfo[9].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
 	difference += draw_skill(12,x,y,&(cur_stats.engineering_skill),&(attributes.engineering_skill),cur_stats.engineering_exp,cur_stats.engineering_exp_next_lev, cur_stats.ingenierie_nexus.cur, cur_stats.ingenierie_nexus.base);
-#endif
 
 	y+=19;
-#ifndef INGENIERIE
-    statsinfo[9].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#else
 	statsinfo[10].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#endif
-#ifdef FR_NEXUS
 	difference += draw_skill(12,x,y,&(cur_stats.overall_skill),&(attributes.overall_skill),cur_stats.overall_exp,cur_stats.overall_exp_next_lev, -1, -1);
-#else
-    draw_skill(12,x,y,&(cur_stats.overall_skill),&(attributes.overall_skill),cur_stats.overall_exp,cur_stats.overall_exp_next_lev, -1);
-#endif
 
 	if (difference != 0)
 	{
@@ -1336,430 +936,6 @@ int display_stats_handler(window_info *win) {
 
 	return 1;
 }
-#else //FR_FENETRE_STATS
-int display_stats_handler(window_info *win)
-{
-	player_attribs cur_stats = your_info;
-#ifdef ENGLISH
-	char str[10];
-	int x,y;
-
-	x=5;
-	y=5;
-
-	draw_string_small(x,y,attributes.base,1);
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.phy),&(attributes.phy));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.coo),&(attributes.coo));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.rea),&(attributes.rea));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.wil),&(attributes.wil));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.ins),&(attributes.ins));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.vit),&(attributes.vit));
-
-	//cross attributes
-	glColor3f(1.0f,1.0f,0.0f);
-	y+=20;
-
-	draw_string_small(x,y,attributes.cross,1);
-#ifndef FR_ATTRIBUTS_SECONDAIRE
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.might),&(attributes.might));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.matter),&(attributes.matter));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.tough),&(attributes.tough));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.charm),&(attributes.charm));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.react),&(attributes.react));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.perc),&(attributes.perc));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.ration),&(attributes.ration));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.dext),&(attributes.dext));
-
-	y+=14;
-	draw_statf(24,x,y,&(cur_stats.eth),&(attributes.eth));
-#else
-    y+=14;
-	draw_stat(24,x,y,&(cur_stats.might),&(attributes.might));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.matter),&(attributes.matter));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.tough),&(attributes.tough));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.charm),&(attributes.charm));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.react),&(attributes.react));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.perc),&(attributes.perc));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.ration),&(attributes.ration));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.dext),&(attributes.dext));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.eth),&(attributes.eth));
-#endif
-	glColor3f(0.5f,0.5f,1.0f);
-	y+=14;	// blank lines for spacing
-	y+=14;	// blank lines for spacing
-
-	//other attribs
-	y+=20;
-	safe_snprintf(str, sizeof(str), "%i",cur_stats.food_level);
-	draw_stat_final(24,x,y,attributes.food.name,str);
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.material_points),&(attributes.material_points));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.ethereal_points),&(attributes.ethereal_points));
-
-        y+=14;
-        draw_stat(24,x,y,&(cur_stats.action_points),&(attributes.action_points));
-
-	//other info
-	safe_snprintf(str, sizeof(str), "%i",cur_stats.overall_skill.base-cur_stats.overall_skill.cur);
-	draw_stat_final(24,205,y,attributes.pickpoints,str);
-
-	//nexuses here
-	glColor3f(1.0f,1.0f,1.0f);
-	x+=200;
-	y=5;
-
-	draw_string_small(x,y,attributes.nexus,1);
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.human_nex),&(attributes.human_nex));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.animal_nex),&(attributes.animal_nex));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.vegetal_nex),&(attributes.vegetal_nex));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.inorganic_nex),&(attributes.inorganic_nex));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.artificial_nex),&(attributes.artificial_nex));
-
-	y+=14;
-	draw_stat(24,x,y,&(cur_stats.magic_nex),&(attributes.magic_nex));
-
-	y+=20;
-	//skills
-	glColor3f(1.0f,0.5f,0.2f);
-	draw_string_small(x,y,attributes.skills,1);
-
-	y+=14;
-
-	check_grid_x_left=x;
-	check_grid_y_top=y;
-
-        statsinfo[0].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.attack_skill),&(attributes.attack_skill),cur_stats.attack_exp,cur_stats.attack_exp_next_lev);
-
-	y+=14;
-        statsinfo[1].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.defense_skill),&(attributes.defense_skill),cur_stats.defense_exp,cur_stats.defense_exp_next_lev);
-
-	y+=14;
-        statsinfo[2].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.harvesting_skill),&(attributes.harvesting_skill),cur_stats.harvesting_exp,cur_stats.harvesting_exp_next_lev);
-
-	y+=14;
-        statsinfo[3].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.alchemy_skill),&(attributes.alchemy_skill),cur_stats.alchemy_exp,cur_stats.alchemy_exp_next_lev);
-
-	y+=14;
-        statsinfo[4].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.magic_skill),&(attributes.magic_skill),cur_stats.magic_exp,cur_stats.magic_exp_next_lev);
-
-	y+=14;
-        statsinfo[5].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.potion_skill),&(attributes.potion_skill),cur_stats.potion_exp,cur_stats.potion_exp_next_lev);
-
-	y+=14;
-        statsinfo[6].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.summoning_skill),&(attributes.summoning_skill),cur_stats.summoning_exp,cur_stats.summoning_exp_next_lev);
-
-	y+=14;
-        statsinfo[7].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.manufacturing_skill),&(attributes.manufacturing_skill),cur_stats.manufacturing_exp,cur_stats.manufacturing_exp_next_lev);
-
-	y+=14;
-        statsinfo[8].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.crafting_skill),&(attributes.crafting_skill),cur_stats.crafting_exp,cur_stats.crafting_exp_next_lev);
-
-	y+=14;
-        statsinfo[9].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.engineering_skill),&(attributes.engineering_skill),cur_stats.engineering_exp,cur_stats.engineering_exp_next_lev);
-
-	y+=14;
-        statsinfo[10].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.tailoring_skill),&(attributes.tailoring_skill),cur_stats.tailoring_exp,cur_stats.tailoring_exp_next_lev);
-
-	y+=14;
-        statsinfo[11].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.ranging_skill),&(attributes.ranging_skill),cur_stats.ranging_exp,cur_stats.ranging_exp_next_lev);
-
-	y+=14;
-        statsinfo[12].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(46,x,y,&(cur_stats.overall_skill),&(attributes.overall_skill),cur_stats.overall_exp,cur_stats.overall_exp_next_lev);
-#else //ENGLISH
-	char str[20];
-	int x,y;
-
-	x=5;
-	y=5;
-
-	draw_string_small(x,y,attributes.base,1);
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.phy),&(attributes.phy));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.coo),&(attributes.coo));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.rea),&(attributes.rea));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.wil),&(attributes.wil));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.ins),&(attributes.ins));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.vit),&(attributes.vit));
-
-#ifdef FR_RCM_WRAITH
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.sangf),&(attributes.sangf));
-#endif
-	//cross attributes
-	glColor3f(1.0f,1.0f,0.0f);
-	y+=20;
-
-	draw_string_small(x,y,attributes.cross,1);
-#ifndef FR_ATTRIBUTS_SECONDAIRE
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.might),&(attributes.might));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.matter),&(attributes.matter));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.tough),&(attributes.tough));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.charm),&(attributes.charm));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.react),&(attributes.react));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.perc),&(attributes.perc));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.ration),&(attributes.ration));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.dext),&(attributes.dext));
-
-	y+=14;
-	draw_statf(12,x,y,&(cur_stats.eth),&(attributes.eth));
-#else
-    y+=14;
-	draw_stat(12,x,y,&(cur_stats.might),&(attributes.might));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.matter),&(attributes.matter));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.tough),&(attributes.tough));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.charm),&(attributes.charm));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.react),&(attributes.react));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.perc),&(attributes.perc));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.ration),&(attributes.ration));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.dext),&(attributes.dext));
-
-	y+=14;
-	draw_stat(12,x,y,&(cur_stats.eth),&(attributes.eth));
-#endif
-
-	glColor3f(0.5f,0.5f,1.0f);
-	y+=14;	// blank lines for spacing
-#ifndef FR_RCM_WRAITH
-	y+=14;	// blank lines for spacing
-#endif
-
-	//other attribs
-	y+=20;
-	safe_snprintf(str, sizeof(str), "%i",cur_stats.food_level);
-	draw_stat_final(22,x,y,attributes.food.name,str);
-
-	y+=14;
-	draw_stat(18,x,y,&(cur_stats.material_points),&(attributes.material_points));
-
-	y+=14;
-	draw_stat(18,x,y,&(cur_stats.ethereal_points),&(attributes.ethereal_points));
-
-	y+=14;
-	draw_stat(18,x,y,&(cur_stats.carry_capacity),&(attributes.carry_capacity));
-
-	//other info
-#ifdef FR_RCM_WRAITH
-	y-=28;
-#else
-	y-=42;
-#endif
-	safe_snprintf(str, sizeof(str), "%i",cur_stats.overall_skill.base-cur_stats.overall_skill.cur);
-	draw_stat_final(19,255,y,attributes.pickpoints,str);
-	y+=14;
-
-	sprintf(str,"%i",cur_stats.notoriete);
-	draw_stat_final(19,255,y,attributes.notoriete.name,str);
-
-	y+=14;
-
-	if ((cur_stats.religion < 7) && (cur_stats.religion > 0))
-	{
-		safe_snprintf(str, sizeof(str), "%s [Rang %i]", religions[cur_stats.religion], cur_stats.niv_rel);
-		draw_stat_final(19, 255, y, attributes.religion.name, str);
-	}
-	else
-	{
-		draw_stat_final(19, 255, y, attributes.religion.name, "Aucune");
-	}
-
-	//nexuses here
-	glColor3f(1.0f,1.0f,1.0f);
-	x+=200;
-	y=5;
-
-	draw_string_small(x,y,attributes.nexus,1);
-
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.human_nex),&(attributes.human_nex));
-
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.animal_nex),&(attributes.animal_nex));
-
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.vegetal_nex),&(attributes.vegetal_nex));
-
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.inorganic_nex),&(attributes.inorganic_nex));
-
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.artificial_nex),&(attributes.artificial_nex));
-
-	y+=14;
-	draw_stat(11,x,y,&(cur_stats.magic_nex),&(attributes.magic_nex));
-
-	y+=20;
-#ifdef FR_RCM_WRAITH
-	y+=14;
-#endif
-	//skills
-	glColor3f(1.0f,0.5f,0.2f);
-	draw_string_small(x,y,attributes.skills,1);
-
-	y+=14;
-
-	check_grid_x_left=x;
-	check_grid_y_top=y;
-
-    statsinfo[0].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.attack_skill),&(attributes.attack_skill),cur_stats.attack_exp,cur_stats.attack_exp_next_lev);
-
-	y+=14;
-    statsinfo[1].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.defense_skill),&(attributes.defense_skill),cur_stats.defense_exp,cur_stats.defense_exp_next_lev);
-
-	y+=14;
-    statsinfo[2].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.harvesting_skill),&(attributes.harvesting_skill),cur_stats.harvesting_exp,cur_stats.harvesting_exp_next_lev);
-
-	y+=14;
-    statsinfo[3].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.alchemy_skill),&(attributes.alchemy_skill),cur_stats.alchemy_exp,cur_stats.alchemy_exp_next_lev);
-
-	y+=14;
-    statsinfo[4].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.magic_skill),&(attributes.magic_skill),cur_stats.magic_exp,cur_stats.magic_exp_next_lev);
-
-	y+=14;
-    statsinfo[5].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.potion_skill),&(attributes.potion_skill),cur_stats.potion_exp,cur_stats.potion_exp_next_lev);
-
-	y+=14;
-    statsinfo[6].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.summoning_skill),&(attributes.summoning_skill),cur_stats.summoning_exp,cur_stats.summoning_exp_next_lev);
-
-	y+=14;
-    statsinfo[7].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.manufacturing_skill),&(attributes.manufacturing_skill),cur_stats.manufacturing_exp,cur_stats.manufacturing_exp_next_lev);
-
-	y+=14;
-    statsinfo[8].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.crafting_skill),&(attributes.crafting_skill),cur_stats.crafting_exp,cur_stats.crafting_exp_next_lev);
-
-#ifdef INGENIERIE
-	y+=14;
-    statsinfo[9].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-	draw_skill(12,x,y,&(cur_stats.engineering_skill),&(attributes.engineering_skill),cur_stats.engineering_exp,cur_stats.engineering_exp_next_lev);
-#endif
-
-	y+=14;
-#ifdef INGENIERIE
-    statsinfo[10].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#else
-	statsinfo[9].is_selected==1?glColor3f(1.0f,0.5f,0.5f):glColor3f(1.0f,0.5f,0.2f);
-#endif
-	draw_skill(12,x,y,&(cur_stats.overall_skill),&(attributes.overall_skill),cur_stats.overall_exp,cur_stats.overall_exp_next_lev);
-#endif //ENGLISH
-
-	return 1;
-}
-#endif //FR_FENETRE_STATS
 
 int click_stats_handler(window_info *win, int mx, int my, Uint32 flags)
 {
@@ -1793,10 +969,8 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
         double f, width, y, x, z;
         double model[16],proj[16];
         int view[4];
-#ifndef ENGLISH
         //@tosh : pour éviter un plantage, si un message flottant arrive pendant une synchro
         if(!your_actor)return;
-#endif //ENGLISH
         if(!message)return;
 
         cut=message->active_time/4000.0f;
@@ -1893,9 +1067,6 @@ void drawactor_floatingmessages(int actor_id, float healthbar_z) {
 	}
 
 	glDisable(GL_BLEND);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 floating_message *get_free_floatingmessage() {

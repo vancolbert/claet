@@ -37,12 +37,7 @@ typedef struct
 	float g;
 	float b;
     /*! @} */
-#ifdef MAP_EDITOR2
-	int locked;
-#endif
-#ifdef CLUSTER_INSIDES
 	short cluster;
-#endif
 }light;
 
 /*! \name Lights limits */
@@ -118,11 +113,7 @@ void destroy_light(int i);
  * \param intensity     a (intensity) value of the lights color
  * \retval int          the index into the \ref lights_list array, where the light was added.
  */
-#if defined (MAP_EDITOR2) || defined (MAP_EDITOR)
-int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, GLfloat intensity, int locked, unsigned int dynamic);
-#else
 int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, GLfloat intensity, unsigned int dynamic);
-#endif
 
 /*!
  * \ingroup lights

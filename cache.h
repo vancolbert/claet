@@ -33,10 +33,6 @@ typedef struct
 	cache_item_struct	**cached_items; /*!< list of cached items */
 	cache_item_struct	*recent_item; /*!< pointer to the last used item */
 	Sint32	num_items;		/*!< the number of active items in the list */
-#ifndef FASTER_MAP_LOAD
-	Sint32	max_item;		/*!< the highest slot used */
-	Sint32	first_unused;	/*!< the lowest possible unused slow (might be in use!!) */
-#endif
 	Sint32	num_allocated;	/*!< the allocated space for the list */
 	Uint32	LRU_time;		/*!< last time LRU processing done */
 	Uint32	total_size;		/*!< total size currently allocated */
@@ -46,20 +42,6 @@ typedef struct
 	Uint32	(*compact_item)();	/*!< routine to call to reduce memory usage without freeing */
 } cache_struct;
 
-#ifndef	NEW_TEXTURES
-/*!
- * we use a separate cache structure to cache textures.
- */
-typedef struct
-{
-	int texture_id;               /*!< the id of the texture */
-	char file_name[128];          /*!< the filename of the texture */
-	cache_item_struct *cache_ptr; /*!< a pointer to the cached item */
-	int alpha;                    /*!< used for alpha blending the texture */
-    int has_alpha;                /*!< specify if the texture has an alpha map */
-	char load_err;                /*!< if true, we tried to load this texture before and failed */
-} texture_cache_struct;
-#endif
 
 /*!
  * \name Cache constants
@@ -95,7 +77,6 @@ void cache_system_init(Uint32 max_items);
  */
 void cache_system_maint(void);
 
-#ifdef	ELC
 /*!
  * \ingroup cache
  * \brief dumps the sizes of the given \a cache.
@@ -107,7 +88,6 @@ void cache_system_maint(void);
  * \callgraph
  */
 void cache_dump_sizes(const cache_struct *cache);
-#endif	/* ELC */
 
 /*!
  * \ingroup cache
@@ -220,9 +200,6 @@ void cache_adj_size(cache_struct *cache, Uint32 size, void *item);
  *
  * \param item      the item for which to set the access time
  */
-#ifndef	USE_INLINE
-void cache_use(cache_item_struct *item);
-#else	//USE_INLINE
 #include "global.h"
 
 static __inline__ void	cache_use(cache_item_struct *item_ptr)
@@ -233,7 +210,6 @@ static __inline__ void	cache_use(cache_item_struct *item_ptr)
 			item_ptr->access_count++;
 		}
 }
-#endif	//USE_INLINE
 
 
 /*!

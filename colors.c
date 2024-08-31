@@ -1,11 +1,7 @@
 #include "colors.h"
 #include "client_serv.h"
 
-#ifdef ENGLISH
-const color_rgb colors_list[] =
-#else //ENGLISH
 color_rgb colors_list[] =
-#endif //ENGLISH
 {
 	//              r1,  g1,  b1,   r2,  g2,  b2,   r3,  g3,  b3,   r4,  g4,  b4
 	[c_red1]    = {255, 179, 193,  255, 148, 168,  223,  93, 116,  132,  39,  56},
@@ -35,10 +31,6 @@ color_rgb colors_list[] =
 	[c_grey1]   = {255, 255, 255,  231, 231, 231,  175, 175, 175,  134, 134, 134},
 	[c_grey2]   = {153, 153, 153,  132, 132, 132,  110, 110, 110,   60,  60,  60},
 	[c_grey3]   = {158, 158, 158,  114, 114, 114,   71,  71,  71,   27,  27,  27},
-#ifdef ENGLISH
-	[c_grey4]   = { 40,  40,  40,   27,  27,  27,   13,  13,  13,    0,   0,   0}
-#else //ENGLISH
 	[c_grey4]   = { 40,  40,  40,   27,  27,  27,   13,  13,  13,    0,   0,   0},
 	[c_rose1]	= {255, 134, 234,  255, 134, 234,  255, 134, 234,  255, 134, 234}
-#endif //ENGLISH
 };

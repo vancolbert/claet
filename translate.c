@@ -11,12 +11,9 @@
 
 #define GROUP 0
 #define DIGROUP 1
-#ifdef ELC
 #define STAT_GROUP 2
-#endif
 
 
-#ifdef ELC
 typedef struct
 {
 	char *name;
@@ -32,11 +29,9 @@ typedef struct
 
 static string_group* named_strings = NULL;
 static size_t num_named_strings = 0;
-#endif
 
 /*! \name Tooltips*/
 /*! \{ */
-#ifdef ELC
 char	tt_walk[30],
 	tt_sit[30],
 	tt_stand[30],
@@ -56,10 +51,8 @@ char	tt_walk[30],
 	tt_console[30],
 	tt_buddy[40],
 	tt_options[32],
-#ifdef FR_VERSION
 	tt_music[30],
 	tt_quitter[30],
-#endif //FR_VERSION
 	tt_help[30],
 	tt_customize[60],
 	newchar_warning[50],
@@ -67,24 +60,12 @@ char	tt_walk[30],
 	newchar_cred_help[100],
 	newchar_done_help[100],
 	tt_name[60],
-#ifdef FR_VERSION
 	tt_info[32],
-#else //FR_VERSION
-	tt_info[30],
-#endif //FR_VERSION
-#ifdef EMOTES
-	tt_emotewin[30],
-#endif
-#ifdef MISSILES
-	tt_rangewin[30],
-#endif //MISSILES
 	tt_minimap[30];
 
-#endif // ELC
 
 /*! \} */
 
-#ifdef ELC
 /*! \name Options*/
 /*! \{ */
 dichar	opt_shadows,
@@ -103,10 +84,8 @@ dichar	opt_shadows,
 char 	switch_video_mode[50],
 	opt_options[20],
 	opt_vidmode[20];
-#endif
 /*! \} */
 
-#ifdef ELC
 /*! \name Sigils/spells */
 /*! \{ */
 char 	sig_too_few_sigs[50];
@@ -136,16 +115,10 @@ dichar	sig_change,
 	sig_remove,
 	sig_health,
 	sig_life,
-#ifdef ENGLISH
-	sig_death;
-#else //ENGLISH
     sig_death,
 	sig_chant;
-#endif //ENGLISH
-#endif
 /*! \} */
 
-#ifdef ELC
 /*! \name Help messages*/
 /*! \{ */
 char
@@ -165,14 +138,8 @@ char
 	buddy_long_delete_str[100],
 	buddy_wants_to_add_str[150],
 	buddy_add_to_list_str[180],
-#ifdef ENGLISH
-	buddy_logon_str[30],
-	buddy_online_str[30],
-	buddy_logoff_str[30],
-#else //ENGLISH
 	buddy_logon_str[31],
 	buddy_logoff_str[32],
-#endif //ENGLISH
 	buddy_white_str[10],
 	buddy_red_str[10],
 	buddy_green_str[10],
@@ -188,24 +155,16 @@ char
 	/* console.c */
 	help_cmd_markpos_str[50],
 	location_info_str[40],
-#ifdef FR_VERSION
     connaissances_str[40],
     connaissances_acquises_str[40],
     connaissances_non_acquises_str[40],
-#else //FR_VERSION
-	knowledge_cmd_str[40],
-#endif //FR_VERSION
 	marked_str[30],
 	unmarked_str[30],
 	urlcmd_none_str[30],
 	urlcmd_list_str[30],
 	win_url_str[30],
 	urlcmd_invalid_str[30],
-#ifdef ENGLISH
-	urlcmd_afk_str[30],
-#else //ENGLISH
 	urlcmd_afk_str[40],
-#endif //ENGLISH
 	urlcmd_clear_str[30],
 	urlwin_open_str[50],
 	urlwin_clear_str[30],
@@ -213,11 +172,6 @@ char
 	low_framerate_str[100],
 	/* encyclopedia */
 	encycl_search_prompt_str[25],
-#ifdef MISSILES
-	/*gamewin.c*/
-	ranginglock_enabled_str[100],
-	ranginglock_disabled_str[50],
-#endif //MISSILES
 	/*gl_init.c*/
 	window_size_adjusted_str[50],
 	/*hud.c*/
@@ -227,11 +181,6 @@ char
 	cm_action_points_str[30],
 	hud_timer_cm_str[100],
 	hud_timer_popup_title_str[25],
-#ifdef ENGLISH
-	day_indicator_str[40],
-	harvest_indicator_str[40],
-	poison_indicator_str[40],
-#endif //ENGLISH
 	/*loginwin.c*/
 	login_username_str[20],
 	login_password_str[20],
@@ -246,23 +195,11 @@ char
 	auto_get_all_str[30],
 	item_list_but_str[35],
 	inv_keeprow_str[30],
-#ifdef FR_VERSION
 	unwear_all_to_inv_str[100],
 	unwear_all_to_sto_str[100],
-#endif //FR_VERSION
 	quantity_edit_str[100],
 	equip_here_str[100],
 	equip_str[20],
-#ifdef ENGLISH
-	mod_click_item_help_str[50],
-	multiuse_item_help_str[50],
-	stoall_help_str[50],
-	getall_help_str[50],
-	dcdrpall_help_str[50],
-	drpall_help_str[50],
-	itmlst_help_str[50],
-	mixoneall_help_str[50],
-#else //ENGLISH
 	pick_item_help_str[150],
 	stoall_help_str[70],
 	getall_help_str[70],
@@ -270,19 +207,12 @@ char
 	drpall_help_str[70],
 	itmlst_help_str[70],
 	mixoneall_help_str[70],
-#endif //ENGLISH
 	items_stack_str[100],
 	mixbut_empty_str[80],
 	mix_empty_str[50],
 	click_clear_str[50],
 	double_click_clear_str[50],
-#ifdef ENGLISH
-	recipe_select_str[50],
-	recipe_load_str[50],
-	recipe_find_str[50],
-#else //ENGLISH
 	recipe_select_str[100],
-#endif //ENGLISH
 	recipe_show_hide_str[70],
 	recipe_save_str[70],
 	/*knowledge.c*/
@@ -296,9 +226,6 @@ char
 	minutes_str[15],
 	minute_str[15],
 	idle_str[15],
-#ifdef ENGLISH
-	knowledge_read_book[15],
-#endif //ENGLISH
 	knowledge_param_read[15],
 	knowledge_param_unread[15],
 	knowledge_param_total[15],
@@ -307,16 +234,11 @@ char
 	know_highlight_prompt_str[20],
 	know_highlight_cm_str[70],
 	/*manufacture.c*/
-#ifdef ENGLISH
-	mix_str[5],
-	mixall_str[10],
-#else //ENGLISH
 	mix_str[20],
 	mixall_str[20],
 	mixclear_help_str[40],
 	dc_mixclear_help_str[45],
 	dc_warning_str[50],
-#endif //ENGLISH
     clear_str[6],
 	reset_str[6],
 	manu_add_str[60],
@@ -329,9 +251,6 @@ char
 	/*new_character.c*/
 	skin_str[15],
 	hair_str[15],
-#ifdef NEW_EYES
-	eyes_str[15],
-#endif //NEW_EYES
 	shirt_str[15],
 	pants_str[15],
 	boots_str[15],
@@ -340,15 +259,10 @@ char
 	male_str[15],
 	female_str[15],
 	race_str[15],
-#ifdef FR_VERSION
     eldo_str[15],
     sinan_str[15],
     haut_elfe_str[15],
     elfe_noir_str[15],
-#else //FR_VERSION
-	human_str[15],
-	elf_str[15],
-#endif //FR_VERSION
 	dwarf_str[15],
 	gnome_str[15],
 	orchan_str[15],
@@ -372,15 +286,10 @@ char
 	hide_password[30],
 	char_done[15],
 	char_back[15],
-#ifdef FR_VERSION
     about_eldo[30],
     about_sinan[30],
     about_haut_elfe[30],
     about_elfe_noir[30],
-#else //FR_VERSION
-	about_human[30],
-	about_elves[30],
-#endif //FR_VERSION
 	about_dwarfs[30],
 	about_gnomes[30],
 	about_orchans[30],
@@ -394,25 +303,13 @@ char
 	afk_names[15],
 	afk_messages[25],
 	afk_print_help[150],
-#ifdef MISSILES
-	/* ranging window */
-	ranging_win_title_str[20],
-	ranging_total_shots_str[40],
-	ranging_sucessful_shots_str[40],
-	ranging_missed_shots_str[40],
-	ranging_success_rate_str[40],
-	ranging_critical_rate_str[40],
-	ranging_exp_per_arrow_str[40],
-#endif //MISSILES
 	/* storage */
 	storage_filter_prompt_str[15],
 	storage_filter_help_str[40],
 	/* session.c */
 	session_reset_help[60],
-#ifndef ENGLISH
 	/* spells.c */
 	click_to_add_str[100],
-#endif //ENGLISH
 	/*trade.c*/
 	quantity_str[30],
 	abort_str[10],
@@ -421,93 +318,43 @@ char
 	/*update.c*/
 	update_complete_str[40],
 	video_restart_str[80],
-#ifdef ENGLISH
-	rotate_chat_log_restart_str[80],
-#endif //ENGLISH
 	client_restart_countdown_str[40],
 	client_restarting_str[20],
 	restart_now_label[20],
 	/* context menu strings */
-#ifdef FR_VERSION
 	cm_quickspellwin_menu_str[100],
 	cm_quickspell_menu_str[100],
 	cm_textedit_menu_str[50],
 	cm_quickbar_menu_str[400],
 	cm_hud_menu_str[300],
-#else //FR_VERSION
-	cm_quickspell_menu_str[50],
-	cm_textedit_menu_str[100],
-	cm_quickbar_menu_str[150],
-	cm_hud_menu_str[270],
-#endif //FR_VERSION
 	cm_banner_menu_str[240],
 	cm_title_menu_str[150],
 	cm_title_help_str[50],
-#ifdef FR_VERSION
 	cm_items_menu_str[300],
 	cm_storage_menu_str[150],
 	cm_stoall_menu_str[150],
 	cm_dropall_menu_str[150],
-#else //FR_VERSION
-	cm_items_menu_str[150],
-	cm_storage_menu_str[90],
-	cm_astro_menu_str[80],
-#endif //FR_VERSION
 	cm_astro_menu_str[50],
-#ifdef MISSILES
-	cm_ranging_menu_str[50],
-#endif //MISSILES
 	cm_dialog_options_str[80],
 	cm_dialog_menu_str[60],
 	cm_url_menu_str[150],
-#ifdef FR_VERSION
 	cm_counters_menu_str[100],
-#else //FR_VERSION
-	cm_counters_menu_str[90],
-#endif //FR_VERSION
 	cm_help_options_str[50],
 	cm_npcname_menu_str[60],
 	cm_dialog_copy_menu_str[50],
-#ifdef FR_VERSION
 	cm_minimap_menu_str[65],
-#else //FR_VERSION
-	cm_minimap_menu_str[60],
-#endif //FR_VERSION
 	cm_user_menu_str[150],
 	cm_item_list_selected_str[40],
 	cm_item_list_names_str[110],
-#ifdef ENGLISH
-	cm_stats_bar_base_str[30],
-	cm_recipe_menu_str[100],
-	cm_manuwin_menu_str[50],
-#else //ENGLISH
 	cm_stats_bar_base_str[35],
-#endif //ENGLISH
-#ifndef ENGLISH
 	cm_manufacture_menu_str[150],
 	cm_listrecipe_menu_str[160],
-#endif //ENGLISH
 	cm_encycl_base_str[150],
 	/* user_menus.cpp */
 	um_invalid_command_str[50],
 	um_invalid_line_str[50],
 	um_no_menus_str[50],
 	um_window_title_str[50],
-#ifdef NEW_QUESTLOG
-	/* quest_log.cpp */
-	cm_questlog_menu_str[400],
-	cm_questlist_menu_str[150],
-	questlog_find_prompt_str[30],
-	questlog_add_npc_prompt_str[20],
-	questlog_add_text_prompt_str[20],
-	questlog_npc_filter_title_str[20],
-	questlist_filter_title_str[20],
-	questlist_showall_str[20],
-	questlog_cm_help_str[50],
-	questlog_deldupe_start_str[50],
-	questlog_deldupe_end_str[75],
-	questlog_deleted_str[20],
-#endif
 	/* new_character.c */
 	use_appropriate_name[500],
 	item_list_use_help_str[40],
@@ -519,10 +366,8 @@ char
 	item_list_magic_str[80],
 	item_list_find_str[20],
 	item_list_find_help_str[40];
-#endif
 /*! \} */
 
-#ifdef ELC
 /*! \name Console*/
 /*! \{ */
 char	name_too_long[75],
@@ -561,18 +406,14 @@ char	name_too_long[75],
 	date_format[100],
 	book_count_str[60],
 	know_help_str[60],
-#ifndef ENGLISH
 	am_cmd_str[10],
-#endif //ENGLISH
 	char_cmd_str[2],
 	char_at_str[2],
 	char_slash_str[2],
 	gm_cmd_str[5],
 	mod_cmd_str[5],
-#ifndef ENGLISH
 	dev_cmd_str[5],
 	coord_cmd_str[5],
-#endif //ENGLISH
 	bc_cmd_str[5],
 	msg_accept_buddy_str[55],
 	local_save_str[80],
@@ -612,7 +453,6 @@ char	name_too_long[75],
 	cmd_cast_spell[20],
 	cmd_reload_icons[20],
 	cmd_session_counters[20];
-#endif
 
 /*! \name Errors */
 /*! \{ */
@@ -620,11 +460,7 @@ char	reg_error_str[15],
 	file_write_error_str[20],
 	/*2d_objects.c*/
 	cant_load_2d_object[30],
-#ifdef ENGLISH
-	cant_open_file[30],
-#else //ENGLISH
     cant_open_file[35],
-#endif //ENGLISH
 	/*3d_objects.c*/
 	object_error_str[30],
 	nasty_error_str[50],
@@ -632,7 +468,6 @@ char	reg_error_str[15],
 	bad_object[30],
 	multiple_material_same_texture[100],
 	invalid_map[40],
-#ifdef ELC
 	/*actors.c*/
 	cant_load_actor[30],
 	cant_find_frame[30],
@@ -657,7 +492,6 @@ char	reg_error_str[15],
 	dialogue_repeat_str[20],
 	open_storage_str[20],
 	reopen_storage_str[50],
-#endif
 	xml_bad_node[80],
 	xml_bad_root_node[50],
 	xml_undefined_node[80],
@@ -665,13 +499,8 @@ char	reg_error_str[15],
 	using_eng_chanlist[120],
 	/*font.c*/
 	cant_load_font[30],
-#ifdef ELC
 	/*gamewin.c*/
-#ifdef ENGLISH
-	no_walk_with_sitlock[100],
-#else //ENGLISH
 	no_walk_with_sitlock[101],
-#endif //ENGLISH
 	/*init.c*/
 	no_stencil_str[150],
 	safemode_str[150],
@@ -686,11 +515,7 @@ char	reg_error_str[15],
 	gl_ext_found_not_used[100],
 	gl_ext_not_found[100],
 	gl_ext_no_multitexture[150],
-#ifdef ENGLISH
-	disabled_shadow_mapping[50],
-#else //ENGLISH
 	disabled_shadow_mapping[60],
-#endif //ENGLISH
 	shadow_map_size_not_supported_str[100],
 	disabled_framebuffer[50],
 	/* framebuffer.c */
@@ -732,9 +557,6 @@ char	reg_error_str[15],
 	init_audio_str[35],
 	load_icons_str[35],
 	load_textures_str[35],
-#ifdef PAWN
-	init_pawn_str[35],
-#endif // PAWN
 	init_network_str[35],
 	init_timers_str[35],
 	load_encyc_str[35],
@@ -751,15 +573,8 @@ char	reg_error_str[15],
 	load_particles_str[35],
 	bld_sectors_str[35],
 	init_done_str[35],
-#ifdef MINES
-	/* mines.c */
-	mines_config_open_err_str[50],
-	mines_config_error[50],
-#endif // MINES
 	/* misc.c */
-#ifdef PNG_SCREENSHOT
 	max_screenshots_warning_str[200],
-#endif //PNG_SCREENSHOT
 	/*multiplayer.c*/
 	failed_resolve[150],
 	failed_connect[100],
@@ -790,7 +605,6 @@ char	reg_error_str[15],
 	item_list_cat_format_error_str[50],
 	item_list_version_error_str[70],
 	item_list_empty_list_str[50],
-#endif
 	/*particles.c*/
 	particles_filever_wrong[100],
 	particle_system_overrun[100],
@@ -802,7 +616,6 @@ char	reg_error_str[15],
 	definitions_str[20],
 	part_sys_str[20],
 	part_part_str[20]
-#ifdef ELC
 	/*paste.c*/
 	,not_ascii[20],
 	/*rules.c*/
@@ -848,11 +661,7 @@ char	reg_error_str[15],
 	timer_lagging_behind[100],
 	/*spells.c*/
 	cast_str[20],
-#ifdef ENGLISH
-	invalid_spell_str[20],
-#else //ENGLISH
 	invalid_spell_str[30],
-#endif //ENGLISH
 	/* notepad.c */
 	cant_parse_notes[100],
 	notes_wrong[100],
@@ -870,31 +679,18 @@ char	reg_error_str[15],
 	cant_load_encycl[70],
 	/* text.c */
 	warn_currently_ignoring[50];
-#else
-	;
-#endif  // ELC
 /*! \} */
 
-#ifdef ELC
 /*! \name Window/Tab titles */
 /*! \{ */
 char	win_notepad[20],
 	win_prompt[10],
 	win_statistics[20],
-#ifdef FR_VERSION
 	win_sigils[20],
-#else //FR_VERSION
-	win_sigils[10],
-#endif //FR_VERSION
 	win_help[10],
 	win_buddy[10],
-#ifdef FR_VERSION
 	win_configuration[25],
 	win_manufacture[25],
-#else //FR_VERSION
-	win_configuration[20],
-	win_manufacture[20],
-#endif //FR_VERSION
 	win_astrology[20],
 	win_principal[20],
 	win_storage[10],
@@ -940,15 +736,9 @@ char	win_notepad[20],
 	label_note_name[20],
 	game_version_str[60],
 	label_cursor_coords[17],
-#ifdef ENGLISH
-	label_mark_filter[13];
-#else //ENGLISH
 	label_mark_filter[15];
-#endif //ENGLISH
-#endif  // ELC
 /*! \} */
 
-#ifdef ELC
 #define CONSOLE_STR 5
 #define ERRORS 7
 #define HELP_STR 5
@@ -957,22 +747,16 @@ char	win_notepad[20],
 #define STATS_STR 5
 #define STATS_EXTRA 1
 #define TITLES_STR 1
-#endif
 
-#ifdef MAP_EDITOR
-#define ERRORS 1
-#endif
 
 group_id * errors;
 group_id_di * options_str;
-#ifdef ELC
 group_id * console_str;
 group_id * help_str;
 group_id_di * sigils_str;
 group_stat * stats_str;
 group_id * stats_extra;
 group_id * titles_str;
-#endif
 
 void init_console(void);
 void init_help(void);
@@ -983,20 +767,17 @@ void init_errors(void);
 void * add_xml_group(int type, int no, ...);
 void free_xml_parser(int type, void * gPtr, int no);
 void parse_errors(xmlNode * in);
-#ifdef ELC
 void parse_console(xmlNode * in);
 void parse_help(xmlNode * in);
 void parse_options(xmlNode * in);
 void parse_spells(xmlNode * in);
 void parse_stats(xmlNode * in);
 void parse_titles(xmlNode * in);
-#endif
 struct xml_struct load_strings(char * file);
 struct xml_struct load_strings_file(char * filename);
 
 void init_groups()
 {
-#ifdef ELC
 	console_str=add_xml_group(GROUP,CONSOLE_STR,"filter","ignore","misc","loading_msg","cmd");
 	errors=add_xml_group(GROUP,ERRORS,"actors","load","misc","particles","snd","video","rules");
 	help_str=add_xml_group(GROUP,HELP_STR,"afk","misc","new","tooltips","buddy");
@@ -1005,10 +786,6 @@ void init_groups()
 	stats_str=add_xml_group(STAT_GROUP,STATS_STR,"base","cross","misc","nexus","skills");
 	stats_extra=add_xml_group(GROUP,STATS_EXTRA,"extra");
 	titles_str = add_xml_group (GROUP, TITLES_STR, "titles");
-#endif
-#ifdef MAP_EDITOR
-	errors=add_xml_group(GROUP,ERRORS,"particles");
-#endif
 }
 
 void * add_xml_group(int type, int no, ...)
@@ -1031,7 +808,6 @@ void * add_xml_group(int type, int no, ...)
 				safe_snprintf (grp[i].xml_id, sizeof (grp[i].xml_id), "%s", va_arg (ap, char*));
 			return grp;
 		}
-#ifdef ELC
 		case STAT_GROUP: {
 			group_stat * grp;
 			grp=(group_stat*)calloc(no,sizeof(group_stat));
@@ -1039,7 +815,6 @@ void * add_xml_group(int type, int no, ...)
 				safe_snprintf (grp[i].xml_id, sizeof (grp[i].xml_id), "%s", va_arg (ap, char*));
 			return grp;
 		}
-#endif
 		default:
 			return NULL;
 	}
@@ -1056,7 +831,6 @@ void add_xml_distringid(group_id_di * group, char * xml_id, dichar * var, char *
 	group->no++;
 }
 
-#ifdef ELC
 void add_xml_statid(group_stat * group, char * xml_id, names * var, char * name, char * shortname)
 {
 	group->statstrings=(statstring_item**)realloc(group->statstrings,(group->no+1)*sizeof(statstring_item*));
@@ -1067,7 +841,6 @@ void add_xml_statid(group_stat * group, char * xml_id, names * var, char * name,
 	safe_strncpy((char*)var->shortname, shortname, sizeof(var->shortname));
 	group->no++;
 }
-#endif
 
 void add_xml_identifier(group_id * group, char * xml_id, char * var, char * def, int max_len)
 {
@@ -1079,26 +852,21 @@ void add_xml_identifier(group_id * group, char * xml_id, char * var, char * def,
 	group->strings[group->no]->max_len=max_len-1;
 	group->no++;
 }
-#ifdef ELC
 void add_options_distringid(char * xml_id, dichar * var, char * str, char * desc)
 {
 	add_xml_distringid(options_str, xml_id, var, str, desc);
 }
-#endif //ELC
 void init_translatables()
 {
 	init_groups();
 	init_errors();
-#ifdef ELC
 	init_console();
 	init_help();
 	init_spell_translatables ();
 	init_stats();
 	init_titles();
-#endif
 }
 
-#ifdef ELC
 /* Save translated strings with their names for later lookup.
 */
 void save_named_strings(const group_id *groups, size_t num_groups, const char *group_name)
@@ -1128,9 +896,7 @@ void save_named_strings(const group_id *groups, size_t num_groups, const char *g
 		}
 	}
 }
-#endif
 
-#ifdef ELC
 /* Retrieve a translated string by its name.
 */
 const char* get_named_string(const char* group_name, const char* string_name)
@@ -1146,13 +912,11 @@ const char* get_named_string(const char* group_name, const char* string_name)
 						}
 	return "Unknown string";
 }
-#endif
 
 /* Free the memory allocated by translation module
 */
 void free_translations(void)
 {
-#ifdef ELC
 	/* the named strings */
 	{
 	size_t i,j;
@@ -1166,10 +930,8 @@ void free_translations(void)
 	num_named_strings = 0;
 	named_strings = NULL;
 	}
-#endif
 }
 
-#ifdef ELC
 void init_console()
 {
 	group_id * filter=&(console_str[0]);
@@ -1242,9 +1004,6 @@ void init_console()
 	add_xml_identifier(loading_msg,"init_audio",init_audio_str,"Initializing audio",sizeof(init_audio_str));
 	add_xml_identifier(loading_msg,"load_icons",load_icons_str,"Loading icons",sizeof(load_icons_str));
 	add_xml_identifier(loading_msg,"load_textures",load_textures_str,"Loading textures",sizeof(load_textures_str));
-#ifdef PAWN
-	add_xml_identifier (loading_msg, "init_pawn", init_pawn_str, "Initializing Pawn", sizeof(init_pawn_str));
-#endif // PAWN
 	add_xml_identifier(loading_msg,"init_network",init_network_str,"Initializing network",sizeof(init_network_str));
 	add_xml_identifier(loading_msg,"init_timers",init_timers_str,"Initializing timers",sizeof(init_timers_str));
 	add_xml_identifier(loading_msg,"load_encyc",load_encyc_str,"Loading Encyclopedia files",sizeof(load_encyc_str));
@@ -1262,18 +1021,14 @@ void init_console()
 
 	add_xml_identifier(cmd_grp,"help_rq",help_request_str,"#help request",sizeof(help_request_str));
 	add_xml_identifier(cmd_grp,"help_cmd",help_cmd_str,"help",sizeof(help_cmd_str));
-#ifndef ENGLISH
 	add_xml_identifier(cmd_grp,"am_cmd",am_cmd_str,"am",sizeof(am_cmd_str));
-#endif //ENGLISH
 	add_xml_identifier(cmd_grp,"char_cmd",char_cmd_str,"#",sizeof(char_cmd_str));
 	add_xml_identifier(cmd_grp,"char_at",char_at_str,"@",sizeof(char_at_str));
 	add_xml_identifier(cmd_grp,"char_slash",char_slash_str,"/",sizeof(char_slash_str));
 	add_xml_identifier(cmd_grp,"gm_cmd",gm_cmd_str,"#gm",sizeof(gm_cmd_str));
 	add_xml_identifier(cmd_grp,"mod_cmd",mod_cmd_str,"#mod",sizeof(mod_cmd_str));
-#ifndef ENGLISH
 	add_xml_identifier(cmd_grp,"dev_cmd",dev_cmd_str,"#dev",sizeof(dev_cmd_str));
 	add_xml_identifier(cmd_grp,"coord_cmd",coord_cmd_str,"#coord",sizeof(coord_cmd_str));
-#endif //ENGLISH
 	add_xml_identifier(cmd_grp,"bc_cmd",bc_cmd_str,"#bc",sizeof(bc_cmd_str));
 	add_xml_identifier(cmd_grp,"msg_accept_buddy",msg_accept_buddy_str," wants to add you on his/her buddy list",sizeof(msg_accept_buddy_str));
 	add_xml_identifier(cmd_grp,"filter",cmd_filter,"filter",sizeof(cmd_filter));
@@ -1302,11 +1057,9 @@ void init_console()
 	add_xml_identifier(cmd_grp,"session_counters",cmd_session_counters,"session_counters",sizeof(cmd_session_counters));
 	add_xml_identifier(cmd_grp,"reload_icons",cmd_reload_icons,"reload_icons",sizeof(cmd_reload_icons));
 }
-#endif
 
 void init_errors()
 {
-#ifdef ELC
 	group_id * actors=&(errors[0]);
 	group_id * load=&(errors[1]);
 	group_id * misc=&(errors[2]);
@@ -1314,12 +1067,7 @@ void init_errors()
 	group_id * snd=&(errors[4]);
 	group_id * video=&(errors[5]);
 	group_id * rules=&(errors[6]);
-#endif
-#ifdef MAP_EDITOR
-	group_id * particles=&(errors[0]);
-#endif
 
-#ifdef ELC
 	//Actor related errors
 	add_xml_identifier(actors,"load",cant_load_actor,"Can't load actor",sizeof(cant_load_actor));
 	add_xml_identifier(actors,"frame",cant_find_frame,"Couldn't find frame",sizeof(cant_find_frame));
@@ -1403,16 +1151,9 @@ void init_errors()
 	add_xml_identifier (misc, "use_builtin_chans", using_builtin_chanlist, "Could not load a channel list from file. Using a limited built-in set instead.", sizeof(using_builtin_chanlist));
 	add_xml_identifier (misc, "use_eng_chans", using_eng_chanlist, "Could not load a channel list for language code %s. Using the english set instead.", sizeof(using_eng_chanlist));
 
-#ifdef MINES
-	// Mines errors
-	add_xml_identifier (misc, "mines_config_open", mines_config_open_err_str, "Error opening mines configuration file", sizeof(mines_config_open_err_str));
-	add_xml_identifier (misc, "mines_config", mines_config_error, "Error loading mines configuration", sizeof(mines_config_error));
-#endif // MINES
 
 	// Misc
-#ifdef PNG_SCREENSHOT
 	add_xml_identifier (misc, "max_screenshots_warning", max_screenshots_warning_str, "You have reached the maximum capacity for screenshots. Please move them all to another folder, otherwise this image will be overwritten next time.", sizeof(max_screenshots_warning_str));
-#endif //PNG_SCREENSHOT
 
 	// item lists
 	add_xml_identifier (misc, "item_list_format_error", item_list_format_error, "Format error while reading item list.", sizeof(item_list_format_error));
@@ -1421,7 +1162,6 @@ void init_errors()
 	add_xml_identifier (misc, "item_list_version_error", item_list_version_error_str, "Item lists file is not compatible with client version.", sizeof(item_list_version_error_str));
 	add_xml_identifier (misc, "item_list_empty_list", item_list_empty_list_str, "No point saving an empty list.", sizeof(item_list_empty_list_str));
 
-#endif
 
 	//Particle errors
 	add_xml_identifier(particles,"version",particles_filever_wrong,"Particle file %s version (%i) doesn't match file reader version (%i)!",sizeof(particles_filever_wrong));
@@ -1435,7 +1175,6 @@ void init_errors()
 	add_xml_identifier(particles,"system",part_sys_str,"systems",sizeof(part_sys_str));
 	add_xml_identifier(particles,"particles",part_part_str,"particles",sizeof(part_part_str));
 
-#ifdef ELC
 	//Sound errors
 	add_xml_identifier(snd,"loadwav",snd_wav_load_error,"Failed to load wav file %s",sizeof(snd_wav_load_error));
 	add_xml_identifier(snd,"loadfile",snd_ogg_load_error,"Failed to load ogg file",sizeof(snd_ogg_load_error));
@@ -1503,10 +1242,8 @@ void init_errors()
 	add_xml_identifier(rules,"read",read_rules_str,"An error occured while reading the rules",sizeof(read_rules_str));
 	add_xml_identifier(rules,"parse",parse_rules_str,"An error occored while parsing the rules",sizeof(parse_rules_str));
 	add_xml_identifier(rules,"notfound",rules_not_found,"The rules.xml file was not found. You will have to redownload your game.",sizeof(rules_not_found));
-#endif
 }
 
-#ifdef ELC
 void init_help()
 {
 	group_id * afk = &(help_str[0]);
@@ -1545,10 +1282,8 @@ void init_help()
 	add_xml_identifier(misc,"autogetall",auto_get_all_str,"Empty Bag Automatically",sizeof(auto_get_all_str));
 	add_xml_identifier(misc,"itemlistbut",item_list_but_str,"Open Left Of Inventory",sizeof(item_list_but_str));
 	add_xml_identifier(misc,"inv_keeprow",inv_keeprow_str,"Keep First Row\nKeep Last Row",sizeof(inv_keeprow_str));
-#ifdef FR_VERSION
 	add_xml_identifier(misc,"unwear_all_to_inv",unwear_all_to_inv_str,"Retirer tous les équipements",sizeof(unwear_all_to_inv_str));
 	add_xml_identifier(misc,"unwear_all_to_sto",unwear_all_to_sto_str,"Ranger au dépot tous les équipements",sizeof(unwear_all_to_sto_str));
-#endif //FR_VERSION
 	add_xml_identifier(misc,"completed",completed_research,"COMPLETED",sizeof(completed_research));
 	add_xml_identifier(misc,"lessthanaminute",lessthanaminute_str,"Less than a minute",sizeof(lessthanaminute_str));
 	add_xml_identifier(misc,"research",researching_str,"Researching",sizeof(researching_str));
@@ -1559,9 +1294,6 @@ void init_help()
 	add_xml_identifier(misc,"minutes",minutes_str,"minutes",sizeof(minutes_str));
 	add_xml_identifier(misc,"minute",minute_str,"minute",sizeof(minute_str));
 	add_xml_identifier(misc,"idle",idle_str,"Idle",sizeof(idle_str));
-#ifdef ENGLISH
-	add_xml_identifier(misc,"read_book",knowledge_read_book,"Read Book",sizeof(knowledge_read_book));
-#endif //ENGLISH
 	add_xml_identifier(misc,"kp_read",knowledge_param_read,"-read",sizeof(knowledge_param_read));
 	add_xml_identifier(misc,"kp_unread",knowledge_param_unread,"-unread",sizeof(knowledge_param_unread));
 	add_xml_identifier(misc,"kp_total",knowledge_param_total,"-total",sizeof(knowledge_param_total));
@@ -1572,11 +1304,9 @@ void init_help()
 	add_xml_identifier(misc,"mix",mix_str,"Mix",sizeof(mix_str));
     add_xml_identifier(misc,"mix_all",mixall_str,"Mix all",sizeof(mixall_str));
 	add_xml_identifier(misc,"clear",clear_str,"Clear",sizeof(clear_str));
-#ifndef ENGLISH
 	add_xml_identifier(misc,"mixclear_help",mixclear_help_str,"Click to clear",sizeof(mixclear_help_str));
 	add_xml_identifier(misc,"dc_mixclear_help",dc_mixclear_help_str,"Double-click to clear",sizeof(dc_mixclear_help_str));
 	add_xml_identifier(misc,"dc_warning",dc_warning_str,"Vous devez double-cliquer pour confirmer",sizeof(dc_warning_str));
-#endif //ENGLISH
 	add_xml_identifier(misc,"manu_add",manu_add_str,"Left-click or scrollwheel to add 1; or 10 with CTRL",sizeof(manu_add_str));
 	add_xml_identifier(misc,"manu_remove",manu_remove_str,"Left-click or scrollwheel to remove 1; or 10 with CTRL",sizeof(manu_remove_str));
 	add_xml_identifier(misc,"cast",cast_str,"Cast",sizeof(cast_str));
@@ -1595,12 +1325,7 @@ void init_help()
 	add_xml_identifier (misc, "appropr_name", use_appropriate_name, "Use an appropriate name:\nPlease do not create a name that is obscene or offensive, contains more than 2 digits, is senseless or stupid (i.e. djrtq47fa), or is made with the intent of impersonating another player.\nTake into consideration that the name you choose does affect the atmosphere of the game. Inappropriate names can and will be locked.", sizeof (use_appropriate_name) );
 	add_xml_identifier(misc,"edit_quantity",quantity_edit_str,"Right-click on the quantity you wish to edit",sizeof(quantity_edit_str));
 	add_xml_identifier(misc,"equip_here",equip_here_str,"Place an item in these boxes to equip it",sizeof(equip_here_str));
-#ifdef ENGLISH
-	add_xml_identifier(misc,"mod_click_item_help",mod_click_item_help_str,"Left-click +ctrl/+alt to drop/store all",sizeof(mod_click_item_help_str));
-	add_xml_identifier(misc,"multiuse_item_help",multiuse_item_help_str,"Left-click to use (+shift to use again)",sizeof(multiuse_item_help_str));
-#else //ENGLISH
 	add_xml_identifier(misc,"pick_item_help",pick_item_help_str,"Pickup item. +ctrl/+alt to drop/store all",sizeof(pick_item_help_str));
-#endif //ENGLISH
 	add_xml_identifier(misc,"equipment",equip_str,"Equipment",sizeof(equip_str));
 	add_xml_identifier(misc,"stoall_help",stoall_help_str,"Move all items into opened storage.",sizeof(stoall_help_str));
 	add_xml_identifier(misc,"getall_help",getall_help_str,"Get all items from ground bag.",sizeof(getall_help_str));
@@ -1614,23 +1339,15 @@ void init_help()
 	add_xml_identifier(misc,"click_clear",click_clear_str,"Click to clear message.",sizeof(click_clear_str));
 	add_xml_identifier(misc,"double_click_clear",double_click_clear_str,"Double-click to clear message.",sizeof(double_click_clear_str));
 	add_xml_identifier(misc,"recipe_select",recipe_select_str,"Left-click or scroll to select recipe slot.",sizeof(recipe_select_str));
-#ifdef ENGLISH
-	add_xml_identifier(misc,"recipe_load",recipe_load_str,"Double-click to load recipe.",sizeof(recipe_load_str));
-	add_xml_identifier(misc,"recipe_find",recipe_find_str,"Type text - find recipe.",sizeof(recipe_find_str));
-#endif //ENGLISH
 	add_xml_identifier(misc,"recipe_show_hide",recipe_show_hide_str,"Click to show/hide saved recipes. Wheel to scroll.",sizeof(recipe_show_hide_str));
 	add_xml_identifier(misc,"recipe_save",recipe_save_str,"Click to save current recipe to selected slot.",sizeof(recipe_save_str));
 	add_xml_identifier(misc,"you",you_str,"You",sizeof(you_str));
 	add_xml_identifier(misc,"accept",accept_str,"Accept",sizeof(accept_str));
 	add_xml_identifier(misc,"cmd_markpos",help_cmd_markpos_str,"Usage: #markpos <x-coord>,<y-coord> <name>",sizeof(help_cmd_markpos_str));
 	add_xml_identifier(misc,"location_info",location_info_str,"Location %d,%d marked with %s",sizeof(location_info_str));
-#ifdef FR_VERSION
 	add_xml_identifier(misc,"connaissances", connaissances_str ,"Liste des connaissances :", sizeof(connaissances_acquises_str));
 	add_xml_identifier(misc,"connaissances_acquises", connaissances_acquises_str ,"Liste des connaissances acquises :", sizeof(connaissances_acquises_str));
 	add_xml_identifier(misc,"connaissances_non_acquises", connaissances_non_acquises_str ,"Liste des connaissances non acquises :", sizeof(connaissances_non_acquises_str));
-#else //FR_VERSION
-	add_xml_identifier(misc,"knowledge_command",knowledge_cmd_str,"List of matching knowledge:",sizeof(knowledge_cmd_str));
-#endif //FR_VERSION
 	add_xml_identifier(misc,"marked",marked_str,"%s marked",sizeof(marked_str));
 	add_xml_identifier(misc,"unmarked",unmarked_str,"%s unmarked",sizeof(unmarked_str));
 	add_xml_identifier(misc,"no_urls",urlcmd_none_str,"No URL seen",sizeof(urlcmd_none_str));
@@ -1642,9 +1359,7 @@ void init_help()
 	add_xml_identifier(misc,"open_urlwin",urlwin_open_str,"Click to open; right+click for options",sizeof(urlwin_open_str));
 	add_xml_identifier(misc,"clear_urlwin",urlwin_clear_str,"Clear the URL list",sizeof(urlwin_clear_str));
 	add_xml_identifier(misc,"reset",reset_str,"Reset",sizeof(reset_str));
-#ifndef ENGLISH
     add_xml_identifier(misc,"click_to_add",click_to_add_str,"Click to add the spell to the quickbar",sizeof(click_to_add_str));
-#endif //ENGLISH
 	add_xml_identifier(misc,"channel_help",channel_help_str,"Click a Channel to join. You can be in up to 3 channels at a time.\n\nTo talk in a channel, type @ before your message. You do not have to type @ to talk in Local.",sizeof(channel_help_str));
 	add_xml_identifier(misc,"channel_color_title",channel_color_title_str,"Channel Colors",sizeof(channel_color_title_str));
 	add_xml_identifier(misc,"channel_color",channel_color_str,"Set/delete the color for channel",sizeof(channel_color_str));
@@ -1655,40 +1370,16 @@ void init_help()
 	add_xml_identifier(misc,"cm_action_points",cm_action_points_str,"Show Action Points Bar",sizeof(cm_action_points_str));
 	add_xml_identifier(misc,"hud_timer_cm",hud_timer_cm_str,"Change Mode\nKeep State\n--\nStart/Stop\nSet Time\nReset Time\n--\nShow Help",sizeof(hud_timer_cm_str));
 	add_xml_identifier(misc,"hud_timer_popup_title",hud_timer_popup_title_str,"Time (in seconds)",sizeof(hud_timer_popup_title_str));
-#ifdef ENGLISH
-	add_xml_identifier(misc,"day indicator",day_indicator_str,"S||Special Day||Ordinary Day",sizeof(day_indicator_str));
-	add_xml_identifier(misc,"harvest_indicator",harvest_indicator_str,"H||Harvesting||Not Harvesting",sizeof(harvest_indicator_str));
-	add_xml_identifier(misc,"poison_indicator",poison_indicator_str,"P||Poisoned||Not Poisoned",sizeof(poison_indicator_str));
-#endif //ENGLISH
 	add_xml_identifier(misc,"dc_note_rm",dc_note_remove,"Double-click to remove this category",sizeof(dc_note_remove));
 	add_xml_identifier(misc,"note_saved",note_saved,"Your notes have been saved",sizeof(note_saved));
 	add_xml_identifier(misc,"note_save_failed",note_save_failed,"Failed to save your notes!",sizeof(note_save_failed));
-#ifdef MISSILES
-	add_xml_identifier(misc,"ranginglock_enabled",ranginglock_enabled_str,"Ranging-Lock is now enabled. Disable it or unequip ranging weapon before walking.",sizeof(ranginglock_enabled_str));
-	add_xml_identifier(misc,"ranginglock_disabled",ranginglock_disabled_str,"Ranging-Lock is now disabled.",sizeof(ranginglock_disabled_str));
-#endif //MISSILES
 	add_xml_identifier(misc,"video_restart", video_restart_str, "Video change will take effect at next restart.", sizeof(video_restart_str));
-#ifdef ENGLISH
-	add_xml_identifier(misc,"rotate_chat_log_restart", rotate_chat_log_restart_str, "Rotate chat log change will take effect at next restart.", sizeof(rotate_chat_log_restart_str));
-#endif //ENGLISH
-#ifdef MISSILES
-	add_xml_identifier(misc,"ranging_win_title", ranging_win_title_str, "Ranging", sizeof(ranging_win_title_str));
-	add_xml_identifier(misc,"ranging_total_shots", ranging_total_shots_str, "Total shots      %d", sizeof(ranging_total_shots_str));
-	add_xml_identifier(misc,"ranging_sucessful_shots", ranging_sucessful_shots_str, "Successful hits  %d", sizeof(ranging_sucessful_shots_str));
-	add_xml_identifier(misc,"ranging_missed_shots", ranging_missed_shots_str, "Missed hits      %d", sizeof(ranging_missed_shots_str));
-	add_xml_identifier(misc,"ranging_success_rate", ranging_success_rate_str, "Success rate     %.2f %%", sizeof(ranging_success_rate_str));
-	add_xml_identifier(misc,"ranging_critical_rate", ranging_critical_rate_str, "Critical rate    %.2f %%", sizeof(ranging_critical_rate_str));
-	add_xml_identifier(misc,"ranging_exp_per_arrow", ranging_exp_per_arrow_str, "Exp/arrows       %.2f exp", sizeof(ranging_exp_per_arrow_str));
-#endif //MISSILES
 	add_xml_identifier(misc,"storage_filter_prompt", storage_filter_prompt_str, "Filter: ", sizeof(storage_filter_prompt_str));
 	add_xml_identifier(misc,"storage_filter_help", storage_filter_help_str, "Type text - filter items.", sizeof(storage_filter_help_str));
 
 	//New characters
 	add_xml_identifier(new,"skin",skin_str,"Skin",sizeof(skin_str));
 	add_xml_identifier(new,"hair",hair_str,"Hair",sizeof(hair_str));
-#ifdef NEW_EYES
-	add_xml_identifier(new,"eyes",eyes_str,"Eyes",sizeof(eyes_str));
-#endif //NEW_EYES
 	add_xml_identifier(new,"shirt",shirt_str,"Shirt",sizeof(shirt_str));
 	add_xml_identifier(new,"pants",pants_str,"Pants",sizeof(pants_str));
 	add_xml_identifier(new,"boots",boots_str,"Boots",sizeof(boots_str));
@@ -1697,15 +1388,10 @@ void init_help()
 	add_xml_identifier(new,"male",male_str,"Male",sizeof(male_str));
 	add_xml_identifier(new,"female",female_str,"Female",sizeof(female_str));
 	add_xml_identifier(new,"race",race_str,"Race",sizeof(race_str));
-#ifdef FR_VERSION
 	add_xml_identifier(new, "eldorian", eldo_str, "Eldorian", sizeof(eldo_str));
 	add_xml_identifier(new, "sinan", sinan_str, "Sinan", sizeof(sinan_str));
 	add_xml_identifier(new, "haut_elfe", haut_elfe_str, "Haut-Elfe", sizeof(haut_elfe_str));
 	add_xml_identifier(new, "elfe_noir", elfe_noir_str, "Elfe Noir", sizeof(elfe_noir_str));
-#else //FR_VERSION
-	add_xml_identifier(new,"human",human_str,"Human",sizeof(human_str));
-	add_xml_identifier(new,"elf",elf_str,"Elf",sizeof(elf_str));
-#endif //FR_VERSION
 	add_xml_identifier(new,"dwarf",dwarf_str,"Dwarf",sizeof(dwarf_str));
 	add_xml_identifier(new,"gnome",gnome_str,"Gnome",sizeof(gnome_str));
 	add_xml_identifier(new,"orchan",orchan_str,"Orchan",sizeof(orchan_str));
@@ -1726,26 +1412,17 @@ void init_help()
 	add_xml_identifier(new,"confirmcreate",error_confirm_create_char,"Click done again to create a character with that name and appearance.",sizeof(error_confirm_create_char));
 	add_xml_identifier(new,"newcharwarning",newchar_warning,"Character creation screen",sizeof(newchar_warning));
 	add_xml_identifier(new,"newcharcusthelp",newchar_cust_help,"Click the eye icon below to customize your character.",sizeof(newchar_cust_help)); // it pains me to spell customize with a z:(
-#ifndef NEW_NEW_CHAR_WINDOW
-	add_xml_identifier(new,"newcharcredhelp",newchar_cred_help,"Click the person icon below to choose your character name and password.",sizeof(newchar_cred_help));
-#else
 	add_xml_identifier(new,"newcharcredhelp",newchar_cred_help,"When ready, click \"Done\" to choose your character name and password.",sizeof(newchar_cred_help));
-#endif
 	add_xml_identifier(new,"newchardonehelp",newchar_done_help,"When ready, click \"Done\" to create your character and enter the game.",sizeof(newchar_done_help));
 	add_xml_identifier(new,"wrongpass",invalid_pass,"Invalid password!",sizeof(invalid_pass));
 	add_xml_identifier(new,"showpass",show_password,"Show password",sizeof(show_password));
 	add_xml_identifier(new,"hidepass",hide_password,"Hide password",sizeof(hide_password));
 	add_xml_identifier(new,"done",char_done,"Done",sizeof(char_done));
 	add_xml_identifier(new,"back",char_back,"Back",sizeof(char_back));
-#ifdef FR_VERSION
 	add_xml_identifier(new, "a_eldo", about_eldo, "A propos des eldorians", sizeof(about_eldo));
 	add_xml_identifier(new, "a_sinan", about_sinan, "A propos des sinans", sizeof(about_sinan));
 	add_xml_identifier(new, "a_haut_elfe", about_haut_elfe, "A propos des hauts elfes", sizeof(about_haut_elfe));
 	add_xml_identifier(new, "a_elfe_noir", about_elfe_noir, "A propos des elfes noirs", sizeof(about_elfe_noir));
-#else //FR_VERSION
-	add_xml_identifier(new,"a_human",about_human,"About Human",sizeof(about_human));
-	add_xml_identifier(new,"a_elf",about_elves,"About Elves",sizeof(about_elves));
-#endif //FR_VERSION
 	add_xml_identifier(new,"a_dwarf",about_dwarfs,"About Dwarfs",sizeof(about_dwarfs));
 	add_xml_identifier(new,"a_gnome",about_gnomes,"About Gnomes",sizeof(about_gnomes));
 	add_xml_identifier(new,"a_orchan",about_orchans,"About Orchans",sizeof(about_orchans));
@@ -1773,20 +1450,12 @@ void init_help()
 	add_xml_identifier(tooltips,"console",tt_console,"View console",sizeof(tt_console));
 	add_xml_identifier(tooltips,"buddy",tt_buddy,"View buddy",sizeof(tt_buddy));
 	add_xml_identifier(tooltips,"opts",tt_options,"View options",sizeof(tt_options));
-#ifdef FR_VERSION
 	add_xml_identifier(tooltips,"music",tt_music,"Musique",sizeof(tt_music));
 	add_xml_identifier(tooltips,"quitter",tt_quitter,"Quitter le jeu",sizeof(tt_quitter));
-#endif //FR_VERSION
 	add_xml_identifier(tooltips,"help",tt_help,"View help",sizeof(tt_help));
 	add_xml_identifier(tooltips,"customize",tt_customize,"Customize your character",sizeof(tt_customize));
 	add_xml_identifier(tooltips,"name_pass",tt_name,"Choose name and password",sizeof(tt_name));
 	add_xml_identifier (tooltips, "info", tt_info, "View notepad/URL window", sizeof (tt_info));
-#ifdef EMOTES
-	add_xml_identifier (tooltips, "emotewin", tt_emotewin, "View Emote window", sizeof (tt_emotewin));
-#endif
-#ifdef MISSILES
-	add_xml_identifier (tooltips, "range", tt_rangewin, "View Ranging window", sizeof (tt_rangewin));
-#endif //MISSILES
 	add_xml_identifier (tooltips, "minimap", tt_minimap, "View Minimap window", sizeof (tt_minimap));
 
 	//Buddy list
@@ -1804,9 +1473,6 @@ void init_help()
 	add_xml_identifier(buddy, "request_dialog", buddy_wants_to_add_str, "%s wants to add you to his/her buddy list. Do you wish to allow it?", sizeof(buddy_wants_to_add_str));
 	add_xml_identifier(buddy, "add_to_list", buddy_add_to_list_str, "Add to my buddy list", sizeof(buddy_add_to_list_str));
 	add_xml_identifier(buddy, "logon", buddy_logon_str, "%.*s has logged on.", sizeof(buddy_logon_str));
-#ifdef ENGLISH
-	add_xml_identifier(buddy, "online", buddy_online_str, "%.*s is online.", sizeof(buddy_online_str));
-#endif //ENGLISH
 	add_xml_identifier(buddy, "logoff", buddy_logoff_str, "%.*s has logged off.", sizeof(buddy_logoff_str));
 	add_xml_identifier(buddy, "white", buddy_white_str, "White", sizeof(buddy_white_str));
 	add_xml_identifier(buddy, "red", buddy_red_str, "Red", sizeof(buddy_red_str));
@@ -1823,25 +1489,16 @@ void init_help()
 
 	/* strings for context menus */
 	add_xml_identifier(misc, "cm_quickspell_menu", cm_quickspell_menu_str, "Move Up\nMove Down\nRemove\n", sizeof(cm_quickspell_menu_str));
-#ifdef FR_VERSION
 	add_xml_identifier(misc, "cm_quickspellwin_menu", cm_quickspellwin_menu_str, "Quickbar Draggable\nFlip Quickbar\nReset Quickbar Position\n", sizeof(cm_quickspellwin_menu_str));
-#endif //FR_VERSION
 	add_xml_identifier(misc, "cm_textedit_menu", cm_textedit_menu_str, "Cut\nCopy\nPaste\n--\nDate\nTime\nCoords", sizeof(cm_textedit_menu_str));
 	add_xml_identifier(misc, "cm_quickbar_menu", cm_quickbar_menu_str, "Quickbar Relocatable\nQuickbar Draggable\nReset Quickbar Position\nFlip Quickbar\nEnable Quickbar Menu\n", sizeof(cm_quickbar_menu_str));
 	add_xml_identifier(misc, "cm_hud_menu", cm_hud_menu_str, "Show Stats\nShow Stats Bars\nShow Knowledge Bar\nShow Timer\nShow Digital Clock\nShow Analogue Clock\nShow Seconds\nShow FPS\nShow Indicators\nEnable Quickbar Menu\n--\nShow Minimap\nShow Ranging Stats\n--\nEnable Sound Effects\nEnable Music\n--\nCopy Location", sizeof(cm_hud_menu_str));
-#ifdef MISSILES
-	add_xml_identifier(misc, "cm_banner_menu", cm_banner_menu_str, "Show Names\nShow Health Bars\nShow Health Numbers\nShow Ether Bar\nShow Ether Numbers\nEnable Instance Mode\nShow Speech Bubbles\nEnable Banner Background\nSit Lock\nRanging Lock\n--\nDisable This Menu\n", sizeof(cm_banner_menu_str));
-#else //MISSILES
 	add_xml_identifier(misc, "cm_banner_menu", cm_banner_menu_str, "Show Names\nShow Health Bars\nShow Health Numbers\nShow Speech Bubbles\nEnable Banner Background\nSit Lock\nDisable This Menu\n", sizeof(cm_banner_menu_str));
-#endif //MISSILES
 	add_xml_identifier(misc, "cm_title_menu", cm_title_menu_str, "Hide Windows\nOpaque Background\nWindows On Top\n", sizeof(cm_title_menu_str));
 	add_xml_identifier(misc, "cm_title_help", cm_title_help_str, "Right-click for window menu", sizeof(cm_title_help_str));
 	add_xml_identifier(misc, "cm_items_menu", cm_items_menu_str, "--\nUse Small Window\nManual Window Size\nItem Window On Drop\nAllow Equipment Swap\nAlt/Ctrl-click With Any Cursor\n--\nOpen Storage (View Only)", sizeof(cm_items_menu_str));
 	add_xml_identifier(misc, "cm_storage_menu", cm_storage_menu_str, "--\nPrint Items To Console\nSort Categories Alphabetically\nDisable item filter", sizeof(cm_storage_menu_str));
 	add_xml_identifier(misc, "cm_astro_menu", cm_astro_menu_str, "--\nPrint Details To Console\nAlways Print Details To Console", sizeof(cm_astro_menu_str));
-#ifdef MISSILES
-	add_xml_identifier(misc, "cm_ranging_menu", cm_ranging_menu_str, "--\nPrint To Console", sizeof(cm_ranging_menu_str));
-#endif //MISSILES
 	add_xml_identifier(misc, "cm_dialog_options", cm_dialog_options_str, "Auto close storage dialogue\nAuto select storage option in dialogue", sizeof(cm_dialog_options_str));
 	add_xml_identifier(misc, "cm_dialog_menu", cm_dialog_menu_str, "--\nEnable Keypresses\nKeypresses Anywhere", sizeof(cm_dialog_menu_str));
 	add_xml_identifier(misc, "cm_url_menu", cm_url_menu_str, "Open\nFind In Console\nMark Visited\nMark Unvisited\n--\nDelete\n--\nDelete All", sizeof(cm_url_menu_str));
@@ -1854,17 +1511,11 @@ void init_help()
 	add_xml_identifier(misc, "cm_item_list_selected", cm_item_list_selected_str, "Edit quantity\n--\nDelete", sizeof(cm_item_list_selected_str));
 	add_xml_identifier(misc, "cm_item_list_names", cm_item_list_names_str, "Create new list\nRename active list\n--\nDelete active list\n--\nReload from file", sizeof(cm_item_list_names_str));
 	add_xml_identifier(misc, "cm_stats_bar_base", cm_stats_bar_base_str, "--\nAdd Bar\nRemove Bar", sizeof(cm_stats_bar_base_str));
-#ifdef ENGLISH
-	add_xml_identifier(misc, "cm_recipe_menu", cm_recipe_menu_str, "Add additional recipe row\nClear selected recipe\nSort recipes by name", sizeof(cm_recipe_menu_str));
-	add_xml_identifier(misc, "cm_manuwin_menu", cm_manuwin_menu_str, "\n--\nDisable key presses for window", sizeof(cm_manuwin_menu_str));
-#endif //ENGLISH
 	add_xml_identifier(misc, "cm_encycl_base", cm_encycl_base_str, "Encyclopedia Index\nSearch Encyclopedia Titles\nRepeat Last Search\nBookmark This Page\nUnbookmark This Page\nClear Bookmarks", sizeof(cm_encycl_base_str));
-#ifdef FR_VERSION
 	add_xml_identifier(misc, "cm_manufacture_menu", cm_manufacture_menu_str, "--\nInverser la molette sur la recette\nNe pas limiter les quantités ajoutées\nAffectation sur sélection à la molette\nActiver le menu sur la liste", sizeof(cm_manufacture_menu_str));
 	add_xml_identifier(misc, "cm_listrecipe_menu", cm_listrecipe_menu_str, "Utiliser cette recette\n--\nMémoriser la recette ici\nVider cet emplacement\nDésélectionner cette ligne\n--\nMonter\nDescendre\n--\nActiver le menu sur la liste", sizeof(cm_listrecipe_menu_str));
 	add_xml_identifier(misc, "cm_stoall_menu", cm_stoall_menu_str, "Garder la dernière ligne\n", sizeof(cm_stoall_menu_str));
 	add_xml_identifier(misc, "cm_dropall_menu", cm_dropall_menu_str, "Garder la dernière ligne\n", sizeof(cm_dropall_menu_str));
-#endif //FR_VERSION
 
 	/* user_menus.cpp */
 	add_xml_identifier(misc, "um_invalid_command", um_invalid_command_str, "Invalid command text", sizeof(um_invalid_command_str));
@@ -1873,29 +1524,6 @@ void init_help()
 	add_xml_identifier(misc, "um_window_title", um_window_title_str, "User Menus", sizeof(um_window_title_str));
 
 	/* quest_log.cpp */
-#ifdef NEW_QUESTLOG
-	add_xml_identifier(misc, "cm_questlog_menu", cm_questlog_menu_str,
-		"Show all quests & entries\nOpen quest list window\nOpen NPC list window\n"
-		"Select NPCs, starting with none...\nShow just this NPC\nShow just this quest\n--\n"
-		"Copy entry\nCopy all entries\nFind text...\nAdd entry...\n--\n"
-		"Select entry\nUnselect entry\nSelect all entries\nUnselect all entires\nShow only selected entries\n--\n"
-		"Delete entry\nUndelete entry\n--\n"
-		"Delete duplicates entries\n--\n"
-		"Save changes", sizeof(cm_questlog_menu_str));
-	add_xml_identifier(misc, "cm_questlist_menu", cm_questlist_menu_str,
-		"Quest completed\nAdd selected entries to quest\n--\n"
-		"Hide completed quests\nDo not always open window\nStart window left of entires\n", sizeof(cm_questlist_menu_str));
-	add_xml_identifier(misc, "questlog_find_prompt", questlog_find_prompt_str, "Text to Find", sizeof(questlog_find_prompt_str));
-	add_xml_identifier(misc, "questlog_add_npc_prompt", questlog_add_npc_prompt_str, "NPC name", sizeof(questlog_add_npc_prompt_str));
-	add_xml_identifier(misc, "questlog_add_text_prompt", questlog_add_text_prompt_str, "Entry text", sizeof(questlog_add_text_prompt_str));
-	add_xml_identifier(misc, "questlog_npc_filter_title", questlog_npc_filter_title_str, "NPC list", sizeof(questlog_npc_filter_title_str));
-	add_xml_identifier(misc, "questlist_filter_title", questlist_filter_title_str, "Quest List", sizeof(questlist_filter_title_str));
-	add_xml_identifier(misc, "questlist_showall", questlist_showall_str, "Show all quests", sizeof(questlist_showall_str));
-	add_xml_identifier(misc, "questlog_cm_help", questlog_cm_help_str, "Right-click for command menu", sizeof(questlog_cm_help_str));
-	add_xml_identifier(misc, "questlog_deldupe_start", questlog_deldupe_start_str, "Deleting duplicate quest log entries...", sizeof(questlog_deldupe_start_str));
-	add_xml_identifier(misc, "questlog_deldupe_end", questlog_deldupe_end_str, "...unique entries: %d, deleted duplicates: %d.", sizeof(questlog_deldupe_end_str));
-	add_xml_identifier(misc, "questlog_deleted", questlog_deleted_str, "(Deleted)", sizeof(questlog_deleted_str));
-#endif
 	add_xml_identifier(misc, "item_list_use_help", item_list_use_help_str, "Use quantity - right-click", sizeof(item_list_use_help_str));
 	add_xml_identifier(misc, "item_list_pickup_help", item_list_pickup_help_str, "Pick up - left-click", sizeof(item_list_pickup_help_str));
 	add_xml_identifier(misc, "item_list_edit_help", item_list_edit_help_str, "Edit menu - ctrl+right-click", sizeof(item_list_edit_help_str));
@@ -1906,9 +1534,7 @@ void init_help()
 	add_xml_identifier(misc, "item_list_find", item_list_find_str, "Find: ", sizeof(item_list_find_str));
 	add_xml_identifier(misc, "item_list_find_help", item_list_find_help_str, "Find list - type text", sizeof(item_list_find_help_str));
 }
-#endif
 
-#ifdef ELC
 void init_spell_translatables ()
 {
 	//Sigils
@@ -1938,13 +1564,9 @@ void init_spell_translatables ()
 	add_xml_distringid(sigils_str,"health",&sig_health,"Health","");
 	add_xml_distringid(sigils_str,"life",&sig_life,"Life","");
 	add_xml_distringid(sigils_str,"death",&sig_death,"Death","");
-#ifndef ENGLISH
 	add_xml_distringid(sigils_str,"chant",&sig_chant,"Chant","");
-#endif //ENGLISH
 }
-#endif
 
-#ifdef ELC
 void init_stats()
 {
 	group_stat * base = &(stats_str[0]);
@@ -1966,9 +1588,6 @@ void init_stats()
 	add_xml_statid(base,"will",&(attributes.wil),"Will","wil");
 	add_xml_statid(base,"inst",&(attributes.ins),"Instinct","ins");
 	add_xml_statid(base,"vit",&(attributes.vit),"Vitality","vit");
-#ifdef FR_RCM_WRAITH
-	add_xml_statid(base,"sangf",&(attributes.sangf),"Sang froid", "sangf");
-#endif
 	add_xml_statid(cross,"might",&(attributes.might),"Might","mig");
 	add_xml_statid(cross,"matter",&(attributes.matter),"Matter","mat");
 	add_xml_statid(cross,"tough",&(attributes.tough),"Toughness","tou");
@@ -1983,15 +1602,9 @@ void init_stats()
 	add_xml_statid(misc,"ethereal",&(attributes.ethereal_points),"Ethereal Points","ethp");
 	add_xml_statid(misc,"carry",&(attributes.carry_capacity),"Carry capacity","Load");
 	add_xml_statid(misc,"food",&(attributes.food),"Food level","food");
-#ifdef ENGLISH
-	add_xml_statid(misc,"action",&(attributes.action_points),"Action Points","actp");
-#endif //ENGLISH
-#ifndef ENGLISH
 	add_xml_statid(misc,"notoriete",&(attributes.notoriete),"Notoriété","notoriete");
 	add_xml_statid(misc,"religion",&(attributes.religion),"Religion","relig");
-#endif //ENGLISH
 
-#ifdef FR_NEXUS
     add_xml_statid(nexus,"defense_nexus",&(attributes.defense_nexus),"Defense","def");
     add_xml_statid(nexus,"attaque_nexus",&(attributes.attaque_nexus),"Attaque","att");
 	add_xml_statid(nexus,"necro_nexus",&(attributes.necro_nexus),"Necro","nec");
@@ -2001,17 +1614,7 @@ void init_stats()
 	add_xml_statid(nexus,"artisanat_nexus",&(attributes.artisanat_nexus),"Artisanant","art");
 	add_xml_statid(nexus,"magie_nexus",&(attributes.magie_nexus),"Magie","mag");
 	add_xml_statid(nexus,"alchimie_nexus",&(attributes.alchimie_nexus),"Aclhimie","acl");
-#ifdef INGENIERIE
 	add_xml_statid(nexus,"ingenierie_nexus",&(attributes.ingenierie_nexus),"Ingénierie","ing");
-#endif
-#else
-	add_xml_statid(nexus,"human",&(attributes.human_nex),"Human","hum");
-	add_xml_statid(nexus,"animal",&(attributes.animal_nex),"Animal","ani");
-	add_xml_statid(nexus,"vegetal",&(attributes.vegetal_nex),"Vegetal","veg");
-	add_xml_statid(nexus,"inorganic",&(attributes.inorganic_nex),"Inorganic","ino");
-	add_xml_statid(nexus,"artificial",&(attributes.artificial_nex),"Artificial","art");
-	add_xml_statid(nexus,"magic",&(attributes.magic_nex),"Magic","magn");
-#endif
 	add_xml_statid(skills,"attack",&(attributes.attack_skill),"Attack","att");
 	add_xml_statid(skills,"defense",&(attributes.defense_skill),"Defense","def");
 	add_xml_statid(skills,"harvest",&(attributes.harvesting_skill),"Harvest","har");
@@ -2021,19 +1624,10 @@ void init_stats()
 	add_xml_statid(skills,"summon",&(attributes.summoning_skill),"Summoning","sum");
 	add_xml_statid(skills,"manu",&(attributes.manufacturing_skill),"Manufacturing","man");
 	add_xml_statid(skills,"crafting",&(attributes.crafting_skill),"Crafting","cra");
-#ifdef INGENIERIE
 	add_xml_statid(skills,"engineering",&(attributes.engineering_skill),"Ingénierie","ing");
-#endif
-#ifdef ENGLISH
-	add_xml_statid(skills,"engineering",&(attributes.engineering_skill),"Engineering","eng");
-	add_xml_statid(skills,"tailoring",&(attributes.tailoring_skill),"Tailoring","tai");
-	add_xml_statid(skills,"ranging",&(attributes.ranging_skill),"Ranging","ran");
-#endif //ENGLISH
 	add_xml_statid(skills,"overall",&(attributes.overall_skill),"Overall","oa");
 }
-#endif
 
-#ifdef ELC
 void init_titles ()
 {
 	add_xml_identifier (titles_str, "w_note", win_notepad, "Notepad", sizeof(win_notepad));
@@ -2091,97 +1685,49 @@ void init_titles ()
 	add_xml_identifier (titles_str, "item_list_preview", item_list_preview_title, "Item lists", sizeof(item_list_preview_title));
 	add_xml_identifier (titles_str, "item_list_quantity", item_list_quantity_str, "Quantity", sizeof(item_list_quantity_str));
 }
-#endif // ELC
 
-#ifdef WRITE_XML
-void save_strings(xmlDoc * doc, char * name)
-{
-	char str[50];
-
-	//default language is en - change this if you want to save the strings to another folder...
-	safe_snprintf (str, sizeof (str), "languages/en/strings/%s", name);
-	xmlSaveFormatFileEnc (str, doc, "UTF-8", 1);//We'll save the file in UTF-8
-}
-#endif
 
 void load_translatables()
 {
 	struct xml_struct file=load_strings("console.xml");
-#ifdef ELC
 	if(file.file!=NULL) {
 		//Parse file
 		parse_console(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"console.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#endif
 	file = load_strings("errors.xml");
 	if(file.file!=NULL) {
 		parse_errors(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"errors.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#ifdef ELC
 	file = load_strings("help.xml");
 	if(file.file!=NULL) {
 		parse_help(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"help.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#endif
-#ifdef ELC
 	file = load_strings("options.xml");
 	if(file.file!=NULL) {
 		parse_options(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"options.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#endif
-#ifdef ELC
 	file = load_strings("spells.xml");
 	if(file.file!=NULL) {
 		parse_spells(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"spells.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#endif
-#ifdef ELC
 	file = load_strings("stats.xml");
 	if(file.file!=NULL){
 		parse_stats(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"stats.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#endif
-#ifdef ELC
 	file = load_strings("titles.xml");
 	if(file.file!=NULL){
 		parse_titles(file.root);
-#ifdef WRITE_XML
-		save_strings(file.file,"titles.xml");
-#endif
 		xmlFreeDoc(file.file);
 	}
-#endif
-#ifdef ELC
 	save_named_strings(help_str,HELP_STR, "tooltips");
-#endif
-#ifndef WRITE_XML
 //There's no need for these variables to be hanging around any more...
 	free_xml_parser(GROUP,errors,ERRORS);
-#ifdef ELC
 	free_xml_parser(GROUP,console_str,CONSOLE_STR);
 	free_xml_parser(GROUP,help_str,HELP_STR);
 	free_xml_parser(DIGROUP,options_str,OPTIONS_STR);
@@ -2189,8 +1735,6 @@ void load_translatables()
 	free_xml_parser(STAT_GROUP,stats_str,STATS_STR);
 	free_xml_parser(GROUP,stats_extra,STATS_EXTRA);
 	free_xml_parser(GROUP,titles_str,TITLES_STR);
-#endif
-#endif
 }
 
 struct xml_struct load_strings(char * file)
@@ -2214,29 +1758,14 @@ struct xml_struct load_strings_file(char * filename)
 {
 	struct xml_struct file={NULL,NULL};
 	if ((file.file = xmlReadFile(filename, NULL, 0)) == NULL){
-#ifdef WRITE_XML
-		if ((file.file = xmlNewDoc(BAD_CAST "1.0"))==NULL){
-			xmlFreeDoc(file.file);
-			file.file=NULL;
-		}
-#else
 		xmlFreeDoc(file.file);
 		file.file=NULL;
-#endif
 	}
 	if(file.file){
 		if((file.root=xmlDocGetRootElement(file.file))==NULL){
-#ifdef WRITE_XML
-			file.root=xmlNewNode(NULL,"root");
-			xmlDocSetRootElement (file.file, file.root);
-			if((file.root=xmlDocGetRootElement(file.file))==NULL) {
-#endif
 				LOG_ERROR("Fatal: couldn't find root element in %s\n",filename);
 				xmlFreeDoc(file.file);
 				file.file=NULL;
-#ifdef WRITE_XML
-			}
-#endif
 		}
 	}
 	return file;
@@ -2251,28 +1780,14 @@ void copy_strings(xmlNode * in, distring_item * string)
 				if(!xmlStrcasecmp(cur->name, (xmlChar*)"name")) {
 					char *p=(char*)string->var->str;
 					my_xmlStrncopy(&p,  (char*)cur->children->content, sizeof(string->var->str) -1);
-#ifdef WRITE_XML
-					string->var->saved_str=1;
-#endif
 				} else if (!xmlStrcasecmp(cur->name, (xmlChar*)"desc")) {
 					char *p=(char*)string->var->desc;
 					my_xmlStrncopy(&p, (char*)cur->children->content, sizeof(string->var->desc) -1);
-#ifdef WRITE_XML
-					string->var->saved_desc=1;
-#endif
 				}
 			}
 		}
 	}
-#ifdef WRITE_XML
-	if(!string->var->saved_str) xmlNewTextChild(in, NULL, "name", string->var->str);
-	if(!string->var->saved_desc) {
-		if(string->var->desc!=NULL) xmlNewTextChild(in, NULL, "desc", string->var->desc);
-		else xmlNewTextChild(in, NULL, "desc", " ");
-	}
-#endif
 }
-#ifdef ELC
 void copy_stats(xmlNode * in, statstring_item * string)
 {
 	xmlNode *cur = in->children?in->children:in;
@@ -2282,27 +1797,15 @@ void copy_stats(xmlNode * in, statstring_item * string)
 				if(!xmlStrcasecmp(cur->name, (xmlChar*)"name")) {
 					char *p=(char*)string->var->name;
 					my_xmlStrncopy(&p, (char*)cur->children->content, 20);
-#ifdef WRITE_XML
-					string->var->saved_name=1;
-#endif
 				} else if (!xmlStrcasecmp(cur->name, (xmlChar*)"shortname")){
 					char *p=(char*)string->var->shortname;
 					my_xmlStrncopy(&p, (char*)cur->children->content, 6);
-#ifdef WRITE_XML
-					string->var->saved_shortname=1;
-#endif
 				}
 			}
 		}
 	}
-#ifdef WRITE_XML
-	if(!string->var->saved_name) xmlNewTextChild(in, NULL, "name", string->var->name);
-	if(!string->var->saved_shortname) xmlNewTextChild(in, NULL, "shortname", string->var->shortname);
-#endif
 }
-#endif
 
-#ifdef ELC
 void parse_statstrings(xmlNode * in, group_stat * group)
 {
 	xmlNode * cur = in->children?in->children:in;
@@ -2313,25 +1816,13 @@ void parse_statstrings(xmlNode * in, group_stat * group)
 				for(i=0;i<group->no;i++){
 					if(!xmlStrcasecmp(cur->name, (xmlChar*)group->statstrings[i]->xml_id)) {
 						copy_stats(cur->children,group->statstrings[i]);
-#ifdef WRITE_XML
-						group->statstrings[i]->saved=1;
-#endif
 						break;
 					}
 				}
 			}
 		}
 	}
-#ifdef WRITE_XML
-	for(i=0;i<group->no;i++) {
-		if(!group->statstrings[i]->saved) {
-			cur=xmlNewTextChild(in, NULL, group->statstrings[i]->xml_id, NULL);
-			copy_stats(cur, group->statstrings[i]);
-		}
-	}
-#endif
 }
-#endif
 
 void parse_distrings(xmlNode * in, group_id_di * group)
 {
@@ -2343,23 +1834,12 @@ void parse_distrings(xmlNode * in, group_id_di * group)
 				for(i=0;i<group->no;i++){
 					if(!xmlStrcasecmp(cur->name, (xmlChar*)group->distrings[i]->xml_id)){
 						copy_strings(cur->children,group->distrings[i]);
-#ifdef WRITE_XML
-						group->distrings[i]->saved=1;
-#endif
 						break;
 					}
 				}
 			}
 		}
 	}
-#ifdef WRITE_XML
-	for(i=0;i<group->no;i++) {
-		if(!group->distrings[i]->saved) {
-			cur=xmlNewTextChild(in, NULL, group->distrings[i]->xml_id, NULL);
-			copy_strings(cur, group->distrings[i]);
-		}
-	}
-#endif
 }
 
 void parse_strings(xmlNode * in, group_id * group)
@@ -2372,31 +1852,19 @@ void parse_strings(xmlNode * in, group_id * group)
 				for(i=0;i<group->no;i++){
 					if(!xmlStrcasecmp(cur->name, (xmlChar*)group->strings[i]->xml_id))	{
 						my_xmlStrncopy(&group->strings[i]->var, (char*)cur->children->content, group->strings[i]->max_len);
-#ifdef WRITE_XML
-						group->strings[i]->saved=1;
-#endif
 						break;
 					}
 				}
 			}
 		}
 	}
-#ifdef WRITE_XML
-	for(i=0;i<group->no;i++) {
-		if(!group->strings[i]->saved) {
-			xmlNewTextChild(in, NULL, group->strings[i]->xml_id, group->strings[i]->var);
-		}
-	}
-#endif
 }
 
 void parse_groups(xmlNode * in, void * gPtr, int size, int type)
 {
 	group_id * group=gPtr;
 	group_id_di * Group=gPtr;
-#ifdef ELC
 	group_stat * stat=gPtr;
-#endif
 	int i;
 	xmlNode * cur = in->children?in->children:in;
 	for(;cur;cur=cur->next) {
@@ -2406,118 +1874,69 @@ void parse_groups(xmlNode * in, void * gPtr, int size, int type)
 					case GROUP:
 						if(!xmlStrcasecmp(cur->name, (xmlChar*)group[i].xml_id)) {
 							parse_strings(cur,&(group[i]));
-#ifdef WRITE_XML
-							group[i].saved=1;
-#endif
 							i=size;
 						}
 						break;
 					case DIGROUP:
 						if(!xmlStrcasecmp(cur->name, (xmlChar*)Group[i].xml_id)) {
 							parse_distrings(cur,&(Group[i]));
-#ifdef WRITE_XML
-							Group[i].saved=1;
-#endif
 							i=size;
 						}
 						break;
-#ifdef ELC
 					case STAT_GROUP:
 						if(!xmlStrcasecmp(cur->name, (xmlChar*)stat[i].xml_id)) {
 							parse_statstrings(cur,&(stat[i]));
-#ifdef WRITE_XML
-							stat[i].saved=1;
-#endif
 							i=size;
 						}
 						break;
-#endif
 					default: break;
 				}
 			}
 		}
 	}
-#ifdef WRITE_XML
-	for(i=0;i<size;i++) {
-		switch(type) {
-			case GROUP:
-				if(!group[i].saved) {
-					cur=xmlNewChild(in, NULL, group[i].xml_id, NULL);
-					parse_strings(cur,&(group[i]));
-				}
-				break;
-			case DIGROUP:
-				if(!Group[i].saved) {
-					cur=xmlNewChild(in, NULL, Group[i].xml_id, NULL);
-					parse_distrings(cur,&(Group[i]));
-				}
-				break;
-			case STAT_GROUP:
-				if(!stat[i].saved) {
-					cur=xmlNewChild(in, NULL, stat[i].xml_id, NULL);
-					parse_statstrings(cur,&(stat[i]));
-				}
-			default: break;
-		}
-	}
-#endif
 }
 
-#ifdef ELC
 void parse_console(xmlNode * in)
 {
 	parse_groups(in,console_str,CONSOLE_STR, GROUP);
 }
-#endif
 
 void parse_errors(xmlNode * in)
 {
 	parse_groups(in,errors,ERRORS,GROUP);
 }
 
-#ifdef ELC
 void parse_help(xmlNode * in)
 {
 	parse_groups(in, help_str, HELP_STR, GROUP);
 }
-#endif
 
-#ifdef ELC
 void parse_options(xmlNode * in)
 {
 	parse_groups(in, options_str, OPTIONS_STR, DIGROUP);
 }
-#endif
 
-#ifdef ELC
 void parse_spells(xmlNode * in)
 {
 	parse_groups(in, sigils_str, SIGILS_STR, DIGROUP);
 }
-#endif
 
-#ifdef ELC
 void parse_stats(xmlNode * in)
 {
 	parse_groups(in, stats_extra, STATS_EXTRA, GROUP);
 	parse_groups(in, stats_str, STATS_STR, STAT_GROUP);
 }
-#endif
 
-#ifdef ELC
 void parse_titles(xmlNode * in)
 {
 	parse_groups(in, titles_str, TITLES_STR, GROUP);
 }
-#endif
 
 void free_xml_parser(int type, void * gPtr, int no)
 {
 	group_id * grp=gPtr;
 	group_id_di * Grp=gPtr;
-#ifdef ELC
 	group_stat * stat=gPtr;
-#endif
 	int i=0,j;
 	switch(type) {
 		case GROUP:
@@ -2538,7 +1957,6 @@ void free_xml_parser(int type, void * gPtr, int no)
 			}
 			free(Grp);
 			break;
-#ifdef ELC
 		case STAT_GROUP:
 			for(;i<no;i++) {
 				for(j=0;j<stat[i].no;j++) {
@@ -2547,7 +1965,6 @@ void free_xml_parser(int type, void * gPtr, int no)
 				free(stat[i].statstrings);
 			}
 			free(stat);
-#endif
 		default: break;
 	}
 }

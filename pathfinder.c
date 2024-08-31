@@ -43,18 +43,8 @@ static __inline__ int pf_heuristic(int dx, int dy)
 #endif
 }
 
-#ifdef  NO_PF_MACRO
-static __inline__ PF_TILE *pf_get_tile(int x, int y)
-{
-	if (x >= tile_map_size_x*6 || y >= tile_map_size_y*6 || x < 0 || y < 0) {
-		return NULL;
-	}
-	return &pf_tile_map[y*tile_map_size_x*6+x];
-}
-#else
 #define pf_get_tile(x, y) \
 	(((x) >= tile_map_size_x*6 || (y) >= tile_map_size_y*6 || ((Sint32)(x)) < 0 || ((Sint32)(y)) < 0) ? NULL : &pf_tile_map[(y)*tile_map_size_x*6+(x)])
-#endif
 
 static PF_TILE *pf_get_next_open_tile()
 {
@@ -100,11 +90,7 @@ static void pf_add_tile_to_open_list(PF_TILE *current, PF_TILE *neighbour)
 		int f, g, h;
 		int diagonal = (neighbour->x != current->x && neighbour->y != current->y);
 
-#ifdef	FUZZY_PATHS
 		g = current->g + (diagonal ? 14 : 10) + rand()%3;
-#else	//FUZZY_PATHS
-		g = current->g + (diagonal ? 14 : 10);
-#endif	//FUZZY_PATHS
 		h = PF_HEUR(neighbour, pf_dst_tile);
 		f = g + h;
 
@@ -151,11 +137,6 @@ static Uint32 pf_movement_timer_callback(Uint32 interval, void* UNUSED(param))
 	e.user.code = EVENT_MOVEMENT_TIMER;
 	SDL_PushEvent(&e);
 
-#ifdef VARIABLE_SPEED
-	if (get_our_actor())
-		return get_our_actor()->step_duration * 10;
-	else
-#endif //VARIABLE_SPEED
 		return interval;
 }
 
@@ -195,12 +176,7 @@ int pf_find_path(int x, int y)
 			pf_follow_path = 1;
 
 			pf_movement_timer_callback(0, NULL);
-#ifdef VARIABLE_SPEED
-			pf_movement_timer = SDL_AddTimer(me->step_duration * 10,
-				pf_movement_timer_callback, NULL);
-#else // VARIABLE_SPEED
 			pf_movement_timer = SDL_AddTimer(2500, pf_movement_timer_callback, NULL);
-#endif // VARIABLE_SPEED
 			break;
 		}
 
@@ -323,11 +299,7 @@ void pf_move()
 		}
 
 		if (pf_cur_tile == t) {
-#ifdef	FUZZY_PATHS
 			int	limit= i-(10+rand()%3);
-#else	//FUZZY_PATHS
-			int	limit= i-12;
-#endif	//FUZZY_PATHS
 			for (pf_cur_tile = pf_dst_tile; pf_cur_tile; pf_cur_tile = pf_cur_tile->parent) {
 				if (j++ == limit) {
 					break;
@@ -417,7 +389,6 @@ void pf_move_to_mouse_position()
 	}
 }
 
-#ifdef FR_VERSION
 void pf_move_to_position(int x_dest, int y_dest)
 {
 	int x, y ;
@@ -450,4 +421,3 @@ void pf_move_to_position(int x_dest, int y_dest)
 		}
 	}
 }
-#endif //FR_VERSION

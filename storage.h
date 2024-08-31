@@ -12,11 +12,7 @@
 extern "C" {
 #endif
 
-#ifdef DEPOT_EXTEND
     #define STORAGE_ITEMS_SIZE 500
-#else
-    #define STORAGE_ITEMS_SIZE 300
-#endif
 /*! \name window handler
  * @{ */
 extern int storage_win; /*!< window handler for the new storage window */
@@ -26,10 +22,8 @@ extern ground_item storage_items[STORAGE_ITEMS_SIZE]; /*!< list of storage items
 
 extern int storage_win_x;
 extern int storage_win_y;
-#ifdef FR_VERSION
 extern int storage_win_x_len;
 extern int storage_win_y_len;
-#endif //FR_VERSION
 extern int view_only_storage;
 extern int sort_storage_categories;
 extern Uint32 drop_fail_time;
@@ -106,7 +100,6 @@ void display_storage_menu();
  */
 void pickup_storage_item(int image_id, Uint16 item_id, int cat_id);
 
-#ifdef WITHDRAW_LIST
 /*!
  * \ingroup storage_window
  * \brief Withdraw the active storage item
@@ -118,7 +111,6 @@ void pickup_storage_item(int image_id, Uint16 item_id, int cat_id);
  * \callgraph
  */
 void withdraw_active_storage_item(int qte_item);
-#endif //WITHDRAW_LIST
 
 #ifdef __cplusplus
 } // extern "C"

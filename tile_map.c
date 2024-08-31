@@ -11,16 +11,8 @@
 #include "shadows.h"
 #include "textures.h"
 #include "tiles.h"
-#ifdef CLUSTER_INSIDES_OLD
-#include "cluster.h"
-#endif
-#ifdef FSAA
 #include "fsaa/fsaa.h"
-#endif /* FSAA */
 
-#ifdef MAP_EDITOR2
-img_struct map_tiles[256];
-#endif
 
 unsigned char *tile_map;
 unsigned char *height_map;
@@ -60,10 +52,6 @@ static __inline__ void build_terrain_buffer()
 {
 	unsigned int i, j, l, x, y, start, stop;
 	float x_scaled,y_scaled;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-	short tile_cluster;
-#endif
 
 	if (get_bbox_intersect_flag(main_bbox_tree, TYPE_TERRAIN, ide_changed))
 	{
@@ -84,11 +72,6 @@ static __inline__ void build_terrain_buffer()
 		x = get_terrain_x (l);
 		y = get_terrain_y (l);
 
-#ifdef CLUSTER_INSIDES_OLD
-		tile_cluster = get_cluster (6*x, 6*y);
-		if (tile_cluster && tile_cluster != cluster)
-			continue;
-#endif
 
 		x_scaled = x * 3.0f;
 		y_scaled = y * 3.0f;
@@ -115,17 +98,12 @@ static __inline__ void build_terrain_buffer()
 	}
 }
 
-#ifdef	NEW_TEXTURES
 void draw_quad_tiles(const unsigned int start, const unsigned int stop,
 	unsigned int idx, const unsigned int zero_id)
 {
 	Uint32 i, l, size;
 	Sint32 x, y;
 	Uint32 cur_id, last_id;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-	short tile_cluster;
-#endif
 
 	size = 0;
 
@@ -158,11 +136,6 @@ void draw_quad_tiles(const unsigned int start, const unsigned int stop,
 		x = get_terrain_x(l);
 		y = get_terrain_y(l);
 
-#ifdef CLUSTER_INSIDES_OLD
-		tile_cluster = get_cluster (6*x, 6*y);
-		if (tile_cluster && tile_cluster != cluster)
-			continue;
-#endif
 
 		if (tile_map[y * tile_map_size_x + x] == 0)
 		{
@@ -185,45 +158,6 @@ void draw_quad_tiles(const unsigned int start, const unsigned int stop,
 	}
 	glDrawArrays(GL_QUADS, idx * 4, size * 4);
 }
-#else	/* NEW_TEXTURES */
-void draw_terrain_quad_tiles(unsigned int start, unsigned int stop)
-{
-	unsigned int i, l, size, idx;
-	int x, y, cur_texture;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-	short tile_cluster;
-#endif
-
-	idx = 0;
-	size = 0;
-
-	for (i = start; i < stop; i++)
-	{
-		l = get_intersect_item_ID(main_bbox_tree, i);
-		x = get_terrain_x(l);
-		y = get_terrain_y(l);
-
-#ifdef CLUSTER_INSIDES_OLD
-		tile_cluster = get_cluster (6*x, 6*y);
-		if (tile_cluster && tile_cluster != cluster)
-			continue;
-#endif
-
-		cur_texture = get_texture_id(tile_list[tile_map[y*tile_map_size_x+x]]);
-		if (cur_texture != last_texture)
-		{
-			glDrawArrays(GL_QUADS, idx * 4, size * 4);
-			bind_texture_id(cur_texture);
-			cur_texture = last_texture;
-			idx += size;
-			size = 0;
-		}
-		size++;
-	}
-	glDrawArrays(GL_QUADS, idx * 4, size * 4);
-}
-#endif	/* NEW_TEXTURES */
 
 static __inline__ void setup_terrain_clous_texgen()
 {
@@ -249,9 +183,6 @@ static __inline__ void setup_terrain_clous_texgen()
 
 	ELglActiveTextureARB(base_unit);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void setup_terrain_texgen()
@@ -274,9 +205,6 @@ static __inline__ void setup_terrain_texgen()
 	plane[3] = 0.0f;
 	glTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void disable_terrain_clous_texgen()
@@ -288,9 +216,6 @@ static __inline__ void disable_terrain_clous_texgen()
 
 	ELglActiveTextureARB(base_unit);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static __inline__ void disable_terrain_texgen()
@@ -298,9 +223,6 @@ static __inline__ void disable_terrain_texgen()
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_tile_map()
@@ -317,11 +239,7 @@ void draw_tile_map()
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -346,23 +264,15 @@ void draw_tile_map()
 	}
 
 	get_intersect_start_stop(main_bbox_tree, TYPE_TERRAIN, &start, &stop);
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
-#ifdef	NEW_TEXTURES
 	draw_quad_tiles(start, stop, 0, tile_list[0]);
-#else	/* NEW_TEXTURES */
-	draw_terrain_quad_tiles(start, stop);
-#endif	/* NEW_TEXTURES */
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glDisable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 
 	glDisable(GL_CULL_FACE);
 
@@ -390,34 +300,12 @@ void draw_tile_map()
 	}
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 //load only the tiles that are on the map
 void load_map_tiles()
 {
 	int i;
-#ifdef MAP_EDITOR2
-	char str[200];
-
-	for(i=0;i<255;i++){
-#ifdef OLD_MISC_OBJ_DIR
-		safe_snprintf(str,sizeof(str), "./tiles/tile%i.bmp",i);
-#else
-		safe_snprintf(str,sizeof(str), "./3dobjects/tile%i.dds",i);
-#endif
-		if(IS_WATER_TILE(i) && IS_REFLECTING(i))
-			tile_list[i]=load_texture_cache(str,70);
-		else
-			tile_list[i]=load_texture_cache(str,255);
-
-		if(get_texture_id(tile_list[i]) == 0)
-			tile_list[i]=0;
-	}
-#else
-#ifdef	NEW_TEXTURES
 	char str[128];
 
 	for (i = 0; i < 255; i++)
@@ -425,34 +313,8 @@ void load_map_tiles()
 		safe_snprintf(str, sizeof(str), "./3dobjects/tile%i", i);
 		tile_list[i] = load_texture_cached(str, tt_mesh);
 	}
-#else	/* NEW_TEXTURES */
-	int cur_tile;
-	char str[80];
-	for(i=0;i<tile_map_size_x*tile_map_size_y;i++)
-		{
-			cur_tile=tile_map[i];
-			if(!cur_tile && dungeon)cur_tile=231;
-			//check to see if we already have the current tile loaded
-			if(!tile_list[cur_tile] && cur_tile!=255)//if it is 255, it's a null tile, don't load it
-				{
-					//tile not loaded, so load it
-#ifdef OLD_MISC_OBJ_DIR
-					safe_snprintf(str, sizeof(str), "./tiles/tile%i.bmp",cur_tile);
-#else
-					safe_snprintf(str, sizeof(str), "./3dobjects/tile%i.dds",cur_tile);
-#endif
-					if(IS_WATER_TILE(cur_tile) && IS_REFLECTING(cur_tile))
-						tile_list[cur_tile]=load_texture_cache(str,70);
-					else
-						tile_list[cur_tile]=load_texture_cache(str,255);
-
-				}
-		}
-#endif	/* NEW_TEXTURES */
-#endif
 }
 
-#ifdef NEW_SOUND
 int get_tile_type(int x, int y)
 {
 	int tile_num = (y / 6) * tile_map_size_x + (x / 6);
@@ -462,7 +324,6 @@ int get_tile_type(int x, int y)
 	else
 		return -1;
 }
-#endif // NEW_SOUND
 
 int get_tile_walkable(const int x, const int y)
 {

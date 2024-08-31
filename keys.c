@@ -8,12 +8,8 @@
 #include "asc.h"
 #include "init.h"
 #include "misc.h"
-#ifdef FASTER_MAP_LOAD
 #include "io/elfilewrapper.h"
-#endif
-#ifndef ENGLISH
 #include "io/elpathwrapper.h"
-#endif //ENGLISH
 
 // default definitions for keys
 Uint32 K_QUIT=ALT|'x';
@@ -36,16 +32,10 @@ Uint32 K_ADVANCE=SDLK_HOME;
 Uint32 K_HEALTHBAR=ALT|'h';
 Uint32 K_VIEWNAMES=ALT|'n';
 Uint32 K_VIEWHP=ALT|'b';
-#ifdef DISPLAY_MANAPOINT
 Uint32 K_VIEWMP=ALT|'k';
 Uint32 K_VIEWMANABAR=ALT|'l';
-#endif //DISPLAY_MANAPOINT
 Uint32 K_STATS=CTRL|'a';
-#ifdef ENGLISH
-Uint32 K_QUESTLOG=CTRL|'g';
-#else //ENGLISH
 Uint32 K_QUESTLOG=ALT|'q';
-#endif //ENGLISH
 Uint32 K_SESSION=CTRL|'z';
 Uint32 K_WALK=CTRL|'w';
 Uint32 K_LOOK=CTRL|'l';
@@ -56,11 +46,7 @@ Uint32 K_SIGILS=CTRL|'s';
 Uint32 K_MANUFACTURE=CTRL|'m';
 Uint32 K_ITEMS=CTRL|'i';
 Uint32 K_MAP=SDLK_TAB;
-#ifdef ENGLISH
-Uint32 K_MINIMAP=ALT|'m';
-#else //ENGLISH
 Uint32 K_MINIMAP=ALT|'t';
-#endif //ENGLISH
 Uint32 K_ROTATELEFT=SDLK_LEFT;
 Uint32 K_ROTATERIGHT=SDLK_RIGHT;
 Uint32 K_FROTATELEFT=SHIFT|SDLK_LEFT;
@@ -85,19 +71,12 @@ Uint32 K_ITEM7=CTRL|'7';
 Uint32 K_ITEM8=CTRL|'8';
 Uint32 K_ITEM9=CTRL|'9';
 Uint32 K_ITEM10=CTRL|'0';
-#ifdef FR_VERSION
 Uint32 K_ITEM11=CTRL|')';
-#else //FR_VERSION
-Uint32 K_ITEM11=CTRL|'-';
-#endif //FR_VERSION
 Uint32 K_ITEM12=CTRL|'=';
 Uint32 K_SCREENSHOT=CTRL|'p';
 Uint32 K_VIEWTEXTASOVERTEXT=ALT|'o';
 Uint32 K_AFK=CTRL|ALT|'a';
 Uint32 K_SIT=ALT|'s';
-#ifdef MISSILES
-Uint32 K_RANGINGLOCK=ALT|'r';
-#endif //MISSILES
 Uint32 K_BUDDY=CTRL|'b';
 Uint32 K_NEXT_CHAT_TAB=CTRL|SDLK_PAGEDOWN;
 Uint32 K_PREV_CHAT_TAB=CTRL|SDLK_PAGEUP;
@@ -112,16 +91,10 @@ Uint32 K_SPELL7=ALT|'7';
 Uint32 K_SPELL8=ALT|'8';
 Uint32 K_SPELL9=ALT|'9';
 Uint32 K_SPELL10=ALT|'0';
-#ifdef FR_VERSION
 Uint32 K_SPELL11=ALT|')';
-#else //FR_VERSION
-Uint32 K_SPELL11=ALT|'-';
-#endif //FR_VERSION
 Uint32 K_SPELL12=ALT|'=';
-#ifdef FR_MORE_MQB
 Uint32 K_PREVQUICKSPELLBAR=ALT|SDLK_DOWN;
 Uint32 K_NEXTQUICKSPELLBAR=ALT|SDLK_UP;
-#endif
 Uint32 K_SPELLTARGET=ALT|'c';
 Uint32 K_TABCOMPLETE=CTRL|' ';
 Uint32 K_WINDOWS_ON_TOP=ALT|'w';
@@ -141,28 +114,11 @@ Uint32 K_PASTE=KMOD_LMETA|'v';
 #endif
 Uint32 K_COPY_ALT=CTRL|SDLK_INSERT;
 Uint32 K_PASTE_ALT=SHIFT|SDLK_INSERT;
-#ifdef ECDEBUGWIN
-Uint32 K_ECDEBUGWIN=ALT|CTRL|'c';
-#endif
-#ifdef EMOTES
-Uint32 K_EMOTES=CTRL|'j';
-#endif //EMOTES
-#ifdef MISSILES
-Uint32 K_RANGINGWIN=CTRL|'t';
-#endif //MISSILES
 Uint32 K_COUNTERS=SDLK_UNKNOWN;
-#ifdef FR_VERSION
 Uint32 K_INCUNABLES=CTRL|'g';
-#else //FR_VERSION
-Uint32 K_HELPSKILLS=SDLK_UNKNOWN;
-#endif //FR_VERSION
-#ifndef ENGLISH
 Uint32 K_OBTENIR=ALT|'r';
-#endif //ENGLISH
-#ifdef FR_VERSION
 Uint32 K_VOIR_MUSIQUE_CARTE=ALT|'z';
 Uint32 K_FENETRE_MUSIQUE=ALT|'m';
-#endif //FR_VERSION
 
 typedef struct
 {
@@ -227,9 +183,6 @@ static key_store_entry key_store[] =
 	{ "#K_VIEWTEXTASOVERTEXT", &K_VIEWTEXTASOVERTEXT },
 	{ "#K_AFK", &K_AFK },
 	{ "#K_SIT", &K_SIT },
-#ifdef ENGLISH
-	{ "#K_RANGINGLOCK", &K_RANGINGLOCK },
-#endif //ENGLISH
 	{ "#K_BUDDY", &K_BUDDY },
 	{ "#K_NEXT_CHAT_TAB", &K_NEXT_CHAT_TAB },
 	{ "#K_PREV_CHAT_TAB", &K_PREV_CHAT_TAB },
@@ -246,10 +199,8 @@ static key_store_entry key_store[] =
 	{ "#K_SPELL10", &K_SPELL10 },
 	{ "#K_SPELL11", &K_SPELL11 },
 	{ "#K_SPELL12", &K_SPELL12 },
-#ifdef FR_MORE_MQB
 	{ "#K_PREVQUICKSPELLBAR", &K_PREVQUICKSPELLBAR },
 	{ "#K_NEXTQUICKSPELLBAR", &K_NEXTQUICKSPELLBAR },
-#endif
 	{ "#K_SPELLTARGET", &K_SPELLTARGET },
 	{ "#K_TABCOMPLETE", &K_TABCOMPLETE },
 	{ "#K_WINDOWS_ON_TOP", &K_WINDOWS_ON_TOP },
@@ -263,27 +214,12 @@ static key_store_entry key_store[] =
 	{ "#K_PASTE", &K_PASTE },
 	{ "#K_COPY_ALT", &K_COPY_ALT },
 	{ "#K_PASTE_ALT", &K_PASTE_ALT },
-#ifdef ECDEBUGWIN
-	{ "#K_ECDEBUGWIN", &K_ECDEBUGWIN },
-#endif
-#ifdef EMOTES
-	{ "#K_EMOTES", &K_EMOTES },
-#endif //EMOTES
-#ifdef MISSILES
-	{ "#K_RANGINGWIN", &K_RANGINGWIN },
-#endif //MISSILES
 	{ "#K_COUNTERS", &K_COUNTERS },
-#ifdef FR_VERSION
 	{ "#K_INCUNABLES", &K_INCUNABLES },
 	{ "#K_OBTENIR", &K_OBTENIR },
-#else //FR_VERSION
-	{ "#K_HELPSKILLS", &K_HELPSKILLS }
-#endif //FR_VERSION
 	{ "#K_COUNTERS", &K_COUNTERS },
-#ifdef FR_VERSION
 	{ "#K_VOIR_MUSIQUE_CARTE", &K_VOIR_MUSIQUE_CARTE },
 	{ "#K_FENETRE_MUSIQUE", &K_FENETRE_MUSIQUE }
-#endif //FR_VERSION
 };
 
 
@@ -552,15 +488,11 @@ void read_key_config()
 	Uint32 last_key_value = SDLK_LAST;
 	size_t i;
 
-#ifdef FR_VERSION
 #ifdef LINUX
 	f = el_open_custom("key_linux.ini");
 #else //LINUX
 	f = el_open_custom("key.ini");
 #endif //LINUX
-#else //FR_VERSION
-	f = el_open_custom("key.ini");
-#endif //FR_VERSION
 	if (f)
 	{
 		while (el_fgets(line, sizeof(line), f))

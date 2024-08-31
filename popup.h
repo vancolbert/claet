@@ -11,10 +11,6 @@
 extern "C" {
 #endif
 
-#ifdef POPUP_AIDE_FR
-extern int info_texture;
-extern int fenetre_message_info;
-#endif //POPUP_AIDE_FR
 
 	/* Option types */
 #define OPTION_TYPE_TEXTENTRY   0x00
@@ -127,10 +123,6 @@ void popup_finish_setup( popup_t *this_popup );
 void popup_set_callback( popup_t *popup, popup_callback_t callback );
 void popup_create_from_network( const unsigned char *payload, size_t size );
 
-#ifdef POPUP_AIDE_FR
-void popupclient();
-void afficher_message_aide(int numero_message_aide);
-#endif
 /*
  Server to Client Protocol definition:
 

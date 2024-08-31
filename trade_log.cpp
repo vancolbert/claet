@@ -69,33 +69,23 @@ namespace Trade_Log
 			{
 				// if we have a description, and it is unique, use it
 				if (get_item_count(the_stuff[i].id, the_stuff[i].image_id)==1)
-#ifdef FR_VERSION
 				{
 					if ((the_stuff[i].id == 20) && (the_stuff[i].image_id == 47))
 					{
 						the_stuff[i].image_id = 2;
 					}
-#endif //FR_VERSION
 					out << "   " << prefix <<
 						" " << the_stuff[i].quantity <<
 						" " << get_item_description(the_stuff[i].id, the_stuff[i].image_id) <<
-#ifdef FR_VERSION
 						((the_stuff[i].type != 1) ?" (dépôt)" :"") << std::endl;
 				}
-#else //FR_VERSION
-						((the_stuff[i].type != 1) ?" (s)" :"") << std::endl;
-#endif //FR_VERSION
 				// otherwise use the raw ids
 				else
 					out << "   " << prefix <<
 						" " << the_stuff[i].quantity <<
 						" image_id=" << the_stuff[i].image_id <<
 						" id=" << the_stuff[i].id <<
-#ifdef FR_VERSION
 						((the_stuff[i].type != 1) ?" (dépôt)" :"") << std::endl;
-#else //FR_VERSION
-						((the_stuff[i].type != 1) ?" (s)" :"") << std::endl;
-#endif //FR_VERSION
 			}
 	}
 
@@ -165,11 +155,7 @@ namespace Trade_Log
 		strftime(buf, sizeof(buf), "%Y-%m-%d %X", localtime(&now));
 
 		std::ostringstream message;
-#ifdef FR_VERSION
 		message << "Echange (" << your_stuff->who() << " <-"
-#else //FR_VERSION
-		message << "Trade log (" << your_stuff->who() << " <-"
-#endif //FR_VERSION
 			<< "-> " << their_stuff->who() << ") " << buf << std::endl;
 
 		if (your_stuff)

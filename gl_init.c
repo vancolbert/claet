@@ -23,12 +23,8 @@
 #include "sky.h"
 #include "shader/shader.h"
 #include "actor_init.h"
-#ifdef	FSAA
 #include "fsaa/fsaa.h"
-#endif	/* FSAA */
-#ifdef FR_VERSION
 #include "books.h"
-#endif //FR_VERSION
 
 Uint32 flags;
 
@@ -197,7 +193,6 @@ void check_gl_mode()
 	}
 	SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8);
 
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		if (!SDL_VideoModeOK(window_width, window_height, bpp, flags))
@@ -210,7 +205,6 @@ void check_gl_mode()
 			fsaa = 0;
 		}
 	}
-#endif	/* FSAA */
 
 	//now, test if the video mode is OK...
 	if(!SDL_VideoModeOK(window_width, window_height, bpp, flags))
@@ -319,20 +313,17 @@ void init_video()
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 	SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, fsaa);
 		glDisable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 	check_gl_mode();
 
 	SDL_WM_SetIcon(SDL_LoadBMP("icon.bmp"), NULL);
 	/* Set the window manager title bar */
 
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		if (!SDL_SetVideoMode(window_width, window_height, bpp, flags))
@@ -345,7 +336,6 @@ void init_video()
 			fsaa = 0;
 		}
 	}
-#endif	/* FSAA */
 
 	//try to find a stencil buffer (it doesn't always work on Linux)
 	if(!SDL_SetVideoMode(window_width, window_height, bpp, flags))
@@ -463,138 +453,17 @@ void init_video()
 	glEnable(GL_NORMALIZE);
 	glClearStencil(0);
 
-#ifdef ANTI_ALIAS
-	if (anti_alias) {
-		glHint(GL_POINT_SMOOTH_HINT,   GL_NICEST);
-		glHint(GL_LINE_SMOOTH_HINT,    GL_NICEST);
-		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-		glEnable(GL_POINT_SMOOTH);
-		glEnable(GL_LINE_SMOOTH);
-		glEnable(GL_POLYGON_SMOOTH);
-	} else {
-		glHint(GL_POINT_SMOOTH_HINT,   GL_FASTEST);
-		glHint(GL_LINE_SMOOTH_HINT,    GL_FASTEST);
-		glHint(GL_POLYGON_SMOOTH_HINT, GL_FASTEST);
-		glDisable(GL_POINT_SMOOTH);
-		glDisable(GL_LINE_SMOOTH);
-		glDisable(GL_POLYGON_SMOOTH);
-	}
-#endif
 	SDL_EnableKeyRepeat(200, 100);
 	SDL_EnableUNICODE(1);
 	build_video_mode_array();
 	SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &have_stencil);
 	last_texture=-1;	//no active texture
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	change_minimap();
 
 	check_options();
 }
 
-#ifdef	GL_EXTENSION_CHECK
-void evaluate_extension()
-{
-	char str[1024];
-	int has_arb_texture_env_add;
-	int has_arb_texture_env_crossbar;
-	int has_arb_texture_rectangle;
-	int has_arb_fragment_shader_shadow;
-	int has_ati_fragment_shader;
-	int has_ati_texture_env_combine3;
-	int has_nv_texture_env_combine4;
-	int has_nv_texture_shader;
-	int has_nv_texture_shader2;
-	int options;
-	char* extensions;
-
-	extensions = (char*)glGetString(GL_EXTENSIONS);
-
-	has_arb_texture_env_add = strstr(extensions, "GL_ARB_texture_env_add") > 0;
-	has_arb_texture_env_crossbar = strstr(extensions, "GL_ARB_texture_env_crossbar") > 0;
-	has_arb_texture_rectangle = strstr(extensions, "GL_ARB_texture_rectangle") > 0;
-	has_arb_fragment_shader_shadow = strstr(extensions, "GL_ARB_fragment_program_shadow") > 0;
-	has_ati_fragment_shader = strstr(extensions, "GL_ATI_fragment_shader") > 0;
-	has_ati_texture_env_combine3 = strstr(extensions, "GL_ATI_texture_env_combine3") > 0;
-	has_nv_texture_env_combine4 = strstr(extensions, "GL_NV_texture_env_combine4") > 0;
-	has_nv_texture_shader = strstr(extensions, "GL_NV_texture_shader") > 0;
-	has_nv_texture_shader2 = strstr(extensions, "GL_NV_texture_shader2") > 0;
-
-	options = (get_texture_units() >= 2) && has_arb_texture_env_add &&
-		have_extension(arb_texture_env_combine) && have_extension(arb_vertex_program) &&
-		have_extension(arb_texture_compression) && have_extension(arb_vertex_buffer_object) &&
-		have_extension(ext_texture_compression_s3tc);
-
-	if (!options)
-	{
-		safe_snprintf(str,sizeof(str),"%s%s%s","Your graphic card/driver don't support the minimum",
-			" requirements for the next EL release. Please upgrade your driver.",
-			" If this don't help, you need a better graphic card.");
-        LOG_TO_CONSOLE(c_red1, str);
-		LOG_ERROR("%s\n",str);
-		return;
-	}
-
-	if (!have_extension(arb_vertex_shader) || (have_extension(arb_fragment_program) &&
-		!have_extension(arb_fragment_shader)) || (has_ati_fragment_shader &&
-		!have_extension(arb_fragment_program) && !have_extension(arb_fragment_shader)))
-	{
-        safe_snprintf(str,sizeof(str),"Please update your graphic card driver!");
-		LOG_TO_CONSOLE(c_yellow1, str);
-		LOG_WARNING("%s\n",str);
-	}
-
-	options = ((has_ati_texture_env_combine3 && has_arb_texture_env_crossbar) ||
-		has_nv_texture_env_combine4) && (get_texture_units() >= 4) &&
-		have_extension(ext_draw_range_elements) && have_extension(arb_shadow) &&
-		have_extension(arb_point_parameters) && have_extension(arb_point_sprite);
-
-	if (!options)
-	{
-		safe_snprintf(str,sizeof(str),"%s%s%s","Your graphic card supports the absolute minimum",
-			" requirements for the next EL release, but don't expect that you can use",
-			" all features.");
-        LOG_TO_CONSOLE(c_yellow1, str);
-		LOG_DEBUG("%s\n",str);
-
-	}
-	else
-	{
-		options = (has_ati_fragment_shader || (has_nv_texture_shader &&
-			has_nv_texture_shader2)) && have_extension(arb_occlusion_query) &&
-			has_arb_texture_rectangle && have_extension(ext_framebuffer_object);
-		if (!options)
-		{
-            safe_snprintf(str,sizeof(str),"%s%s","Your graphic card supports the default ",
-				"requirements for the next EL release.");
-			LOG_TO_CONSOLE(c_green2, str);
-			LOG_DEBUG("%s\n",str);
-		}
-		else
-		{
-			if (have_extension(arb_fragment_shader) &&
-				have_extension(arb_shader_objects) &&
-				have_extension(arb_vertex_shader) &&
-				have_extension(arb_shading_language_100))
-			{
-				safe_snprintf(str,sizeof(str),"%s%s","Your graphic card supports all ",
-					"features EL will use in the future.");
-                LOG_TO_CONSOLE(c_blue2, str);
-                LOG_DEBUG("%s\n",str);
-			}
-			else
-			{
-                safe_snprintf(str,sizeof(str),"%s%s","Your graphic card supports more than the",
-				" default requirements for the next EL release.");
-				LOG_TO_CONSOLE(c_blue2, str);
-                LOG_DEBUG("%s\n",str);
-			}
-		}
-	}
-}
-#endif	//GL_EXTENSION_CHECK
 
 void init_gl_extensions()
 {
@@ -973,9 +842,6 @@ void init_gl_extensions()
 #endif
 	init_shaders();
 
-#ifdef	GL_EXTENSION_CHECK
-	evaluate_extension();
-#endif	//GL_EXTENSION_CHECK
 
 	gl_extensions_loaded = 1;
 
@@ -996,12 +862,7 @@ void resize_root_window()
 	glMatrixMode(GL_PROJECTION);					// Select The Projection Matrix
 	glLoadIdentity();							// Reset The Projection Matrix
 
-#ifdef NEW_NEW_CHAR_WINDOW
 	window_ratio=(GLfloat)(window_width-hud_x)/(GLfloat)(window_height-hud_y);
-#else
-	//window_ratio=(GLfloat)(window_width-hud_x)/(GLfloat)(window_height-hud_y);
-	window_ratio=(GLfloat)window_width/(GLfloat)window_height;
-#endif
 
 	//hud_y_adjust=(2.0/window_height)*hud_y;
 	//hud_x_adjust=(2.0/window_width)*hud_x;
@@ -1043,53 +904,18 @@ void resize_root_window()
 void set_new_video_mode(int fs,int mode)
 {
 	int i;
-#ifndef	NEW_TEXTURES
-	int alpha;
-#endif	/* NEW_TEXTURES */
 
 	full_screen=fs;
 	video_mode=mode;
 
 	//now, clear all the textures...
-#ifdef	NEW_TEXTURES
 	unload_texture_cache();
-#else	/* NEW_TEXTURES */
-	for(i = 0; i < TEXTURE_CACHE_MAX; i++)
-	{
-		if(texture_cache[i].file_name[0])
-		{
-			glDeleteTextures(1,(GLuint*)&texture_cache[i].texture_id);
-			texture_cache[i].texture_id=0;//force a reload
-			CHECK_GL_ERRORS();
-		}
-	}
-
-#ifndef MAP_EDITOR2
-	//do the same for the actors textures...
-	for(i=0;i<max_actors;i++)
-		{
-			if(actors_list[i])
-				{
-					if(actors_list[i]->remapped_colors || actors_list[i]->is_enhanced_model)//if it is not remapable, then it is already in the cache
-						{
-							glDeleteTextures(1,&actors_list[i]->texture_id);
-							actors_list[i]->texture_id=0;
-							CHECK_GL_ERRORS();
-						}
-				}
-		}
-#endif
-#endif	/* NEW_TEXTURES */
 
 	if (use_vertex_buffers)
 	{
 		e3d_object * obj;
 
-#ifdef FASTER_MAP_LOAD
 		for (i = 0; i < cache_e3d->num_items; i++)
-#else
-		for (i = 0; i < cache_e3d->max_item; i++)
-#endif
 		{
 			if (!cache_e3d->cached_items[i]) continue;
 			obj= cache_e3d->cached_items[i]->cache_item;
@@ -1098,9 +924,6 @@ void set_new_video_mode(int fs,int mode)
 		CHECK_GL_ERRORS();
 	}
 
-#ifndef	NEW_TEXTURES
-	ec_clear_textures();
-#endif	/* NEW_TEXTURES */
 
 	//destroy the current context
 
@@ -1123,42 +946,6 @@ void set_new_video_mode(int fs,int mode)
 	ec_load_textures();
 
 	//now, reload the textures
-#ifndef	NEW_TEXTURES
-	for(i = 0; i < TEXTURE_CACHE_MAX; i++)
-	{
-		if (texture_cache[i].file_name[0] && !texture_cache[i].load_err)
-		{
-			alpha=texture_cache[i].alpha;
-			//our texture was freed, we have to reload it
-			if(alpha<=0)
-				texture_cache[i].texture_id = load_bmp8_color_key (&(texture_cache[i]), alpha);
-	            	else
-				texture_cache[i].texture_id = load_bmp8_fixed_alpha (&(texture_cache[i]), alpha);
-		}
-	}
-	reload_fonts();
-
-#ifndef MAP_EDITOR2
-	//do the same for the actors textures...
-	for(i=0;i<max_actors;i++)
-		{
-			if(actors_list[i])
-				{
-					if(actors_list[i]->remapped_colors)//if it is not remapable, then it is already in the cache
-						{
-							//reload the skin
-							//actors_list[i]->texture_id=load_bmp8_remapped_skin(actors_list[i]->skin_name,
-							//												   150,actors_list[i]->skin,actors_list[i]->hair,actors_list[i]->shirt,
-							//												   actors_list[i]->pants,actors_list[i]->boots);
-						}
-					if(actors_list[i]->is_enhanced_model)
-						{
-							actors_list[i]->texture_id=load_bmp8_enhanced_actor(actors_list[i]->body_parts, 255);
-						}
-				}
-		}
-#endif
-#endif	/* NEW_TEXTURES */
 
 	//it is dependent on the window height...
 	init_hud_interface (HUD_INTERFACE_LAST);
@@ -1171,14 +958,6 @@ void set_new_video_mode(int fs,int mode)
 	resize_all_root_windows (window_width, window_height);
 	check_options();
 	reload_tab_map = 1;
-#ifdef NEW_CURSOR
-	if (!sdl_cursors)
-	{
-		SDL_ShowCursor(0);
-		SDL_WM_GrabInput(SDL_GRAB_OFF);
-	}
-#endif // NEW_CURSOR
-#ifdef FR_VERSION
 	if (paper_win != -1)
 	{
 		destroy_window(paper_win);
@@ -1193,7 +972,6 @@ void set_new_video_mode(int fs,int mode)
 	// etant donne que la presentation depend de la taille
 	// de la fenetre du jeu.
 	libere_memoire_livres();
-#endif //FR_VERSION
 }
 
 void toggle_full_screen()

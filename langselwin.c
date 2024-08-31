@@ -479,15 +479,9 @@ static int display_langsel_handler(window_info *win)
 
 		if (add_scroll_bar)
 		{
-#ifdef FR_VERSION
 			langsel_scroll_id = vscrollbar_add_extended(langsel_win, 102, NULL,  winwidth - scroll_width, winsep,
 				scroll_width, line_step * max_lang_lines, 0, max_lang_lines,
 				langsel_winRGB[3][0], langsel_winRGB[3][1], langsel_winRGB[3][2], 0, 1, num_lang_lines);
-#else //FR_VERSION
-			langsel_scroll_id = vscrollbar_add_extended(langsel_win, 102, NULL,  winwidth - scroll_width, winsep,
-				scroll_width, line_step * max_lang_lines, 0, 1.0,
-				langsel_winRGB[3][0], langsel_winRGB[3][1], langsel_winRGB[3][2], 0, 1, num_lang_lines - max_lang_lines);
-#endif //FR_VERSION
 			widget_set_OnDrag(langsel_win, langsel_scroll_id, langsel_scroll_drag_handler);
 			widget_set_OnClick(langsel_win, langsel_scroll_id, langsel_scroll_click_handler);
 			add_scroll_bar = 0;

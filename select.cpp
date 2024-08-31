@@ -12,9 +12,6 @@
 #include <map>
 #include <cassert>
 #include "exceptions/extendedexception.hpp"
-#ifdef	USE_BOOST
-#include <boost/foreach.hpp>
-#endif	/* USE_BOOST */
 
 #include "2d_objects.h"
 #include "3d_objects.h"
@@ -89,9 +86,7 @@ static inline void update_selection(Uint8 *color)
 	Uint32 i, j, idx, index;
 	float t, count;
 	IndexMap indices;
-#ifndef	USE_BOOST
 	IndexMap::const_iterator it;
-#endif	/* USE_BOOST */
 
 	idx = 0;
 	for (i = 0; i < select_size; i++)
@@ -115,16 +110,6 @@ static inline void update_selection(Uint8 *color)
 	}
 	index = 0;
 	count = 0;
-#ifdef	USE_BOOST
-	BOOST_FOREACH(IndexMap::value_type it, indices)
-	{
-		if (it.second > count)
-		{
-			index = it.first;
-			count = it.second;
-		}
-	}
-#else	/* USE_BOOST */
 	for (it = indices.begin(); it != indices.end(); it++)
 	{
 		if (it->second > count)
@@ -133,7 +118,6 @@ static inline void update_selection(Uint8 *color)
 			count = it->second;
 		}
 	}
-#endif	/* USE_BOOST */
 	if (count > 0)
 	{
 		thing_under_the_mouse = selections[index].type;
@@ -320,12 +304,6 @@ extern "C" void reset_under_the_mouse()
 
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#ifdef ENGLISH
-			if (use_animation_program)
-			{
-				set_actor_animation_program(SELECTION_RENDER_PASS, 0);
-			}
-#endif //ENGLISH
 			for (i = 0; i < selections.size(); i++)
 			{
 				switch (selections[i].type)
@@ -334,18 +312,7 @@ extern "C" void reset_under_the_mouse()
 					case UNDER_MOUSE_NPC:
 					case UNDER_MOUSE_ANIMAL:
 						update_color(color, colorf, i, true);
-#ifdef ENGLISH
-						if (use_animation_program)
-						{
-							ELglVertexAttrib4Nubv(4, color);
-						}
-						else
-						{
 							glColor4ubv(color);
-						}
-#else //ENGLISH
-							glColor4ubv(color);
-#endif //ENGLISH
 						if (actors_list[selections[i].id])
 						{
 							if (actors_list[selections[i].id]->has_alpha)
@@ -380,13 +347,6 @@ extern "C" void reset_under_the_mouse()
 			}
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-#ifdef ENGLISH
-			if (use_animation_program)
-			{
-				ELglVertexAttrib4f(4, 1.0f, 1.0f, 1.0f, 1.0f);
-				disable_actor_animation_program();
-			}
-#endif //ENGLISH
 			x = mouse_x - select_offset;
 			y = window_height - mouse_y - select_offset;
 

@@ -21,13 +21,7 @@
 #include "queue.h"
 #include "text.h"
 #include "translate.h"
-#ifdef ENGLISH
-#ifdef OPENGL_TRACE
 #include "gl_init.h"
-#endif
-#else //ENGLISH
-#include "gl_init.h"
-#endif //ENGLISH
 #include "io/elfilewrapper.h"
 #include "io/elpathwrapper.h"
 #include "sound.h"
@@ -37,22 +31,14 @@ int chat_win = -1;
 void remove_chat_tab (Uint8 channel);
 int add_chat_tab (int nlines, Uint8 channel);
 void update_chat_tab_idx (Uint8 old_ix, Uint8 new_idx);
-#ifndef ENGLISH
 int changement_barre = 0;
 void remove_tab_button (Uint8 channel, int ligne);
 // Nombre de bouton sur la barre 1
 int nb_tab_button_1 = 0;
 // Nombre de bouton sur la barre 2
 int nb_tab_button_2 = 0;
-#else //ENGLISH
-void remove_tab_button (Uint8 channel);
-#endif //ENGLISH
 int add_tab_button (Uint8 channel);
-#ifndef ENGLISH
 void update_tab_button_idx (Uint8 old_idx, Uint8 new_idx, int niveau_tab);
-#else //ENGLISH
-void update_tab_button_idx (Uint8 old_idx, Uint8 new_idx);
-#endif //ENGLISH
 void convert_tabs (int new_wc);
 int display_channel_color_win(Uint32 channel_number);
 
@@ -98,15 +84,10 @@ void input_widget_move_to_win(int window_id)
 
 void add_tab (Uint8 channel)
 {
-#ifndef ENGLISH
 	if (tab_bar_win_1 != -1) add_tab_button (channel);
-#else //ENGLISH
-	if (tab_bar_win != -1) add_tab_button (channel);
-#endif //ENGLISH
 	if (chat_win != -1) add_chat_tab (0, channel);
 }
 
-#ifndef ENGLISH
 // Suppression de l'un des boutons
 void remove_tab (Uint8 channel, int niveau_tab)
 {
@@ -121,20 +102,8 @@ void remove_tab (Uint8 channel, int niveau_tab)
     }
 	if (chat_win != -1) remove_chat_tab (channel);
 }
-#else //ENGLISH
-void remove_tab (Uint8 channel)
-{
-	recolour_messages(display_text_buffer);
-	if (tab_bar_win != -1) remove_tab_button (channel);
-	if (chat_win != -1) remove_chat_tab (channel);
-}
-#endif //ENGLISH
 
-#ifndef ENGLISH
 void update_tab_idx (Uint8 old_idx, Uint8 new_idx, int niveau_tab)
-#else //ENGLISH
-void update_tab_idx (Uint8 old_idx, Uint8 new_idx)
-#endif //ENGLISH
 {
 	// XXX: CAUTION
 	// Since this function simply replaces old_idx y new_idx, it could
@@ -143,22 +112,14 @@ void update_tab_idx (Uint8 old_idx, Uint8 new_idx)
 	// update_tab_idx are in increasing order of old_idx, and new_idx
 	// is lower than old_idx, so we should be safe.
 
-#ifndef ENGLISH
 	if (tab_bar_win_1 != -1 && niveau_tab == 1) update_tab_button_idx (old_idx, new_idx,1);
 	if (tab_bar_win_2 != -1 && niveau_tab == 2) update_tab_button_idx (old_idx, new_idx,2);
-#else //ENGLISH
-	if (tab_bar_win != -1) update_tab_button_idx (old_idx, new_idx);
-#endif //ENGLISH
 	if (chat_win != -1) update_chat_tab_idx (old_idx, new_idx);
 }
 
 void set_channel_tabs (const Uint32 *chans)
 {
-#ifndef ENGLISH
 	int nmax = CHAT_CHANNEL5-CHAT_CHANNEL1+1;
-#else //ENGLISH
-	int nmax = CHAT_CHANNEL3-CHAT_CHANNEL1+1;
-#endif //ENGLISH
 	Uint32 chan;
 	Uint8 chan_nr, chan_nrp;
 
@@ -175,7 +136,6 @@ void set_channel_tabs (const Uint32 *chans)
 		if (chan_nrp >= nmax)
 		{
 			// we left this channel
-#ifndef ENGLISH
             int i;
             for (i=0; i<nb_tab_button_1; i++)
             {
@@ -191,13 +151,9 @@ void set_channel_tabs (const Uint32 *chans)
                     remove_tab (chan_nr+CHAT_CHANNEL1,2);
                 }
             }
-#else //ENGLISH
-			remove_tab (chan_nr+CHAT_CHANNEL1);
-#endif //ENGLISH
 		}
 		else
 		{
-#ifndef ENGLISH
             int i;
             for (i=0; i<nb_tab_button_1; i++)
             {
@@ -213,9 +169,6 @@ void set_channel_tabs (const Uint32 *chans)
         			update_tab_idx (chan_nr+CHAT_CHANNEL1, chan_nrp+CHAT_CHANNEL1,2);
                 }
             }
-#else //ENGLISH
-			update_tab_idx (chan_nr+CHAT_CHANNEL1, chan_nrp+CHAT_CHANNEL1);
-#endif //ENGLISH
 		}
 	}
 
@@ -262,11 +215,7 @@ void send_active_channel (Uint8 chan)
 {
 	Uint8 msg[2];
 
-#ifndef ENGLISH
 	if (chan >= CHAT_CHANNEL1 && chan <= CHAT_CHANNEL5)
-#else //ENGLISH
-	if (chan >= CHAT_CHANNEL1 && chan <= CHAT_CHANNEL3)
-#endif //ENGLISH
 	{
 		msg[0] = SET_ACTIVE_CHANNEL;
 		msg[1] = chan;
@@ -278,11 +227,7 @@ void send_active_channel (Uint8 chan)
 
 Uint32 get_active_channel (Uint8 idx)
 {
-#ifndef ENGLISH
 	if (idx >= CHAT_CHANNEL1 && idx <= CHAT_CHANNEL5)
-#else //ENGLISH
-	if (idx >= CHAT_CHANNEL1 && idx <= CHAT_CHANNEL3)
-#endif //ENGLISH
 		return active_channels[idx-CHAT_CHANNEL1];
 	return 0;
 }
@@ -300,10 +245,8 @@ int personal_chat_separate = 0;
 int guild_chat_separate = 1;
 int server_chat_separate = 0;
 int mod_chat_separate = 0;
-#ifndef ENGLISH
 int dev_chat_separate = 0;
 int coord_chat_separate = 0;
-#endif //ENGLISH
 
 /*
  * use_windowed_chat == 0: old behaviour, all text is printed
@@ -402,20 +345,12 @@ int close_channel (window_info *win)
 			{
 				char str[256];
 				safe_snprintf(str, sizeof(str), "%c#lc %d", RAW_TEXT, active_channels[idx]);
-#ifdef ENGLISH
-			safe_snprintf(str, sizeof(str), "%c#lc %d", RAW_TEXT, active_channels[idx]);
-#else
 			safe_snprintf(str, sizeof(str), "%c#qc %d", RAW_TEXT, active_channels[idx]);
-#endif
 				my_tcp_send(my_socket, (Uint8*)str, strlen(str+1)+1);
 			}
 
 			// Safe to remove?
-#ifndef ENGLISH
 			if (tab_bar_win_1 != -1) remove_tab_button(channels[ichan].chan_nr,1);
-#else //ENGLISH
-			if (tab_bar_win != -1) remove_tab_button(channels[ichan].chan_nr);
-#endif //ENGLISH
 
 			return 1;
 		}
@@ -474,11 +409,7 @@ int add_chat_tab(int nlines, Uint8 channel)
 			set_window_flag (channels[ichan].tab_id, ELW_CLICK_TRANSPARENT);
 
 			set_window_min_size (channels[ichan].tab_id, 0, 0);
-#ifdef FR_VERSION
 			channels[ichan].out_id = text_field_add_extended (channels[ichan].tab_id, channels[ichan].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, channel, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
-#else //FR_VERSION
-			channels[ichan].out_id = text_field_add_extended (channels[ichan].tab_id, channels[ichan].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, channel, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
-#endif //FR_VERSION
 
 			set_window_handler (channels[ichan].tab_id, ELW_HANDLER_DESTROY, close_channel);
 
@@ -532,14 +463,12 @@ Uint8 get_tab_channel (Uint8 channel)
 		case CHAT_MODPM:
 			// always display moderator PMs in all tabs
 			return CHAT_ALL;
-#ifndef ENGLISH
 		case CHAT_DEV:
 			if (!dev_chat_separate) return CHAT_ALL;
 			break;
 		case CHAT_COORD:
 			if (!coord_chat_separate) return CHAT_ALL;
 			break;
-#endif //ENGLISH
 	}
 
 	return channel;
@@ -547,11 +476,7 @@ Uint8 get_tab_channel (Uint8 channel)
 
 void update_chat_window (text_message *msg, char highlight)
 {
-#ifdef FR_VERSION
 	int ichan, nlines, width, channel;
-#else //FR_VERSION
-	int ichan, len, nlines, width, channel;
-#endif //FR_VERSION
 	char found;
 
 	// don't bother if there's no chat window
@@ -559,11 +484,7 @@ void update_chat_window (text_message *msg, char highlight)
 
 	// rewrap message to get correct # of lines
 	width = windows_list.window[chat_win].len_x;
-#ifdef FR_VERSION
 	nlines = rewrap_message(msg, chat_zoom, chat_font, width, NULL);
-#else //FR_VERSION
-	nlines = rewrap_message(msg, chat_zoom, width, NULL);
-#endif //FR_VERSION
 
 	// first check if we need to display in all open channels
 	channel = get_tab_channel (msg->chan_idx);
@@ -581,15 +502,8 @@ void update_chat_window (text_message *msg, char highlight)
 			}
 		}
 
-#ifdef FR_VERSION
 		vscrollbar_set_bar_len (chat_win, chat_scroll_id, channels[active_tab].nr_lines);
 		vscrollbar_set_pos (chat_win, chat_scroll_id, channels[active_tab].nr_lines);
-#else //FR_VERSION
-		len = channels[active_tab].nr_lines - nr_displayed_lines;
-		if (len < 0) len = 0;
-		vscrollbar_set_bar_len (chat_win, chat_scroll_id, len);
-		vscrollbar_set_pos (chat_win, chat_scroll_id, len);
-#endif //FR_VERSION
 
 		current_line = channels[active_tab].nr_lines;
 		text_changed = 1;
@@ -611,16 +525,8 @@ void update_chat_window (text_message *msg, char highlight)
 
 			if (ichan == active_tab)
 			{
-#ifdef FR_VERSION
 				vscrollbar_set_bar_len (chat_win, chat_scroll_id, channels[ichan].nr_lines);
 				vscrollbar_set_pos (chat_win, chat_scroll_id, channels[ichan].nr_lines);
-#else //FR_VERSION
-				len = channels[ichan].nr_lines - nr_displayed_lines;
-				if (len < 0) len = 0;
-
-				vscrollbar_set_bar_len (chat_win, chat_scroll_id, len);
-				vscrollbar_set_pos (chat_win, chat_scroll_id, len);
-#endif //FR_VERSION
 				current_line = channels[ichan].nr_lines;
 				text_changed = 1;
 			}
@@ -645,16 +551,8 @@ void update_chat_window (text_message *msg, char highlight)
 		channels[0].newchan = 1;
 		if (0 == active_tab)
 		{
-#ifdef FR_VERSION
 			vscrollbar_set_bar_len (chat_win, chat_scroll_id, channels[0].nr_lines);
 			vscrollbar_set_pos (chat_win, chat_scroll_id, channels[0].nr_lines);
-#else //FR_VERSION
-			len = channels[0].nr_lines - nr_displayed_lines;
-			if (len < 0) len = 0;
-
-			vscrollbar_set_bar_len (chat_win, chat_scroll_id, len);
-			vscrollbar_set_pos (chat_win, chat_scroll_id, len);
-#endif //FR_VERSION
 			current_line = channels[active_tab].nr_lines;
 			text_changed = 1;
 		}
@@ -722,21 +620,12 @@ void switch_to_chat_tab(int id, char click)
 	{
 		current_line = 0;
 	}
-#ifdef FR_VERSION
 	vscrollbar_set_bar_len(chat_win, chat_scroll_id, channels[active_tab].nr_lines);
 	vscrollbar_set_pos(chat_win, chat_scroll_id, channels[active_tab].nr_lines);
-#else //FR_VERSION
-	vscrollbar_set_bar_len(chat_win, chat_scroll_id, current_line);
-	vscrollbar_set_pos(chat_win, chat_scroll_id, current_line);
-#endif //FR_VERSION
 	text_changed = 1;
 	channels[active_tab].highlighted = 0;
 
-#ifndef ENGLISH
 	if (channels[active_tab].chan_nr >= CHAT_CHANNEL1 && channels[active_tab].chan_nr <= CHAT_CHANNEL5)
-#else //ENGLISH
-	if (channels[active_tab].chan_nr >= CHAT_CHANNEL1 && channels[active_tab].chan_nr <= CHAT_CHANNEL3)
-#endif //ENGLISH
 	{
 		send_active_channel (channels[active_tab].chan_nr);
 	}
@@ -762,7 +651,6 @@ void change_to_current_chat_tab(const char *input)
 	{
 		channel = CHAT_MOD;
 	}
-#ifndef ENGLISH
 	else if(my_strncompare(input, "#dev ", 7) || (my_strncompare(input, dev_cmd_str, strlen(dev_cmd_str)) && input_len > strlen(dev_cmd_str)+1 && input[strlen(dev_cmd_str)] == ' '))
 	{
 		channel = CHAT_DEV;
@@ -771,7 +659,6 @@ void change_to_current_chat_tab(const char *input)
 	{
 		channel = CHAT_COORD;
 	}
-#endif	//ENGLISH
 	else if(my_strncompare(input, "#bc ", 4) || (my_strncompare(input, bc_cmd_str, strlen(bc_cmd_str)) && input_len > strlen(bc_cmd_str)+1 && input[strlen(bc_cmd_str)] == ' '))
 	{
 		channel = CHAT_SERVER;
@@ -970,14 +857,9 @@ void update_chat_win_buffers(void)
 	current_line = channels[active_tab].nr_lines - nr_displayed_lines;
 	if (current_line < 0)
 		current_line = 0;
-#ifdef FR_VERSION
 	widget_set_size (chat_win, chat_scroll_id, nr_displayed_lines);
 	vscrollbar_set_bar_len (chat_win, chat_scroll_id, channels[active_tab].nr_lines);
 	vscrollbar_set_pos (chat_win, chat_scroll_id, channels[active_tab].nr_lines);
-#else //FR_VERSION
-	vscrollbar_set_bar_len (chat_win, chat_scroll_id, current_line);
-	vscrollbar_set_pos (chat_win, chat_scroll_id, current_line);
-#endif //FR_VERSION
 	text_changed = 1;
 }
 
@@ -1066,11 +948,7 @@ int root_key_to_input_field (Uint32 key, Uint32 unikey)
 
 		// set invalid width to force rewrap
 		msg->wrap_width = 0;
-#ifdef FR_VERSION
 		tf->nr_lines = rewrap_message (msg, input_widget->size, tf->font_num, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-#else //FR_VERSION
-		tf->nr_lines = rewrap_message (msg, input_widget->size, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-#endif //FR_VERSION
 	}
 	else if (ch == SDLK_BACKSPACE || ch == SDLK_DELETE
 #ifdef OSX
@@ -1135,11 +1013,7 @@ void paste_in_input_field (const Uint8 *text)
 
 	// set invalid width to force rewrap
 	msg->wrap_width = 0;
-#ifdef FR_VERSION
 		tf->nr_lines = rewrap_message(msg, input_widget->size, tf->font_num, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-#else //FR_VERSION
-	tf->nr_lines = rewrap_message(msg, input_widget->size, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-#endif //FR_VERSION
 	if(use_windowed_chat != 2) {
 		widget_resize(input_widget->window_id, input_widget->id, input_widget->len_x, tf->y_space*2 + ceilf(DEFAULT_FONT_Y_LEN*input_widget->size*tf->nr_lines));
 	}
@@ -1154,11 +1028,7 @@ void put_string_in_input_field(const Uint8 *text)
 		tf->cursor = msg->len = safe_snprintf((char*)msg->data, msg->size, "%s", text);
 		// set invalid width to force rewrap
 		msg->wrap_width = 0;
-#ifdef FR_VERSION
 		tf->nr_lines = rewrap_message(msg, input_widget->size, tf->font_num, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-#else //FR_VERSION
-		tf->nr_lines = rewrap_message(msg, input_widget->size, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
-#endif //FR_VERSION
 		if(use_windowed_chat != 2) {
 			widget_resize(input_widget->window_id, input_widget->id, input_widget->len_x, tf->y_space*2 + ceilf(DEFAULT_FONT_Y_LEN*input_widget->size*tf->nr_lines));
 		}
@@ -1199,11 +1069,7 @@ void create_chat_window(void)
 	set_window_handler (chat_win, ELW_HANDLER_RESIZE, &resize_chat_handler);
 	set_window_handler (chat_win, ELW_HANDLER_CLOSE, &close_chat_handler);
 
-#ifdef FR_VERSION
 	chat_scroll_id = vscrollbar_add_extended (chat_win, chat_scroll_id, NULL, chat_win_width - CHAT_WIN_SCROLL_WIDTH, ELW_BOX_SIZE, CHAT_WIN_SCROLL_WIDTH, chat_win_height - 2*ELW_BOX_SIZE, 0, nr_displayed_lines, 0.77f, 0.57f, 0.39f, 0, 1, 0);
-#else //FR_VERSION
-	chat_scroll_id = vscrollbar_add_extended (chat_win, chat_scroll_id, NULL, chat_win_width - CHAT_WIN_SCROLL_WIDTH, ELW_BOX_SIZE, CHAT_WIN_SCROLL_WIDTH, chat_win_height - 2*ELW_BOX_SIZE, 0, 1.0f, 0.77f, 0.57f, 0.39f, 0, 1, 0);
-#endif //FR_VERSION
 	widget_set_OnDrag (chat_win, chat_scroll_id, chat_scroll_drag);
 	widget_set_OnClick (chat_win, chat_scroll_id, chat_scroll_click);
 
@@ -1213,11 +1079,7 @@ void create_chat_window(void)
 	channels[0].tab_id = tab_add (chat_win, chat_tabcollection_id, (tab_label(CHAT_ALL))->name, 0, 0, 0);
 	set_window_flag (channels[0].tab_id, ELW_CLICK_TRANSPARENT);
 	set_window_min_size (channels[0].tab_id, 0, 0);
-#ifdef FR_VERSION
 	channels[0].out_id = text_field_add_extended (channels[0].tab_id, channels[0].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
-#else //FR_VERSION
-	channels[0].out_id = text_field_add_extended (channels[0].tab_id, channels[0].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
-#endif //FR_VERSION
 	channels[0].chan_nr = CHAT_ALL;
 	channels[0].nr_lines = 0;
 	channels[0].open = 1;
@@ -1227,11 +1089,7 @@ void create_chat_window(void)
 	if(input_widget == NULL) {
 		Uint32 id;
 		set_text_message_color (&input_text_line, 1.0f, 1.0f, 1.0f);
-#ifdef FR_VERSION
 		id = text_field_add_extended (chat_win, 19, NULL, CHAT_WIN_SPACE, input_y, inout_width, input_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_NO_KEYPRESS, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
-#else //FR_VERSION
-		id = text_field_add_extended (chat_win, 19, NULL, CHAT_WIN_SPACE, input_y, inout_width, input_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_NO_KEYPRESS, chat_zoom, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
-#endif //FR_VERSION
 		widget_set_OnKey (chat_win, id, chat_input_key);
 		input_widget = widget_find(chat_win, id);
 	}
@@ -1272,25 +1130,15 @@ void chat_win_update_zoom(void)
 
 #define CS_MAX_DISPLAY_CHANS 10
 
-#ifndef ENGLISH
 int tab_bar_win_1 = -1;
-#else //ENGLISH
-int tab_bar_win = -1;
-#endif //ENGLISH
 int chan_sel_win = -1;
 int chan_sel_scroll_id = -1;
-#ifndef ENGLISH
 chat_tab tabs_1[MAX_CHAT_TABS];
 int current_bar = 0;
 int cur_button_id_1 = 0;
-#else //ENGLISH
-chat_tab tabs[MAX_CHAT_TABS];
-int cur_button_id = 0;
-#endif //ENGLISH
 int tabs_in_use = 0;
 int current_tab = 0;
 
-#ifndef ENGLISH
 chat_tab tabs_2[MAX_CHAT_TABS];
 int nb_ligne_tabs = 0;
 int tab_bar_win_2 = -1;
@@ -1298,9 +1146,6 @@ int cur_button_id_2 = 0;
 
 int tab_bar_width_1 = 0;
 int tab_bar_width_2 = 0;
-#else //ENGLISH
-int tab_bar_width = 0;
-#endif //ENGLISH
 int tab_bar_height = 18;
 
 void add_chan_name(int no, char * name, char * desc)
@@ -1319,17 +1164,11 @@ void add_chan_name(int no, char * name, char * desc)
 	safe_strncpy(entry->description, desc, strlen(desc) + 1);
 	queue_push(chan_name_queue, entry);
 	len = chan_name_queue->nodes-CS_MAX_DISPLAY_CHANS;
-#ifdef FR_VERSION
 	// si la barre de défilement existe déjà : il faut dans tous les cas la mettre à jour !
 	if (chan_sel_scroll_id != -1)
 		vscrollbar_set_bar_len(chan_sel_win, chan_sel_scroll_id, chan_name_queue->nodes);
 	else if (len > 0 && chan_sel_win != -1)
 		chan_sel_scroll_id = vscrollbar_add_extended (chan_sel_win, 0, NULL, 165, 20, 20, 163, 0, CS_MAX_DISPLAY_CHANS, 0.77f, 0.57f, 0.39f, 0, 1, chan_name_queue->nodes);
-#else //FR_VERSION
-	if(len > 0 && chan_sel_scroll_id == -1 && chan_sel_win != -1) {
-		chan_sel_scroll_id = vscrollbar_add_extended (chan_sel_win, 0, NULL, 165, 20, 20, 163, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1, len);
-	}
-#endif //FR_VERSION
 }
 
 void add_spec_chan_name(int no, char * name, char * desc)
@@ -1363,11 +1202,9 @@ void generic_chans(void)
 	add_spec_chan_name(8, "GMs", "Guild Messages");
 	add_spec_chan_name(9, "Server", "Messages from the server");
 	add_spec_chan_name(10, "Mod", "Mod chat");
-#ifdef FR_VERSION
 	add_spec_chan_name(11, "Dev", "Dev chat");
 	add_spec_chan_name(12, "Coord", "Coord chat");
 	add_spec_chan_name(13, "Combat", "Combat chat");
-#endif //FR_VERSION
 	add_chan_name(1, "Newbie", "Newbie Q&A about the game");
 	add_chan_name(3, "Market", "Trading, hiring, and price checks");
 	add_chan_name(4, "EL Gen Chat", "Chat about EL topics");
@@ -1447,14 +1284,8 @@ void init_channel_names(void)
 				xmlFree (attrib);
 				continue;
 			}
-#ifdef ENGLISH
-			/*channelname = malloc (attriblen)+1;
-			my_xmlStrncopy (&channelname, attrib, attriblen);*/
-			channelname = (char*)xmlStrdup(attrib);
-#else //ENGLISH
 			channelname = malloc (attriblen+1);
 			my_xmlStrncopy (&channelname, (char*)attrib, attriblen);
-#endif //ENGLISH
 			xmlFree (attrib);
 
 			// Get the index number
@@ -1481,14 +1312,8 @@ void init_channel_names(void)
 			}
 			attrib = cur->children->content;
 			attriblen = strlen ((char*)attrib);
-#ifdef ENGLISH
-			/*channeldesc = malloc (attriblen)+1;
-			my_xmlStrncopy (&channeldesc, attrib, attriblen);*/
-			channeldesc = (char*)xmlStrdup(attrib);
-#else //ENGLISH
 			channeldesc = malloc (attriblen+1);
 			my_xmlStrncopy (&channeldesc, (char*)attrib, attriblen);
-#endif //ENGLISH
 			xmlFree (attrib);
 
 			// Add it.
@@ -1525,15 +1350,9 @@ void init_channel_names(void)
 				xmlFree (attrib);
 				continue;
 			}
-#ifdef ENGLISH
-			/*channelname = malloc (attriblen)+1;
-			my_xmlStrncopy (&channelname, attrib, attriblen);*/
-			channelname = (char*)xmlStrdup(attrib);
-#else //ENGLISH
 			/*channelname = xmlStrdup(attrib);*/
 			channelname = malloc (attriblen+1);
 			my_xmlStrncopy (&channelname, (char*)attrib, attriblen);
-#endif //ENGLISH
 			xmlFree (attrib);
 
 			// Get the description.
@@ -1547,16 +1366,9 @@ void init_channel_names(void)
 				continue;
 			}
 			attrib = cur->children->content;
-#ifdef ENGLISH
-			/*attriblen = strlen (attrib);
-			channeldesc = malloc (attriblen);
-			my_xmlStrncopy (&channeldesc, attrib, attriblen);*/
-			channeldesc = (char*)xmlStrdup(attrib);
-#else //ENGLISH
 			attriblen = strlen ((char*)attrib);
 			channeldesc = malloc (attriblen+1);
 			my_xmlStrncopy (&channeldesc, (char*)attrib, attriblen);
-#endif //ENGLISH
 			xmlFree (attrib);
 
 			// Add it.
@@ -1611,7 +1423,6 @@ void cleanup_chan_names(void)
 	queue_destroy(chan_name_queue);
 }
 
-#ifndef ENGLISH
 int test_channel_race (int no_channel)
 {
     // On essaie de joindre un canal de race
@@ -1672,7 +1483,6 @@ void cleanup_chan_race_names()
 	}
 	while(step != NULL);
 }
-#endif //ENGLISH
 
 int highlight_tab(const Uint8 channel)
 {
@@ -1686,16 +1496,11 @@ int highlight_tab(const Uint8 channel)
 	switch(use_windowed_chat)
 	{
 		case 1:
-#ifndef ENGLISH
 			if (tab_bar_win_1 < 0)
-#else //ENGLISH
-			if (tab_bar_win < 0)
-#endif //ENGLISH
 			{
 				//it doesn't exist
 				return 0;
 			}
-#ifndef ENGLISH
 			if(tabs_1[current_tab].channel != CHAT_ALL) {
 				/* If we're in the All tab, we have already seen this message */
 				for (i = 0; i < nb_tab_button_1; i++)
@@ -1726,23 +1531,6 @@ int highlight_tab(const Uint8 channel)
                     }
                 }
 			}
-#else //ENGLISH
-			if(tabs[current_tab].channel != CHAT_ALL) {
-				/* If we're in the All tab, we have already seen this message */
-				for (i = 0; i < tabs_in_use; i++)
-				{
-					if (tabs[i].channel == channel)
-					{
-						if (current_tab != i && !tabs[i].highlighted)
-						{
-							widget_set_color (tab_bar_win, tabs[i].button, 1.0f, 0.0f, 0.0f);
-							tabs[i].highlighted = 1;
-						}
-						break;
-					}
-				}
-			}
-#endif //ENGLISH
 		break;
 		case 2:
 			if (chat_win < 0)
@@ -1773,7 +1561,6 @@ int highlight_tab(const Uint8 channel)
 	return 1;
 }
 
-#ifndef ENGLISH
 void switch_to_tab(int id, int niveau_tab)
 {
     int i, j;
@@ -1854,34 +1641,8 @@ void switch_to_tab(int id, int niveau_tab)
 	    }
     }
 }
-#else //ENGLISH
-void switch_to_tab(int id)
-{
-	int i=2;
-	widget_set_color (tab_bar_win, tabs[current_tab].button, 0.77f, 0.57f, 0.39f);
-	widget_set_color (tab_bar_win, tabs[0].button,  0.5f, 0.75f, 1.0f);
-	widget_set_color (tab_bar_win, tabs[1].button,  0.5f, 0.75f, 1.0f);
-	for(;i < MAX_CHAT_TABS; ++i) {
-		if(tabs[i].button <= 0) {
-			continue;
-		} else if(tabs[i].highlighted) {
-			continue;
-		}
-		widget_set_color (tab_bar_win, tabs[i].button, 0.77f, 0.57f, 0.39f);
-	}
-	current_tab = id;
-	widget_set_color (tab_bar_win, tabs[current_tab].button, 0.57f, 1.0f, 0.59f);
-	current_filter = tabs[current_tab].channel;
-	tabs[current_tab].highlighted = 0;
-	if(tabs[current_tab].channel >= CHAT_CHANNEL1 && tabs[current_tab].channel <= CHAT_CHANNEL3) {
-		send_active_channel (tabs[current_tab].channel);
-		recolour_messages(display_text_buffer);
-	}
-}
-#endif //ENGLISH
 
 
-#ifndef ENGLISH
 int tab_bar_button_click (widget_list *w, int mx, int my, Uint32 flags, int ligne)
 {
 	int itab;
@@ -2013,75 +1774,6 @@ int tab_bar_button_click_2 (widget_list *w, int mx, int my, Uint32 flags)
    return tab_bar_button_click(w, mx, my, flags, 2);
 }
 
-#else //ENGLISH
-int tab_bar_button_click (widget_list *w, int mx, int my, Uint32 flags)
-{
-	int itab;
-
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-		if (w->id == tabs[itab].button)
-			break;
-	}
-
-	if (itab >= tabs_in_use)
-		// shouldn't happen
-		return 0;
-
-
-	if (flags&ELW_RIGHT_MOUSE)
-	{
-		display_channel_color_win(get_active_channel(tabs[itab].channel));
-		return 1;
-	}
-	else
-	{
-		// NOTE: This is an optimization, instead of redefining a "Tab/Button" type.
-		//		 Further use of this would be best served be a new definition.
-		// Detect clicking on 'x'
-		if(tabs[itab].channel == CHAT_CHANNEL1 || tabs[itab].channel == CHAT_CHANNEL2 ||
-				tabs[itab].channel == CHAT_CHANNEL3)
-		{
-			int x = w->len_x - 6;
-			int y = 5;
-			char str[256];
-
-			// 'x' was clicked?
-			if(mx > x-4 && mx < x+3 && my > y-4 && my < y+3)
-			{
-				// Drop this channel via #lc
-				safe_snprintf(str, sizeof(str), "%c#lc %d", RAW_TEXT, active_channels[tabs[itab].channel-CHAT_CHANNEL1]);
-				my_tcp_send(my_socket, (Uint8*)str, strlen(str+1)+1);
-				// Can I remove this?
-				remove_tab(tabs[itab].channel);
-				if(current_tab == itab) {
-					int i;
-					//We're closing the current tab, switch to the all-tab
-					for(i = 0; i < tabs_in_use; i++)
-					{
-						if(tabs[i].channel == CHAT_ALL)
-						{
-							switch_to_tab(i);
-							break;
-						}
-					}
-				}
-				do_click_sound();
-				return 1; //The click was handled, no need to continue
-			}
-		}
-
-
-		if (current_tab != itab)
-		{
-			switch_to_tab(itab);
-			do_click_sound();
-		}
-		lines_to_show = 10;
-	}
-	return 1;
-}
-#endif //ENGLISH
 
 char tmp_tab_label[20];
 
@@ -2103,18 +1795,12 @@ chan_name *tab_label (Uint8 chan)
 		case CHAT_GM:	return pseudo_chans[8];
 		case CHAT_SERVER:	return pseudo_chans[9];
 		case CHAT_MOD:	return pseudo_chans[10];
-#ifdef FR_VERSION
 		case CHAT_DEV:	return pseudo_chans[11];
 		case CHAT_COORD:	return pseudo_chans[12];
 		case CHAT_COMBAT: return pseudo_chans[13];
-#endif //FR_VERSION
 	}
 
-#ifndef ENGLISH
 	if(chan < CHAT_CHANNEL1 || chan > CHAT_CHANNEL5 ){
-#else //ENGLISH
-	if(chan < CHAT_CHANNEL1 || chan > CHAT_CHANNEL3 ){
-#endif //ENGLISH
 		// shouldn't get here...
 		return NULL;
 	}
@@ -2139,14 +1825,7 @@ chan_name *tab_label (Uint8 chan)
 	safe_snprintf (desc, sizeof(desc), pseudo_chans[0]->description, cnr);
 	add_chan_name(cnr,name,desc);
 
-#ifdef FR_VERSION
 	// inutile puisque add_chan_name() se charge de mettre à jour la barre de défilement
-#else //FR_VERSION
-	if(chan_sel_scroll_id >= 0 && steps > 8) {
-		vscrollbar_set_bar_len(chan_sel_win, chan_sel_scroll_id, steps-8);
-		//we're adding another name to the queue, so the window scrollbar needs to be adusted
-	}
-#endif //FR_VERSION
 	return step->next->data;
 }
 
@@ -2170,17 +1849,12 @@ unsigned int chan_int_from_name(char * name, int * return_length)
 	return 0;
 }
 
-#ifndef ENGLISH
 void update_tab_button_idx (Uint8 old_idx, Uint8 new_idx, int niveau_tab)
-#else //ENGLISH
-void update_tab_button_idx (Uint8 old_idx, Uint8 new_idx)
-#endif //ENGLISH
 {
 	int itab;
 
 	if (old_idx == new_idx) return;
 
-#ifndef ENGLISH
     if (niveau_tab == 1)
     {
     	for (itab = 0; itab < nb_tab_button_1; itab++)
@@ -2203,19 +1877,8 @@ void update_tab_button_idx (Uint8 old_idx, Uint8 new_idx)
             }
         }
     }
-#else //ENGLISH
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-		if (tabs[itab].channel == old_idx)
-		{
-			tabs[itab].channel = new_idx;
-			return;
-		}
-	}
-#endif //ENGLISH
 }
 
-#ifndef ENGLISH
 int chan_tab_mouseover_handler(widget_list *widget, int niveau_tab)
 {
 	int itab = 0;
@@ -2240,22 +1903,7 @@ int chan_tab_mouseover_handler(widget_list *widget, int niveau_tab)
 	}
 	return 0;
 }
-#else //ENGLISH
-int chan_tab_mouseover_handler(widget_list *widget)
-{
-	int itab = 0;
-	if(!show_help_text){return 0;}
-	for (itab = 0; itab < tabs_in_use; itab++){
-		if ((tabs[itab].button) == (widget->id)){
-			show_help(tabs[itab].description, widget->pos_x,widget->pos_y+widget->len_y);
-			return 1;
-		}
-	}
-	return 0;
-}
-#endif //ENGLISH
 
-#ifndef ENGLISH
 int chan_tab_mouseover_handler_1(widget_list *widget)
 {
     return chan_tab_mouseover_handler(widget, 1);
@@ -2264,7 +1912,6 @@ int chan_tab_mouseover_handler_2(widget_list *widget)
 {
     return chan_tab_mouseover_handler(widget, 2);
 }
-#endif //ENGLISH
 
 int display_chan_sel_handler(window_info *win)
 {
@@ -2273,10 +1920,8 @@ int display_chan_sel_handler(window_info *win)
 
 	node_t *step = queue_front_node(chan_name_queue);
 
-#ifdef FR_VERSION
     cleanup_chan_race_names();
 	if (chan_sel_scroll_id != -1) vscrollbar_set_bar_len(chan_sel_win, chan_sel_scroll_id, chan_name_queue->nodes);
-#endif //FR_VERSION
 
 	if(mouse_x >= win->pos_x+win->len_x || mouse_y >= win->pos_y+win->len_y) {
 		win->displayed = 0;
@@ -2315,9 +1960,6 @@ int display_chan_sel_handler(window_info *win)
 	num_lines = reset_soft_breaks(channel_help_str, strlen(channel_help_str), sizeof(channel_help_str), local_zoom, win->len_x - 5, NULL, NULL);
 	draw_string_zoomed(x, y+=5, (unsigned char*)channel_help_str, num_lines, local_zoom);
 	win->len_y = 187 + num_lines * DEFAULT_FONT_Y_LEN * local_zoom + 2;
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 0;
 }
 
@@ -2355,55 +1997,31 @@ int click_chan_sel_handler(window_info *win, int mx, int my, Uint32 flags)
 int tab_special_click(widget_list *w, int mx, int my, Uint32 flags)
 {
 	int itab = 0;
-#ifndef ENGLISH
 	for (itab = 0; itab < nb_tab_button_1; itab++) {
 		if (tabs_1[itab].button == w->id){
 			switch(tabs_1[itab].channel) {
-#else //ENGLISH
-	for (itab = 0; itab < tabs_in_use; itab++) {
-		if (tabs[itab].button == w->id){
-			switch(tabs[itab].channel) {
-#endif //ENGLISH
 				case CHAT_HIST:
-#ifdef FR_VERSION
 					/* On inverse l'ordre des 2 fonctions pour éviter les soucis avec le texte de chat qui ne s'affiche plus */
 					toggle_window(console_root_win);
 					toggle_window(game_root_win);
-#else //FR_VERSION
-					toggle_window(game_root_win);
-					toggle_window(console_root_win);
-#endif //FR_VERSION
 					do_click_sound();
 					break;
 				case CHAT_LIST:
 					if(chan_sel_win >= 0) {
 						toggle_window(chan_sel_win);
 					} else {
-#ifndef ENGLISH
 						chan_sel_win = create_window ("Channel Selection", tab_bar_win_1, 0, w->pos_x,w->pos_y+w->len_y+1, 185, 187, (ELW_USE_BACKGROUND|ELW_USE_BORDER|ELW_SHOW|ELW_ALPHA_BORDER|ELW_CLOSE_BOX));
-#else //ENGLISH
-						chan_sel_win = create_window ("Channel Selection", tab_bar_win, 0, w->pos_x,w->pos_y+w->len_y+1, 185, 187, (ELW_USE_BACKGROUND|ELW_USE_BORDER|ELW_SHOW|ELW_ALPHA_BORDER|ELW_CLOSE_BOX));
-#endif //ENGLISH
 						windows_list.window[chan_sel_win].back_color[3]= 0.25f;
 						set_window_handler (chan_sel_win, ELW_HANDLER_DISPLAY, &display_chan_sel_handler);
 						set_window_handler (chan_sel_win, ELW_HANDLER_CLICK, &click_chan_sel_handler);
 						if(chan_name_queue->nodes >= CS_MAX_DISPLAY_CHANS && chan_sel_scroll_id == -1) {
-#ifdef FR_VERSION
 							chan_sel_scroll_id = vscrollbar_add_extended (chan_sel_win, 0, NULL, 165, 20, 20, 163, 0, CS_MAX_DISPLAY_CHANS, 0.77f, 0.57f, 0.39f, 0, 1, chan_name_queue->nodes);
-#else //FR_VERSION
-							int len = chan_name_queue->nodes-CS_MAX_DISPLAY_CHANS;
-							chan_sel_scroll_id = vscrollbar_add_extended (chan_sel_win, 0, NULL, 165, 20, 20, 163, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1, len);
-#endif //FR_VERSION
 						}
 					}
 					do_click_sound();
 					break;
 				default:
-#ifndef ENGLISH
 					return tab_bar_button_click(w, mx, my, flags,1);	//grumble. this shouldn't happen
-#else //ENGLISH
-					return tab_bar_button_click(w, mx, my, flags);	//grumble. this shouldn't happen
-#endif //ENGLISH
 			}
 			return 1;
 		}
@@ -2418,58 +2036,13 @@ static int draw_tab_details (widget_list *W)
 {
 	int x = W->pos_x + W->len_x - 6;
 	int y = W->pos_y+5;
-#ifdef ENGLISH
-	int itab;
-#else //ENGLSIH
 	int itab_1, itab_2;
-#endif //ENGLISH
 
 	glColor3f(0.77f,0.57f,0.39f);
 
 	glDisable(GL_TEXTURE_2D);
 
 	/* check for an active "#jc" channel */
-#ifdef ENGLISH
-	for (itab = 0; itab < tabs_in_use; itab++)
-		if ((tabs[itab].button == W->id) && (tabs[itab].channel == CHAT_CHANNEL1 + current_channel))
-		{
-			int x = W->pos_x+2;
-			int y = W->pos_y+1;
-			int i, color;
-			/* draw the "+" for the active channel */
-			for(i=0; i<MAX_CHANNEL_COLORS; i++)
-			{
-				if(channel_colors[i].nr == get_active_channel(tabs[itab].channel) && channel_colors[i].color > -1)
-				break;
-			}
-			if(i < MAX_CHANNEL_COLORS)
-			{
-				color = channel_colors[i].color;
-				glColor3ub(colors_list[color].r1, colors_list[color].g1, colors_list[color].b1);
-			}
-			glBegin(GL_LINES);
-				glVertex2i(x+gx_adjust,y+4);
-				glVertex2i(x+7+gx_adjust,y+4);
-				glVertex2i(x+3,y+gy_adjust);
-				glVertex2i(x+3,y+7+gy_adjust);
-			glEnd();
-			glColor3f(0.77f,0.57f,0.39f);
-			/* draw a dotted underline if input would go to this channel */
-			if ((input_text_line.len > 0) && (input_text_line.data[0] == '@') && !((input_text_line.len > 1) && (input_text_line.data[1] == '@')))
-			{
-				glPushAttrib(GL_ENABLE_BIT|GL_LINE_BIT);
-				glEnable(GL_LINE_STIPPLE);
-				glLineStipple(1, 0xCCCC);
-				glLineWidth(3.0);
-				glBegin(GL_LINES);
-					glVertex2i(W->pos_x, W->pos_y + W->len_y + 4);
-					glVertex2i(W->pos_x + W->len_x, W->pos_y + W->len_y + 4);
-				glEnd();
-				glPopAttrib();
-			}
-			break;
-		}
-#else //ENGLISH
 	for (itab_1 = 0; itab_1 < nb_tab_button_1; itab_1++)
 		if ((tabs_1[itab_1].button == W->id) && (tabs_1[itab_1].channel == CHAT_CHANNEL1 + current_channel))
 		{
@@ -2544,7 +2117,6 @@ static int draw_tab_details (widget_list *W)
 			}
 			break;
 		}
-#endif //ENGLISH
 
 
 	/* draw the closing x */
@@ -2556,13 +2128,9 @@ static int draw_tab_details (widget_list *W)
 		glVertex2i(x+3,y-4);
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
-#ifndef ENGLISH
 int add_tab_button (Uint8 channel)
 {
 	int itab_1, itab_2;
@@ -2697,60 +2265,7 @@ int add_tab_button (Uint8 channel)
 	return tabs_in_use - 1;
 }
 
-#else //ENGLISH
-int add_tab_button (Uint8 channel)
-{
-	int itab;
-	const char *label;
-	chan_name *chan;
 
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-		if (tabs[itab].channel == channel)
-			// already there
-			return itab;
-	}
-
-	if (tabs_in_use >= MAX_CHAT_TABS)
-		// no more room. Shouldn't happen anyway.
-		return -1;
-
-	tabs[tabs_in_use].channel = channel;
-	tabs[tabs_in_use].highlighted = 0;
-	chan = tab_label (channel);
-	if(chan == NULL){
-		return -1;
-	}
-	label = chan->name;
-	tabs[tabs_in_use].description = chan->description;
-
-	tabs[tabs_in_use].button = button_add_extended (tab_bar_win, cur_button_id++, NULL, tab_bar_width, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
-	if(channel == CHAT_HIST || channel == CHAT_LIST) {
-		//a couple of special cases
-		widget_set_OnClick (tab_bar_win, tabs[itab].button, tab_special_click);
-		widget_set_color (tab_bar_win, tabs[itab].button, 0.5f, 0.75f, 1.0f);
-	} else {
-		//general case
-		widget_set_OnClick (tab_bar_win, tabs[itab].button, tab_bar_button_click);
-	}
-	widget_set_OnMouseover (tab_bar_win, tabs[itab].button, chan_tab_mouseover_handler);
-	widget_set_type(tab_bar_win, tabs[itab].button, &square_button_type);
- 	// Handlers for the 'x'
- 	// Make sure it's a CHANNEL first
- 	if(tabs[itab].channel == CHAT_CHANNEL1 || tabs[itab].channel == CHAT_CHANNEL2 ||
- 	   tabs[itab].channel == CHAT_CHANNEL3)
- 	{
- 		widget_set_OnDraw (tab_bar_win, tabs[itab].button, draw_tab_details);
- 	}
-	tab_bar_width += widget_get_width (tab_bar_win, tabs[tabs_in_use].button)+1;
-	resize_window (tab_bar_win, tab_bar_width, tab_bar_height);
-
-	tabs_in_use++;
-	return tabs_in_use - 1;
-}
-#endif //ENGLISH
-
-#ifndef ENGLISH
 void remove_tab_button (Uint8 channel, int ligne)
 {
 	int itab, w;
@@ -2832,31 +2347,6 @@ void remove_tab_button (Uint8 channel, int ligne)
         }
     }
 }
-#else //ENGLISH
-void remove_tab_button (Uint8 channel)
-{
-	int itab, w;
-
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-		if (tabs[itab].channel == channel)
-			break;
-	}
-	if (itab >= tabs_in_use) return;
-
-	w = widget_get_width (tab_bar_win, tabs[itab].button)+1;
-	widget_destroy (tab_bar_win, tabs[itab].button);
-	for (++itab; itab < tabs_in_use; itab++)
-	{
-		widget_move_rel (tab_bar_win, tabs[itab].button, -w, 0);
-		tabs[itab-1] = tabs[itab];
-	}
-	tabs_in_use--;
-
-	tab_bar_width -= w;
-	resize_window (tab_bar_win, tab_bar_width, tab_bar_height);
-}
-#endif //ENGLISH
 
 void update_tab_bar (text_message * msg)
 {
@@ -2867,38 +2357,21 @@ void update_tab_bar (text_message * msg)
 	if (msg->deleted) return;
 
 	// don't bother if there's no tab bar
-#ifndef ENGLISH
 	if (tab_bar_win_1 < 0 && tab_bar_win_2 < 0) return;
-#else //ENGLISH
-	if (tab_bar_win < 0) return;
-#endif //ENGLISH
 
 	// Only update specific channels
 	channel = get_tab_channel (msg->chan_idx);
 	if (channel == CHAT_ALL || channel == CHAT_MODPM) {
-#ifdef FR_VERSION
 		lines_to_show += rewrap_message(msg, chat_zoom, chat_font, get_console_text_width(), NULL);
-#else //FR_VERSION
-		lines_to_show += rewrap_message(msg, chat_zoom, get_console_text_width(), NULL);
-#endif //FR_VERSION
 		if (lines_to_show >= 10) lines_to_show = 10;
 		return;
 	}
 
-#ifdef FR_VERSION
 	if (tabs_1[current_tab].channel == CHAT_ALL && msg->chan_idx != CHAT_COMBAT) {
-#else //FR_VERSION
-	if (tabs[current_tab].channel == CHAT_ALL) {
-#endif //FR_VERSION
-#ifdef FR_VERSION
 		lines_to_show += rewrap_message(msg, chat_zoom, chat_font, get_console_text_width(), NULL);
-#else //FR_VERSION
-		lines_to_show += rewrap_message(msg, chat_zoom, get_console_text_width(), NULL);
-#endif //FR_VERSION
 		if (lines_to_show >= 10) lines_to_show = 10;
 	}
 
-#ifndef ENGLISH
 	for (itab = 2; itab < nb_tab_button_1; itab++)
 	{
 		if (tabs_1[itab].channel == channel)
@@ -2906,26 +2379,12 @@ void update_tab_bar (text_message * msg)
 			if (current_tab != itab && !tabs_1[itab].highlighted && tabs_1[current_tab].channel != CHAT_ALL && !get_show_window(console_root_win) && current_bar == 1)
 				widget_set_color (tab_bar_win_1, tabs_1[itab].button, 1.0f, 1.0f, 0.0f);
 			if (current_tab == itab && current_bar == 1) {
-#else //ENGLISH
-	for (itab = 2; itab < tabs_in_use; itab++)
-	{
-		if (tabs[itab].channel == channel)
-		{
-			if (current_tab != itab && !tabs[itab].highlighted && tabs[current_tab].channel != CHAT_ALL && !get_show_window(console_root_win))
-				widget_set_color (tab_bar_win, tabs[itab].button, 1.0f, 1.0f, 0.0f);
-			if (current_tab == itab) {
-#endif //ENGLISH
-#ifdef FR_VERSION
 				lines_to_show += rewrap_message(msg, chat_zoom, chat_font, get_console_text_width(), NULL);
-#else //FR_VERSION
-				lines_to_show += rewrap_message(msg, chat_zoom, get_console_text_width(), NULL);
-#endif //FR_VERSION
 				if (lines_to_show >= 10) lines_to_show = 10;
 			}
 			return;
 		}
 	}
-#ifndef ENGLISH
 	for (itab = 0; itab < tabs_in_use-nb_tab_button_1; itab++)
 	{
 		if (tabs_2[itab].channel == channel)
@@ -2933,34 +2392,22 @@ void update_tab_bar (text_message * msg)
 			if (current_tab != itab && !tabs_2[itab].highlighted && tabs_2[current_tab].channel != CHAT_ALL && !get_show_window(console_root_win) && current_bar == 2)
 				widget_set_color (tab_bar_win_2, tabs_2[itab].button, 1.0f, 1.0f, 0.0f);
 			if (current_tab == itab && current_bar == 2) {
-#ifdef FR_VERSION
 				lines_to_show += rewrap_message(msg, chat_zoom, chat_font, console_text_width, NULL);
-#else //FR_VERSION
-				lines_to_show += rewrap_message(msg, chat_zoom, console_text_width, NULL);
-#endif //FR_VERSION
 				if (lines_to_show >= 10) lines_to_show = 10;
 			}
 			return;
 		}
     }
-#endif //ENGLISH
 
 	// we need a new button
 	new_button = add_tab_button (channel);
-#ifndef ENGLISH
 	if(tabs_1[current_tab].channel != CHAT_ALL && current_bar == 1) {
 		widget_set_color (tab_bar_win_1, tabs_1[new_button].button, 1.0f, 1.0f, 0.0f);
 	}
-#else //ENGLISH
-	if(tabs[current_tab].channel != CHAT_ALL) {
-		widget_set_color (tab_bar_win, tabs[new_button].button, 1.0f, 1.0f, 0.0f);
-	}
-#endif //ENGLISH
 }
 
 void create_tab_bar(void)
 {
-#ifndef ENGLISH
 	window_info *console_win = &windows_list.window[console_root_win];
     widget_list *console_out_w = widget_find(console_root_win, console_out_id);
 
@@ -2993,25 +2440,10 @@ void create_tab_bar(void)
 	widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_win->len_y - input_widget->len_y - CONSOLE_SEP_HEIGHT - HUD_MARGIN_Y - 10 - nb_ligne_tabs*tab_bar_height);
 	nr_console_lines = console_out_w->len_y / (int)(DEFAULT_FONT_Y_LEN * chat_zoom);
 	display_console_handler((widget_find(console_root_win, console_out_id))->widget_info);
-#else //ENGLISH
-	int tab_bar_x = 10;
-	int tab_bar_y = 3;
-
-	tab_bar_win = create_window ("Tab bar", -1, 0, tab_bar_x, tab_bar_y, tab_bar_width < ELW_BOX_SIZE ? ELW_BOX_SIZE : tab_bar_width, tab_bar_height, ELW_USE_BACKGROUND|ELW_SHOW);
-
-	add_tab_button (CHAT_LIST);
-	add_tab_button (CHAT_HIST);
-	add_tab_button (CHAT_ALL);
-	//add_tab_button (CHAT_NONE);
-	current_tab = 2;
-	widget_set_color (tab_bar_win, tabs[current_tab].button, 0.57f, 1.0f, 0.59f);
-	current_filter = tabs[current_tab].channel;
-#endif //ENGLISH
 }
 
 void display_tab_bar(void)
 {
-#ifndef ENGLISH
 	if (tab_bar_win_1 < 0)
 	{
 		create_tab_bar ();
@@ -3026,17 +2458,6 @@ void display_tab_bar(void)
 		show_window (tab_bar_win_2);
 		select_window (tab_bar_win_2);
     }
-#else //ENGLISH
-	if (tab_bar_win < 0)
-	{
-		create_tab_bar ();
-	}
-	else
-	{
-		show_window (tab_bar_win);
-		select_window (tab_bar_win);
-	}
-#endif //ENGLISH
 }
 
 void change_to_current_tab(const char *input)
@@ -3057,7 +2478,6 @@ void change_to_current_tab(const char *input)
 	{
 		channel = CHAT_MOD;
 	}
-#ifndef ENGLISH
 	else if(my_strncompare(input, "#dev ", 7) || (my_strncompare(input, dev_cmd_str, strlen(dev_cmd_str)) && input_len > strlen(dev_cmd_str)+1 && input[strlen(dev_cmd_str)] == ' '))
 	{
 		channel = CHAT_DEV;
@@ -3066,7 +2486,6 @@ void change_to_current_tab(const char *input)
 	{
 		channel = CHAT_COORD;
 	}
-#endif //ENGLISH
 	else if(my_strncompare(input, "#bc ", 4) || (my_strncompare(input, bc_cmd_str, strlen(bc_cmd_str)) && input_len > strlen(bc_cmd_str)+1 && input[strlen(bc_cmd_str)] == ' '))
 	{
 		channel = CHAT_SERVER;
@@ -3116,7 +2535,6 @@ void change_to_current_tab(const char *input)
 				channel = CHAT_ALL;
 			}
 		break;
-#ifndef ENGLISH
 		case CHAT_DEV:
 			if (!dev_chat_separate)
 			{
@@ -3129,38 +2547,22 @@ void change_to_current_tab(const char *input)
 				channel = CHAT_ALL;
 			}
 		break;
-#endif //ENGLISH
-#ifdef FR_VERSION
 		case CHAT_COMBAT:
 		break;
-#endif //FR_VERSION
 	}
 	if(channel != CHAT_ALL)
 	{
-#ifndef ENGLISH
 		for(itab = 0; itab < nb_tab_button_1; itab++)
-#else //ENGLISH
-		for(itab = 0; itab < tabs_in_use; itab++)
-#endif //ENGLISH
 		{
-#ifndef ENGLISH
 			if(tabs_1[itab].channel == channel)
-#else //ENGLISH
-			if(tabs[itab].channel == channel)
-#endif //ENGLISH
 			{
 				if(itab != current_tab) //We don't want to switch to the tab we're already in
 				{
-#ifndef ENGLISH
 					switch_to_tab(itab,1);
-#else //ENGLISH
-					switch_to_tab(itab);
-#endif //ENGLISH
 				}
 				return;
 			}
 		}
-#ifndef ENGLISH
 		for(itab = 0; itab < tabs_in_use-nb_tab_button_1; itab++)
 		{
 			if(tabs_2[itab].channel == channel)
@@ -3172,15 +2574,10 @@ void change_to_current_tab(const char *input)
                 return;
             }
 		}
-#endif //ENGLISH
 		//We didn't find any tab to switch to, create new
 		itab = add_tab_button (channel);
 		if (itab >= 0)
-#ifndef ENGLISH
 			switch_to_tab(itab,1);
-#else //ENGLISH
-			switch_to_tab (itab);
-#endif //ENGLISH
 	}
 }
 
@@ -3195,11 +2592,7 @@ void convert_tabs (int new_wc)
 		// longer active
 		for (ibc = 2; ibc < tabs_in_use; ibc++)
 		{
-#ifndef ENGLISH
 			chan = tabs_1[ibc].channel;
-#else //ENGLISH
-			chan = tabs[ibc].channel;
-#endif //ENGLISH
 			for (iwc = 0; iwc < MAX_CHAT_TABS; iwc++)
 			{
 				if (channels[iwc].chan_nr == chan && channels[iwc].open)
@@ -3207,11 +2600,7 @@ void convert_tabs (int new_wc)
 			}
 
 			if (iwc >= MAX_CHAT_TABS)
-#ifndef ENGLISH
                 remove_tab_button (chan,1);
-#else //ENGLISH
-				remove_tab_button (chan);
-#endif //ENGLISH
 		}
 
 		// now add buttons for every tab that doesn't have a button yet
@@ -3222,11 +2611,7 @@ void convert_tabs (int new_wc)
 				chan = channels[iwc].chan_nr;
 				for (ibc = 0; ibc < tabs_in_use; ibc++)
 				{
-#ifndef ENGLISH
 					if (tabs_1[ibc].channel == chan)
-#else //ENGLISH
-					if (tabs[ibc].channel == chan)
-#endif //ENGLISH
 						break;
 				}
 
@@ -3248,11 +2633,7 @@ void convert_tabs (int new_wc)
 				chan = channels[iwc].chan_nr;
 				for (ibc = 0; ibc < tabs_in_use; ibc++)
 				{
-#ifndef ENGLISH
 					if (tabs_1[ibc].channel == chan)
-#else //ENGLISH
-					if (tabs[ibc].channel == chan)
-#endif //ENGLISH
 						break;
 				}
 
@@ -3266,11 +2647,7 @@ void convert_tabs (int new_wc)
 		// now add tabs for every button that doesn't have a tab yet
 		for (ibc = 2; ibc < tabs_in_use; ibc++)
 		{
-#ifndef ENGLISH
 			chan = tabs_1[ibc].channel;
-#else //ENGLISH
-			chan = tabs[ibc].channel;
-#endif //ENGLISH
 			for (iwc = 0; iwc < MAX_CHAT_TABS; iwc++)
 			{
 				if (channels[iwc].chan_nr == chan && channels[iwc].open)
@@ -3641,20 +3018,12 @@ int command_channel_colors(char * text, int len)
 	int i;
 	char string[20];
 
-#ifdef FR_VERSION
 	LOG_TO_CONSOLE(c_grey1, "Couleurs actuels des canaux :");
-#else //FR_VERSION
-	LOG_TO_CONSOLE(c_grey1, "Your currently set channel colors:");
-#endif //FR_VERSION
 	for(i=0; i<MAX_CHANNEL_COLORS; i++)
 	{
 		if(channel_colors[i].nr >0 && channel_colors[i].color > -1)
 		{
-#ifdef FR_VERSION
 			safe_snprintf(string, sizeof(string), "Canal %u", channel_colors[i].nr);
-#else //FR_VERSION
-			safe_snprintf(string, sizeof(string), "Channel %u", channel_colors[i].nr);
-#endif //FR_VERSION
 			LOG_TO_CONSOLE(channel_colors[i].color, string);
 		}
 	}

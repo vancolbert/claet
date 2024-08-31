@@ -8,9 +8,7 @@
 #include "init.h"
 #include "io/elpathwrapper.h"
 
-#ifndef ENGLISH
 int clear_log = 0;
-#endif //nENGLISH
 
 FILE* open_log (const char *fname, const char *mode)
 {
@@ -31,27 +29,6 @@ FILE* open_log (const char *fname, const char *mode)
 	return file;
 }
 
-#ifdef EXTRA_DEBUG
-FILE *func_file = NULL;
-void clear_func_log()
-{
-	if(!func_file) {
-		func_file = open_log("function_log.txt", "w");
-	}
-	fflush(func_file);
-}
-
-void log_func_err(const char * file, const char * func, unsigned line)
-{
-	if(!func_file)
-		clear_func_log();
-	if(func_file)
-		{
-			fprintf(func_file,"%s.%s:%u\n",file,func,line);
-			fflush(func_file);
-		}
-}
-#endif
 
 
 FILE *conn_file = NULL;

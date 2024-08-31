@@ -20,9 +20,6 @@
 #include "tabs.h"
 #include "textures.h"
 #include "translate.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "sound.h"
 
 static size_t cm_edit_id = CM_INIT_VALUE;
@@ -522,10 +519,8 @@ int widget_handle_mouseover (widget_list *widget, int mx, int my)
 int widget_handle_click (widget_list *widget, int mx, int my, Uint32 flags)
 {
 	int res = 0;
-#ifdef NEW_SOUND
 	/* widget might get destroyed by handler so check for sound type now */
 	int play_sound = (widget->type == &round_button_type) ?1 :0;
-#endif // NEW_SOUND
 
 	if (widget->type != NULL) {
 		if (widget->type->click != NULL) {
@@ -639,13 +634,8 @@ int image_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 x, Ui
 	image *T = calloc (1, sizeof (image));
 	T->u1 = u1;
 	T->u2 = u2;
-#ifdef	NEW_TEXTURES
 	T->v1 = -v1;
 	T->v2 = -v2;
-#else	/* NEW_TEXTURES */
-	T->v1 = v1;
-	T->v2 = v2;
-#endif	/* NEW_TEXTURES */
 	T->id = id;
 	T->alpha = alpha;
 
@@ -660,11 +650,7 @@ int image_add(int window_id, int (*OnInit)(), int id, Uint16 x, Uint16 y, Uint16
 int image_draw(widget_list *W)
 {
 	image *i = (image *)W->widget_info;
-#ifdef	NEW_TEXTURES
 	bind_texture(i->id);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(i->id);
-#endif	/* NEW_TEXTURES */
 	glColor3f(W->r, W->g, W->b);
 	if (i->alpha > -1) {
 		glEnable(GL_ALPHA_TEST);
@@ -676,9 +662,6 @@ int image_draw(widget_list *W)
 	if (i->alpha > -1) {
 		glDisable(GL_ALPHA_TEST);
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -700,13 +683,8 @@ int image_set_uv(int window_id, Uint32 widget_id, float u1, float v1, float u2, 
 		image *l = (image *) w->widget_info;
 		l->u1 = u1;
 		l->u2 = u2;
-#ifdef	NEW_TEXTURES
 		l->v1 = -v1;
 		l->v2 = -v2;
-#else	/* NEW_TEXTURES */
-		l->v1 = v1;
-		l->v2 = v2;
-#endif	/* NEW_TEXTURES */
 		return 1;
 	}
 	return 0;
@@ -720,7 +698,6 @@ int checkbox_draw(widget_list *W)
 	glDisable(GL_TEXTURE_2D);
 	if(W->r!=-1.0)
 		glColor3f(W->r, W->g, W->b);
-#ifdef FR_VERSION
 	glBegin(GL_LINE_LOOP);
 	glVertex3i(W->pos_x,W->pos_y,0);
 	glVertex3i(W->pos_x + W->len_x,W->pos_y,0);
@@ -736,18 +713,7 @@ int checkbox_draw(widget_list *W)
 		glVertex3i(W->pos_x + 3,            W->pos_y - 3 + W->len_y, 0);
 		glEnd();
 	}
-#else //FR_VERSION
-	glBegin(*c->checked ? GL_QUADS: GL_LINE_LOOP);
-	glVertex3i(W->pos_x,W->pos_y,0);
-	glVertex3i(W->pos_x + W->len_x,W->pos_y,0);
-	glVertex3i(W->pos_x + W->len_x,W->pos_y + W->len_y,0);
-	glVertex3i(W->pos_x,W->pos_y + W->len_y,0);
-	glEnd();
-#endif //FR_VERSION
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -844,11 +810,7 @@ int button_draw(widget_list *W)
 		extra_space = 0;
 	}*/
 
-#ifdef NEW_NEW_CHAR_WINDOW
 	draw_smooth_button(l->text, W->size, W->pos_x, W->pos_y, W->len_x-2*BUTTONRADIUS*W->size, 1, W->r, W->g, W->b, W->Flags & BUTTON_ACTIVE, 0.32f, 0.23f, 0.15f, 0.0f);
-#else
-	draw_smooth_button(l->text, W->size, W->pos_x, W->pos_y, W->len_x-2*BUTTONRADIUS*W->size, 1, W->r, W->g, W->b, 0, 0.0f, 0.0f, 0.0f, 0.0f);
-#endif
 
 	return 1;
 }
@@ -875,9 +837,6 @@ int square_button_draw(widget_list *W)
 
 	glEnable(GL_TEXTURE_2D);
 	draw_string_zoomed(W->pos_x + 2 + extra_space + gx_adjust, W->pos_y + 2 + gy_adjust, (unsigned char *)l->text, 1, W->size);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -961,9 +920,6 @@ int progressbar_draw(widget_list *W)
 	glEnd();
 
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 0;
 }
 
@@ -992,11 +948,7 @@ int progressbar_set_progress(int window_id, Uint32 widget_id, float progress)
 // Vertical scrollbar
 int vscrollbar_draw(widget_list *W)
 {
-#ifdef FR_VERSION
 	int cursor_len, cursor_pos;
-#else //FR_VERSION
-	int drawn_bar_len = 0;
-#endif //FR_VERSION
 	vscrollbar *c = (vscrollbar *)W->widget_info;
 	glDisable(GL_TEXTURE_2D);
 	if(W->r!=-1.0)
@@ -1011,7 +963,6 @@ int vscrollbar_draw(widget_list *W)
 	glEnd ();
 
 	// scrollbar arrows
-#ifdef FR_VERSION
 	glBegin (GL_TRIANGLES);
 	glVertex3i(W->pos_x + gx_adjust + 0.5*W->len_x + 4, W->pos_y + gy_adjust + 10, 0);
 	glVertex3i(W->pos_x + gx_adjust + 0.5*W->len_x,     W->pos_y + gy_adjust + 5,  0);
@@ -1019,20 +970,8 @@ int vscrollbar_draw(widget_list *W)
 	glVertex3i(W->pos_x + gx_adjust + 0.5*W->len_x + 4, W->pos_y + gy_adjust + W->len_y - 10, 0);
 	glVertex3i(W->pos_x + gx_adjust + 0.5*W->len_x,     W->pos_y + gy_adjust + W->len_y - 5,  0);
 	glVertex3i(W->pos_x + gx_adjust + 0.5*W->len_x - 4, W->pos_y + gy_adjust + W->len_y - 10, 0);
-#else //FR_VERSION
-	glBegin (GL_LINES);
-	glVertex3i(W->pos_x + 5 + gx_adjust, W->pos_y + 10 + gy_adjust,0);
-	glVertex3i(W->pos_x + 10 + gx_adjust, W->pos_y + 5 + gy_adjust,0);
-	glVertex3i(W->pos_x + 10 + gx_adjust, W->pos_y + 5 + gy_adjust,0);
-	glVertex3i(W->pos_x + 15 + gx_adjust, W->pos_y + 10 + gy_adjust,0);
-	glVertex3i(W->pos_x + 5 + gx_adjust, W->pos_y + W->len_y - 10 + gy_adjust,0);
-	glVertex3i(W->pos_x + 10 + gx_adjust, W->pos_y + W->len_y - 5 + gy_adjust,0);
-	glVertex3i(W->pos_x + 10 + gx_adjust, W->pos_y + W->len_y - 5 + gy_adjust,0);
-	glVertex3i(W->pos_x + 15 + gx_adjust, W->pos_y + W->len_y - 10 + gy_adjust,0);
-#endif //FR_VERSION
 	glEnd();
 
-#ifdef FR_VERSION
 	/**
 	 * La scrollbar d'origine n'utilise pas le paramètre size.
 	 * Elle ne connait pas la hauteur des éléments visible,
@@ -1053,32 +992,11 @@ int vscrollbar_draw(widget_list *W)
 	glVertex3i(W->pos_x - 7 + gx_adjust + W->len_x, W->pos_y + gy_adjust + 15 + cursor_pos + cursor_len, 0);
 	glVertex3i(W->pos_x + 7 + gx_adjust,            W->pos_y + gy_adjust + 15 + cursor_pos + cursor_len, 0);
 	glEnd();
-#else //FR_VERSION
-	if (c->bar_len > 0)
-		drawn_bar_len = c->bar_len;
-	else
-	{
-		drawn_bar_len = 1;
-		if(W->r!=-1.0)
-			glColor3f(W->r/3, W->g/3, W->b/3);
-	}
-
-	glBegin(GL_QUADS);
-	glVertex3i(W->pos_x + 7 + gx_adjust, W->pos_y + 15 + (c->pos*((float)(W->len_y-50)/drawn_bar_len)) + gy_adjust, 0);
-	glVertex3i(W->pos_x + W->len_x - 7 + gx_adjust, W->pos_y +  15 + (c->pos*((float)(W->len_y-50)/drawn_bar_len)) + gy_adjust, 0);
-	glVertex3i(W->pos_x + W->len_x - 7 + gx_adjust, W->pos_y + 35 + (c->pos*((float)(W->len_y-50)/drawn_bar_len)) + gy_adjust, 0);
-	glVertex3i(W->pos_x + 7 + gx_adjust, W->pos_y + 35 + (c->pos*((float)(W->len_y-50)/drawn_bar_len)) + gy_adjust, 0);
-	glEnd();
-#endif //FR_VERSION
 
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 0;
 }
 
-#ifdef FR_VERSION
 /* écart entre le pointeur de la souris et le centre du curseur pour les drag */
 int vscrollbar_drag_offset = 0;
 
@@ -1093,12 +1011,10 @@ int vscrollbar_set_pos_base(widget_list *W, int pos)
 	}
 	return 0;
 }
-#endif //FR_VERSION
 
 int vscrollbar_click (widget_list *W, int mx, int my, Uint32 flags)
 {
 	vscrollbar *b = (vscrollbar *)W->widget_info;
-#ifdef FR_VERSION
 	if ((flags & ELW_WHEEL_UP) || my < 15)
 		return vscrollbar_set_pos_base(W, b->pos - b->pos_inc);
 	if ((flags & ELW_WHEEL_DOWN) || my > W->len_y - 15)
@@ -1114,23 +1030,6 @@ int vscrollbar_click (widget_list *W, int mx, int my, Uint32 flags)
 		// sinon un clic sur le curseur prépare un drag (on note l'écart avec le centre du curseur)
 		vscrollbar_drag_offset = (cursor_deb + cursor_fin) * 0.5f - my;
 	}
-#else //FR_VERSION
-	if ( my < 15 || (flags & ELW_WHEEL_UP) )
-	{
-		b->pos -= b->pos_inc;
-	}
-	else if (my > W->len_y - 15 || (flags & ELW_WHEEL_DOWN) )
-	{
-		b->pos += b->pos_inc;
-	}
-	else
-	{
-		b->pos = (my - 25)/((float)(W->len_y-50)/b->bar_len);
-	}
-
-	if (b->pos < 0) b->pos = 0;
-	if (b->pos > b->bar_len) b->pos = b->bar_len;
-#endif //FR_VERSION
 
 	return 1;
 }
@@ -1150,21 +1049,7 @@ int vscrollbar_set_pos_inc(int window_id, Uint32 widget_id, int pos_inc)
 int vscrollbar_set_pos(int window_id, Uint32 widget_id, int pos)
 {
 	widget_list *w = widget_find(window_id, widget_id);
-#ifdef FR_VERSION
 	return vscrollbar_set_pos_base(w, pos);
-#else //FR_VERSION
-	if(w){
-		vscrollbar *c = (vscrollbar *)w->widget_info;
-		if (pos < 0)
-			c->pos = 0;
-		else if (pos > c->bar_len)
-		 	c->pos = c->bar_len;
-		else
-			c->pos = pos;
-		return 1;
-	}
-	return 0;
-#endif //FR_VERSION
 }
 
 int vscrollbar_scroll_up(int window_id, Uint32 widget_id)
@@ -1172,12 +1057,8 @@ int vscrollbar_scroll_up(int window_id, Uint32 widget_id)
 	widget_list *w = widget_find(window_id, widget_id);
 	if(w){
 		vscrollbar *scrollbar = w->widget_info;
-#ifdef FR_VERSION
 		// évite de refaire un widget_find avec la fonction set_pos
 		return vscrollbar_set_pos_base(w, scrollbar->pos - scrollbar->pos_inc);
-#else //FR_VERSION
-		return vscrollbar_set_pos(window_id, widget_id, scrollbar->pos - scrollbar->pos_inc);
-#endif //FR_VERSION
 	}
 	return 0;
 }
@@ -1187,12 +1068,8 @@ int vscrollbar_scroll_down(int window_id, Uint32 widget_id)
 	widget_list *w = widget_find(window_id, widget_id);
 	if(w){
 		vscrollbar *scrollbar = w->widget_info;
-#ifdef FR_VERSION
 		// évite de refaire un widget_find avec la fonction set_pos
 		return vscrollbar_set_pos_base(w, scrollbar->pos + scrollbar->pos_inc);
-#else //FR_VERSION
-		return vscrollbar_set_pos(window_id, widget_id, scrollbar->pos + scrollbar->pos_inc);
-#endif //FR_VERSION
 	}
 	return 0;
 }
@@ -1202,14 +1079,8 @@ int vscrollbar_set_bar_len (int window_id, Uint32 widget_id, int bar_len)
 	widget_list *w = widget_find(window_id, widget_id);
 	if(w){
 		vscrollbar *c = (vscrollbar *)w->widget_info;
-#ifdef FR_VERSION
 		c->bar_len = (bar_len < w->size) ? w->size : bar_len;
 		if (c->pos + w->size > c->bar_len) c->pos = c->bar_len - w->size;
-#else //FR_VERSION
-		c->bar_len = bar_len > 0 ? bar_len : 1;
-		if (c->pos > c->bar_len)
-			c->pos = c->bar_len;
-#endif //FR_VERSION
 		return 1;
 	}
 
@@ -1219,12 +1090,8 @@ int vscrollbar_set_bar_len (int window_id, Uint32 widget_id, int bar_len)
 int vscrollbar_drag(widget_list *W, int x, int y, Uint32 flags, int dx, int dy)
 {
 	window_info *win = (W==NULL) ? NULL : &windows_list.window[W->window_id];
-#ifdef FR_VERSION
 	vscrollbar *c = (vscrollbar *)W->widget_info;
 	vscrollbar_set_pos_base(W, (y + vscrollbar_drag_offset - 15) * c->bar_len / (W->len_y - 2*15) - 0.5f*W->size);
-#else //FR_VERSION
-	vscrollbar_click(W, x, y, flags);
-#endif //FR_VERSION
 
 	/* the drag event can happen multiple times for each redraw as its done in the event loop
 	 * so update the scroll bar position each time to avoid positions glitches */
@@ -1254,25 +1121,16 @@ int vscrollbar_add_extended(int window_id, Uint32 wid,  int (*OnInit)(), Uint16 
 {
 	vscrollbar *T = calloc (1, sizeof(vscrollbar));
 	T->pos_inc = pos_inc;
-#ifdef FR_VERSION
 	// pour plus de simplicité/tranquilité, la taille totale du contenu vaut au moins celle de l'affichage
 	T->bar_len = (bar_len < size) ? size : bar_len;
 	// on applique au cas où le controle de validité sur la position initiale
 	T->pos = (pos + size > T->bar_len) ? T->bar_len - size : pos;
-#else //FR_VERSION
-	T->pos = pos;
-	T->bar_len = bar_len > 0 ? bar_len : 0;
-#endif //FR_VERSION
 	return widget_add (window_id, wid, OnInit, x, y, lx, ly, Flags, size, r, g, b, &vscrollbar_type, T, NULL);
 }
 
 int vscrollbar_add(int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly)
 {
-#ifdef FR_VERSION
 	return vscrollbar_add_extended(window_id, widget_id++, OnInit, x, y, lx, ly, 0, ly, -1.0, -1.0, -1.0, 0, 1, ly);
-#else //FR_VERSION
-	return vscrollbar_add_extended(window_id, widget_id++, OnInit, x, y, lx, ly, 0, 1.0, -1.0, -1.0, -1.0, 0, 1, ly);
-#endif //FR_VERSION
 }
 
 // Tab collection
@@ -1608,9 +1466,6 @@ int tab_collection_draw (widget_list *w)
 	// show the content of the current tab
 	if (col->nr_tabs > 0)
 		show_window (col->tabs[col->cur_tab].content_id);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -1850,9 +1705,7 @@ void _text_field_set_nr_visible_lines (widget_list *w)
 		tf->nr_visible_lines = (int) ((w->len_y - 2*tf->y_space) / displayed_font_y_size);
 		if (tf->nr_visible_lines < 0)
 			tf->nr_visible_lines = 0;
-#ifdef FR_VERSION
 		if (tf->scroll_id != -1) widget_set_size(w->window_id, tf->scroll_id, tf->nr_visible_lines);
-#endif //FR_VERSION
 	}
 }
 
@@ -1864,12 +1717,7 @@ void _text_field_set_nr_lines (widget_list *w, int nr_lines)
 		tf->nr_lines = nr_lines;
 		if (tf->scroll_id != -1)
 		{
-#ifdef FR_VERSION
 			vscrollbar_set_bar_len (w->window_id, tf->scroll_id, nr_lines);
-#else //FR_VERSION
-			int bar_len = nr_lines >= tf->nr_visible_lines ? nr_lines - tf->nr_visible_lines : 0;
-			vscrollbar_set_bar_len (w->window_id, tf->scroll_id, bar_len);
-#endif //FR_VERSION
 			tf->update_bar = 0;
 		}
 	}
@@ -1879,9 +1727,7 @@ int skip_message (const text_message *msg, Uint8 filter)
 {
 	int skip = 0;
 	int channel = msg->chan_idx;
-#ifdef FR_VERSION
 	if(channel == CHAT_COMBAT && filter == FILTER_ALL) return 1;
-#endif //FR_VERSION
 	if (filter == FILTER_ALL) return 0;
 	if (channel != filter)
 	{
@@ -1893,10 +1739,8 @@ int skip_message (const text_message *msg, Uint8 filter)
 			case CHAT_SERVER:   skip = server_chat_separate;  	break;
 			case CHAT_MOD:      skip = mod_chat_separate;      	break;
 			case CHAT_MODPM:    skip = 0;                      	break;
-#ifndef ENGLISH
 			case CHAT_DEV:      skip = dev_chat_separate;      	break;
 			case CHAT_COORD:    skip = coord_chat_separate;   	break;
-#endif //ENGLISH
 			default:            skip = 1;
 		}
 	}
@@ -1904,10 +1748,8 @@ int skip_message (const text_message *msg, Uint8 filter)
 		case CHAT_CHANNEL1:
 		case CHAT_CHANNEL2:
 		case CHAT_CHANNEL3:
-#ifndef ENGLISH
 		case CHAT_CHANNEL4:
 		case CHAT_CHANNEL5:
-#endif //ENGLISH
 			skip = (msg->channel != active_channels[filter - CHAT_CHANNEL1]);
 	}
 	return skip;
@@ -2307,11 +2149,7 @@ void _text_field_delete_backward (widget_list * w)
 
 	// set invalid width to force rewrap
 	msg->wrap_width = 0;
-#ifdef FR_VERSION
 	nr_lines = rewrap_message (msg, w->size, tf->font_num, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#else //FR_VERSION
-	nr_lines = rewrap_message (msg, w->size, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#endif //FR_VERSION
 	_text_field_set_nr_lines (w, nr_lines);
 
 	tf->cursor -= n;
@@ -2341,11 +2179,7 @@ void _text_field_delete_forward (widget_list *w)
 	msg->len -= n;
 	// set invalid width to force rewrap
 	msg->wrap_width = 0;
-#ifdef FR_VERSION
 	nr_lines = rewrap_message (msg, w->size, tf->font_num, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#else //FR_VERSION
-	nr_lines = rewrap_message (msg, w->size, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#endif //FR_VERSION
 	_text_field_set_nr_lines (w, nr_lines);
 
 	// cursor position doesn't change, so no need to update it here
@@ -2386,11 +2220,7 @@ void _text_field_insert_char (widget_list *w, char ch)
 	// be the number of extra line breaks introduced before the
 	// cursor position
 	old_cursor = tf->cursor;
-#ifdef FR_VERSION
 	nr_lines = rewrap_message (msg, w->size, tf->font_num, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#else //FR_VERSION
-	nr_lines = rewrap_message (msg, w->size, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#endif //FR_VERSION
 	tf->cursor_line += tf->cursor - old_cursor;
 	_text_field_set_nr_lines (w, nr_lines);
 
@@ -2415,7 +2245,6 @@ void _text_field_copy_to_clipboard(text_field *tf)
 }
 
 #if !defined OSX && !defined WINDOWS
-#ifdef MIDDLE_MOUSE_PASTE
 void _text_field_copy_to_primary(text_field *tf)
 {
 	char* text = text_field_get_selected_text(tf);
@@ -2425,7 +2254,6 @@ void _text_field_copy_to_primary(text_field *tf)
 		free(text);
 	}
 }
-#endif
 #endif
 
 static void update_cursor_selection(widget_list* w, int flag);
@@ -2453,11 +2281,7 @@ int text_field_resize (widget_list *w, int width, int height)
 			for (i = 0; i < tf->buf_size; i++)
 			{
 				int *cursor = i == tf->msg ? &(tf->cursor) : NULL;
-#ifdef FR_VERSION
 				nr_lines += rewrap_message (tf->buffer+i, w->size, tf->font_num, width - tf->scrollbar_width, cursor);
-#else //FR_VERSION
-				nr_lines += rewrap_message (tf->buffer+i, w->size, width - tf->scrollbar_width, cursor);
-#endif //FR_VERSION
 			}
 			_text_field_set_nr_lines (w, nr_lines);
 
@@ -2773,9 +2597,7 @@ void _set_edit_pos (text_field* tf, int x, int y)
 		}
 	}
 
-#ifdef FR_VERSION
 	set_font(tf->font_num);	// switch to the chat font
-#endif //FR_VERSION
 	tf->cursor_line = tf->line_offset + nrlines;
 	for (; i < msg->len; i++) {
 		switch (msg->data[i]) {
@@ -2795,9 +2617,7 @@ void _set_edit_pos (text_field* tf, int x, int y)
 		}
 	}
 	tf->cursor = msg->len;
-#ifdef FR_VERSION
 	set_font(0);
-#endif //FR_VERSION
 }
 
 void update_selection(int x, int y, widget_list* w, int drag)
@@ -2821,9 +2641,7 @@ void update_selection(int x, int y, widget_list* w, int drag)
 		return;
 	}
 
-#ifdef FR_VERSION
 	set_font(tf->font_num);	// switch to the chat font
-#endif //FR_VERSION
 	msg = &tf->buffer[tf->select.lines[line].msg];
 	for (col = tf->select.lines[line].chr; col < msg->len; col++)
 	{
@@ -2847,14 +2665,10 @@ void update_selection(int x, int y, widget_list* w, int drag)
 		tf->select.em = tf->select.lines[line].msg;
 		tf->select.ec = col;
 #if !defined OSX && !defined WINDOWS
-#ifdef MIDDLE_MOUSE_PASTE
 		_text_field_copy_to_primary(tf);
 #endif
-#endif
 	}
-#ifdef FR_VERSION
 	set_font(0);
-#endif //FR_VERSION
 }
 
 static void update_cursor_selection(widget_list* w, int update_end)
@@ -2883,9 +2697,7 @@ static void update_cursor_selection(widget_list* w, int update_end)
 		tf->select.em = tf->select.lines[line].msg;
 		tf->select.ec = tf->cursor;
 #if !defined OSX && !defined WINDOWS
-#ifdef MIDDLE_MOUSE_PASTE
 		_text_field_copy_to_primary(tf);
-#endif
 #endif
 	}
 }
@@ -2914,11 +2726,9 @@ int text_field_click(widget_list *w, int mx, int my, Uint32 flags)
 		return 0;
 
 #if !defined OSX && !defined WINDOWS
-#ifdef MIDDLE_MOUSE_PASTE
 	// Don't handle middle button clicks (paste) if the text field is not editable
 	if (buttons == ELW_MID_MOUSE && !(w->Flags & TEXT_FIELD_EDITABLE))
 		return 0;
-#endif
 #endif
 
 	em_before = tf->select.em;
@@ -2933,10 +2743,8 @@ int text_field_click(widget_list *w, int mx, int my, Uint32 flags)
 	_set_edit_pos(tf, mx, my);
 
 #if !defined OSX && !defined WINDOWS
-#ifdef MIDDLE_MOUSE_PASTE
 	if (flags & ELW_MID_MOUSE)
 		start_paste_from_primary(w);
-#endif // MIDDLE_MOUSE_PASTE
 #endif
 
 	return 1;
@@ -2975,11 +2783,7 @@ const struct WIDGET_TYPE text_field_type = {
 	text_field_destroy
 };
 
-#ifdef FR_VERSION
 int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, int font, float r, float g, float b, text_message *buf, int buf_size, Uint8 chan_filt, int x_space, int y_space)
-#else //FR_VERSION
-int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, Uint32 Flags, float size, float r, float g, float b, text_message *buf, int buf_size, Uint8 chan_filt, int x_space, int y_space)
-#endif //FR_VERSION
 {
 	int res;
 
@@ -2995,9 +2799,7 @@ int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 
 	T->cursor = (Flags & TEXT_FIELD_EDITABLE) ? 0 : -1;
 	T->cursor_line = T->cursor;
 	T->next_blink = TF_BLINK_DELAY;
-#ifdef FR_VERSION
 	T->font_num = font;
-#endif //FR_VERSION
 	if (Flags & TEXT_FIELD_SCROLLBAR)
 	{
 		T->scrollbar_width = ELW_BOX_SIZE;
@@ -3019,11 +2821,7 @@ int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 
 		widget_list *w = widget_find (window_id, wid);
 		if (w != NULL)
 		{
-#ifdef FR_VERSION
 			int nr_lines = rewrap_message (buf, w->size, T->font_num, lx - 2*x_space - T->scrollbar_width, &T->cursor);
-#else //FR_VERSION
-			int nr_lines = rewrap_message (buf, w->size, lx - 2*x_space - T->scrollbar_width, &T->cursor);
-#endif //FR_VERSION
 			_text_field_set_nr_visible_lines (w);
 			_text_field_set_nr_lines (w, nr_lines);
 			T->select.lines = (text_field_line*) calloc(T->nr_visible_lines, sizeof(text_field_line));
@@ -3046,11 +2844,7 @@ int text_field_add_extended (int window_id, Uint32 wid, int (*OnInit)(), Uint16 
 
 int text_field_add (int window_id, int (*OnInit)(), Uint16 x, Uint16 y, Uint16 lx, Uint16 ly, text_message *buf, int buf_size, int x_space, int y_space)
 {
-#ifdef FR_VERSION
 	return text_field_add_extended (window_id, widget_id++, OnInit, x, y, lx, ly, TEXT_FIELD_BORDER, 1.0, 0, -1.0, -1.0, -1.0, buf, buf_size, FILTER_ALL, x_space, y_space);
-#else //FR_VERSION
-	return text_field_add_extended (window_id, widget_id++, OnInit, x, y, lx, ly, TEXT_FIELD_BORDER, 1.0, -1.0, -1.0, -1.0, buf, buf_size, FILTER_ALL, x_space, y_space);
-#endif //FR_VERSION
 }
 
 int text_field_draw (widget_list *w)
@@ -3080,11 +2874,7 @@ int text_field_draw (widget_list *w)
 			int nr_lines;
 			int old_cursor = tf->cursor;
 			tf->buffer[tf->msg].wrap_width = 0;
-#ifdef FR_VERSION
 			nr_lines = rewrap_message (&tf->buffer[tf->msg], w->size, tf->font_num, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#else //FR_VERSION
-			nr_lines = rewrap_message (&tf->buffer[tf->msg], w->size, w->len_x - 2*tf->x_space - tf->scrollbar_width, &tf->cursor);
-#endif //FR_VERSION
 			tf->cursor_line += tf->cursor - old_cursor;
 			_text_field_set_nr_lines (w, nr_lines);
 			_text_field_scroll_to_cursor(w);
@@ -3151,11 +2941,7 @@ int text_field_draw (widget_list *w)
 	}
 
 	glEnable(GL_TEXTURE_2D);
-#ifdef FR_VERSION
 	set_font(tf->font_num);	// switch to the chat font
-#else //FR_VERSION
-	set_font(chat_font);	// switch to the chat font
-#endif //FR_VERSION
 
 	for (i = 0; i < tf->nr_visible_lines; i++)
 		tf->select.lines[i].msg = -1;
@@ -3174,9 +2960,6 @@ int text_field_draw (widget_list *w)
 		}
 	}
 	set_font (0);	// switch to fixed
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -3356,9 +3139,6 @@ int pword_field_draw (widget_list *w)
 		}
 		free(text);
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -3457,18 +3237,10 @@ int multiselect_click(widget_list *widget, int mx, int my, Uint32 flags)
 
 	if(M->scrollbar != -1)
 	{
-#ifdef FR_VERSION
 		if(flags&ELW_WHEEL_DOWN)
 			vscrollbar_scroll_down(M->win_id, M->scrollbar);
 		else if (flags&ELW_WHEEL_UP)
 			vscrollbar_scroll_up(M->win_id, M->scrollbar);
-#else //FR_VERSION
-		vscrollbar *scrollbar = widget_find(M->win_id, M->scrollbar)->widget_info;
-		if(flags&ELW_WHEEL_DOWN)
-			vscrollbar_set_pos(M->win_id, M->scrollbar, scrollbar->pos+scrollbar->pos_inc);
-		else if (flags&ELW_WHEEL_UP)
-			vscrollbar_set_pos(M->win_id, M->scrollbar, scrollbar->pos-scrollbar->pos_inc);
-#endif //FR_VERSION
 		top_but = vscrollbar_get_pos(M->win_id, M->scrollbar);
 		start_y = M->buttons[top_but].y;
 	}
@@ -3564,11 +3336,7 @@ int multiselect_button_add_extended(int window_id, Uint32 multiselect_id, Uint16
 		int i;
 
 		/* Add scrollbar */
-#ifdef FR_VERSION
 		M->scrollbar = vscrollbar_add_extended(window_id, widget_id++, NULL, widget->pos_x+widget->len_x-ELW_BOX_SIZE, widget->pos_y, ELW_BOX_SIZE, M->max_height, 0, M->max_height/multiselect_button_height, widget->r, widget->g, widget->b, 0, 1, M->nr_buttons);
-#else //FR_VERSION
-		M->scrollbar = vscrollbar_add_extended(window_id, widget_id++, NULL, widget->pos_x+widget->len_x-ELW_BOX_SIZE, widget->pos_y, ELW_BOX_SIZE, M->max_height, 0, 1.0, widget->r, widget->g, widget->b, 0, 1, M->max_height);
-#endif //FR_VERSION
 		widget->len_x -= ELW_BOX_SIZE;
 		widget->len_y = M->max_height;
 		/* We don't want things to look ugly. */
@@ -3580,11 +3348,7 @@ int multiselect_button_add_extended(int window_id, Uint32 multiselect_id, Uint16
 	}
 
 	if (M->scrollbar != -1)
-#ifdef FR_VERSION
 		vscrollbar_set_bar_len(window_id, M->scrollbar, M->nr_buttons);
-#else //FR_VERSION
-		vscrollbar_set_bar_len(window_id, M->scrollbar, M->nr_buttons-widget->len_y/multiselect_button_height);
-#endif //FR_VERSION
 
 	return current_button;
 }
@@ -3855,9 +3619,6 @@ int spinbutton_draw(widget_list *widget)
 		glVertex3i(widget->pos_x+widget->len_x-20 + 5, widget->pos_y + widget->len_y - widget->len_y/4-2, 0); //Back to the beginning
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 

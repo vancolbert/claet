@@ -14,9 +14,6 @@
 #include "gamewin.h"
 #include "gl_init.h"
 #include "global.h"
-#ifdef ENGLISH
-#include "hud_indicators.h"
-#endif //ENGLISH
 #include "hud_timer.h"
 #include "icon_window.h"
 #include "init.h"
@@ -28,9 +25,6 @@
 #include "manufacture.h"
 #include "mapwin.h"
 #include "minimap.h"
-#ifdef MISSILES
-#include "missiles.h"
-#endif //MISSILES
 #include "multiplayer.h"
 #include "new_character.h"
 #include "notepad.h"
@@ -44,23 +38,13 @@
 #include "textures.h"
 #include "trade.h"
 #include "translate.h"
-#ifndef ENGLISH
 #include "notepad.h"
-#endif //ENGLISH
-#ifdef ECDEBUGWIN
-#include "eye_candy_debugwin.h"
-#endif
 #include "user_menus.h"
 #include "url.h"
-#ifdef EMOTES
-#include "emotes.h"
-#endif
-#ifdef FR_VERSION
 #include "console.h"
 #include "fr_quickitems.h"
 #include "themes.h"
 #include "sound.h"
-#endif //FR_VERSION
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -81,25 +65,14 @@
 #define USE 5
 
 Uint32 exp_lev[200];
-#ifdef NEW_NEW_CHAR_WINDOW
 hud_interface last_interface = HUD_INTERFACE_NEW_CHAR; //Current interface (game or new character)
-#endif
-#ifndef ENGLISH
 int show_coord=0;
-#ifdef SHOW_COORD_SETTER
 int show_coord_2=0;
-#endif //SHOW_COORD_SETTER
 int rot_boussole=0;
-#endif //ENGLISH
 int	display_stats_bar_handler(window_info *win);
 int	display_misc_handler(window_info *win);
 int	click_misc_handler(window_info *win, int mx, int my, Uint32 flags);
 int	mouseover_misc_handler(window_info *win, int mx, int my);
-#ifdef ENGLISH
-int	display_quickbar_handler(window_info *win);
-int	click_quickbar_handler(window_info *win, int mx, int my, Uint32 flags);
-int	mouseover_quickbar_handler(window_info *win, int mx, int my);
-#endif //ENGLISH
 int	mouseover_stats_bar_handler(window_info *win, int mx, int my);
 void init_hud_frame();
 void init_newchar_icons();
@@ -110,20 +83,10 @@ void init_stats_display();
 void draw_exp_display();
 void draw_stats();
 void init_misc_display(hud_interface type);
-#ifdef ENGLISH
-void init_quickbar();
-void toggle_quickbar_draggable();
-void flip_quickbar();
-void reset_quickbar();
-#endif //ENGLISH
 void change_flags(int win_id, Uint32 flags);
 Uint32 get_flags(int win_id);
-#ifdef ENGLISH
-int get_quickbar_y_base();
-#endif //ENGLISH
 
 static int context_hud_handler(window_info *win, int widget_id, int mx, int my, int option);
-#ifdef FR_VERSION
 static size_t cm_hud_id = CM_INIT_VALUE;
 static size_t cm_id = CM_INIT_VALUE;
 static int cm_sound_enabled = 0;
@@ -134,32 +97,11 @@ enum {	CMH_STATS=0, CMH_STATBARS, CMH_KNOWBAR, CMH_TIMER, CMH_DIGCLOCK, CMH_ANAC
 
 int hud_x = HUD_MARGIN_X;
 int hud_y = HUD_MARGIN_Y;
-#else //FR_VERSION
-static size_t cm_hud_id = CM_INIT_VALUE;
-static size_t cm_quickbar_id = CM_INIT_VALUE;
-static size_t cm_id = CM_INIT_VALUE;
-static int cm_quickbar_enabled = 0;
-static int cm_sound_enabled = 0;
-static int cm_music_enabled = 0;
-static int cm_minimap_shown = 0;
-static int cm_rangstats_shown = 0;
-enum {	CMH_STATS=0, CMH_STATBARS, CMH_KNOWBAR, CMH_TIMER, CMH_DIGCLOCK, CMH_ANACLOCK,
-		CMH_SECONDS, CMH_FPS, CMH_INDICATORS, CMH_QUICKBM, CMH_SEP1, CMH_MINIMAP, CMH_RANGSTATS,
-		CMH_SEP2, CMH_SOUND, CMH_MUSIC, CMH_SEP3, CMH_LOCATION };
-enum {	CMQB_RELOC=0, CMQB_DRAG, CMQB_RESET, CMQB_FLIP, CMQB_ENABLE };
-
-int hud_x= 64;
-int hud_y= 48;
-#endif //FR_VERSION
 int hud_text;
 int view_analog_clock= 1;
 int view_digital_clock= 0;
 int view_knowledge_bar = 1;
-#ifdef FR_VERSION
 int view_hud_timer = 0;
-#else //FR_VERSION
-int view_hud_timer = 1;
-#endif //FR_VERSION
 int copy_next_LOCATE_ME = 0;
 int	stats_bar_win= -1;
 int	misc_win= -1;
@@ -173,9 +115,7 @@ int qb_action_mode=ACTION_USE;
 int show_stats_in_hud=0;
 int show_statbars_in_hud=0;
 
-#ifdef SHOW_ATTR_BOOSTED
 int show_attr_boosted=0;
-#endif //SHOW_ATTR_BOOSTED
 
 static int first_disp_stat = 0;					/* first skill that will be display */
 static int num_disp_stat = NUM_WATCH_STAT-1;	/* number of skills to be displayed */
@@ -188,12 +128,7 @@ static int mouse_over_knowledge_bar = 0;			/* 1 if mouse is over the knowledge b
 static const int knowledge_bar_height = SMALL_FONT_Y_LEN + 6;
 static const int stats_bar_height = SMALL_FONT_Y_LEN;
 
-#ifdef ENGLISH
-static int mouseover_quickbar_item_pos = -1;
-#endif //ENGLISH
-#ifdef FR_VERSION
 int confirm_quitter_fenetre = -1;
-#endif //FR_VERSION
 
 /* called on client exit to free resources */
 void cleanup_hud(void)
@@ -202,12 +137,7 @@ void cleanup_hud(void)
 	destroy_window(misc_win);
 	destroy_window(stats_bar_win);
 	destroy_window(quickbar_win);
-#ifdef FR_VERSION
 	stats_bar_win = quickbar_win = misc_win = -1;
-#else //FR_VERSION
-	destroy_window(indicators_win);
-	stats_bar_win = quickbar_win = misc_win = indicators_win = -1;
-#endif //FR_VERSION
 }
 
 
@@ -218,18 +148,11 @@ int show_exp(char *text, int len)
 	char buf[256];
 	for (thestat=0; thestat<NUM_WATCH_STAT-1; thestat++)
 	{
-#ifdef ENGLISH
-		safe_snprintf(buf, sizeof(buf), "%s: level %u, %u/%u exp (%u to go)",
-			statsinfo[thestat].skillnames->name, statsinfo[thestat].skillattr->base,
-			*statsinfo[thestat].exp, *statsinfo[thestat].next_lev,
-			*statsinfo[thestat].next_lev - *statsinfo[thestat].exp );
-#else //ENGLISH
 		safe_snprintf(buf, sizeof(buf), "%+12s : niveau %-3u (%2u%%) %9u/%-9u suivant dans %u xp",
 			statsinfo[thestat].skillnames->name, statsinfo[thestat].skillattr->base,
 			100 * (*statsinfo[thestat].exp - exp_lev[statsinfo[thestat].skillattr->base]) / (*statsinfo[thestat].next_lev - exp_lev[statsinfo[thestat].skillattr->base]),
 			*statsinfo[thestat].exp, *statsinfo[thestat].next_lev,
 			*statsinfo[thestat].next_lev - *statsinfo[thestat].exp );
-#endif //ENGLISH
 		LOG_TO_CONSOLE(c_green1, buf);
 	}
 	return 1;
@@ -238,48 +161,29 @@ int show_exp(char *text, int len)
 // initialize anything related to the hud
 void init_hud_interface (hud_interface type)
 {
-#ifndef NEW_NEW_CHAR_WINDOW
-	static hud_interface last_interface = HUD_INTERFACE_NEW_CHAR;
-#endif
 
 	if (type == HUD_INTERFACE_LAST)
 		type = last_interface;
 
 	init_hud_frame ();
-#ifndef NEW_NEW_CHAR_WINDOW
-	init_misc_display (type);
-#else
 	if(type == HUD_INTERFACE_GAME)
 	init_misc_display (type);
-#endif
 
 	if (type == HUD_INTERFACE_NEW_CHAR)
 	{
-#ifdef NEW_NEW_CHAR_WINDOW
 		hud_x=270;
 		resize_root_window();
-#endif
 		init_icon_window (NEW_CHARACTER_ICONS);
 	}
 	else
 	{
-#ifdef NEW_NEW_CHAR_WINDOW
 		if (hud_x>0)
 			hud_x=HUD_MARGIN_X;
 		resize_root_window();
-#endif
 		init_icon_window (MAIN_WINDOW_ICONS);
 		init_stats_display ();
-#ifdef FR_VERSION
 		init_fr_quickitems ();
-#else //FR_VERSION
-		init_quickbar ();
-#endif //FR_VERSION
 		init_quickspell ();
-#ifdef ENGLISH
-		if (show_indicators)
-			init_hud_indicators ();
-#endif //ENGLISH
 		ready_for_user_menus = 1;
 		if (enable_user_menus)
 			display_user_menus();
@@ -297,9 +201,6 @@ void show_hud_windows ()
 	if (misc_win >= 0) show_window (misc_win);
 	if (quickbar_win >= 0) show_window (quickbar_win);
 	if (quickspell_win >= 0) show_window (quickspell_win);
-#ifdef ENGLISH
-	if (indicators_win >= 0) show_window (indicators_win);
-#endif //ENGLISH
 }
 
 void hide_hud_windows ()
@@ -309,9 +210,6 @@ void hide_hud_windows ()
 	if (misc_win >= 0) hide_window (misc_win);
 	if (quickbar_win >= 0) hide_window (quickbar_win);
 	if (quickspell_win >= 0) hide_window (quickspell_win);
-#ifdef ENGLISH
-	if (indicators_win >= 0) hide_window (indicators_win);
-#endif //ENGLISH
 }
 
 // draw everything related to the hud
@@ -341,92 +239,30 @@ float horizontal_bar_v_end = 0.0f;
 
 void init_hud_frame()
 {
-#ifdef ENGLISH
-#ifdef	NEW_TEXTURES
-	vertical_bar_v_end = (float)window_height/256;
-	horizontal_bar_v_start = (float)(window_width-hud_x)/256;
-#else	/* NEW_TEXTURES */
-	vertical_bar_v_start = (float)window_height/256;
-	horizontal_bar_v_end = (float)(window_width-hud_x)/256;
-#endif	/* NEW_TEXTURES */
-#else //ENGLISH
-#ifdef	NEW_TEXTURES
 	// utiliser HUD_MARGIN_X plutot que hud_x qui est variable (0=masquer)
 	vertical_bar_v_end = (float)window_height/256;
 	horizontal_bar_v_start = (float)(window_width-HUD_MARGIN_X)/256;
-#else	/* NEW_TEXTURES */
-	vertical_bar_v_start = (float)window_height/256;
-	horizontal_bar_v_end = (float)(window_width-HUD_MARGIN_X)/256;
-#endif	/* NEW_TEXTURES */
-#endif //ENGLISH
 }
 
-#ifdef	NEW_TEXTURES
 float logo_u_start = (float)64/256;
 float logo_v_start = (float)128/256;
 float logo_u_end = (float)127/256;
 float logo_v_end = (float)191/256;
-#else	/* NEW_TEXTURES */
-float logo_u_start=(float)64/256;
-float logo_v_start=1.0f-(float)128/256;
-
-float logo_u_end=(float)127/256;
-float logo_v_end=1.0f-(float)191/256;
-#endif	/* NEW_TEXTURES */
 
 void draw_hud_frame()
 {
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-#ifdef	NEW_TEXTURES
 	bind_texture(hud_text);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(hud_text);
-#endif	/* NEW_TEXTURES */
 	glBegin(GL_QUADS);
-#ifdef ENGLISH
-#ifndef NEW_NEW_CHAR_WINDOW
-	draw_2d_thing(vertical_bar_u_start, vertical_bar_v_start, vertical_bar_u_end, vertical_bar_v_end,window_width-hud_x, 0, window_width, window_height);
-	draw_2d_thing_r(horizontal_bar_u_start, horizontal_bar_v_start, horizontal_bar_u_end, horizontal_bar_v_end,0,window_height,window_width-hud_x , window_height-hud_y);
-#else
-	draw_2d_thing_r(horizontal_bar_u_start, horizontal_bar_v_start, horizontal_bar_u_end, horizontal_bar_v_end,0,window_height,window_width, window_height-hud_y);
-#endif
-#ifdef NEW_NEW_CHAR_WINDOW
-	if(last_interface == HUD_INTERFACE_GAME)
-	{
-		draw_2d_thing(vertical_bar_u_start, vertical_bar_v_start, vertical_bar_u_end, vertical_bar_v_end,window_width-hud_x, 0, window_width, window_height);
-#endif
-	//draw the logo
-	draw_2d_thing(logo_u_start, logo_v_start, logo_u_end, logo_v_end,window_width-hud_x, 0, window_width, 64);
-#ifdef NEW_NEW_CHAR_WINDOW
-	}
-#endif
-#else //ENGLISH
 	// histoire de réécrire plus clairement + condition si le hud est masqué
-#ifndef NEW_NEW_CHAR_WINDOW
-	if (hud_x)
-	{
-		draw_2d_thing(vertical_bar_u_start, vertical_bar_v_start, vertical_bar_u_end, vertical_bar_v_end, window_width-HUD_MARGIN_X, 0, window_width, window_height);
-		draw_2d_thing_r(horizontal_bar_u_start, horizontal_bar_v_start, horizontal_bar_u_end, horizontal_bar_v_end, 0, window_height, window_width-HUD_MARGIN_X, window_height-HUD_MARGIN_Y);
-		draw_2d_thing(logo_u_start, logo_v_start, logo_u_end, logo_v_end, window_width-HUD_MARGIN_X, 0, window_width, 64);
-	}
-#else //NEW_NEW_CHAR_WINDOW
 	if (hud_y) draw_2d_thing_r(horizontal_bar_u_start, horizontal_bar_v_start, horizontal_bar_u_end, horizontal_bar_v_end, 0, window_height, window_width, window_height-HUD_MARGIN_Y);
 	if ((hud_x) && (last_interface == HUD_INTERFACE_GAME)) // hud vertical uniquement en jeu (pas à la création)
 	{
 		draw_2d_thing(vertical_bar_u_start, vertical_bar_v_start, vertical_bar_u_end, vertical_bar_v_end, window_width-HUD_MARGIN_X, 0, window_width, window_height);
 		draw_2d_thing(logo_u_start, logo_v_start, logo_u_end, logo_v_end, window_width-HUD_MARGIN_X, 0, window_width, HUD_MARGIN_X);
 	}
-#endif //NEW_NEW_CHAR_WINDOW
-#endif //ENGLISH
 	glEnd();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
-#ifdef FR_VERSION
 void mix_button_pressed(void * none, int id)
 {
 		if (items_mix_but_all)
@@ -472,7 +308,6 @@ void confirmation_quitter()
 	}
 
 }
-#endif //FR_VERSION
 
 void switch_action_mode(int * mode, int id)
 {
@@ -538,9 +373,6 @@ int* get_winid(const char *name)
 		{ "invent", &items_win },
 		{ "spell", &sigil_win },
 		{ "manu", &manufacture_win },
-#ifdef EMOTES
-		{ "emotewin", &emotes_win },
-#endif //EMOTES
 		{ "quest", &questlog_win },
 		{ "map", &map_root_win },
 		{ "info", &tab_info_win },
@@ -549,14 +381,9 @@ int* get_winid(const char *name)
 		{ "console", &console_root_win },
 		{ "help", &tab_help_win },
 		{ "opts", &elconfig_win },
-#ifdef MISSILES
-		{ "range", &range_win },
-#endif //MISSILES
 		{ "minimap", &minimap_win },
 		{ "name_pass", &namepass_win },
-#ifdef FR_VERSION
 		{ "music", &fenetre_musique },
-#endif //FR_VERSION
 		{ "customize", &color_race_win } };
 	size_t i;
 	if (name == NULL)
@@ -598,40 +425,18 @@ void view_window(int * window, int id)
 			if(window==&items_win)display_items_menu();
 			else if(window==&sigil_win) display_sigils_menu();
 			else if(window==&manufacture_win) display_manufacture_menu();
-#ifdef EMOTES
-			else if(window==&emotes_win) display_emotes_menu();
-#endif
-#ifdef FR_FENETRE_OPTIONS
-			else if (window == &fenetre_options)
-            {
-                affiche_fenetre_options();
-            }
-#endif //FR_FENETRE_OPTIONS
 			else if(window==&elconfig_win) display_elconfig_win();
 			else if(window==&buddy_win) display_buddy();
 			else if(window==&trade_win) display_trade_menu();
 			else if(window==&tab_info_win) display_tab_info();
 			else if(window==&minimap_win) display_minimap();
-#ifdef ECDEBUGWIN
-			else if(window==&ecdebug_win) display_ecdebugwin();
-#endif
 			else if(window==&storage_win) display_storage_menu();
 			else if(window==&tab_stats_win) display_tab_stats();
 			else if(window==&tab_help_win) display_tab_help();
-#ifndef NEW_NEW_CHAR_WINDOW
-			else if(window==&namepass_win) show_account_win();
-			else if(window==&color_race_win) show_color_race_win();
-#endif
-#ifdef ENGLISH
-			else if(window==&questlog_win) display_questlog();
-			else if(window==&range_win) display_range_win();
-#endif //ENGLISH
-#ifdef FR_VERSION
             else if (window == &fenetre_musique)
             {
                 affiche_fenetre_musique();
             }
-#endif //FR_VERSION
 		}
 	else toggle_window(*window);
 }
@@ -665,7 +470,6 @@ int enlarge_text(void)
 
 void show_help(const char *help_message, int x, int y)
 {
-#ifdef FR_VERSION
 	int width, height, nbl=1, len=0;
 	int i, last=0;
 
@@ -710,17 +514,8 @@ void show_help(const char *help_message, int x, int y)
 
 	glColor3f(couleur_texte_aide.rouge, couleur_texte_aide.vert, couleur_texte_aide.bleu);
 	draw_string_small(x, y, (unsigned char*)help_message, nbl);
-#else //FR_VERSION
-	show_sized_help_coloured(help_message, x, y, 1.0f, 1.0f, 1.0f, 0);
-#endif //FR_VERSION
 }
 
-#ifdef ENGLISH
-void show_sized_help(const char *help_message, int x, int y, int big)
-{
-	show_sized_help_coloured(help_message, x, y, 1.0f, 1.0f, 1.0f, big);
-}
-#endif //ENGLISH
 
 void show_help_coloured(const char *help_message, int x, int y, float r, float g, float b)
 {
@@ -754,16 +549,10 @@ void show_sized_help_coloured(const char *help_message, int x, int y, float r, f
 		draw_string(x, y, (unsigned char*)help_message, 1);
 	else
 	draw_string_small(x, y, (unsigned char*)help_message, 1);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 // Stats bars in the bottom HUD .....
 
-#ifdef ENGLISH
-int show_action_bar = 0;
-#endif //ENGLISH
 int watch_this_stats[MAX_WATCH_STATS]={NUM_WATCH_STAT -1, 0, 0, 0, 0};  // default to only watching overall
 int max_food_level=45;
 static int exp_bar_text_len = 9.5*SMALL_FONT_X_LEN;
@@ -857,11 +646,7 @@ static int recalc_exp_bar_text_len(void)
 static int calc_stats_bar_len(int num_exp)
 {
 	// calculate the maximum length for stats bars given the current number of both bar types
-#ifdef ENGLISH
-	int num_stat = (show_action_bar) ?5: 4;
-#else //ENGLISH
 	int num_stat = 4;
-#endif //ENGLISH
 	int prosed_len = (window_width-HUD_MARGIN_X-1) - (num_stat * stats_bar_text_len) - (num_exp * exp_bar_text_len);
 	prosed_len /= num_stat + num_exp;
 
@@ -877,11 +662,7 @@ static int calc_stats_bar_len(int num_exp)
 // calculate the maximum number of exp bars
 static int calc_max_disp_stats(int suggested_stats_bar_len)
 {
-#ifdef ENGLISH
-	int exp_offset = ((show_action_bar)?5:4) * (suggested_stats_bar_len + stats_bar_text_len);
-#else //ENGLISH
 	int exp_offset = 4 * (suggested_stats_bar_len + stats_bar_text_len);
-#endif //ENGLISH
 	int preposed_max_disp_stats = (window_width - HUD_MARGIN_X - exp_offset) / (suggested_stats_bar_len + exp_bar_text_len);
 	if (preposed_max_disp_stats > MAX_WATCH_STATS)
 		preposed_max_disp_stats = MAX_WATCH_STATS;
@@ -890,9 +671,6 @@ static int calc_max_disp_stats(int suggested_stats_bar_len)
 
 static int	statbar_cursor_x;
 static int stats_bar_len;
-#ifdef ENGLISH
-static int max_disp_stats=1;
-#endif //ENGLISH
 static int health_bar_start_x;
 static int health_bar_start_y;
 static int mana_bar_start_x;
@@ -901,10 +679,6 @@ static int food_bar_start_x;
 static int food_bar_start_y;
 static int load_bar_start_x;
 static int load_bar_start_y;
-#ifdef ENGLISH
-static int action_bar_start_x;
-static int action_bar_start_y;
-#endif //ENGLISH
 static int exp_bar_start_x;
 static int exp_bar_start_y;
 static int free_statbar_space;
@@ -1000,19 +774,9 @@ void init_stats_display()
 	//create the stats bar window
 	if(stats_bar_win < 0)
 		{
-#ifdef ENGLISH
-		static size_t cm_id_ap = CM_INIT_VALUE;
-#endif //ENGLISH
 		stats_bar_win= create_window("Stats Bar", -1, 0, 0, window_height-44, window_width-HUD_MARGIN_X, 12, ELW_TITLE_NONE|ELW_SHOW_LAST);
 			set_window_handler(stats_bar_win, ELW_HANDLER_DISPLAY, &display_stats_bar_handler);
 			set_window_handler(stats_bar_win, ELW_HANDLER_MOUSEOVER, &mouseover_stats_bar_handler);
-#ifdef ENGLISH
-
-		// context menu to enable/disable the action points bar
-		cm_id_ap = cm_create(cm_action_points_str, NULL);
-		cm_add_window(cm_id_ap, stats_bar_win);
-		cm_bool_line(cm_id_ap, 0, &show_action_bar, "show_action_bar");
-#endif //ENGLISH
 		}
 	else
 		init_window(stats_bar_win, -1, 0, 0, window_height-44, window_width-HUD_MARGIN_X, 12);
@@ -1028,28 +792,16 @@ void init_stats_display()
 		stats_bar_len = calc_stats_bar_len(max_disp_stats);
 
 	// all the bars are at the top of the window
-#ifdef ENGLISH
-	mana_bar_start_y = food_bar_start_y = health_bar_start_y = load_bar_start_y = action_bar_start_y = exp_bar_start_y = 0;
-#else //ENGLISH
 	mana_bar_start_y = food_bar_start_y = health_bar_start_y = load_bar_start_y = exp_bar_start_y = 0;
-#endif //ENGLISH
 
 	// calculate the stats bar x position
 	mana_bar_start_x = stats_bar_text_len;
 	food_bar_start_x = stats_bar_len + 2 * stats_bar_text_len;
 	health_bar_start_x = 2 * stats_bar_len + 3 * stats_bar_text_len;
 	load_bar_start_x = 3 * stats_bar_len + 4 * stats_bar_text_len;
-#ifdef ENGLISH
-	if (show_action_bar)
-		action_bar_start_x = 4 * stats_bar_len + 5 * stats_bar_text_len;
-#endif //ENGLISH
 
 	// the x position of the first exp bar
-#ifdef ENGLISH
-	exp_bar_start_x = ((show_action_bar)?5:4) * (stats_bar_len + stats_bar_text_len) + exp_bar_text_len;
-#else //ENGLISH
 	exp_bar_start_x = 4 * (stats_bar_len + stats_bar_text_len) + exp_bar_text_len;
-#endif //ENGLISH
 
 	// clear any unused slots in the watch list and recalc how many are being displayed
 	if (max_disp_stats < MAX_WATCH_STATS)
@@ -1099,15 +851,6 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 		glBegin(GL_QUADS);
 		//draw the colored section
  		glColor3f(r2, g2, b2);
-#ifdef ENGLISH
-		glVertex3i(x, y+8, 0);
-		glColor3f(r, g, b);
-		glVertex3i(x, y, 0);
-		glColor3f(r, g, b);
-		glVertex3i(x+i, y, 0);
-		glColor3f(r2, g2, b2);
-		glVertex3i(x+i, y+8, 0);
-#else //ENGLISH
 		glVertex3i(x, y+10, 0);
 		glColor3f(r, g, b);
 		glVertex3i(x, y, 0);
@@ -1115,37 +858,22 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 		glVertex3i(x+i, y, 0);
 		glColor3f(r2, g2, b2);
 		glVertex3i(x+i, y+10, 0);
-#endif //ENGLISH
 		glEnd();
 	}
 	// draw the bar frame
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glBegin(GL_LINE_LOOP);
-#ifdef ENGLISH
-	glVertex3i(x, y, 0);
-	glVertex3i(x+stats_bar_len, y, 0);
-	glVertex3i(x+stats_bar_len, y+8, 0);
-	glVertex3i(x, y+8, 0);
-#else //ENGLISH
 	glVertex3i(x, y, 0);
 	glVertex3i(x+stats_bar_len, y, 0);
 	glVertex3i(x+stats_bar_len, y+10, 0);
 	glVertex3i(x, y+10, 0);
-#endif //ENGLISH
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 
 	// handle the text
 	safe_snprintf(buf, sizeof(buf), "%d", val);
 	//glColor3f(0.8f, 0.8f, 0.8f); moved to next line
-#ifdef ENGLISH
-	draw_string_small_shadowed(x-(1+8*strlen(buf))-1, y-2, (unsigned char*)buf, 1,0.8f, 0.8f, 0.8f,0.0f,0.0f,0.0f);
-#else //ENGLISH
 	draw_string_small_shadowed(x-(1+8*strlen(buf))-1, y-2, (unsigned char*)buf, 1,1.0f, 1.0f, 1.0f,0.0f,0.0f,0.0f);
-#endif //ENGLISH
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static void draw_side_stats_bar(const int x, const int y, const int baselev, const int cur_exp, const int nl_exp, size_t colour)
@@ -1158,9 +886,6 @@ static void draw_side_stats_bar(const int x, const int y, const int baselev, con
 	if (colour > 1)
 		colour = 0;
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	glDisable(GL_TEXTURE_2D);
 	if(len >= 0){
 		glBegin(GL_QUADS);
@@ -1185,9 +910,6 @@ CHECK_GL_ERRORS();
 	glVertex3i(x, y+13, 0);
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 static struct { int d; int h; Uint32 dt; Uint32 ht; } my_last_health = { 0, 0, 0, 0 };
@@ -1243,9 +965,6 @@ int	display_stats_bar_handler(window_info *win)
 	float food_adjusted_x_len;
 	float mana_adjusted_x_len;
 	float load_adjusted_x_len;
-#ifdef ENGLISH
-	float action_adjusted_x_len;
-#endif //ENGLISH
 	int over_health_bar;
 
 	// the space taken up by the exp bar text is minimised, but may change
@@ -1286,16 +1005,9 @@ int	display_stats_bar_handler(window_info *win)
 	else
 		load_adjusted_x_len=stats_bar_len/((float)your_info.carry_capacity.base/(float)your_info.carry_capacity.cur);
 
-#ifdef ENGLISH
-	if(!your_info.action_points.cur || !your_info.action_points.base)
-		action_adjusted_x_len=0;//we don't want a div by 0
-	else
-		action_adjusted_x_len=stats_bar_len/((float)your_info.action_points.base/(float)your_info.action_points.cur);
-#endif //ENGLISH
 
 	draw_stats_bar(health_bar_start_x, health_bar_start_y, your_info.material_points.cur, health_adjusted_x_len, 1.0f, 0.2f, 0.2f, 0.5f, 0.2f, 0.2f);
 
-#ifdef FR_VERSION
 	if (your_info.food_level <= 45)
 	{
 		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 1.0f, 0.2f, 0.5f, 0.5f, 0.2f); //yellow
@@ -1304,19 +1016,10 @@ int	display_stats_bar_handler(window_info *win)
 	{
 		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 0.5f, 0.0f, 0.7f, 0.3f, 0.0f); //orange
 	}
-#else //FR_VERSION
-	if (your_info.food_level<=max_food_level) //yellow
-		draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 1.0f, 0.2f, 0.5f, 0.5f, 0.2f);
-	else draw_stats_bar(food_bar_start_x, food_bar_start_y, your_info.food_level, food_adjusted_x_len, 1.0f, 0.5f, 0.0f, 0.7f, 0.3f, 0.0f); //orange
-#endif //FR_VERSION
 
 
 	draw_stats_bar(mana_bar_start_x, mana_bar_start_y, your_info.ethereal_points.cur, mana_adjusted_x_len, 0.2f, 0.2f, 1.0f, 0.2f, 0.2f, 0.5f);
 	draw_stats_bar(load_bar_start_x, load_bar_start_y, your_info.carry_capacity.base-your_info.carry_capacity.cur, load_adjusted_x_len, 0.6f, 0.4f, 0.4f, 0.4f, 0.2f, 0.2f);
-#ifdef ENGLISH
-	if (show_action_bar)
-		draw_stats_bar(action_bar_start_x, action_bar_start_y, your_info.action_points.cur, action_adjusted_x_len, 0.8f, 0.3f, 0.8f, 0.5f, 0.1f, 0.5f);
-#endif //ENGLISH
 
 	draw_exp_display();
 
@@ -1326,12 +1029,8 @@ int	display_stats_bar_handler(window_info *win)
 		else if(statbar_cursor_x>food_bar_start_x && statbar_cursor_x < food_bar_start_x+stats_bar_len) show_help((char*)attributes.food.name,food_bar_start_x+stats_bar_len+10,-3);
 		else if(statbar_cursor_x>mana_bar_start_x && statbar_cursor_x < mana_bar_start_x+stats_bar_len) show_help((char*)attributes.ethereal_points.name,mana_bar_start_x+stats_bar_len+10,-3);
 		else if(statbar_cursor_x>load_bar_start_x && statbar_cursor_x < load_bar_start_x+stats_bar_len) show_help((char*)attributes.carry_capacity.name,load_bar_start_x+stats_bar_len+10,-3);
-#ifdef ENGLISH
-		else if(show_action_bar && statbar_cursor_x>action_bar_start_x && statbar_cursor_x < action_bar_start_x+stats_bar_len) show_help((char*)attributes.action_points.name,action_bar_start_x+stats_bar_len+10,-3);
-#endif //ENGLISH
 	}
 
-#ifdef SHOW_ATTR_BOOSTED
     //Ajout stats sur le HUD
     if(show_attr_boosted)
     {
@@ -1409,7 +1108,6 @@ int	display_stats_bar_handler(window_info *win)
         else {r_stat = 1.0f;g_stat = 0.2f;b_stat = 0.2f;}                                                  //red
         draw_string_small_shadowed(xOffsetBuff+10, food_bar_start_y+27, aura_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
     }
-#endif //SHOW_ATTR_BOOSTED
 
 	if (over_health_bar)
 		draw_last_health_change();
@@ -1426,7 +1124,6 @@ int mouseover_stats_bar_handler(window_info *win, int mx, int my)
 }
 
 // the misc section (compass, clock, ?)
-#ifdef	NEW_TEXTURES
 float compass_u_start = (float)32/256;
 float compass_v_start = (float)192/256;
 
@@ -1450,31 +1147,6 @@ float clock_needle_v_start = (float)192/256;
 
 float clock_needle_u_end = (float)31/256;
 float clock_needle_v_end = (float)223/256;
-#else	/* NEW_TEXTURES */
-float compass_u_start=(float)32/256;
-float compass_v_start=1.0f-(float)192/256;
-
-float compass_u_end=(float)95/256;
-float compass_v_end=0;
-
-float clock_u_start=0;
-float clock_v_start=1.0f-(float)128/256;
-
-float clock_u_end=(float)63/256;
-float clock_v_end=1.0f-(float)191/256;
-
-float needle_u_start=(float)4/256;
-float needle_v_start=1.0f-(float)200/256;
-
-float needle_u_end=(float)14/256;
-float needle_v_end=1.0f-(float)246/256;
-
-float clock_needle_u_start=(float)21/256;
-float clock_needle_v_start=1.0f-(float)192/256;
-
-float clock_needle_u_end=(float)31/256;
-float clock_needle_v_end=1.0f-(float)223/256;
-#endif	/* NEW_TEXTURES */
 
 static int context_hud_handler(window_info *win, int widget_id, int mx, int my, int option)
 {
@@ -1482,13 +1154,8 @@ static int context_hud_handler(window_info *win, int widget_id, int mx, int my, 
 	switch (option)
 	{
 		case CMH_MINIMAP: view_window(&minimap_win, 0); break;
-#ifdef ENGLISH
-		case CMH_RANGSTATS: view_window(&range_win, 0); break;
-#endif //ENGLISH
-#ifdef NEW_SOUND
 		case CMH_SOUND: toggle_sounds(&sound_on); set_var_unsaved("enable_sound", INI_FILE_VAR); break;
 		case CMH_MUSIC: toggle_music(&music_on); set_var_unsaved("enable_music", INI_FILE_VAR); break;
-#endif // NEW_SOUND
 		case CMH_LOCATION:
 			copy_next_LOCATE_ME = 1;
 			protocol_name= LOCATE_ME;
@@ -1498,29 +1165,12 @@ static int context_hud_handler(window_info *win, int widget_id, int mx, int my, 
 	return 1;
 }
 
-#ifdef ENGLISH
-static int context_quickbar_handler(window_info *win, int widget_id, int mx, int my, int option)
-{
-	switch (option)
-	{
-		case CMQB_DRAG: quickbar_draggable ^= 1; toggle_quickbar_draggable(); break;
-		case CMQB_RESET: reset_quickbar(); break;
-		case CMQB_FLIP: flip_quickbar(); break;
-	}
-	return 1;
-}
-#endif //ENGLISH
 
 static void context_hud_pre_show_handler(window_info *win, int widget_id, int mx, int my, window_info *cm_win)
 {
-#ifdef NEW_SOUND
 	cm_sound_enabled = sound_on;
 	cm_music_enabled = music_on;
-#endif // NEW_SOUND
 	cm_minimap_shown = get_show_window(minimap_win);
-#ifdef ENGLISH
-	cm_rangstats_shown = get_show_window(range_win);
-#endif //ENGLISH
 }
 
 void init_misc_display(hud_interface type)
@@ -1543,17 +1193,9 @@ void init_misc_display(hud_interface type)
 			cm_bool_line(cm_hud_id, CMH_ANACLOCK, &view_analog_clock, "view_analog_clock");
 			cm_bool_line(cm_hud_id, CMH_SECONDS, &show_game_seconds, "show_game_seconds");
 			cm_bool_line(cm_hud_id, CMH_FPS, &show_fps, "show_fps");
-#ifdef ENGLISH
-			cm_bool_line(cm_hud_id, CMH_INDICATORS, &show_indicators, "show_indicators");
-#endif //ENGLISH
 			cm_bool_line(cm_hud_id, CMH_MINIMAP, &cm_minimap_shown, NULL);
-#ifdef ENGLISH
-			cm_bool_line(cm_hud_id, CMH_RANGSTATS, &cm_rangstats_shown, NULL);
-#endif //ENGLISH
 			cm_bool_line(cm_hud_id, CMH_QUICKBM, &cm_quickbar_enabled, NULL);
-#ifdef FR_VERSION
 			cm_bool_line(cm_hud_id, CMH_QUICKBP, &cm_quickbar_protected, NULL);
-#endif //FR_VERSION
 			cm_bool_line(cm_hud_id, CMH_SOUND, &cm_sound_enabled, NULL);
 			cm_bool_line(cm_hud_id, CMH_MUSIC, &cm_music_enabled, NULL);
 			cm_add_window(cm_hud_id, misc_win);
@@ -1564,20 +1206,12 @@ void init_misc_display(hud_interface type)
 			move_window(misc_win, -1, 0, window_width-HUD_MARGIN_X, window_height-y_len);
 		}
 
-#ifdef FR_VERSION
 	// ces options du menu contextuel sont désactivées à la création d'un perso
 	cm_grey_line(cm_hud_id, CMH_QUICKBP, (type == HUD_INTERFACE_NEW_CHAR));
-#endif //FR_VERSION
 	cm_grey_line(cm_hud_id, CMH_STATS, (type == HUD_INTERFACE_NEW_CHAR));
 	cm_grey_line(cm_hud_id, CMH_STATBARS, (type == HUD_INTERFACE_NEW_CHAR));
 	cm_grey_line(cm_hud_id, CMH_FPS, (type == HUD_INTERFACE_NEW_CHAR));
-#ifdef ENGLISH
-	cm_grey_line(cm_hud_id, CMH_INDICATORS, (type == HUD_INTERFACE_NEW_CHAR));
-#endif //ENGLISH
 	cm_grey_line(cm_hud_id, CMH_MINIMAP, (type == HUD_INTERFACE_NEW_CHAR));
-#ifdef ENGLISH
-	cm_grey_line(cm_hud_id, CMH_RANGSTATS, (type == HUD_INTERFACE_NEW_CHAR));
-#endif //ENGLISH
 	cm_grey_line(cm_hud_id, CMH_QUICKBM, (type == HUD_INTERFACE_NEW_CHAR));
 	cm_grey_line(cm_hud_id, CMH_LOCATION, (type == HUD_INTERFACE_NEW_CHAR));
 
@@ -1595,11 +1229,7 @@ void init_misc_display(hud_interface type)
 static int get_max_quick_y(void)
 {
 	int quickspell_base = get_quickspell_y_base();
-#ifdef FR_VERSION
 	int quickbar_base = get_fr_quickitems_y_base();
-#else //FR_VERSION
-	int quickbar_base = get_quickbar_y_base();
-#endif //FR_VERSION
 	int max_quick_y = window_height;
 
 	if (quickspell_base > quickbar_base)
@@ -1618,11 +1248,7 @@ static int calc_statbar_start_y(int base_y_start, int win_y_len)
 {
 	int winoverlap = 0;
 	int quickspell_base = get_quickspell_y_base();
-#ifdef FR_VERSION
 	int quickbar_base = get_fr_quickitems_y_base();
-#else //FR_VERSION
-	int quickbar_base = get_quickbar_y_base();
-#endif //FR_VERSION
 	int max_quick_y = window_height;
 
 	/* get the longest of the active quickspells and the quickbar (if its in default place) */
@@ -1655,7 +1281,6 @@ static int calc_statbar_start_y(int base_y_start, int win_y_len)
 	return statbar_start_y;
 }
 
-#ifdef FR_VERSION
 void change_max_nutri(int max)
 {
 	if (max == 1)
@@ -1667,34 +1292,19 @@ void change_max_nutri(int max)
 		max_food_level = 45;
 	}
 }
-#endif //FR_VERSION
 
 int display_misc_handler(window_info *win)
 {
 	int base_y_start = win->len_y - (view_analog_clock?128:64) - (view_digital_clock?DEFAULT_FONT_Y_LEN:0);
-#ifdef FR_VERSION
 	char str[40];	// one extra incase the length of the day ever changes
-#else //FR_VERSION
-	char str[16];	// one extra incase the length of the day ever changes
-#endif //FR_VERSION
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-#ifndef ENGLISH
 	int coord_y=285;
-#endif //ENGLISH
-#ifdef	NEW_TEXTURES
 	bind_texture(hud_text);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(hud_text);
-#endif	/* NEW_TEXTURES */
 
 	// allow for transparency
 	glEnable(GL_ALPHA_TEST);//enable alpha filtering, so we have some alpha key
 	glAlphaFunc(GL_GREATER, 0.09f);
 
 	//draw the compass
-#ifndef ENGLISH
 	//@tosh : On fait tourner la boussole plutôt que l'aiguille.
 	if(rot_boussole)
 	{
@@ -1712,12 +1322,9 @@ CHECK_GL_ERRORS();
 	}
 	else
 	{
-#endif
 	glBegin(GL_QUADS);
 	draw_2d_thing(compass_u_start, compass_v_start, compass_u_end, compass_v_end, 0,win->len_y-64,64,win->len_y);
-#ifndef ENGLISH
 	}
-#endif
 	if(view_analog_clock > 0){
 		//draw the clock
 		draw_2d_thing(clock_u_start, clock_v_start, clock_u_end, clock_v_end,
@@ -1726,7 +1333,6 @@ CHECK_GL_ERRORS();
 	glEnd();
 
 	//draw the compass needle
-#ifndef ENGLISH
 	//@tosh : L'aiguille ne tourne plus
 	if(rot_boussole)
 	{
@@ -1736,7 +1342,6 @@ CHECK_GL_ERRORS();
 	}
 	else
 	{
-#endif
 	glPushMatrix();
 	glTranslatef(32, win->len_y-32, 0);
 	glRotatef(rz, 0.0f, 0.0f, 1.0f);
@@ -1745,9 +1350,7 @@ CHECK_GL_ERRORS();
 	draw_2d_thing(needle_u_start, needle_v_start, needle_u_end, needle_v_end,-5, -28, 5, 28);
 	glEnd();
 	glPopMatrix();
-#ifndef ENGLISH
 	}
-#endif
 	if(view_analog_clock > 0){
 		//draw the clock needle
 		glAlphaFunc(GL_GREATER, 0.05f);
@@ -1761,15 +1364,9 @@ CHECK_GL_ERRORS();
 		glDisable(GL_ALPHA_TEST);
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	//Digital Clock
 	if(view_digital_clock > 0){
 		int x;
-#ifndef FR_VERSION
-		char str[10];
-#endif //FR_VERSION
 
 		//glColor3f(0.77f, 0.57f, 0.39f); // useless
 		if (show_game_seconds)
@@ -1788,9 +1385,6 @@ CHECK_GL_ERRORS();
 	/* if mouse over the either of the clocks - display the time & date */
 	if (mouse_over_clock)
 			{
-#ifndef FR_VERSION
-		char str[20];
-#endif //FR_VERSION
 		const char *the_date = get_date(NULL);
 		int centre_y =  (view_analog_clock) ?win->len_y-96 : base_y_start + DEFAULT_FONT_Y_LEN/2;
 
@@ -1807,9 +1401,6 @@ CHECK_GL_ERRORS();
 	/* if mouse over the compass - display the coords */
 	if (mouse_over_compass)
 	{
-#ifndef FR_VERSION
-		char str[12];
-#endif //FR_VERSION
 		actor *me = get_our_actor ();
 		if (me != NULL)
 		{
@@ -1822,11 +1413,7 @@ CHECK_GL_ERRORS();
 	/* if the knowledge bar is enabled, show progress in bar and ETA as hover over */
 	if (view_knowledge_bar)
 	{
-#ifdef FR_VERSION
 		char str[21];
-#else //FR_VERSION
-		char str[20];
-#endif //FR_VERSION
 		char *use_str = idle_str;
 		int percentage_done = 0;
 		int x = 4;
@@ -1856,14 +1443,6 @@ CHECK_GL_ERRORS();
 	/* if the timer is visible, draw it */
 	base_y_start -= display_timer(win, base_y_start);
 
-#ifdef ENGLISH
-	// Trade the number of quickbar slots if too much is displayed (not considering stats yet)
-	while (((win->len_y - base_y_start) - get_max_quick_y()) > 0)
-	{
-		num_quickbar_slots--;
-		set_var_OPT_INT("num_quickbar_slots", num_quickbar_slots);
-	}
-#endif //ENGLISH
 
 	/*	Optionally display the stats bar.  If the current window size does not
 		provide enough room, display only some skills and allow scrolling to view
@@ -1876,18 +1455,6 @@ CHECK_GL_ERRORS();
 		int y = calc_statbar_start_y(base_y_start, win->len_y);
 		int skill_modifier;
 
-#ifdef ENGLISH
-		// trade the number of quickbar slots if there is not enough space
-		while ((num_disp_stat < 5) && (num_quickbar_slots > 1))
-		{
-			num_quickbar_slots--;
-			set_var_OPT_INT("num_quickbar_slots", num_quickbar_slots);
-			y = calc_statbar_start_y(base_y_start, win->len_y);
-		}
-#endif //ENGLISH
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 		for (thestat=0; thestat<NUM_WATCH_STAT-1; thestat++)
 		{
@@ -1928,14 +1495,9 @@ CHECK_GL_ERRORS();
 			/* if the mouse is over the stat bar, draw the XP remaining */
 			if (stat_mouse_is_over == thestat)
 			{
-#ifdef FR_VERSION
 				safe_snprintf(str,sizeof(str),"%7li",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
 				// ne pas décaler la position lorsque les barres du HUD sont masquées
 				draw_string_small_shadowed(-(HUD_MARGIN_X+hover_offset), y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#else //FR_VERSION
-				safe_snprintf(str,sizeof(str),"%li",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
-				draw_string_small_shadowed(-(int)(SMALL_FONT_X_LEN*(strlen(str)+0.5+hover_offset)), y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#endif //FR_VERSION
 				stat_mouse_is_over = -1;
 			}
 
@@ -1943,12 +1505,7 @@ CHECK_GL_ERRORS();
 		}
 	}
 
-#ifndef ENGLISH
-#ifdef SHOW_COORD_SETTER
     if (show_coord_2)
-#else //SHOW_COORD_SETTER
-    if (show_coord)
-#endif //SHOW_COORD_SETTER
     {
 		char str[9];
 		actor *me=get_actor_ptr_from_id(yourself);
@@ -1960,7 +1517,6 @@ CHECK_GL_ERRORS();
             draw_string_small_shadowed(5, coord_y-12, (unsigned char*)str, 1, 0.0f, 1.0f, 1.0f, 0.0f,0.0f,0.0f);
 		}
 	}
-#endif //ENGLISH
 
 	{
 		static int last_window_width = -1;
@@ -1981,9 +1537,6 @@ CHECK_GL_ERRORS();
 		}
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return	1;
 }
 
@@ -2054,11 +1607,7 @@ int	click_misc_handler(window_info *win, int mx, int my, Uint32 flags)
 	if (mouse_is_over_knowedge_bar(win, mx, my))
 		{
 			do_click_sound();
-#ifdef FR_VERSION
 			send_input_text_line("#recherches", 11);
-#else //FR_VERSION
-			send_input_text_line("#research", 9);
-#endif //FR_VERSION
 			return 1;
 		}
 
@@ -2125,28 +1674,6 @@ int mouseover_misc_handler(window_info *win, int mx, int my)
 	return 0;
 }
 
-#ifdef ENGLISH
-/* #define as these numbers are used many times */
-#define DEF_QUICKBAR_X_LEN 30
-#define DEF_QUICKBAR_Y_LEN 30
-#define DEF_QUICKBAR_X (DEF_QUICKBAR_X_LEN+4)
-#define DEF_QUICKBAR_Y 64
-
-int quickbar_x_len = DEF_QUICKBAR_X_LEN;
-int quickbar_x = DEF_QUICKBAR_X;
-int quickbar_y = DEF_QUICKBAR_Y;
-int quickbar_draggable=0;
-int quickbar_dir=VERTICAL;
-int quickbar_relocatable=0;
-int num_quickbar_slots = 6;
-static int last_num_quickbar_slots = 6;
-
-// return the window y len based on the number of slots
-int get_quickbar_y_len(void)
-{
-	return num_quickbar_slots * DEF_QUICKBAR_Y_LEN + 1;
-}
-#endif //ENGLISH
 
 // check if key is one of the item keys and use it if so.
 int action_item_keys(Uint32 key)
@@ -2154,11 +1681,7 @@ int action_item_keys(Uint32 key)
 	size_t i;
 	Uint32 keys[] = {K_ITEM1, K_ITEM2, K_ITEM3, K_ITEM4, K_ITEM5, K_ITEM6,
 					 K_ITEM7, K_ITEM8, K_ITEM9, K_ITEM10, K_ITEM11, K_ITEM12 };
-#ifdef FR_VERSION
 	for (i=0; (i<sizeof(keys)/sizeof(Uint32)) & (i < quickitems_size); i++)
-#else //FR_VERSION
-	for (i=0; (i<sizeof(keys)/sizeof(Uint32)) & (i < num_quickbar_slots); i++)
-#endif //FR_VERSION
 		if(key == keys[i])
 		{
 			quick_use (i);
@@ -2167,575 +1690,6 @@ int action_item_keys(Uint32 key)
 	return 0;
 }
 
-#ifndef FR_VERSION
-/* get the base y coord of the quick bar if its in
-   it's default place, otherwise return where the top would be */
-int get_quickbar_y_base()
-{
-	if ((quickbar_draggable) || (quickbar_dir!=VERTICAL) ||
-		(quickbar_x_len != DEF_QUICKBAR_X_LEN) ||
-		(quickbar_x != DEF_QUICKBAR_X) || (quickbar_y != DEF_QUICKBAR_Y))
-		return DEF_QUICKBAR_Y;
-	else
-		return DEF_QUICKBAR_Y + get_quickbar_y_len();
-}
-
-//quickbar section
-void init_quickbar ()
-{
-	Uint32 flags = ELW_USE_BACKGROUND | ELW_USE_BORDER;
-
-	quickbar_x_len = DEF_QUICKBAR_X_LEN;
-
-	if (!quickbar_relocatable)
-	{
-		flags |= ELW_SHOW_LAST;
-		quickbar_draggable = 0;
-	}
-	if (quickbar_draggable) flags |= ELW_TITLE_BAR | ELW_DRAGGABLE;
-
-	if (quickbar_win < 0)
-	{
-		if (quickbar_dir == VERTICAL)
-			quickbar_win = create_window ("Quickbar", -1, 0, window_width - quickbar_x, quickbar_y, quickbar_x_len, get_quickbar_y_len(), flags);
-		else
-			quickbar_win = create_window ("Quickbar", -1, 0, window_width - quickbar_x, quickbar_y, get_quickbar_y_len(), quickbar_x_len, flags);
-		last_num_quickbar_slots = num_quickbar_slots;
-
-		set_window_handler(quickbar_win, ELW_HANDLER_DISPLAY, &display_quickbar_handler);
-		set_window_handler(quickbar_win, ELW_HANDLER_CLICK, &click_quickbar_handler);
-		set_window_handler(quickbar_win, ELW_HANDLER_MOUSEOVER, &mouseover_quickbar_handler );
-
-		cm_quickbar_id = cm_create(cm_quickbar_menu_str, context_quickbar_handler);
-		cm_bool_line(cm_quickbar_id, CMQB_RELOC, &quickbar_relocatable, "relocate_quickbar");
-		cm_bool_line(cm_quickbar_id, CMQB_DRAG, &quickbar_draggable, NULL);
-		cm_bool_line(cm_quickbar_id, CMQB_ENABLE, &cm_quickbar_enabled, NULL);
-	}
-	else
-	{
-		change_flags (quickbar_win, flags);
-		if (quickbar_draggable)
-		{
-			show_window (quickbar_win);
-		}
-		else if (quickbar_y > window_height || quickbar_x > window_width)
-		{
-			move_window (quickbar_win, -1, 0, 200, 64); // The player has done something stupid... let him/her correct it
-		}
-		else
-		{
-			move_window (quickbar_win, -1, 0, window_width - quickbar_x, quickbar_y);
-		}
-	}
-}
-
-int	display_quickbar_handler(window_info *win)
-{
-	char str[80];
-	int y, i;
-	Uint32 _cur_time = SDL_GetTicks(); /* grab a snapshot of current time */
-	int ypos = -1, xpos = -1;
-
-	// check if the number of slots has changes and adjust if needed
-	if (last_num_quickbar_slots == -1)
-		last_num_quickbar_slots = num_quickbar_slots;
-	else if (last_num_quickbar_slots != num_quickbar_slots)
-	{
-		last_num_quickbar_slots = num_quickbar_slots;
-		if (quickbar_dir==VERTICAL)
-			init_window(win->window_id, -1, 0, win->cur_x, win->cur_y, quickbar_x_len, get_quickbar_y_len());
-		else
-			init_window(win->window_id, -1, 0, win->cur_x, win->cur_y, get_quickbar_y_len(), quickbar_x_len);
-	}
-
-	glEnable(GL_TEXTURE_2D);
-	glColor3f(1.0f,1.0f,1.0f);
-	//ok, now let's draw the objects...
-	for(i=0;i<num_quickbar_slots;i++)
-	{
-		if(item_list[i].quantity > 0)
-		{
-			float u_start,v_start,u_end,v_end;
-			int this_texture,cur_item,cur_pos;
-			int x_start,x_end,y_start,y_end, itmp;
-
-			//get the UV coordinates.
-			cur_item=item_list[i].image_id%25;
-#ifdef	NEW_TEXTURES
-			get_item_uv(cur_item, &u_start, &v_start, &u_end,
-				&v_end);
-#else	/* NEW_TEXTURES */
-			u_start=0.2f*(cur_item%5);
-			u_end=u_start+(float)50/256;
-			v_start=(1.0f+((float)50/256)/256.0f)-((float)50/256*(cur_item/5));
-			v_end=v_start-(float)50/256;
-#endif	/* NEW_TEXTURES */
-
-			//get the x and y
-			cur_pos=item_list[i].pos;
-
-			x_start= 2;
-			x_end= x_start+27;
-			y_start= DEF_QUICKBAR_Y_LEN*(cur_pos%num_quickbar_slots)+2;
-            y_end= y_start+27;
-
-			if(quickbar_dir != VERTICAL)
-			{
-				itmp = x_start; x_start = y_start; y_start = itmp;
-				itmp = x_end; x_end = y_end; y_end = itmp;
-			}
-
-			//get the texture this item belongs to
-			this_texture=get_items_texture(item_list[i].image_id/25);
-
-#ifdef	NEW_TEXTURES
-			bind_texture(this_texture);
-#else	/* NEW_TEXTURES */
-			get_and_set_texture_id(this_texture);
-#endif	/* NEW_TEXTURES */
-			glBegin(GL_QUADS);
-				draw_2d_thing(u_start,v_start,u_end,v_end,x_start,y_start,x_end,y_end);
-			glEnd();
-
-			if (item_list[i].cooldown_time > _cur_time)
-			{
-				float cooldown = ((float)(item_list[i].cooldown_time - _cur_time)) / ((float)item_list[i].cooldown_rate);
-				float x_center = (x_start + x_end)*0.5f;
-				float y_center = (y_start + y_end)*0.5f;
-
-				if (cooldown < 0.0f)
-					cooldown = 0.0f;
-				else if (cooldown > 1.0f)
-					cooldown = 1.0f;
-
-				glDisable(GL_TEXTURE_2D);
-				glEnable(GL_BLEND);
-
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glBegin(GL_TRIANGLE_FAN);
-					glColor4f(0.14f, 0.35f, 0.82f, 0.50f);
-
-					glVertex2f(x_center, y_center);
-
-					if (cooldown >= 0.875f) {
-						float t = tan(2.0f*M_PI*(1.0f - cooldown));
-						glVertex2f(t*x_end + (1.0f - t)*x_center, y_start);
-						glVertex2f(x_end, y_start);
-						glVertex2f(x_end, y_end);
-						glVertex2f(x_start, y_end);
-						glVertex2f(x_start, y_start);
-					} else if (cooldown >= 0.625f) {
-						float t = 0.5f + 0.5f*tan(2.0f*M_PI*(0.75f - cooldown));
-						glVertex2f(x_end, t*y_end + (1.0f - t)*y_start);
-						glVertex2f(x_end, y_end);
-						glVertex2f(x_start, y_end);
-						glVertex2f(x_start, y_start);
-					} else if (cooldown >= 0.375f) {
-						float t = 0.5f + 0.5f*tan(2.0f*M_PI*(0.5f - cooldown));
-						glVertex2f(t*x_start + (1.0f - t)*x_end, y_end);
-						glVertex2f(x_start, y_end);
-						glVertex2f(x_start, y_start);
-					} else if (cooldown >= 0.125f) {
-						float t = 0.5f + 0.5f*tan(2.0f*M_PI*(0.25f - cooldown));
-						glVertex2f(x_start, t*y_start + (1.0f - t)*y_end);
-						glVertex2f(x_start, y_start);
-					} else {
-						float t = tan(2.0f*M_PI*(cooldown));
-						glVertex2f(t*x_start + (1.0f - t)*x_center, y_start);
-					}
-
-					glVertex2f(x_center, y_start);
-				glEnd();
-
-				glDisable(GL_BLEND);
-				glEnable(GL_TEXTURE_2D);
-			}
-
-			safe_snprintf(str,sizeof(str),"%i",item_list[i].quantity);
-			if (quickbar_dir==VERTICAL)
-			{
-				int lenstr = strlen(str);
-				lenstr *= ((mouseover_quickbar_item_pos == i) && enlarge_text()) ?DEFAULT_FONT_X_LEN :SMALL_FONT_X_LEN;
-				xpos = ((x_start + lenstr + win->cur_x) > window_width) ?window_width - win->cur_x - lenstr :x_start;
-				ypos = y_end-15;
-			}
-			else
-			{
-				xpos = x_start;
-				ypos = (i&1)?(y_end-15):(y_end-25);
-			}
-			if ((mouseover_quickbar_item_pos == i) && enlarge_text())
-				draw_string_shadowed(xpos,ypos,(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-			else
-				draw_string_small_shadowed(xpos,ypos,(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-		}
-	}
-	mouseover_quickbar_item_pos = -1;
-
-	// Render the grid *after* the images. It seems impossible to code
-	// it such that images are rendered exactly within the boxes on all
-	// cards
-	glDisable(GL_TEXTURE_2D);
-	glBegin(GL_LINES);
-	use_window_color(quickbar_win, ELW_COLOR_LINE);
-	//draw the grid
-	if(quickbar_dir==VERTICAL)
-	{
-			for(y=1;y<num_quickbar_slots;y++)
-		{
-					glVertex3i(0, y*DEF_QUICKBAR_Y_LEN+1, 0);
-					glVertex3i(quickbar_x_len, y*DEF_QUICKBAR_Y_LEN+1, 0);
-		}
-	}
-	else
-	{
-			for(y=1;y<num_quickbar_slots;y++)
-		{
-					glVertex3i(y*DEF_QUICKBAR_Y_LEN+1, 0, 0);
-					glVertex3i(y*DEF_QUICKBAR_Y_LEN+1, quickbar_x_len, 0);
-		}
-    }
-	glEnd();
-	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-
-	return 1;
-}
-
-int last_type=0;
-
-static void quickbar_item_description_help(window_info *win, int pos, int slot)
-{
-	Uint16 item_id = item_list[pos].id;
-	int image_id = item_list[pos].image_id;
-	if (show_item_desc_text && item_info_available() && (get_item_count(item_id, image_id) == 1))
-	{
-		const char *str = get_item_description(item_id, image_id);
-		if (str != NULL)
-		{
-			int xpos = 0, ypos = 0;
-			int len_str = (strlen(str) + 1) * SMALL_FONT_X_LEN;
-			/* vertical place right (or left) and aligned with slot */
-			if (quickbar_dir==VERTICAL)
-			{
-				xpos = win->len_x + 5;
-				if ((xpos + len_str + win->cur_x) > window_width)
-					xpos = -len_str;
-				ypos = slot * DEF_QUICKBAR_Y_LEN + (DEF_QUICKBAR_Y_LEN - SMALL_FONT_Y_LEN) / 2;
-			}
-			/* horizontal place right at bottom (or top) of window */
-			else
-			{
-				xpos = 0;
-				ypos = win->len_y + 5;
-				if ((xpos + len_str + win->cur_x) > window_width)
-					xpos = window_width - win->cur_x - len_str;
-				if ((xpos + win->cur_x) < 0)
-					xpos = -win->cur_x + 5;
-				if ((ypos + SMALL_FONT_Y_LEN + win->cur_y) > window_height)
-					ypos = -(5 + SMALL_FONT_Y_LEN + (quickbar_draggable * ELW_TITLE_HEIGHT));
-			}
-			show_help(str, xpos, ypos);
-		}
-	}
-}
-
-int mouseover_quickbar_handler(window_info *win, int mx, int my) {
-	int y,i=0;
-	int x_screen,y_screen;
-	for(y=0;y<num_quickbar_slots;y++)
-		{
-			if(quickbar_dir==VERTICAL)
-				{
-					x_screen=0;
-					y_screen=y*DEF_QUICKBAR_Y_LEN;
-				}
-			else
-				{
-					x_screen=y*DEF_QUICKBAR_Y_LEN;
-					y_screen=0;
-				}
-			if(mx>x_screen && mx<x_screen+DEF_QUICKBAR_Y_LEN && my>y_screen && my<y_screen+DEF_QUICKBAR_Y_LEN)
-				{
-					for(i=0;i<ITEM_NUM_ITEMS;i++){
-						if(item_list[i].quantity && item_list[i].pos==y)
-							{
-								if(qb_action_mode==ACTION_LOOK) {
-									elwin_mouse=CURSOR_EYE;
-								} else if(qb_action_mode==ACTION_USE) {
-									elwin_mouse=CURSOR_USE;
-								} else if(qb_action_mode==ACTION_USE_WITEM) {
-									elwin_mouse=CURSOR_USE_WITEM;
-								} else {
-									elwin_mouse=CURSOR_PICK;
-								}
-								quickbar_item_description_help(win, i, y);
-								return 1;
-							}
-					}
-				}
-			}
-	return 0;
-}
-
-int	click_quickbar_handler(window_info *win, int mx, int my, Uint32 flags)
-{
-	int i,y;
-	int x_screen,y_screen;
-	Uint8 str[100];
-	int trigger=ELW_LEFT_MOUSE|ELW_CTRL|ELW_SHIFT;//flags we'll use for the quickbar relocation handling
-	int right_click = flags & ELW_RIGHT_MOUSE;
-	int ctrl_on = flags & ELW_CTRL;
-#ifdef ENGLISH
-	int shift_on = flags & ELW_SHIFT;
-#endif //ENGLISH
-
-	// only handle mouse button clicks, not scroll wheels moves or clicks
-	if (( (flags & ELW_MOUSE_BUTTON) == 0) || ( (flags & ELW_MID_MOUSE) != 0)) return 0;
-
-	if(right_click) {
-		switch(qb_action_mode) {
-		case ACTION_WALK:
-			qb_action_mode=ACTION_LOOK;
-			break;
-		case ACTION_LOOK:
-			qb_action_mode=ACTION_USE;
-			break;
-		case ACTION_USE:
-			qb_action_mode=ACTION_USE_WITEM;
-			break;
-		case ACTION_USE_WITEM:
-			if(use_item!=-1)
-				use_item=-1;
-			else
-				qb_action_mode=ACTION_WALK;
-			break;
-		default:
-			use_item=-1;
-			qb_action_mode=ACTION_WALK;
-		}
-		if (cm_quickbar_enabled)
-			cm_show_direct(cm_quickbar_id, quickbar_win, -1);
-		return 1;
-	}
-
-	if(qb_action_mode==ACTION_USE_WITEM)	action_mode=ACTION_USE_WITEM;
-#ifndef ENGLISH
-	if(qb_action_mode==ACTION_USE)		action_mode=ACTION_USE;
-#endif //ENGLISH
-
-	// no in window check needed, already done
-	//see if we clicked on any item in the main category
-	for(y=0;y<num_quickbar_slots;y++)
-		{
-			if(quickbar_dir==VERTICAL)
-				{
-					x_screen=0;
-					y_screen=y*DEF_QUICKBAR_Y_LEN;
-				}
-			else
-				{
-					x_screen=y*DEF_QUICKBAR_Y_LEN;
-					y_screen=0;
-				}
-			if(mx>x_screen && mx<x_screen+DEF_QUICKBAR_Y_LEN && my>y_screen && my<y_screen+DEF_QUICKBAR_Y_LEN)
-				{
-					//see if there is an empty space to drop this item over.
-					if(item_dragged!=-1)//we have to drop this item
-						{
-							int any_item=0;
-						        if(item_dragged == y)
-						        {
-
-								 //let's try auto equip
-								 int i;
-								 for(i = ITEM_WEAR_START; i<ITEM_WEAR_START+8;i++)
-								 {
-								       if(item_list[i].quantity<1)
-								       {
-								              move_item(y,i);
-								              break;
-								       }
-								  }
-
-						                  item_dragged = -1;
-						                  return 1;
-						        }
-						   	for(i=0;i<num_quickbar_slots;i++)
-								{
-									if(item_list[i].quantity && item_list[i].pos==y)
-										{
-											any_item=1;
-											if(item_dragged==i)//drop the item only over itself
-												item_dragged=-1;
-											do_drop_item_sound();
-											return 1;
-										}
-								}
-							if(!any_item)
-								{
-									//send the drop info to the server
-									str[0]=MOVE_INVENTORY_ITEM;
-									str[1]=item_list[item_dragged].pos;
-									str[2]=y;
-									my_tcp_send(my_socket,str,3);
-									item_dragged=-1;
-									do_drag_item_sound();
-									return 1;
-								}
-						}
-					if(quickbar_relocatable>0)
-						{
-							if((flags&trigger)==(ELW_LEFT_MOUSE|ELW_CTRL))
-							{
-								//toggle draggable
-								toggle_quickbar_draggable();
-							}
-							else if ( (flags & trigger)== (ELW_LEFT_MOUSE | ELW_SHIFT) && (get_flags (quickbar_win) & (ELW_TITLE_BAR | ELW_DRAGGABLE)) == (ELW_TITLE_BAR | ELW_DRAGGABLE) )
-							{
-								//toggle vertical/horisontal
-								flip_quickbar();
-							}
-							else if (((flags&trigger)==trigger))
-								{
-									//reset
-									reset_quickbar();
-								}
-						}
-					//see if there is any item there
-					for(i=0;i<num_quickbar_slots;i++)
-						{
-							//should we get the info for it?
-							if(item_list[i].quantity && item_list[i].pos==y)
-								{
-
-									if(ctrl_on){
-										str[0]=DROP_ITEM;
-										str[1]=item_list[i].pos;
-										*((Uint32 *)(str+2))=item_list[i].quantity;
-										my_tcp_send(my_socket, str, 4);
-										do_drop_item_sound();
-										return 1;
-									} else if(qb_action_mode==ACTION_LOOK)
-										{
-											click_time=cur_time;
-											str[0]=LOOK_AT_INVENTORY_ITEM;
-											str[1]=item_list[i].pos;
-											my_tcp_send(my_socket,str,2);
-										}
-									else if(qb_action_mode==ACTION_USE)
-										{
-											if(item_list[i].use_with_inventory)
-												{
-													str[0]=USE_INVENTORY_ITEM;
-													str[1]=item_list[i].pos;
-													my_tcp_send(my_socket,str,2);
-#ifdef NEW_SOUND
-													item_list[i].action = USE_INVENTORY_ITEM;
-#endif // NEW_SOUND
-													return 1;
-												}
-											return 1;
-										}
-									else if(qb_action_mode==ACTION_USE_WITEM) {
-										if(use_item!=-1) {
-											str[0]=ITEM_ON_ITEM;
-											str[1]=item_list[use_item].pos;
-											str[2]=item_list[i].pos;
-											my_tcp_send(my_socket,str,3);
-#ifdef NEW_SOUND
-											item_list[use_item].action = ITEM_ON_ITEM;
-											item_list[i].action = ITEM_ON_ITEM;
-#endif // NEW_SOUND
-#ifdef ENGLISH
-											if (!shift_on)
-#endif //ENGLISH
-											use_item=-1;
-										}
-										else
-											use_item=i;
-										return 1;
-									}
-									else//we might test for other things first, like use or drop
-										{
-											if(item_dragged==-1)//we have to drag this item
-												{
-													item_dragged=i;
-													do_drag_item_sound();
-												}
-										}
-
-									return 1;
-								}
-						}
-				}
-		}
-	return 1;
-}
-
-/*Enable/disable quickbar title bar and dragability*/
-void toggle_quickbar_draggable()
-{
-	Uint32 flags = get_flags(quickbar_win);
-	if (!quickbar_draggable)
-	{
-		flags &= ~ELW_SHOW_LAST;
-		flags |= ELW_DRAGGABLE | ELW_TITLE_BAR;
-		change_flags (quickbar_win, flags);
-		quickbar_draggable = 1;
-	}
-	else
-	{
-		flags |= ELW_SHOW_LAST;
-		flags &= ~(ELW_DRAGGABLE | ELW_TITLE_BAR);
-		change_flags (quickbar_win, flags);
-		quickbar_draggable = 0;
-		quickbar_x = window_width - windows_list.window[quickbar_win].cur_x;
-		quickbar_y = windows_list.window[quickbar_win].cur_y;
-	}
-}
-
-/*Change the quickbar from vertical to horizontal, or vice versa*/
-void flip_quickbar()
-{
-	if (quickbar_dir==VERTICAL)
-	{
-		quickbar_dir=HORIZONTAL;
-			init_window(quickbar_win, -1, 0, windows_list.window[quickbar_win].cur_x, windows_list.window[quickbar_win].cur_y, get_quickbar_y_len(), quickbar_x_len);
-	}
-	else if (quickbar_dir==HORIZONTAL)
-	{
-		quickbar_dir=VERTICAL;
-			init_window(quickbar_win, -1, 0, windows_list.window[quickbar_win].cur_x, windows_list.window[quickbar_win].cur_y, quickbar_x_len, get_quickbar_y_len());
-	}
-}
-
-
-/*Return the quickbar to it's Built-in position*/
-void reset_quickbar()
-{
-	//Necessary Variables
-	quickbar_x_len= DEF_QUICKBAR_X_LEN;
-#ifdef ENGLISH
-	quickbar_y_len= DEF_QUICKBAR_Y_LEN;
-#else //ENGLISH
-	quickbar_y_len= quickitems_size*30+1;
-#endif //ENGLISH
-	quickbar_x= DEF_QUICKBAR_X;
-	quickbar_y= DEF_QUICKBAR_Y;
-	//Re-set to default orientation
-	quickbar_dir=VERTICAL;
-	quickbar_draggable=0;
-	init_window(quickbar_win, -1, 0, quickbar_x, quickbar_y, quickbar_x_len, get_quickbar_y_len());
-	//Re-set  Flags
-	change_flags(quickbar_win, ELW_TITLE_NONE|ELW_SHOW|ELW_USE_BACKGROUND|ELW_USE_BORDER|ELW_SHOW_LAST);
-	//NEED x_offset
-	move_window(quickbar_win, -1, 0, window_width-quickbar_x, 64);
-}
-
-#endif //FR_VERSION
 
 
 void build_levels_table()
@@ -2764,9 +1718,7 @@ void draw_exp_display()
 {
 	size_t i;
 	int my_exp_bar_start_x = exp_bar_start_x;
-#ifndef ENGLISH
 	char buf[20];
-#endif //ENGLISH
 
 	// default to overall if no valid first skill is set
 	if(watch_this_stats[0]<1 || watch_this_stats[0]>=NUM_WATCH_STAT)
@@ -2781,19 +1733,12 @@ void draw_exp_display()
 		if (watch_this_stats[i] > 0)
 		{
 			int name_x;
-#ifdef ENGLISH
-			int name_y = exp_bar_start_y+10;
-#endif //ENGLISH
 			int icon_x = get_icons_win_active_len();
 			int cur_exp = *statsinfo[watch_this_stats[i]-1].exp;
 			int nl_exp = *statsinfo[watch_this_stats[i]-1].next_lev;
 			int baselev = statsinfo[watch_this_stats[i]-1].skillattr->base;
-#ifdef ENGLISH
-			unsigned char * name = statsinfo[watch_this_stats[i]-1].skillnames->name;
-#else //ENGLISH
 			unsigned char * name = statsinfo[watch_this_stats[i]-1].skillnames->shortname;
 			unsigned char * full_name = statsinfo[watch_this_stats[i]-1].skillnames->name;
-#endif //ENGLISH
 			int exp_adjusted_x_len;
 			int delta_exp;
 			float prev_exp;
@@ -2824,24 +1769,10 @@ void draw_exp_display()
 				// otherwise move the name onto the bar and use short form
 				else
 				{
-#ifdef ENGLISH
-					name = statsinfo[watch_this_stats[i]-1].skillnames->shortname;
-#endif //ENGLISH
 					name_x = my_exp_bar_start_x + stats_bar_len - strlen((char *)name) * SMALL_FONT_X_LEN - 3;
-#ifdef ENGLISH
-					name_y = -3;
-#endif //ENGLISH
 				}
 			}
 
-#ifdef ENGLISH
-	// only display if you are below the exp needed, don't allow negative bars
-	//if(exp_adjusted_x_len >= 0){
-				draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, nl_exp - cur_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
-			draw_string_small_shadowed(name_x, name_y, name, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-
-			my_exp_bar_start_x += stats_bar_len+exp_bar_text_len;
-#else //ENGLISH
 			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, nl_exp - cur_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
 			// affichage du nom de la compétence sous la barre (uniquement si la barre d'icone est finie)
 			if (my_exp_bar_start_x > windows_list.window[icons_win].len_y) {
@@ -2855,7 +1786,6 @@ void draw_exp_display()
 				safe_snprintf(buf, sizeof(buf), "%s (%.1f%%)", full_name, 100-100.0f/(float)((float)delta_exp/(float)(nl_exp-cur_exp)));
 				show_help(buf, my_exp_bar_start_x+stats_bar_len-strlen(buf)*8, exp_bar_start_y+12);
 			}
-#endif //ENGLISH
 			my_exp_bar_start_x += stats_bar_len + exp_bar_text_len;
 		}
 		else

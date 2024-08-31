@@ -17,16 +17,9 @@
 #include "spells.h"
 #include "tabs.h"
 #include "io/elpathwrapper.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "translate.h"
 
-#ifdef INGENIERIE
 #define NUM_COUNTERS 15
-#else
-#define NUM_COUNTERS 14
-#endif
 #define NUM_LINES 18
 #define MAX(a,b) (a > b ? a : b)
 
@@ -40,31 +33,18 @@ enum {
    MANUFACTURING,
    POTIONS,
    SPELLS,
-#ifdef ENGLISH
    SUMMONS,
-   ENGINEERING,
-#else //ENGLISH
-   SUMMONS,
-#endif //ENGLISH
    BREAKS,
    MISC_EVENTS,
-#ifdef FR_VERSION
    INFO_COMBAT,
-#else //FR_VERSION
-   TAILORING,
-#endif //FR_VERSION
    CRIT_FAILS
-#ifdef INGENIERIE
    ,ENGINEERING
-#endif
 };
 
 /* Columns IDs */
 enum {
    NAME = 1,
-#ifndef ENGLISH
    FULLSESSION,
-#endif //ENGLISH
    SESSION,
    TOTAL
 };
@@ -72,9 +52,7 @@ enum {
 /* Counter structure */
 struct Counter {
    char *name;
-#ifndef ENGLISH
    Uint32 n_fullsession;
-#endif //ENGLISH
    Uint32 n_session;
    Uint32 n_total;
    Uint32 extra;
@@ -83,23 +61,17 @@ struct Counter {
 static struct Counter *counters[NUM_COUNTERS];
 static int counters_initialized = 0;
 static int selected_counter_id = KILLS;
-#ifdef ENGLISH
-static int last_selected_counter_id = KILLS;
-#else //ENGLISH
 /* Permet d'avoir la barre de defilement dans la partie
  * "Combats" sans a avoir passe par une autre categorie avant
  */
 static int last_selected_counter_id = 0;
-#endif //ENGLISH
 static int sort_counter_id = KILLS;
 static int entries[NUM_COUNTERS];
 static int sort_by[NUM_COUNTERS];
 static int multiselect_id;
 
 static int mouseover_name = 0;
-#ifndef ENGLISH
 static int mouseover_fullsession = 0;
-#endif //ENGLISH
 static int mouseover_session = 0;
 static int mouseover_total = 0;
 static int mouseover_entry_y = -1;
@@ -113,51 +85,9 @@ static char to_count_name[128];
 static char *spell_names[128] = { NULL };
 static int requested_spell_id = -1;
 
-#ifdef FR_VERSION
-#ifndef INGENIERIE
-static const char *cat_str[] = { "Combats", "Décès", "Récolte", "Alchimie", "Artisanat", "Fabrication",
-	"Potions", "Magie", "Nécromancie", "Casse", "Evènement", "Infos combat", "Ratés crit." };
-#else //INGENIERIE
 static const char *cat_str[] = { "Combats", "Décès", "Récolte", "Alchimie", "Artisanat", "Fabrication",
 	"Potions", "Magie", "Nécromancie", "Casse", "Evènement", "Infos combat", "Ratés crit.", "Ingénierie" };
-#endif //INGENIERIE
-#else //FR_VERSION
-static const char *cat_str[] = { "Kills", "Deaths", "Harvests", "Alchemy", "Crafting", "Manufac.",
-	"Potions", "Spells", "Summons", "Engineering", "Breakages", "Events", "Tailoring", "Crit Fails" };
-#endif //FR_VERSION
 
-#ifdef ENGLISH
-static const char *temp_event_string[] =
-   {  "%s found a", /* keep this one first in the list as its different from the rest*/
-      "%s was blessed by the Queen of Nature with ", /* referenced laters as second in the list */
-      "A cavern wall collapsed on %s",
-      "Mother Nature got pissed off at %s",
-      "%s was stung by a bee, losing ",
-      "%s just hit a teleport nexus, ",
-      "While harvesting, %s upset a radon pouch, ",
-      "%s found Joker and got ",
-      "%s found Joker and failed to get",
-		"%s found 1 Pear.",
-      "While harvesting, %s lit up a match to check the dung level, ",
-		"While trying to harvest, the outhouse lid fell on %s, ",
-		"While harvesting some dung, Mother Nature was nearby taking a dump. Unfortunately %s ",
-		"You just got food poisoned!" };
-static const char *count_str[] =
-   {  "dummy",
-      "Blessed by the Queen of Nature",
-      "A cavern wall collapsed",
-      "Mother Nature got pissed off",
-      "Stung by a bee",
-      "Hit a teleport nexus",
-      "Upset a radon pouch",
-      "Gift from Joker",
-      "Gift from Joker (lost)",
-		"Found a Pear",
-      "Explosion while harvesting dung",
-		"Outhouse lid accident",
-		"Mother Nature taking a dump",
-		"Food poisoned" };
-#else //ENGLISH
 static const char *temp_event_string[] =
    {  "%s a trouvé", /* keep this one first in the list as its different from the rest*/
       "%s est gratifié par Mère Nature de ", /* referenced laters as second in the list */
@@ -188,7 +118,6 @@ static const char *count_str[] =
       "Adonis",
       "Adonis loupé",
       "Dégât de lumière" };
-#endif //ENGLISH
 static const int num_search_str = sizeof(count_str)/sizeof(char *);
 static char **search_str = NULL;
 static size_t *search_len = NULL;
@@ -238,13 +167,11 @@ int sort_counter_func(const void *a, const void *b)
          return -1;
       if (ca->n_total > cb->n_total)
          return 1;
-#ifndef ENGLISH
    case FULLSESSION:
       if (ca->n_fullsession < cb->n_fullsession)
          return -1;
       if (ca->n_fullsession > cb->n_fullsession)
          return 1;
-#endif //ENGLISH
    case SESSION:
       if (ca->n_session < cb->n_session)
          return -1;
@@ -290,11 +217,7 @@ void load_counters()
    Uint8 io_name_len;
    Uint32 io_extra;
    Uint32 io_n_total;
-#ifdef ENGLISH
-   char io_name[64];
-#else
    char io_name[100];
-#endif
    int fread_ok = 1;
 
    if (counters_initialized) {
@@ -341,14 +264,12 @@ void load_counters()
       fread_ok = 0;
       if (fread(&io_name_len, sizeof(io_name_len), 1, f) != 1)
          break;
-#ifndef ENGLISH
       //@tosh : prévention d'un buffer overflow
       if(io_name_len >= sizeof(io_name))
       {
          LOG_ERROR("Erreur: nom de compteur trop long !\n");
          break;
       }
-#endif
       if (fread(io_name, io_name_len, 1, f) != 1)
          break;
       io_name[io_name_len] = '\0';
@@ -370,9 +291,7 @@ void load_counters()
       j = entries[i]++;
       counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
       counters[i][j].name = strdup(io_name);
-#ifndef ENGLISH
       counters[i][j].n_fullsession = 0;
-#endif //ENGLISH
       counters[i][j].n_session = 0;
       counters[i][j].n_total = io_n_total;
       counters[i][j].extra = io_extra;
@@ -457,7 +376,6 @@ void cleanup_counters()
    counters_initialized = 0;
 }
 
-#ifndef ENGLISH
 /*
    @Tosh : recherche un counter suivant son nom, et le renvoit
    >PARAM type : Utilisez les constantes comme HARVEST, INFO_COMBAT, etc...
@@ -496,7 +414,6 @@ void set_max_value_counter(int type, char *name, int val)
          count->n_fullsession = val;
    }
 }
-#endif //ENGLISH
 
 static void increment_product_counter(int counter_id, const char *name, int quantity, int extra)
 {
@@ -525,9 +442,7 @@ void increment_counter(int counter_id, const char *name, int quantity, int extra
          continue;
       }
 
-#ifndef ENGLISH
       counters[i][j].n_fullsession += quantity;
-#endif //ENGLISH
       counters[i][j].n_session += quantity;
       counters[i][j].n_total += quantity;
       new_entry = 0;
@@ -540,16 +455,12 @@ void increment_counter(int counter_id, const char *name, int quantity, int extra
 		last_selected_counter_id = -1;  /* force recalculation of the scrollbar */
       counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
       counters[i][j].name = strdup(name);
-#ifndef ENGLISH
       counters[i][j].n_fullsession = quantity;
-#endif //ENGLISH
       counters[i][j].n_session = quantity;
       counters[i][j].n_total = quantity;
       counters[i][j].extra = extra;
-#ifdef FR_VERSION
       // FIX: mettre à jour la scrollbar (utile si c'est la catégorie actuellement affichée)
       if (i == selected_counter_id - 1) vscrollbar_set_bar_len(counters_win, counters_scroll_id, entries[i]);
-#endif //FR_VERSION
    }
 
    if (floating_session_counters && (floating_counter_flags & (1 << i)))
@@ -573,9 +484,7 @@ void decrement_counter(int counter_id, char *name, int quantity, int extra)
          continue;
       }
 
-#ifndef ENGLISH
       counters[i][j].n_fullsession -= quantity;
-#endif //ENGLISH
       counters[i][j].n_session -= quantity;
       counters[i][j].n_total -= quantity;
 
@@ -692,9 +601,7 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
             for (i=cm_selected_entry+1; i<entries[cm_selected_id]; i++)
             {
                the_entry->name = (the_entry+1)->name;
-#ifndef ENGLISH
                the_entry->n_fullsession = (the_entry+1)->n_fullsession;
-#endif //ENGLISH
                the_entry->n_session = (the_entry+1)->n_session;
                the_entry->n_total = (the_entry+1)->n_total;
                the_entry->extra = (the_entry+1)->extra;
@@ -759,36 +666,6 @@ void fill_counters_win()
    set_window_handler(counters_win, ELW_HANDLER_MOUSEOVER, &mouseover_counters_handler);
 
    multiselect_id = multiselect_add(counters_win, NULL, 8, 2, 104);
-#ifdef ENGLISH
-	multiselect_button_add(counters_win, multiselect_id, 0, 0, cat_str[0], 1);
-	multiselect_button_add(counters_win, multiselect_id, 0, 25, cat_str[1], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 125, cat_str[2], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 150, cat_str[3], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 175, cat_str[4], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 200, cat_str[5], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 225, cat_str[6], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 250, cat_str[7], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 275, cat_str[8], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 50, cat_str[10], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 100, cat_str[11], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 325, cat_str[12], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 75, cat_str[13], 0);
-#else //ENGLISH
-#ifndef INGENIERIE
-	multiselect_button_add(counters_win, multiselect_id, 0, 0, cat_str[0], 1);
-	multiselect_button_add(counters_win, multiselect_id, 0, 25, cat_str[1], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 100, cat_str[2], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 125, cat_str[3], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 150, cat_str[4], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 175, cat_str[5], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 200, cat_str[6], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 250, cat_str[7], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 225, cat_str[8], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 50, cat_str[9], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 75, cat_str[10], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 275, cat_str[11], 0);
-	multiselect_button_add(counters_win, multiselect_id, 0, 300, cat_str[12], 0);
-#else //INGENIERIE
    multiselect_button_add(counters_win, multiselect_id, 0, 0, cat_str[0], 1);
 	multiselect_button_add(counters_win, multiselect_id, 0, 25, cat_str[1], 0);
 	multiselect_button_add(counters_win, multiselect_id, 0, 100, cat_str[2], 0);
@@ -803,24 +680,13 @@ void fill_counters_win()
 	multiselect_button_add(counters_win, multiselect_id, 0, 300, cat_str[11], 0);
 	multiselect_button_add(counters_win, multiselect_id, 0, 325, cat_str[12], 0);
    multiselect_button_add(counters_win, multiselect_id, 0, 225, cat_str[13], 0);
-#endif //INGENIERIE
-#endif //ENGLISH
 
-#ifdef FR_VERSION
    counters_scroll_id = vscrollbar_add_extended(counters_win,
          counters_scroll_id, NULL,
          STATS_TAB_WIDTH - 20, 25, 20,
          STATS_TAB_HEIGHT - 50, 0,
          NUM_LINES, 0.77f, 0.57f, 0.39f,
          0, 1, entries[idx]);
-#else //FR_VERSION
-   counters_scroll_id = vscrollbar_add_extended(counters_win,
-         counters_scroll_id, NULL,
-         STATS_TAB_WIDTH - 20, 25, 20,
-         STATS_TAB_HEIGHT - 50, 0,
-         1.0f, 0.77f, 0.57f, 0.39f,
-         0, 1, MAX(0, entries[idx] - NUM_LINES));
-#endif //FR_VERSION
 
    if (cm_counters == CM_INIT_VALUE)
    {
@@ -836,20 +702,14 @@ int display_counters_handler(window_info *win)
    int i, j, n, x, y;
    int scroll;
    int total, session_total;
-#ifndef ENGLISH
    int fullsession_total;
-#endif //ENGLISH
    char buffer[32];
 
    i = multiselect_get_selected(counters_win, multiselect_id);
    selected_counter_id = i + 1;
 
    if (selected_counter_id != last_selected_counter_id) {
-#ifdef FR_VERSION
       vscrollbar_set_bar_len(counters_win, counters_scroll_id, entries[i]);
-#else //FR_VERSION
-      vscrollbar_set_bar_len(counters_win, counters_scroll_id, MAX(0, entries[i] - NUM_LINES));
-#endif //FR_VERSION
       vscrollbar_set_pos(counters_win, counters_scroll_id, 0);
       last_selected_counter_id = selected_counter_id;
 		selected_entry = -1;
@@ -878,21 +738,10 @@ int display_counters_handler(window_info *win)
 
    if (mouseover_name) glColor3f(0.6f, 0.6f, 0.6f);
    else glColor3f(1.0f, 1.0f, 1.0f);
-#ifdef ENGLISH
-   draw_string_small(x, y, (unsigned char*)"Name", 1);
-#else //ENGLISH
    draw_string_small(x, y, (unsigned char*)"Nom", 1);
-#endif //ENGLISH
 
    if (mouseover_session) glColor3f(0.6f, 0.6f, 0.6f);
    else glColor3f(1.0f, 1.0f, 1.0f);
-#ifdef ENGLISH
-   draw_string_small(x + 200, y, (unsigned char*)"This Session", 1);
-
-   if (mouseover_total) glColor3f(0.6f, 0.6f, 0.6f);
-   else glColor3f(1.0f, 1.0f, 1.0f);
-   draw_string_small(x + 370, y, (unsigned char*)"Total", 1);
-#else //ENGLISH
    draw_string_small(x + 246, y, (unsigned char*)"En cours", 1);
    if (mouseover_fullsession) glColor3f(0.6f, 0.6f, 0.6f);
    else glColor3f(1.0f, 1.0f, 1.0f);
@@ -900,7 +749,6 @@ int display_counters_handler(window_info *win)
    if (mouseover_total) glColor3f(0.6f, 0.6f, 0.6f);
    else glColor3f(1.0f, 1.0f, 1.0f);
    draw_string_small(x + 394, y, (unsigned char*)"Total", 1);
-#endif //ENGLISH
 
    if (counters_scroll_id != -1) {
       scroll = vscrollbar_get_pos(counters_win, counters_scroll_id);
@@ -934,19 +782,12 @@ int display_counters_handler(window_info *win)
          glColor3f(1.0f, 1.0f, 1.0f);
 
       /* draw first so left padding does not overwrite name */
-#ifdef ENGLISH
-      safe_snprintf(buffer, sizeof(buffer), "%12d", counters[i][j].n_session);
-      draw_string_small(x + 200, y, (unsigned char*)buffer, 1);
-      safe_snprintf(buffer, sizeof(buffer), "%12d", counters[i][j].n_total);
-      draw_string_small(x + 314, y, (unsigned char*)buffer, 1);
-#else //ENGLISH
       safe_snprintf(buffer, sizeof(buffer), "%5d", counters[i][j].n_session);
       draw_string_small(x + 270, y, (unsigned char*)buffer, 1);
       safe_snprintf(buffer, sizeof(buffer), "%5d", counters[i][j].n_fullsession);
       draw_string_small(x + 320, y, (unsigned char*)buffer, 1);
       safe_snprintf(buffer, sizeof(buffer), "%7d", counters[i][j].n_total);
       draw_string_small(x + 370, y, (unsigned char*)buffer, 1);
-#endif //ENGLISH
 
       if (counters[i][j].name) {
          float max_name_x;
@@ -980,28 +821,15 @@ int display_counters_handler(window_info *win)
 
    glColor3f(1.0f, 1.0f, 1.0f);
 
-#ifdef ENGLISH
-   draw_string_small(x, win->len_y - 20, (unsigned char*)"Totals:", 1);
-#else //ENGLISH
    draw_string_small(x, win->len_y - 20, (unsigned char*)"Total :", 1);
    fullsession_total = 0;
-#endif //ENGLISH
 
    for (j = 0, total = 0, session_total = 0; j < entries[i]; j++) {
       total += counters[i][j].n_total;
       session_total += counters[i][j].n_session;
-#ifndef ENGLISH
       fullsession_total += counters[i][j].n_fullsession;
-#endif //ENGLISH
    }
 
-#ifdef ENGLISH
-   safe_snprintf(buffer, sizeof(buffer), "%12d", session_total);
-   draw_string_small(x + 200, win->len_y - 20, (unsigned char*)buffer, 1);
-
-   safe_snprintf(buffer, sizeof(buffer), "%5d", total);
-   draw_string_small(x + 370, win->len_y - 20, (unsigned char*)buffer, 1);
-#else //ENGLISH
    if((i+1) != MISC_EVENTS && (i+1) != INFO_COMBAT)
    {
       safe_snprintf(buffer, sizeof(buffer), "%5d", session_total);
@@ -1019,10 +847,6 @@ int display_counters_handler(window_info *win)
       safe_snprintf(buffer, sizeof(buffer), "%7c", '-');
       draw_string_small(x + 370, win->len_y - 20, (unsigned char*)buffer, 1);
    }
-#endif //ENGLISH
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
    return 1;
 }
 
@@ -1058,7 +882,6 @@ int click_counters_handler(window_info *win, int mx, int my, Uint32 extra)
             sort_by[selected_counter_id-1] = SESSION;
          }
       }
-#ifndef ENGLISH
       if (mouseover_fullsession) {
          if (sort_by[selected_counter_id-1] == FULLSESSION) {
             sort_by[selected_counter_id-1] = -FULLSESSION;
@@ -1066,7 +889,6 @@ int click_counters_handler(window_info *win, int mx, int my, Uint32 extra)
             sort_by[selected_counter_id-1] = FULLSESSION;
          }
       }
-#endif //ENGLISH
       if (mouseover_total) {
          if (sort_by[selected_counter_id-1] == TOTAL) {
             sort_by[selected_counter_id-1] = -TOTAL;
@@ -1083,9 +905,7 @@ int click_counters_handler(window_info *win, int mx, int my, Uint32 extra)
 
 int mouseover_counters_handler(window_info *win, int mx, int my)
 {
-#ifndef ENGLISH
    mouseover_fullsession = 0;
-#endif //ENGLISH
    mouseover_name = mouseover_session = mouseover_total = 0;
    mouseover_entry_y = -1;
 
@@ -1093,45 +913,27 @@ int mouseover_counters_handler(window_info *win, int mx, int my)
 		counters_show_win_help = 1;
 
    if (my > 25){
-#ifdef ENGLISH
-		if (my > 30 && my < (30+NUM_LINES*16) && mx >= 130 && mx <= 540) {
-#else // ENGLISH
       if (my > 30 && my < (30+NUM_LINES*16) && mx >= 130 && mx <= 450) {
-#endif //ENGLISH
          mouseover_entry_y = my;
       }
       return 0;
    }
-#ifdef ENGLISH
-   if (mx >= 130 && mx <= 165) {
-#else // ENGLISH
    if (mx >= 130 && mx <= 350) {
-#endif //ENGLISH
       mouseover_name = 1;
       return 0;
    }
 
-#ifdef ENGLISH
-   if (mx >= 330 && mx <= 425) {
-#else // ENGLISH
    if (mx >= 370 && mx <= 440) {
-#endif //ENGLISH
       mouseover_session = 1;
       return 0;
    }
 
-#ifndef ENGLISH
    if (mx >= 450 && mx <= 510) {
       mouseover_fullsession = 1;
       return 0;
    }
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	if (mx >= 500 &&  mx <= 540) {
-#else //ENGLISH
    if (mx >= 520 &&  mx <= 560) {
-#endif //ENGLISH
       mouseover_total = 1;
       return 0;
    }
@@ -1142,11 +944,7 @@ int mouseover_counters_handler(window_info *win, int mx, int my)
 /*
  * Remove colors and guild tag from an actor's name.
  */
-#ifdef FR_VERSION
 char *strip_actor_name (const char *actor_name)
-#else //FR_VERSION
-const char *strip_actor_name (const char *actor_name)
-#endif //FR_VERSION
 {
    static char buf[32];
    int i;
@@ -1202,13 +1000,6 @@ static void increment_kill_counter(actor *me, actor *them)
    increment_counter(KILLS, strip_actor_name(them->actor_name), 1,   0);
 }
 
-#ifdef MISSILES
-void increment_range_kill_counter(actor *me, actor *them)
-{
-   if (them->last_range_attacker_id == me->actor_id)
-      increment_counter(KILLS, strip_actor_name(them->actor_name), 1,   0);
-}
-#endif //MISSILES
 
 /*
  * Called whenever an actor dies.
@@ -1234,11 +1025,7 @@ void increment_death_counter(actor *a)
 		if (now_harvesting()) {
          /* a crude check to see if death was just after (1 second should be enough) a harvest event */
          if (abs(SDL_GetTicks() - misc_event_time) < 1000) {
-#ifdef ENGLISH
-            increment_counter(DEATHS, "Harvesting event", 1, 0);
-#else //ENGLISH
             increment_counter(DEATHS, "Evènement de récolte", 1, 0);
-#endif //ENGLISH
             found_death_reason = 1;
          }
 
@@ -1285,27 +1072,15 @@ void increment_death_counter(actor *a)
       if (!found_death_reason) {
          /* count deaths while we were poisoned - possibily in adition to another possible reason */
          if (we_are_poisoned()) {
-#ifdef ENGLISH
-            increment_counter(DEATHS, "While poisoned", 1, 0);
-#else //ENGLISH
             increment_counter(DEATHS, "Empoisonné", 1, 0);
-#endif //ENGLISH
             found_death_reason = 1;
          }
          else if (me->async_fighting) {
-#ifdef ENGLISH
-            increment_counter(DEATHS, "While fighting unknown opponent", 1, 0);
-#else //ENGLISH
             increment_counter(DEATHS, "Adversaire inconnu", 1, 0);
-#endif //ENGLISH
          }
          else {
             /* if we don't die while harvesting, fighting or poisoned, the cause is unknow */
-#ifdef ENGLISH
-            increment_counter(DEATHS, "Unknown cause", 1, 0);
-#else //ENGLISH
             increment_counter(DEATHS, "Cause inconnue", 1, 0);
-#endif //ENGLISH
          }
       }
    }
@@ -1314,14 +1089,7 @@ void increment_death_counter(actor *a)
        * we've killed him, we already catched it from a server message */
       if (a->is_enhanced_model && (a->kind_of_actor == HUMAN ||
                             a->kind_of_actor == PKABLE_HUMAN)) return;
-#ifdef MISSILES
-      if (a->last_range_attacker_id < 0)
          increment_kill_counter(me, a);
-      else
-         increment_range_kill_counter(me, a);
-#else //MISSILES
-         increment_kill_counter(me, a);
-#endif //MISSILES
    }
 }
 
@@ -1345,24 +1113,11 @@ void increment_crafting_counter()
    increment_product_counter(CRAFTING, product_name, product_count, 0);
 }
 
-#ifdef INGENIERIE
-void increment_engineering_counter()
-{
-   increment_product_counter(ENGINEERING, product_name, product_count, 0);
-}
-#endif
-
-#ifdef ENGLISH
 void increment_engineering_counter()
 {
    increment_product_counter(ENGINEERING, product_name, product_count, 0);
 }
 
-void increment_tailoring_counter()
-{
-   increment_product_counter(TAILORING, product_name, product_count, 0);
-}
-#endif //ENGLISH
 
 void increment_potions_counter()
 {
@@ -1379,12 +1134,10 @@ void increment_critfail_counter(char *name)
    increment_counter(CRIT_FAILS, name, 1, 0);
 }
 
-#ifdef FR_VERSION
 void increment_break_counter(char *name)
 {
    increment_counter(BREAKS, name, 1, 0);
 }
-#endif //FR_VERSION
 
 void increment_harvest_counter(int quantity)
 {
@@ -1441,7 +1194,6 @@ void increment_spell_counter(int spell_id)
    }
 }
 
-#ifdef FR_VERSION
 void increment_combat_info_counter(char *str_type, int num)
 {
    increment_product_counter(INFO_COMBAT, str_type, num, 0);
@@ -1451,7 +1203,6 @@ void set_max_combat_counter(char *str_type, int val)
 {
    set_max_value_counter(INFO_COMBAT, str_type, val);
 }
-#endif //FR_VERSION
 void increment_summon_manu_counter()
 {
    increment_product_counter(SUMMONS, product_name, product_count, 0);
@@ -1465,19 +1216,11 @@ void increment_summon_counter(char *string)
 
    string += strlen(username_str);
 
-#ifdef ENGLISH
-   if (strncmp(string, " summoned a ", 12)) {
-#else //ENGLISH
    if (strncmp(string, " a invoqué un(e) ", 17)) {
-#endif //ENGLISH
       return;
    }
 
-#ifdef ENGLISH
-   string += 12;
-#else //ENGLISH
    string += 17;
-#endif //ENGLISH
 
 	increment_counter(SUMMONS, string, 1, 0);
 	check_for_recipe_name(string);
@@ -1505,23 +1248,13 @@ void catch_counters_text(const char* text)
       return;
 
    /* Your xxx ... */
-#ifdef ENGLISH
-   if (my_strncompare(text, "Your ", 5))
-#else //ENGLISH
    if (my_strncompare(text, "Ta ", 3) || my_strncompare(text, "Ton ", 4))
-#endif //ENGLISH
    {
       int i;
-#ifdef ENGLISH
-      char *mess_ends[] = {" has been destroyed", " broke, sorry!"};
-      size_t to_count_name_len = 0;
-      const char *item_string = &text[5];
-#else //ENGLISH
         int nb = my_strncompare(text, "Ta ", 3) ? 3 : 4;
       const char *item_string = &text[nb];
       char *mess_ends[] = {" a été détruit !", " a été détruite !"};
       size_t to_count_name_len = 0;
-#endif //ENGLISH
 
       /* look for one of the endings, if found use it to locate the item name */
       for (i=0; i<sizeof(mess_ends)/sizeof(char *); i++)
@@ -1546,12 +1279,8 @@ void catch_counters_text(const char* text)
    else if (my_strncompare(text, search_str[0], search_len[0]))
    {
       size_t start_from = search_len[0];
-#ifdef ENGLISH
-      size_t could_not_carry_index = get_string_occurance(". What a pity ", text, text_len, 1);
-#else //ENGLISH
       size_t could_not_carry_index = get_string_occurance(". Mais, quel malheur ", text, text_len, 1);
       while ((text_len > start_from) && (text[start_from] != ' '))
-#endif //ENGLISH
       if ((text_len > start_from) && (text[start_from] != ' '))
          start_from++; /* move past the a/an/a[n] */
       start_from++; /* move past the space */
@@ -1559,23 +1288,14 @@ void catch_counters_text(const char* text)
       /* some death messages match so crudely exclude them but catch bags of gold */
       if (strchr(&text[start_from], ',') != NULL)
       {
-#ifdef ENGLISH
-         char *gold_str = "bag of gold, getting ";
-#else //ENGLISH
          char *gold_str = "sac d'or, contenant ";
-#endif //ENGLISH
          size_t gold_len = strlen(gold_str);
          if (my_strncompare(&text[start_from], gold_str, gold_len))
          {
             int quanity = atoi(&text[start_from+gold_len]);
-#ifdef ENGLISH
-            increment_counter(MISC_EVENTS, "Total gold coin from bags", quanity, 0);
-            increment_counter(MISC_EVENTS, "Bag of gold", 1, 0);
-#else //ENGLISH
             increment_counter(MISC_EVENTS, "Total lumens venant de sac", quanity, 0);
             increment_counter(MISC_EVENTS, "Sac d'or", 1, 0);
             set_max_value_counter(MISC_EVENTS, "Sac d'or maximum", quanity);
-#endif //ENGLISH
          }
       }
 
@@ -1584,11 +1304,7 @@ void catch_counters_text(const char* text)
       {
          size_t thing_len = could_not_carry_index - start_from;
          safe_strncpy2(to_count_name, &text[start_from], sizeof(to_count_name), thing_len);
-#ifdef ENGLISH
-         safe_strcat (to_count_name, " (lost)", sizeof(to_count_name));
-#else //ENGLISH
          safe_strcat (to_count_name, " (perdu)", sizeof(to_count_name));
-#endif //ENGLISH
          increment_counter(MISC_EVENTS, to_count_name, 1, 0);
       }
 
@@ -1634,12 +1350,8 @@ void catch_counters_text(const char* text)
             if (i==1)
             {
                int quanity = atoi(&text[search_len[i]]);
-#ifdef ENGLISH
-               increment_counter(MISC_EVENTS, "Exp from Queen of Nature blessing", quanity, 0);
-#else //ENGLISH
                increment_counter(MISC_EVENTS, "Gratification de mère nature", quanity, 0);
                set_max_value_counter(MISC_EVENTS, "Plus grande gratification", quanity);
-#endif //ENGLISH
             }
             /* record the event time so can check associate with a subsequent cause of death */
             misc_event_time = SDL_GetTicks();
@@ -1736,27 +1448,12 @@ int chat_to_counters_command(const char *text, int len)
 
 int is_death_message (const char * RawText)
 {
-#ifdef ENGLISH
-   if (!strncmp(RawText, "You killed ", 11)) {
-      int i = 11;
-      for (; i<strlen(RawText); i++)
-         if (*(RawText+i) == ' ')
-            return 0; // kills should just have the name, don't use invalid messages.
-      increment_counter(KILLS, RawText+11, 1, 1);
-#else //ENGLISH
    if (!strncmp(RawText, "Tu as tué ", 10)) {
       increment_counter(KILLS, RawText+10, 1, 1);
-#endif //ENGLISH
       return 1;
    }
-#ifdef ENGLISH
-   else if (!strncmp(RawText, "You were killed by ", 19)) {
-      killed_by_player = 1;
-      increment_counter(DEATHS, RawText+19, 1, 1);
-#else //ENGLISH
    else if (!strncmp(RawText, "Tu as été tué par ", 18)) {
       increment_counter(DEATHS, RawText+18, 1, 1);
-#endif //ENGLISH
       killed_by_player = 1;
       return 1;
    }

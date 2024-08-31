@@ -50,9 +50,7 @@ float weather_get_lightning_intensity(float x, float y);
 
 void weather_sound_control();
 
-#ifdef NEW_SOUND
 float weather_adjust_gain(float in_gain, int in_cookie);
-#endif // NEW_SOUND
 
 #ifdef __cplusplus
 } // extern "C"

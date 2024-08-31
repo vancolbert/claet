@@ -19,17 +19,10 @@
 #include "tiles.h"
 #include "translate.h"
 #include "io/e3d_io.h"
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif
-#ifdef FSAA
 #include "fsaa/fsaa.h"
-#endif /* FSAA */
 
 int use_3d_alpha_blend= 1;
-#ifndef FASTER_MAP_LOAD
-static int objects_list_placeholders = 0;
-#endif
 object3d *objects_list[MAX_OBJ_3D];
 
 #include "eye_candy_wrapper.h"
@@ -37,29 +30,13 @@ object3d *objects_list[MAX_OBJ_3D];
 e3d_object *load_e3d (const char *file_name);
 void compute_clouds_map(object3d * object_id);
 e3d_object *cur_e3d;
-#ifdef  DEBUG
-int cur_e3d_count;
-int e3d_count, e3d_total;
-#endif  //DEBUG
 
 static int next_obj_3d = 0;
 
-#ifdef FASTER_MAP_LOAD
 void inc_objects_list_placeholders(void)
 {
 	next_obj_3d++;
 }
-#else
-void clear_objects_list_placeholders(void)
-{
-	objects_list_placeholders = 0;
-}
-
-void inc_objects_list_placeholders(void)
-{
-	objects_list_placeholders++;
-}
-#endif
 
 static __inline__ void build_clouds_planes(object3d* obj)
 {
@@ -196,36 +173,15 @@ void draw_3d_object_detail(object3d * object_id, Uint32 material_index, Uint32 u
 		// gather statistics
 		if (object_id->e3d_data != cur_e3d)
 		{
-#ifdef  DEBUG
-			if ((cur_e3d_count > 0) && (cur_e3d != NULL))
-			{
-				e3d_count++;
-				e3d_total += cur_e3d_count;
-			}
-			cur_e3d_count = 0;
-#endif    //DEBUG
 			cur_e3d = object_id->e3d_data;
 		}
 	}
-#ifdef  DEBUG
-	cur_e3d_count++;
-#endif  //DEBUG
 
 	if (use_textures)
 	{
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture(object_id->e3d_data->materials[material_index].texture);
-#else	/* NEW_TEXTURES */
-		get_and_set_texture_id(object_id->e3d_data->materials[material_index].texture);
-#endif	/* NEW_TEXTURES */
 	}
-#ifdef ENGLISH
-	else
-	{
-		glDisable(GL_TEXTURE_2D);
-	}
-#endif
 
 	if (use_draw_range_elements && ELglDrawRangeElementsEXT)
 		ELglDrawRangeElementsEXT(GL_TRIANGLES,
@@ -244,10 +200,6 @@ void draw_3d_object_detail(object3d * object_id, Uint32 material_index, Uint32 u
 	CHECK_GL_ERRORS();
 
 	//OK, let's check if our mouse is over...
-#ifdef MAP_EDITOR2
-	if (selected_3d_object == -1 && read_mouse_now && mouse_in_sphere(object_id->x_pos, object_id->y_pos, object_id->z_pos, object_id->e3d_data->radius))
-		anything_under_the_mouse(object_id->id, UNDER_MOUSE_3D_OBJ);
-#endif
 }
 
 void draw_3d_objects(unsigned int object_type)
@@ -255,22 +207,9 @@ void draw_3d_objects(unsigned int object_type)
 	unsigned int    start, stop;
 	unsigned int    i, l;
 	int is_selflit, is_transparent, is_ground;
-#ifdef  SIMPLE_LOD
-	int x, y, dist;
-#endif
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-#endif
 
-#ifdef SIMPLE_LOD
-	x= -camera_x;
-	y= -camera_y;
-#endif
 
  	cur_e3d= NULL;
-#ifdef  DEBUG
-	cur_e3d_count= 0;
-#endif  //DEBUG
 
 	get_intersect_start_stop(main_bbox_tree, object_type, &start, &stop);
 	// nothing to draw?
@@ -306,27 +245,15 @@ void draw_3d_objects(unsigned int object_type)
 		glDisable(GL_LIGHTING);
 	}
 
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 	if(is_transparent) {
-#ifdef	NEW_ALPHA
-		if(use_3d_alpha_blend){
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		}
-#endif	//NEW_ALPHA
 		//enable alpha filtering, so we have some alpha key
 		glEnable(GL_ALPHA_TEST);
 		if(is_ground)glAlphaFunc(GL_GREATER,0.23f);
-#ifdef OLD_MISC_OBJ_DIR
-		else glAlphaFunc(GL_GREATER,0.06f);
-#else
 		else glAlphaFunc(GL_GREATER,0.3f);
-#endif
 		glDisable(GL_CULL_FACE);
 	}
 
@@ -354,24 +281,10 @@ void draw_3d_objects(unsigned int object_type)
 		//track the usage
 		cache_use(objects_list[l]->e3d_data->cache_ptr);
 		if(!objects_list[l]->display) continue;	// not currently on the map, ignore it
-#ifdef CLUSTER_INSIDES_OLD
-		if (objects_list[l]->cluster && objects_list[l]->cluster != cluster)
-			// Object is in another cluster as actor, don't show it
-			continue;
-#endif // CLUSTER_INSIDES_OLD
-#ifdef  SIMPLE_LOD
-		// simple size/distance culling
-		dist= (x-objects_list[l]->x_pos)*(x-objects_list[l]->x_pos) + (y-objects_list[l]->y_pos)*(y-objects_list[l]->y_pos);
-		if(objects_list[l]->e3d_data->materials && (10000*objects_list[l]->e3d_data->materials[get_3dobject_material(j)].max_size)/(dist) < ((is_transparent)?15:10)) continue;
-#endif  //SIMPLE_LOD
 
 		draw_3d_object_detail(objects_list[l], get_3dobject_material(j), 1, 1, 1);
 
-#ifdef MAP_EDITOR2
-		if ((selected_3d_object == -1) && read_mouse_now && (get_cur_intersect_type(main_bbox_tree) == INTERSECTION_TYPE_DEFAULT))
-#else
 		if (read_mouse_now && (get_cur_intersect_type(main_bbox_tree) == INTERSECTION_TYPE_DEFAULT))
-#endif
 		{
 			anything_under_the_mouse(objects_list[l]->id, UNDER_MOUSE_3D_OBJ);
 		}
@@ -395,30 +308,15 @@ void draw_3d_objects(unsigned int object_type)
 	}
 	if(is_transparent) {
 		glEnable(GL_CULL_FACE);
-#ifdef	NEW_ALPHA
-		if(use_3d_alpha_blend){
-			glDisable(GL_BLEND);
-		}
-#endif	//NEW_ALPHA
 		glDisable(GL_ALPHA_TEST);
 	}
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glDisable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 
 	CHECK_GL_ERRORS();
 
-#ifdef  DEBUG
-	// final statistics
-	if(cur_e3d_count > 0){
-		e3d_count++;
-		e3d_total+= cur_e3d_count;
-	}
-	cur_e3d_count= 0;
-#endif  //DEBUG
 }
 
 //Tests to see if an e3d object is already loaded. If it is, return the handle.
@@ -461,9 +359,7 @@ int add_e3d_at_id(int id, const char* file_name,
 	float r, float g, float b, unsigned int dynamic)
 {
 	char fname[128];
-#ifdef FASTER_MAP_LOAD
 	const char *fbase;
-#endif
 	e3d_object *returned_e3d;
 	object3d *our_object;
 	int i;
@@ -485,26 +381,19 @@ int add_e3d_at_id(int id, const char* file_name,
 
 	// convert to lower case and replace any '\' by '/'
 	clean_file_name(fname, file_name, sizeof(fname));
-#ifdef FASTER_MAP_LOAD
 	fbase = strrchr(fname, '/');
 	if (fbase)
 		fbase++;
 	else
 		fbase = fname;
-#endif
 
 	returned_e3d = load_e3d_cache(fname);
 	if (!returned_e3d)
 	{
 		LOG_ERROR(nasty_error_str, fname);
 		//replace it with the null object, to avoid object IDs corruption
-#ifdef OLD_MISC_OBJ_DIR
-		returned_e3d = load_e3d_cache("./3dobjects/misc_objects/badobject.e3d");
-		my_strncp(fname, "./3dobjects/misc_objects/badobject.e3d", sizeof(fname));
-#else
 		returned_e3d = load_e3d_cache("./3dobjects/badobject.e3d");
 		my_strncp(fname, "./3dobjects/badobject.e3d", sizeof(fname));
-#endif
 		if (!returned_e3d)
 			return -1; // umm, not even found the place holder, this is teh SUCK!!!
 	}
@@ -539,51 +428,15 @@ int add_e3d_at_id(int id, const char* file_name,
 
 	our_object->flags = 0;
 
-#ifdef FASTER_MAP_LOAD
 	if (is_harvestable(fbase))
 		our_object->flags |= OBJ_3D_HARVESTABLE;
 	if (is_entrable(fbase))
 		our_object->flags |= OBJ_3D_ENTRABLE;
 	if (*fbase && strcasecmp(fbase, "bag1.e3d") == 0)
 		our_object->flags |= OBJ_3D_BAG;
-#ifdef MINES
-	if (*fbase && strcasecmp(fbase, "branch1.e3d") == 0)
-		our_object->flags |= OBJ_3D_MINE;
-#endif //MINES
-#else  // FASTER_MAP_LOAD
 
-	for(i = 0; i < sizeof(harvestable_objects)/sizeof(harvestable_objects[0]); i++) {
-#ifdef ENGLISH
-		if(*harvestable_objects[i] && strstr(file_name, harvestable_objects[i]) != NULL) {
-#else //ENGLISH
-        char *fichier;
-        fichier = strrchr(file_name,'/');
-		if(*harvestable_objects[i] && strncmp(fichier+1, harvestable_objects[i], strlen(fichier+1)) == 0) {
-#endif //ENGLISH
-			our_object->flags |= OBJ_3D_HARVESTABLE;
-			break;
-		}
-	}
-	for(i = 0; i < sizeof(entrable_objects)/sizeof(entrable_objects[0]); i++) {
-		if(*(entrable_objects[i]) && strstr(file_name, entrable_objects[i]) != NULL) {
-			our_object->flags |= OBJ_3D_ENTRABLE;
-			break;
-		}
-	}
-	if (strcasecmp(file_name, "") && strcasecmp(strrchr(file_name, '/')+1, "bag1.e3d") == 0) {
-		our_object->flags |= OBJ_3D_BAG;
-	}
-#ifdef MINES
-	if (strcasecmp(file_name, "") && strcasecmp(strrchr(file_name, '/')+1, "branch1.e3d") == 0) {
-		our_object->flags |= OBJ_3D_MINE;
-	}
-#endif // MINES
-#endif // FASTER_MAP_LOAD
-
-#ifdef CLUSTER_INSIDES
 	our_object->cluster = get_cluster ((int)(x_pos/0.5f), (int)(y_pos/0.5f));
 	current_cluster = our_object->cluster;
-#endif
 
 	objects_list[id] = our_object;
 	// watch the top end
@@ -632,11 +485,7 @@ int add_e3d(const char* file_name, float x_pos, float y_pos, float z_pos,
 	float r, float g, float b, unsigned int dynamic)
 {
 	int i;
-#ifndef FASTER_MAP_LOAD
-	int j = 0;
-#endif
 
-#ifdef FASTER_MAP_LOAD
 	if (next_obj_3d < MAX_OBJ_3D && !objects_list[next_obj_3d])
 		return add_e3d_at_id(next_obj_3d, file_name, x_pos, y_pos, z_pos,
 			x_rot, y_rot, z_rot, self_lit, blended,
@@ -644,16 +493,10 @@ int add_e3d(const char* file_name, float x_pos, float y_pos, float z_pos,
 
 	// Oh my, next_obj_3d is not free. Find a free spot in the e3d_list,
 	// but don't count on IDs being correct.
-#endif
 	for (i = 0; i < MAX_OBJ_3D; i++)
 	{
 		if (!objects_list[i])
 		{
-#ifndef FASTER_MAP_LOAD
-			if (j < objects_list_placeholders)
-				j++;
-			else
-#endif
 			return add_e3d_at_id(i, file_name, x_pos, y_pos, z_pos,
 				x_rot, y_rot, z_rot, self_lit, blended,
 				r, g, b, dynamic);
@@ -664,7 +507,6 @@ int add_e3d(const char* file_name, float x_pos, float y_pos, float z_pos,
 	return -1;
 }
 
-#ifdef NEW_SOUND
 char * get_3dobject_at_location(float x_pos, float y_pos)
 {
 	int i;
@@ -681,7 +523,6 @@ char * get_3dobject_at_location(float x_pos, float y_pos)
 	}
 	return "";
 }
-#endif // NEW_SOUND
 
 void display_objects(void)
 {
@@ -696,11 +537,7 @@ void display_objects(void)
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -743,11 +580,7 @@ void display_ground_objects(void)
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -787,11 +620,7 @@ void display_alpha_objects(void)
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -833,11 +662,7 @@ void display_blended_objects(void)
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -982,15 +807,9 @@ void set_3d_object (Uint8 display, const void *ptr, int len)
 			if (obj_id < next_obj_3d && objects_list[obj_id])
 			{
 				objects_list[obj_id]->display = display;
-#ifdef ENGLISH
-				idx++;
-				len -= sizeof (*id_ptr);
-#endif //ENGLISH
 			}
-#ifndef ENGLISH
 	    	idx++;
 			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }
@@ -1020,15 +839,9 @@ void state_3d_object (Uint8 state, const void *ptr, int len)
 			if (obj_id < next_obj_3d && objects_list[obj_id])
 			{
 				objects_list[obj_id]->state = state;
-#ifdef ENGLISH
-				idx++;
-				len -= sizeof (*id_ptr);
-#endif //ENGLISH
 			}
-#ifndef ENGLISH
 	    	idx++;
 			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }

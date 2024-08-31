@@ -2,14 +2,9 @@
 #include <string.h>
 #include <errno.h>
 #include "spells.h"
-#ifdef ENGLISH
-#include "actors.h"
-#endif //ENGLISH
 #include "asc.h"
 #include "cursors.h"
-#ifdef FR_FENETRE_NECRO
 #include "console.h"
-#endif //FR_FENETRE_NECRO
 #include "context_menu.h"
 #include "elwindows.h"
 #include "gamewin.h"
@@ -22,9 +17,6 @@
 #include "stats.h"
 #include "colors.h"
 #include "multiplayer.h"
-#ifdef ENGLISH
-#include "named_colours.h"
-#endif //ENGLISH
 #include "pathfinder.h"
 #include "textures.h"
 #include "translate.h"
@@ -32,58 +24,39 @@
 #include "errors.h"
 #include "io/elpathwrapper.h"
 #include "sound.h"
-#ifdef FR_VERSION
 #include "themes.h"
-#endif //FR_VERSION
 
-#ifdef FR_FAST_SPELL
 #include "highlight.h"
-#endif
 
 #define SIGILS_NO 64
 #define	NUM_SIGILS_LINE	12	// how many sigils per line displayed
 #define	NUM_SIGILS_ROW	3	// how many rows of sigils are there?
-#ifdef ENGLISH
-#define MAX_DATA_FILE_SIZE 560
-#else //ENGLISH
 #define MAX_DATA_FILE_SIZE 1850 // QUICKSPELLS_MAXSIZE * 92 + 1 ? (default 560)
 #define QUICKSPELLS_MAXSIZE 20
-#endif //ENGLISH
 #define SIGILS_NO 64
 #define SPELLS_NO 32
 #define GROUPS_NO 8
-#ifdef FR_FENETRE_NECRO
 #define NECRO_NO 5
-#endif //FR_FENETRE_NECRO
 
 #define UNCASTABLE_REAGENTS 1
 #define UNCASTABLE_SIGILS 2
 #define UNCASTABLE_MANA 4
 #define UNCASTABLE_LVLS 8
 
-#ifdef ENGLISH
-#define UNCASTABLE_SIGILS_STR "(missing sigils)"
-#define UNCASTABLE_REAGENTS_STR "(not enough reagents)"
-#define UNCASTABLE_MANA_STR "(not enough mana)"
-#define UNCASTABLE_LVLS_STR "(not enough levels)"
-#else //ENGLISH
 #define UNCASTABLE_SIGILS_STR "(rune(s) manquante(s))"
 #define UNCASTABLE_REAGENTS_STR "(pas assez d'essences)"
 #define UNCASTABLE_MANA_STR "(pas assez de mana)"
 #define UNCASTABLE_LVLS_STR "(pas le niveau)"
-#endif //ENGLISH
 
 #define GET_UNCASTABLE_STR(cast) (  (cast&UNCASTABLE_SIGILS) ? (UNCASTABLE_SIGILS_STR):( (cast&UNCASTABLE_LVLS) ? (UNCASTABLE_LVLS_STR):(  (cast&UNCASTABLE_MANA) ? (UNCASTABLE_MANA_STR):( (cast&UNCASTABLE_REAGENTS) ? (UNCASTABLE_REAGENTS_STR):("")   )          )        )            )
 
 #define SPELLS_ALIGN_X 7
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-#ifdef FR_FENETRE_NECRO
 #define NECRO_ALIGN_X 1
 #define NECRO_SPACE_X 10 // espace entre bord gauche de la fenêtre et la grille de nécro
 #define NECRO_SPACE_Y 10 // espace entre bord haut de la fenêtre et la grille de nécro
 #define NECRO_SPACE_Y_BETWEEN 2 //espace vertical entre les différentes icones de nécro
-#endif //FR_FENETRE_NECRO
 
 #define SET_COLOR(x) glColor4f((float) colors_list[x].r1 / 255.0f,(float) colors_list[x].g1 / 255.0f,(float) colors_list[x].b1 / 255.0f,1.0f)
 typedef struct
@@ -94,19 +67,16 @@ typedef struct
 	int have_sigil;
 }sigil_def;
 
-#ifdef FR_FAST_SPELL
 int selected_spell = -1;
 int selected_spell_sent = 0;
 int selected_spell_target = -1;
 int fast_spell_cible_bool = 0;
-#endif
 int set_fast_spell_target;
 
 sigil_def sigils_list[SIGILS_NO];
 int sigils_text;
 int sigils_we_have;
 
-#ifdef FR_FENETRE_NECRO
 typedef struct {
     int necro_img; //image de l'icone : position dans gamebuttons.dds cf liste de #define dans hud.c
     char name[60]; //contient la commande sous forme #commande
@@ -120,7 +90,6 @@ int mouseover_necro = -1; //permet d'afficher dans display_necro_handler() le no
 //pour le sort de soin des invoqués : positions x et y
 int pos_x_sdi;
 int pos_y_sdi;
-#endif //FR_FENETRE_NECRO
 
 typedef struct {
 	int id;//The spell server id
@@ -134,9 +103,6 @@ typedef struct {
 	int reagents_id[4]; //reagents needed
 	Uint16 reagents_uid[4]; //reagents needed, unique item id
 	int reagents_qt[4]; //their quantities
-#ifdef ENGLISH
-	Uint32 buff;
-#endif //ENGLISH
 	int uncastable; //0 if castable, otherwise if something missing
 } spell_info;
 
@@ -151,10 +117,6 @@ int spell_result=0;
 int have_error_message=0;
 int we_have_spell=-1; //selected spell
 int on_spell=-1;//mouse over this spell
-#ifdef ENGLISH
-int show_poison_count = 0; // elconfig variable
-static int poison_drop_counter = 0;
-#endif //ENGLISH
 
 typedef struct {
 	unsigned char desc[120];
@@ -170,9 +132,7 @@ typedef struct
 	Sint8 spell;
 	Uint32 cast_time;
 	Uint32 duration;
-#ifdef NEW_SOUND
 	unsigned int sound;
-#endif
 } spell_def;
 spell_def active_spells[NUM_ACTIVE_SPELLS];
 
@@ -182,9 +142,7 @@ int sigils_win=-1;
 int spell_win=-1;
 int spell_mini_win=-1;
 int last_win=-1;
-#ifdef FR_FENETRE_NECRO
 int necro_win = -1;
-#ifdef FR_NECRO_RECETTES
 int creature_en_cours = 0;
 int double_invoc = 0;
 int securite_invoc = 1;
@@ -193,8 +151,6 @@ char **nom_bestiole;	//Tableau des noms des invocation	char nom_bestiole[45][30]
 int **liste_items_necro;//Tableau des recettes			int liste_items_necro[45][20]    (mars 2020)
 static char items_string[350]={0};
 static size_t last_items_string_id = 0;
-#endif //FR_NECRO_RECETTES
-#endif //FR_FENETRE_NECRO
 int start_mini_spells=0; //do we start minimized?
 int init_ok=0;
 int sigil_menu_x=10;
@@ -210,182 +166,19 @@ int sigil_y_len=(3+NUM_SIGILS_ROW)*33;
 int spell_mini_x_len=0;
 int spell_mini_y_len=0;
 int spell_mini_rows=0;
-#ifdef FR_FENETRE_NECRO
 //necro window
 int necro_x_len = (NECRO_NO+1) * 33 + NECRO_SPACE_Y + 40 + NECRO_SPACE_Y_BETWEEN * 8;
 int necro_y_len = NECRO_ALIGN_X * 33 + NECRO_SPACE_X + 55 + 190 - 15;
-#endif //FR_FENETRE_NECRO
-#ifdef ENGLISH
-/* spell duration state */
-static Uint16 requested_durations = 0;
-static Uint16 last_requested_duration = 0;
-static size_t buff_duration_colour_id = 0;
-
-/* mapping of spell buff value from spells.xml to buff bit-masks */
-typedef struct buff_buffmask {
-	Uint32 buff;
-	Uint16 buffmask;
-} buff_buffmask;
-static buff_buffmask buff_to_buffmask[NUM_BUFFS] = {
-		{11, BUFF_INVISIBILITY},
-		{3, BUFF_MAGIC_IMMUNITY},
-		{1, BUFF_MAGIC_PROTECTION},
-		{23, BUFF_COLD_SHIELD},
-		{24, BUFF_HEAT_SHIELD},
-		{25, BUFF_RADIATION_SHIELD},
-		{0, BUFF_SHIELD},
-		{7, BUFF_TRUE_SIGHT},
-		{5, BUFF_ACCURACY},
-		{6, BUFF_EVASION},
-		{0xFFFFFFFF, BUFF_DOUBLE_SPEED}
-	};
-
-/* display debug information about buff durations */
-#if defined(BUFF_DURATION_DEBUG)
-static void duration_debug(int buff, int duration, const char*message)
-{
-	size_t i;
-	char buf[128];
-	const char *buff_name = "Unknown";
-	if (buff == 5)
-		buff_name = "Accuracy";
-	else if (buff == 6)
-		buff_name = "Evasion";
-	else
-		for (i=0; i<SPELLS_NO; i++)
-			if (spells_list[i].buff == buff)
-			{
-				buff_name = spells_list[i].name;
-				break;
-			}
-	safe_snprintf(buf, sizeof(buf), "Debug: Buff [%s] %s: %d seconds", buff_name, message, duration, message);
-	LOG_TO_CONSOLE (c_red1, buf);
-}
-#endif
-
-/* Called when the client receives SEND_BUFF_DURATION from server.
- * Set the duration and start the time out for the buff duration.
-*/
-void here_is_a_buff_duration(Uint8 duration)
-{
-	/* check the request is on the queue */
-	if (requested_durations & last_requested_duration)
-	{
-		size_t i;
-		Uint32 buff = 0xFFFFFFFF;
-
-		/* get the spell / buff value from the bit-mask we used */
-		for (i=0; i<NUM_BUFFS; i++)
-			if (last_requested_duration == buff_to_buffmask[i].buffmask)
-			{
-				buff = buff_to_buffmask[i].buff;
-				break;
-			}
-
-		/* if we have a matching spell, set the duration information */
-		for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
-		{
-			if ((active_spells[i].spell != -1) && (buff == active_spells[i].spell))
-			{
-				active_spells[i].cast_time = get_game_time_sec();
-				active_spells[i].duration = (Uint32)duration;
-#if defined(BUFF_DURATION_DEBUG)
-				duration_debug(buff, active_spells[i].duration, "duration from server");
-#endif
-				break;
-			}
-		}
-
-		/* clear request */
-		requested_durations &= ~last_requested_duration;
-		last_requested_duration = 0;
-	}
-
-	/* to save waiting, process others in the queue now */
-	check_then_do_buff_duration_request();
-}
-
-
-/* Called periodically from the main loop
- * Time out any old requests.
- * If no request is pending but we have one in the queue, ask the server for the duration.
-*/
-void check_then_do_buff_duration_request(void)
-{
-	static Uint32 last_request_time = 0;
-
-	/* wait until the client knows the game time fully */
-	if (!is_real_game_second_valid())
-		return;
-
-	/* stop waiting for server response after 10 seconds, clear all other requests */
-	if (last_requested_duration && abs(SDL_GetTicks() - last_request_time) > 10000)
-	{
-		last_requested_duration = 0;
-		requested_durations = 0;
-	}
-
-	/* else if there is no active request but we have one queued, make the server request */
-	else if (!last_requested_duration && requested_durations)
-	{
-		Uint8 str[4];
-
-		last_requested_duration = 1;
-		while (!(requested_durations & last_requested_duration))
-			last_requested_duration <<= 1;
-		last_request_time = SDL_GetTicks();
-
-		str[0] = GET_BUFF_DURATION;
-		*((Uint16 *)(str+1)) = SDL_SwapLE16(last_requested_duration);
-		my_tcp_send (my_socket, str, 3);
-	}
-}
-
-/*	Called when we receive notification that a spell is active.
- * 	If the spell is in the buff bit-mask array, queue the duration request.
-*/
-static void request_buff_duration(Uint32 buff)
-{
-	size_t i;
-	for (i=0; i<NUM_BUFFS; i++)
-		if (buff == buff_to_buffmask[i].buff)
-		{
-			requested_durations |= buff_to_buffmask[i].buffmask;
-			check_then_do_buff_duration_request();
-			return;
-		}
-}
-
-
-typedef struct {
-	char spell_name[60];//The spell_name
-	Sint8 spell_image;//image_id
-	Sint8 spell_id;
-	Uint8 spell_str[30];
-	//to be difficult, we will store the entire string ready
-	//to be sent to the server, including CAST_SPELL and len bytes, len will be byte 2
-} mqbdata;
-#endif //ENGLISH
 
 //QUICKSPELLS
 int clear_mouseover=0;
 int cast_mouseover=0;
-#ifdef ENGLISH
-mqbdata * mqb_data[MAX_QUICKBAR_SLOTS+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-int quickspell_size=20;//size of displayed icons in pixels
-int quickspell_x_len=26;
-int quickspell_y_len=6*30;
-int quickspell_x=60;
-int quickspell_y=64;
-#else //ENGLISH
 mqbdata * mqb_data[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-#ifdef FR_MORE_MQB
 int quickspell_mqb_selected = 0;
 mqbdata * mqb_data2[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
 mqbdata * mqb_data3[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
 mqbdata * mqb_data4[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
 mqbdata * mqb_data5[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-#endif //FR_MORE_MQB
 int quickspells_nb = 0;             // nombre de raccourcis existants
 int quickspells_size = 6;           // nombre de raccourcis    (cf ini)
 int quickspells_dir = VERTICAL;     // orientation par défaut  (cf cfg)
@@ -395,7 +188,6 @@ int quickspell_x = HUD_MARGIN_X;    // position x par défaut   (cf cfg)
 int quickspell_y = HUD_MARGIN_X;    // position y par défaut   (cf cfg)
 int quickspell_x_len = (1+30)*1 +1; // largeur par défaut
 int quickspell_y_len = (1+30)*1 +1; // longueur par défaut
-#endif //ENGLISH
 int quickspells_loaded = 0;
 
 
@@ -405,21 +197,11 @@ void draw_spell_icon(int id,int x_start, int y_start, int gridsize, int alpha, i
 void set_spell_help_text(int spell);
 void init_sigils();
 
-#ifdef FR_VERSION
 size_t cm_quickspells_win_id = CM_INIT_VALUE;
-#endif //FR_VERSION
 size_t cm_quickspells_id = CM_INIT_VALUE;
 void cm_update_quickspells(void);
 
 
-#ifdef FR_RCM_MAGIE
-    int sort_menu_x=10;
-    int sort_menu_y=20;
-    int sort_menu_x_len=9*33+20;
-    int sort_menu_y_len=4*33+115;
-    static int button_y_top = 4*33+40;
-    static int button_y_bot = 4*33+60;
-#endif
 
 void repeat_spell(){
 	if(last_spell_len > 0)
@@ -481,15 +263,8 @@ int init_spells ()
 	int ok = 1;
 	char *fname="./spells.xml";
 
-#ifdef ENGLISH
-	buff_duration_colour_id = elglGetColourId("buff.duration.background");
-#endif //ENGLISH
 	//init textures and structs
-#ifdef	NEW_TEXTURES
 	sigils_text = load_texture_cached("textures/sigils.dds", tt_gui);
-#else	/* NEW_TEXTURES */
-	sigils_text = load_texture_cache ("./textures/sigils.bmp", 0);
-#endif	/* NEW_TEXTURES */
 	for (i = 0; i < SIGILS_NO; i++)
 		sigils_list[i].have_sigil = 0;
 	for (i = 0; i < SPELLS_NO; i++){
@@ -534,23 +309,9 @@ int init_spells ()
 	{
 		xmlNode *node;
 		xmlNode *data;
-#ifdef ENGLISH
-		char tmp[200]
-#endif //ENGLISH
         char name[200];
-#ifdef ENGLISH
-		const int expected_version = 1;
-		int actual_version = -1;
-#endif //ENGLISH
 		i = 0;
 
-#ifdef ENGLISH
-		if ((actual_version = xmlGetInt(root,(xmlChar*)"version")) < expected_version)
-		{
-			safe_snprintf(tmp, sizeof(tmp), "Warning: %s file is out of date expecting %d, actual %d.", fname, expected_version, actual_version);
-			LOG_TO_CONSOLE (c_red1, tmp);
-		}
-#endif //ENGLISH
 
 		//parse spells
 		node = get_XML_node(root->children, "Spell_list");
@@ -559,11 +320,9 @@ int init_spells ()
 		while (node)
 		{
 			int j;
-#ifndef ENGLISH
             // Pour gerer correctement les accents dans ce fichier
             char* nom_fr = NULL;
             char* desc_fr = NULL;
-#endif //ENGLISH
 			memset(name, 0, sizeof(name));
 
 			data=get_XML_node(node->children,"name");
@@ -573,18 +332,12 @@ int init_spells ()
 				LOG_ERROR("No name for %d spell", i);
 			}
 
-#ifdef ENGLISH
-			get_string_value(name, sizeof(name), data);
-			safe_strncpy(spells_list[i].name, name,
-				sizeof(spells_list[i].name));
-#else //ENGLISH
             nom_fr = fromUTF8 (data->children->content, strlen ((const char*) data->children->content));
 			safe_strncpy(spells_list[i].name, nom_fr, sizeof(spells_list[i].name));
             if (nom_fr)
             {
                 free(nom_fr);
             }
-#endif //ENGLISH
 
 			data=get_XML_node(node->children, "desc");
 
@@ -593,18 +346,12 @@ int init_spells ()
 				LOG_ERROR("No desc for spell '%s'[%d]",
 					name, i);
 			}
-#ifdef ENGLISH
-			get_string_value(tmp, sizeof(tmp), data);
-			safe_strncpy(spells_list[i].desc, tmp,
-				sizeof(spells_list[i].desc));
-#else //ENGLISH
             desc_fr = fromUTF8 (data->children->content, strlen ((const char*) data->children->content));
 			safe_strncpy(spells_list[i].desc, desc_fr, sizeof(spells_list[i].desc));
             if (desc_fr)
             {
                 free(desc_fr);
             }
-#endif //ENGLISH
 
 			data=get_XML_node(node->children, "id");
 
@@ -710,29 +457,6 @@ int init_spells ()
 				data = get_XML_node(data->next, "reagent");
 			}
 
-#ifdef ENGLISH
-			data = get_XML_node(node->children, "duration");
-
-			if (data != 0)
-			{
-				spells_list[i].duration = get_int_value(data);
-			}
-			else
-			{
-				spells_list[i].duration = 0;
-			}
-
-			data = get_XML_node(node->children, "buff");
-
-			if (data != 0)
-			{
-				spells_list[i].buff = get_int_value(data);
-			}
-			else
-			{
-				spells_list[i].buff = 0xFFFFFFFF;
-			}
-#endif //ENGLISH
 			node = get_XML_node(node->next, "spell");
 	i++;
 		}
@@ -743,33 +467,22 @@ int init_spells ()
 		node = get_XML_node(node->children, "sigil");
 		while (node)
         {
-#ifndef ENGLISH
             char* runes_fr = NULL;
-#endif //ENGLISH
 			int k;
 			k = get_int_property(node, "id");
 			sigils_list[k].sigil_img = k;
-#ifdef ENGLISH
-			get_string_value(sigils_list[k].description,
-				sizeof(sigils_list[k].description), node);
-			safe_strncpy((char*)sigils_list[k].name,
-				get_string_property(node, "name"),
-				sizeof(sigils_list[k].name));
-#else //ENGLISH
             runes_fr = fromUTF8 (node->children->content, strlen ((const char*) node->children->content));
 			safe_strncpy(sigils_list[k].name, runes_fr, sizeof(sigils_list[k].name));
             if (runes_fr)
             {
                 free(runes_fr);
             }
-#endif //ENGLISH
 
 			data=get_XML_node(node->children,"id");
 			sigils_list[k].have_sigil = 1;
 			node = get_XML_node(node->next, "sigil");
 		}
 
-#ifdef FR_FENETRE_NECRO
 		//parse necro
 		node = get_XML_node(root->children, "Necro_list");
 		node = get_XML_node(node->children, "necro");
@@ -786,7 +499,6 @@ int init_spells ()
 		}
 		//Soin des invoqués :
 		safe_strncpy((char*)necro_list[5].description, "Soigner", sizeof(necro_list[5].description));
-#endif //FR_FENETRE_NECRO
 
 		//parse groups
 		num_groups = 0;
@@ -794,23 +506,15 @@ int init_spells ()
 		node = get_XML_node(node->children,"group");
 		while (node)
         {
-#ifndef ENGLISH
             char* groupes_fr = NULL;
-#endif //ENGLISH
 			int k;
 			k = get_int_property(node, "id");
-#ifdef ENGLISH
-			get_string_value(tmp, sizeof(tmp), node);
-			safe_strncpy((char*)groups_list[k].desc, tmp,
-				sizeof(groups_list[k].desc));
-#else //ENGLISH
             groupes_fr = fromUTF8 (node->children->content, strlen ((const char*) node->children->content));
 			safe_strncpy((char*)groups_list[k].desc, groupes_fr, sizeof(groups_list[k].desc));
             if (groupes_fr)
             {
                 free(groupes_fr);
             }
-#endif //ENGLISH
 			num_groups++;
 			node = get_XML_node(node->next, "group");
 		}
@@ -828,12 +532,10 @@ int init_spells ()
 		active_spells[i].spell = -1;
 		active_spells[i].cast_time = 0;
 		active_spells[i].duration = 0;
-#ifdef NEW_SOUND
 		if (active_spells[i].sound > 0)
 		{
 			stop_sound(active_spells[i].sound);
 		}
-#endif // NEW_SOUND
 	}
 
 	if (!ok) //xml failed, init sigils manually
@@ -890,68 +592,23 @@ void check_castability()
 	set_spell_help_text(we_have_spell);
 }
 
-#ifdef ENGLISH
-/* called each time we get poisoned - perhaps */
-void increment_poison_incidence(void)
-{
-	poison_drop_counter++;
-}
-
-/* called from display_game_handler() so we are in a position to draw text */
-void draw_spell_icon_strings(void)
-{
-	size_t i;
-	int x_start = 0;
-	int y_start = window_height-hud_y-64-SMALL_FONT_Y_LEN;
-
-	for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
-	{
-		unsigned char str[20];
-		/* handle the poison count */
-		if ((poison_drop_counter > 0) && (active_spells[i].spell == 2) && show_poison_count)
-		{
-			safe_snprintf((char*)str, sizeof(str), "%d", poison_drop_counter );
-			draw_string_small_shadowed(x_start+(33-strlen((char *)str)*SMALL_FONT_X_LEN)/2, y_start, str, 1, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
-		}
-		/* other strings on spell icons, timers perhaps .....*/
-		x_start += 33;
-	}
-
-}
-#endif //ENGLISH
 
 
 
 
 
 //ACTIVE SPELLS
-#ifdef ENGLISH
-void get_active_spell(int pos, int spell)
-#else //ENGLISH
 // durée restante obtenue du serveur (l'US utilise le fichier XML)
 void get_active_spell(int pos, int spell, int timer)
-#endif //ENGLISH
 {
-#ifdef ENGLISH
-	Uint32 i;
-#endif //ENGLISH
 
 	active_spells[pos].spell = spell;
-#ifdef ENGLISH
-	active_spells[pos].cast_time = 0;
-	request_buff_duration(spell);
-#else //ENGLISH
 	// mémorisation de la date de fin plutot que celle du début
 	active_spells[pos].cast_time = cur_time + timer * 1000;
-#endif //ENGLISH
-#ifdef NEW_SOUND
 	active_spells[pos].sound = add_spell_sound(spell);
-#endif // NEW_SOUND
 
-#ifndef ENGLISH
 	// conservation de la durée totale (max) plutot que celle restante
 	if (timer > active_spells[pos].duration) active_spells[pos].duration = timer;
-#endif //ENGLISH
 }
 
 void remove_active_spell(int pos)
@@ -961,56 +618,20 @@ void remove_active_spell(int pos)
 		duration_debug(active_spells[pos].spell, diff_game_time_sec(active_spells[pos].cast_time), "actual duration");
 #endif
 	if (active_spells[pos].spell == 2)
-#ifdef ENGLISH
-		poison_drop_counter = 0;
-#endif //ENGLISH
 	active_spells[pos].spell = -1;
 	active_spells[pos].cast_time = 0;
 	active_spells[pos].duration = 0;
-#ifdef NEW_SOUND
 	if (active_spells[pos].sound > 0)
 		stop_sound(active_spells[pos].sound);
-#endif // NEW_SOUND
 }
 
-#ifdef ENGLISH
-static void rerequest_durations(void)
-{
-	size_t i;
-	for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
-	{
-		if (active_spells[i].spell >= 0)
-			request_buff_duration(active_spells[i].spell);
-	}
-}
-
-#if defined(BUFF_DURATION_DEBUG)
-int command_buff_duration(char *text, int len)
-{
-	LOG_TO_CONSOLE(c_green1, "Request buff durations");
-	rerequest_durations();
-	return 1;
-}
-#endif
-#endif //ENGLISH
 
 void get_active_spell_list(const Uint8 *my_spell_list)
 {
-#ifdef ENGLISH
-	Uint32 i, j;
-	int cur_spell;
-#else //ENGLISH
 	Uint32 i;
-#endif //ENGLISH
 
 	for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
 	{
-#ifdef ENGLISH
-		active_spells[i].spell = my_spell_list[i];
-		active_spells[i].duration = active_spells[i].cast_time = 0;
-		if (active_spells[i].spell >= 0)
-			request_buff_duration(active_spells[i].spell);
-#else //ENGLISH
 		// le serveur FR envoit des données différentes
 		active_spells[i].spell = my_spell_list[i*3];
 		// récupération de la durée restante
@@ -1018,18 +639,10 @@ void get_active_spell_list(const Uint8 *my_spell_list)
 		if (active_spells[i].spell < 0) active_spells[i].duration = 0;
 		// mémorisation de la date de fin du sort
 		active_spells[i].cast_time = cur_time + active_spells[i].duration * 1000;
-#endif //ENGLISH
-#ifdef NEW_SOUND
 		active_spells[i].sound = add_spell_sound(active_spells[i].spell);
-#endif // NEW_SOUND
-#ifdef ENGLISH
-		if (active_spells[i].spell == 2)
-			increment_poison_incidence();
-#endif //ENGLISH
 	}
 }
 
-#ifdef NEW_SOUND
 void restart_active_spell_sounds(void)
 {
 	Uint32 i;
@@ -1046,7 +659,6 @@ void restart_active_spell_sounds(void)
 	    }
 	}
 }
-#endif // NEW_SOUND
 
 int we_are_poisoned()
 {
@@ -1062,7 +674,6 @@ int we_are_poisoned()
 	return 0;
 }
 
-#ifndef ENGLISH
 // détermine la couleur de la jauge
 // un pourcentage négatif indique une inversion du dégradé (rouge->vert)
 void set_timer_color(float percent, float multiplier)
@@ -1077,27 +688,14 @@ void set_timer_color(float percent, float multiplier)
 	else if (g > 1.0f) g = 1.0f;
 	glColor3f(r*multiplier, g*multiplier, 0.0f);
 }
-#endif //ENGLISH
 
 void time_out(const float x_start, const float y_start, const float gridsize,
 	const float progress)
 {
 	glDisable(GL_TEXTURE_2D);
-#ifdef ENGLISH
-	glEnable(GL_BLEND);
-
-	elglColourI(buff_duration_colour_id);
-#else //ENGLISH
 	glColor3f(0.0f, 0.7f, 0.0f);
-#endif //ENGLISH
 
 	glBegin(GL_QUADS);
-#ifdef ENGLISH
-		glVertex2f(x_start, y_start + gridsize * progress);
-		glVertex2f(x_start + gridsize, y_start + gridsize * progress);
-		glVertex2f(x_start + gridsize, y_start + gridsize);
-		glVertex2f(x_start, y_start + gridsize);
-#else //ENGLISH
 		// Affichage d'une jauge avec coloration variable
 		set_timer_color(progress, 1.0f);
 		glVertex2f(x_start, y_start + gridsize);
@@ -1105,11 +703,7 @@ void time_out(const float x_start, const float y_start, const float gridsize,
 		set_timer_color(progress, 0.3f);
 		glVertex2f(x_start + 5, y_start + gridsize - gridsize * fabs(progress));
 		glVertex2f(x_start + 5, y_start + gridsize);
-#endif //ENGLISH
 	glEnd();
-#ifdef ENGLISH
-	glDisable(GL_BLEND);
-#endif //ENGLISH
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
@@ -1117,74 +711,28 @@ void time_out(const float x_start, const float y_start, const float gridsize,
 void display_spells_we_have()
 {
 	Uint32 i;
-#ifdef ENGLISH
-	float scale, duration;
-#else //ENGLISH
 	float scale, duration, cur_time;
-#endif //ENGLISH
-#ifndef ENGLISH
 	// numéro de position globale incrémentée ne laissant pas de trou entre les sorts
 	int cur_pos = 0;
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	if (your_actor != NULL)
-	{
-		static int last_actor_type = -1;
-		if (last_actor_type < 0)
-			last_actor_type = your_actor->actor_type;
-		if (last_actor_type != your_actor->actor_type)
-		{
-			last_actor_type = your_actor->actor_type;
-			rerequest_durations();
-		}
-	}
-#endif //ENGLISH
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-#ifndef ENGLISH
 	cur_time = SDL_GetTicks();
-#endif //ENGLISH
 
 	//ok, now let's draw the objects...
 	for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
 	{
 		if (active_spells[i].spell != -1)
 		{
-#ifndef ENGLISH
 			int cur_spell;
 			char string[10];
-#else //ENGLISH
-			int cur_spell,cur_pos;
-#endif //ENGLISH
 			int x_start,y_start;
 
 			//get the UV coordinates.
 			cur_spell = active_spells[i].spell + 32;	//the first 32 icons are the sigils
 
 			//get the x and y
-#ifdef ENGLISH
-			cur_pos=i;
-
-			x_start=33*cur_pos;
-			y_start=window_height-hud_y-64;
-
-			duration = active_spells[i].duration;
-
-			if (duration > 0.0)
-			{
-				scale = diff_game_time_sec(active_spells[i].cast_time) / duration;
-
-				if ((scale >= 0.0) && (scale <= 1.0))
-				{
-					time_out(x_start, y_start, 32, scale);
-				}
-			}
-#else //ENGLISH
 			cur_pos++;
 
 			x_start = 8; // la jauge prend place de 0 à 5
@@ -1206,20 +754,14 @@ void display_spells_we_have()
 				draw_string_small_shadowed(x_start+16 - 4*strlen(string), y_start+10, (unsigned char*)string, 1, 1.0f,0.0f,0.0f, 0.0f,0.0f,0.0f);
 				continue;
 			}
-#endif //ENGLISH
 
 			glEnable(GL_BLEND);
 			draw_spell_icon(cur_spell,x_start,y_start,32,0,0);
 			glDisable(GL_BLEND);
-#ifndef ENGLISH
 			// affichage du temps restant par dessus l'icone
 			draw_string_small_shadowed(x_start+16 - 4*strlen(string), y_start+10, (unsigned char*)string, 1, 1.0f,1.0f,1.0f, 0.0f,0.0f,0.0f);
-#endif //ENGLISH
 		}
 	}
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int show_last_spell_help=0;
@@ -1231,7 +773,6 @@ int show_last_spell_help=0;
 int draw_switcher(window_info *win){
 
 	glDisable(GL_TEXTURE_2D);
-#ifdef FR_VERSION
 	glEnable(GL_POINT_SMOOTH);
 	glPointSize(ELW_BOX_SIZE - 8);
 	glColor3f(0.77f,0.57f,0.39f);
@@ -1239,9 +780,7 @@ int draw_switcher(window_info *win){
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*1.5, 0);
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*2.5, 0);
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*3.5, 0);
-#ifdef FR_FENETRE_NECRO
         glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*4.5, 0);
-#endif //FR_FENETRE_NECRO
 	glEnd();
 	glPointSize(ELW_BOX_SIZE - 10);
 	glColor3f(0.0f,0.0f,0.0f);
@@ -1249,9 +788,7 @@ int draw_switcher(window_info *win){
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*1.5, 0);
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*2.5, 0);
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*3.5, 0);
-#ifdef FR_FENETRE_NECRO
 		glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*4.5, 0);
-#endif //FR_FENETRE_NECRO
 	glEnd();
 	glPointSize(ELW_BOX_SIZE - 14);
 	glColor3f(0.77f,0.57f,0.39f);
@@ -1259,52 +796,10 @@ int draw_switcher(window_info *win){
 		if      (sigil_win==sigils_win)     glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*1.5, 0);
 		else if (sigil_win==spell_mini_win) glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*2.5, 0);
 		else if (sigil_win==spell_win)      glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*3.5, 0);
-#ifdef FR_FENETRE_NECRO
         else if (sigil_win==necro_win)      glVertex3i(win->len_x - ELW_BOX_SIZE*0.5, ELW_BOX_SIZE*4.5, 0);
-#endif //FR_FENETRE_NECRO
 	glEnd();
 	glPointSize(1.0);
 	glDisable(GL_POINT_SMOOTH);
-#else //FR_VERSION
-	glColor3f(0.77f,0.57f,0.39f);
-
-	//Draw switcher spells <-> sigils
-	glBegin(GL_LINES);
-		glVertex3i(win->len_x-20,40,0);
-		glVertex3i(win->len_x,40,0);
-		glVertex3i(win->len_x-20,40,0);
-		glVertex3i(win->len_x-20,20,0);
-	glEnd();
-	glBegin(GL_QUADS);
-		glVertex3i(win->len_x-15,35,0);
-		glVertex3i(win->len_x-5,35,0);
-		glVertex3i(win->len_x-5,25,0);
-		glVertex3i(win->len_x-15,25,0);
-	glEnd();
-
-	if (sigil_win==spell_win || sigil_win==spell_mini_win) {
-		//Draw switcher spells <-> mini
-		glBegin(GL_LINES);
-			glVertex3i(win->len_x-20,60,0);
-			glVertex3i(win->len_x,60,0);
-			glVertex3i(win->len_x-20,60,0);
-			glVertex3i(win->len_x-20,40,0);
-			if(sigil_win==spell_win) {
-			//arrow down
-					glVertex3i(win->len_x-15,45,0);
-					glVertex3i(win->len_x-10,55,0);
-					glVertex3i(win->len_x-10,55,0);
-					glVertex3i(win->len_x-5,45,0);
-			} else {
-			//arrow up
-					glVertex3i(win->len_x-15,55,0);
-					glVertex3i(win->len_x-10,45,0);
-					glVertex3i(win->len_x-10,45,0);
-					glVertex3i(win->len_x-5,55,0);
-			}
-		glEnd();
-	}
-#endif //FR_VERSION
 	glEnable(GL_TEXTURE_2D);
 	return 1;
 }
@@ -1313,35 +808,12 @@ void draw_spell_icon(int id,int x_start, int y_start, int gridsize, int alpha, i
 
 		float u_start,v_start,u_end,v_end;
 
-#ifdef	NEW_TEXTURES
-#ifdef FR_VERSION
 	u_start = 0.125f/2 * (id % 16);
 	v_start = 0.125f/2 * (id / 16);
 	u_end = u_start + 0.125f/2;
 	v_end = v_start + 0.125f/2;
-#else //FR_VERSION
-	u_start = 0.125f * (id % 8);
-	v_start = 0.125f * (id / 8);
-	u_end = u_start + 0.125f;
-	v_end = v_start + 0.125f;
-#endif //FR_VERSION
 
 	bind_texture(sigils_text);
-#else	/* NEW_TEXTURES */
-#ifdef FR_VERSION
-	u_start=0.125f/2*(id%16);
-	v_start=1.0f-((float)32/512*(id/16));
-	u_end=u_start+0.125f/2;
-	v_end=v_start-0.125f/2;
-#else //FR_VERSION
-	u_start=0.125f*(id%8);
-	v_start=1.0f-((float)32/256*(id/8));
-	u_end=u_start+0.125f;
-	v_end=v_start-0.125f;
-#endif //FR_VERSION
-
-	get_and_set_texture_id(sigils_text);
-#endif	/* NEW_TEXTURES */
 	if(alpha) {
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.05f);
@@ -1382,13 +854,9 @@ void draw_current_spell(int x, int y, int sigils_too){
 
 		//draw reagents
 		x+= (sigils_too) ? (33*6+33):(33+16);
-#ifdef ENGLISH
-		for(i=0;spells_list[j].reagents_id[i]>0;i++) {
-#else //ENGLISH
         // Modification car sur les sorts avec 4 essences différentes
         // l'affichage pose soucis
 		for(i=0;spells_list[j].reagents_id[i]>0&&i<4;i++) {
-#endif //ENGLISH
 			draw_item(spells_list[j].reagents_id[i],x+33*i,y,33);
 			safe_snprintf((char *)str, sizeof(str), "%i",spells_list[j].reagents_qt[i]);
 			draw_string_small_shadowed(x+33*i, y+21, (unsigned char*)str, 1,1.0f,1.0f,1.0f, 0.0f, 0.0f, 0.0f);
@@ -1409,19 +877,11 @@ void draw_current_spell(int x, int y, int sigils_too){
 	glColor3f(0.77f,0.57f,0.39f);
 	if(sigils_too) {
 		x+=33*2;
-#ifdef ENGLISH
-		draw_string_small(x,y-15,(unsigned char*)"Sigils",1);
-#else //ENGLISH
 		draw_string_small(x,y-15,(unsigned char*)"Runes",1);
-#endif //ENGLISH
 		x+=33*6+33;
 	} else x+=33+16;
 
-#ifdef ENGLISH
-	draw_string_small(x,y-15,(unsigned char*)"Reagents",1);
-#else //ENGLISH
 	draw_string_small(x,y-15,(unsigned char*)"Essences",1);
-#endif //ENGLISH
 	x+=33*4+((sigils_too) ? (33):(17));
 	draw_string_small(x,y-15,(unsigned char*)"Mana",1);
 
@@ -1491,9 +951,6 @@ int display_sigils_handler(window_info *win)
 
 	if(show_last_spell_help && mqb_data[0] && mqb_data[0]->spell_id!=-1)show_help(mqb_data[0]->spell_name,350-8*strlen(mqb_data[0]->spell_name),120);
 	show_last_spell_help=0;
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -1528,11 +985,7 @@ int display_spells_handler(window_info *win){
 	//draw spell text & help
 	glColor3f(1.0f,1.0f,1.0f);
 	draw_string_small(20,spell_y_len-100,spell_text,4);
-#ifdef ENGLISH
-	draw_string_small(20,spell_y_len+5,spell_help,2);
-#else //ENGLISH
 	draw_string_small(20,spell_y_len+5,spell_help,3);
-#endif //ENGLISH
 
 	//draw the bottom bar
 	draw_current_spell(20,spell_y_len-37,1);
@@ -1543,9 +996,6 @@ int display_spells_handler(window_info *win){
 
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -1566,10 +1016,8 @@ int display_spells_mini_handler(window_info *win){
 					x+j*33,y+33*i,32,
 					0,spells_list[groups_list[i].spells_id[j]].uncastable);
 			cs++;
-#ifndef ENGLISH
 			//@tosh : correction d'un bug qui survient si la ligne est remplie de runes.
 			if(j == SPELLS_ALIGN_X-1){cg++; cs = 0;}
-#endif
 		}
 
 	//draw spell help
@@ -1603,19 +1051,14 @@ int display_spells_mini_handler(window_info *win){
 
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
 
-#ifdef FR_FENETRE_NECRO
 int display_necro_handler(window_info *win)
 {
     int i, j;
     float u_start, v_start, u_end, v_end;
-#ifdef FR_NECRO_RECETTES
     Uint8 nombre[80];
     int grille_x;
     int grille_y;
@@ -1670,14 +1113,8 @@ int display_necro_handler(window_info *win)
 	    }
 	}
     }
-#endif //FR_NECRO_RECETTES
     draw_switcher(win);
-#ifdef NEW_TEXTURES
     bind_texture(divers_text);
-#else //NEW_TEXTURES
-    bind_texture_id(divers_text);
-    get_and_set_texture_id(divers_text);
-#endif //NEW_TEXTUES
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.05f);
     glBegin(GL_QUADS);
@@ -1685,13 +1122,8 @@ int display_necro_handler(window_info *win)
     {
 	u_start = 0.125f * (necro_list[i].necro_img%8);
 	u_end = u_start + 0.125f;
-#ifdef NEW_TEXTURES
 	v_start =((float)32/256*(necro_list[i].necro_img/8));
 	v_end = v_start + 0.125f;
-#else //NEW_TEXTURES
-	v_start = 1.0f - ((float)32/256*(necro_list[i].necro_img/8));
-	v_end = v_start - 0.125f;
-#endif //NEW_TEXTURES
 
 	if(i >= 4)
 	{
@@ -1713,12 +1145,7 @@ int display_necro_handler(window_info *win)
     //ajout du sort de soin des invoqués :
     glEnd();
     glDisable(GL_ALPHA_TEST);
-#ifdef NEW_TEXTURES
     bind_texture_id(sigils_text); //icones de sorts
-#else //NEW_TEXTURES
-    bind_texture_id(sigils_text); //icones de sorts
-    get_and_set_texture_id(sigils_text); // icones de sorts
-#endif //NEW_TEXTURES
     pos_y_sdi = NECRO_SPACE_X;
     pos_x_sdi = NECRO_SPACE_Y+5*(33+NECRO_SPACE_Y_BETWEEN)+NECRO_SPACE_Y_BETWEEN*5;
     draw_spell_icon(spells_list[groups_list[1].spells_id[4]].image,pos_x_sdi,pos_y_sdi,32,0,spells_list[groups_list[1].spells_id[4]].uncastable);
@@ -1734,7 +1161,6 @@ int display_necro_handler(window_info *win)
     {
 	draw_string_small(NECRO_SPACE_X, NECRO_SPACE_Y*2+33+10, (unsigned char*)necro_list[mouseover_necro].description, 1);
     }
-#ifdef FR_NECRO_RECETTES
     if(nb_recettes_necro > 0)
     {
 	if (last_items_string_id != inventory_item_string_id)
@@ -1816,13 +1242,8 @@ int display_necro_handler(window_info *win)
 	glColor3f(0.77f,0.57f,0.39f);
 	draw_string_small(texte_options_x, texte_options_y + 95 - 15, (unsigned char*)("Double Invocation"), 1);
     }
-#endif //FR_NECRO_RECETTES
-#ifdef OPENGL_TRACE
-    CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE*
     return 1;
 }
-#ifdef FR_NECRO_RECETTES
 int chargement_necro_recettes(int choix)
 {
     int encours = 0;
@@ -1882,8 +1303,6 @@ int chargement_necro_recettes(int choix)
 	return -1;	//Pas de fichier
     }
 }
-#endif //FR_NECRO_RECETTES
-#endif //FR_FENETRE_NECRO
 //CLICK HANDLERS
 int switch_handler(int new_win)
 {
@@ -1896,28 +1315,19 @@ int switch_handler(int new_win)
     win=&windows_list.window[last_win];
     windows_list.window[this_win].opaque=windows_list.window[last_win].opaque;
     hide_window(last_win);
-#ifdef FR_VERSION
     // positionnement en conservant l'alignement à droite (pour rester sur les switchs)
     move_window(this_win, win->pos_id, win->pos_loc, win->pos_x + win->len_x - windows_list.window[this_win].len_x, win->pos_y);
-#else //FR_VERSION
-    move_window(this_win, win->pos_id, win->pos_loc, win->pos_x, win->pos_y);
-#endif //FR_VERSION
     show_window(this_win);
     select_window(this_win);
     sigil_win=this_win;
-#ifdef FR_NECRO_RECETTES
     if(new_win == sigils_win) start_mini_spells = 0;
     else if (new_win == spell_mini_win) start_mini_spells = 1;
     else if (new_win == spell_win) start_mini_spells = 2;
     else if (new_win == necro_win) start_mini_spells = 3;
-#else
-    start_mini_spells=(sigil_win==spell_mini_win)? 1:0;
-#endif //FR_NECRO_RECETTES
 
     return 1;
 }
 
-#ifdef FR_VERSION
 int mouseover_switcher_handler(window_info *win, int mx, int my)
 {
 	if (mx >= win->len_x - ELW_BOX_SIZE && my > ELW_BOX_SIZE)
@@ -1934,21 +1344,15 @@ int mouseover_switcher_handler(window_info *win, int mx, int my)
 		{
 			show_help("Liste détaillée", win->len_x+5, ELW_BOX_SIZE*3);
 		}
-#ifdef FR_FENETRE_NECRO
         else if (my < ELW_BOX_SIZE*5)
         {
             show_help("Nécromancie", win->len_x+5, ELW_BOX_SIZE*4);
         }
-#endif //FR_FENETRE_NECRO
 	}
 	return 0;
 }
-#endif //FR_VERSION
 
 int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags){
-#ifdef FR_VERSION
-#ifdef FR_FENETRE_NECRO
-#ifdef FR_NECRO_RECETTES
     int pos = 0;
     if(win->window_id == necro_win)
     {
@@ -1981,8 +1385,6 @@ int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags){
 	    }
 	}
     }
-#endif //FR_NECRO_RECETTES
-#endif //FR_FENETRE_NECRO
     if (mx >= win->len_x - ELW_BOX_SIZE && my > ELW_BOX_SIZE)
     {
 	if (my < ELW_BOX_SIZE*2)
@@ -2009,7 +1411,6 @@ int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags){
 		switch_handler(spell_win);
 	    }
 	}
-#ifdef FR_FENETRE_NECRO
 	else if (my <  ELW_BOX_SIZE*5)
 	{
             if (sigil_win != necro_win)
@@ -2018,19 +1419,7 @@ int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags){
 		switch_handler(necro_win);
 	    }
 	}
-#endif //FR_FENETRE_NECRO
     }
-#else //FR_VERSION
-    if (mx>=win->len_x-20&&my>=20&&my<=40) {
-	do_click_sound();
-	switch_handler((sigil_win==sigils_win) ? (last_win):(sigils_win));
-    } else if(sigil_win==spell_win || sigil_win==spell_mini_win){
-	if (mx>=win->len_x-20&&my>=40&&my<=60) {
-	    do_click_sound();
-	    switch_handler((sigil_win==spell_win) ? (spell_mini_win):(spell_win));
-	}
-    }
-#endif //FR_VERSION
 	return 0;
 }
 
@@ -2167,7 +1556,6 @@ int click_spells_mini_handler(window_info *win, int mx, int my, Uint32 flags){
 	return 0;
 }
 
-#ifdef FR_FENETRE_NECRO
 int click_necro_handler(window_info *win, int mx, int my, Uint32 flags)
 {
     int pos, i, clique_bouton = 0;
@@ -2192,7 +1580,6 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags)
 
 	if (pos == 0)
 	{
-#ifdef FR_NECRO_RECETTES
 	    if(nb_recettes_necro > 0)
 	    {
 		if((i == 4) && (securite_invoc))
@@ -2209,13 +1596,10 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags)
 	    }
 	    else
 	    {
-#endif //FR_NECRO_RECETTES
 		test_for_console_command (necro_list[i].name, strlen(necro_list[i].name));
 		clique_bouton = 1;
 		break;
-#ifdef FR_NECRO_RECETTES
 	    }
-#endif //FR_NECRO_RECETTES
 	}
     }
 
@@ -2227,7 +1611,6 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags)
 	put_on_cast();
 	cast_handler();
     }
-#ifdef FR_NECRO_RECETTES
     if(nb_recettes_necro > 0)
     {
 	//pos = get_mouse_pos_in_grid(mx, my, 1, 1, double_invoc_x - 5, double_invoc_y - 5, 10, 10);
@@ -2267,7 +1650,6 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags)
 	    }
 	}
     }
-#endif //FR_NECRO_RECETTES
     if (!clique_bouton)
     {
 	click_switcher_handler(win, mx, my, flags);
@@ -2275,7 +1657,6 @@ int click_necro_handler(window_info *win, int mx, int my, Uint32 flags)
 
 	return 0;
 }
-#endif //FR_FENETRE_NECRO
 
 
 //MOUSEOVER HANDLERS
@@ -2313,16 +1694,10 @@ int mouseover_sigils_handler(window_info *win, int mx, int my)
 	}
 
 	if(mx>=350 && mx<=381 && my>=112 && my<=143 && mqb_data[0] && mqb_data[0]->spell_id != -1) {
-#ifdef ENGLISH
-		safe_snprintf((char*)spell_text, sizeof(spell_text), "Click to add the spell to the quickbar");
-#else //ENGLISH
 		safe_snprintf((char*)spell_text, sizeof(spell_text), click_to_add_str);
-#endif //ENGLISH
 		return 0;
 	}
-#ifdef FR_VERSION
 	mouseover_switcher_handler(win, mx, my);
-#endif //FR_VERSION
 	return 0;
 }
 
@@ -2379,16 +1754,10 @@ int mouseover_spells_handler(window_info *win, int mx, int my){
 	set_spell_help_text(we_have_spell);
 	//check spell icon
 	if(mx>20&&mx<53&&my>spell_y_len-37&&my<spell_y_len-4&&we_have_spell>=0) {
-#ifdef ENGLISH
-		safe_snprintf((char*)spell_text, sizeof(spell_text), "Left click to cast\nRight click to add the spell to the quickbar");
-#else //ENGLISH
 		safe_snprintf((char*)spell_text, sizeof(spell_text), "Clique gauche pour lancer le sort\nClique droit pour ajouter le sort dans la barre rapide");
-#endif //ENGLISH
 		have_error_message=0;
 	}
-#ifdef FR_VERSION
 	mouseover_switcher_handler(win, mx, my);
-#endif //FR_VERSION
 	return 0;
 }
 int mouseover_spells_mini_handler(window_info *win, int mx, int my){
@@ -2412,13 +1781,10 @@ int mouseover_spells_mini_handler(window_info *win, int mx, int my){
 		//check spell icon
 		on_spell=-2; //draw uncastability reason
 	}
-#ifdef FR_VERSION
 	mouseover_switcher_handler(win, mx, my);
-#endif //FR_VERSION
 	return 0;
 }
 
-#ifdef FR_FENETRE_NECRO
 int mouseover_necro_handler(window_info *win, int mx, int my)
 {
     int i, pos;
@@ -2459,7 +1825,6 @@ int mouseover_necro_handler(window_info *win, int mx, int my)
 	mouseover_switcher_handler(win, mx, my);
 	return 0;
 }
-#endif //FR_FENETRE_NECRO
 
 
 
@@ -2493,11 +1858,7 @@ int have_spell_name(int spell_id)
 {
 	int i;
 
-#ifdef ENGLISH
-	for(i=1;i<MAX_QUICKBAR_SLOTS+1;i++){
-#else //ENGLISH
     for(i=1;i<=QUICKSPELLS_MAXSIZE;i++){
-#endif //ENGLISH
 		if(mqb_data[i] && mqb_data[i]->spell_id==spell_id && mqb_data[i]->spell_name[0]){
 			if(mqb_data[0])
 				safe_snprintf(mqb_data[0]->spell_name, sizeof(mqb_data[0]->spell_name), "%s", mqb_data[i]->spell_name);
@@ -2516,11 +1877,7 @@ void set_spell_name (int id, const char *data, int len)
 
 	counters_set_spell_name(id, (char *)data, len);
 
-#ifdef ENGLISH
-	for (i = 0; i < MAX_QUICKBAR_SLOTS+1; i++)
-#else //ENGLISH
 	for (i = 0; i < QUICKSPELLS_MAXSIZE; i++)
-#endif //ENGLISH
 	{
 		if (mqb_data[i] != NULL && mqb_data[i]->spell_id==id)
 		{
@@ -2530,36 +1887,6 @@ void set_spell_name (int id, const char *data, int len)
 
 }
 
-#ifdef ENGLISH
-static void spell_cast(const Uint8 id)
-{
-	Uint32 i, spell;
-
-	spell = 0xFFFFFFFF;
-
-	for (i = 0; i < SPELLS_NO; i++)
-	{
-		if (spells_list[i].id == id)
-		{
-			spell = spells_list[i].buff;
-			break;
-		}
-	}
-
-	for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
-	{
-		if (active_spells[i].spell == spell)
-		{
-#ifdef ENGLISH
-			request_buff_duration(spell);
-#else //ENGLISH
-			active_spells[i].cast_time = SDL_GetTicks();
-#endif //ENGLISH
-			return;
-		}
-	}
-}
-#endif //ENGLISH
 
 void process_network_spell (const char *data, int len)
 {
@@ -2575,11 +1902,9 @@ void process_network_spell (const char *data, int len)
 			return;;
 		case S_SELECT_TARGET://spell_result==3
 		  spell_result=3;
-#ifdef FR_FAST_SPELL
 		  if(selected_spell != -1 && selected_spell_sent) {
 		    fast_spell_cast();
 		  }
-#endif
 		  action_mode=ACTION_WAND;
 
 			break;
@@ -2588,11 +1913,9 @@ void process_network_spell (const char *data, int len)
 		  // interfere with our destination
 		  if (pf_follow_path) pf_destroy_path ();
 
-#ifdef FR_FAST_SPELL
 		  if(selected_spell != -1 && selected_spell_sent) {
 		    fast_spell_teleport();
 		  }
-#endif
 
 		  spell_result=2;
 		  action_mode=ACTION_WAND;
@@ -2600,24 +1923,17 @@ void process_network_spell (const char *data, int len)
 			break;
 		case S_SUCCES://spell_result==1
 			spell_result=1;
-#ifdef FR_FAST_SPELL
 			if(selected_spell_sent) {
 			  action_mode=ACTION_ATTACK;
 			  selected_spell_sent = 0;
 			} else
-#endif
 			action_mode=ACTION_WALK;
-#ifdef ENGLISH
-			spell_cast(data[1]);
-#endif //ENGLISH
 			break;
 		case S_FAILED:
-#ifdef FR_FAST_SPELL
 		  	if(selected_spell_sent) {
 			  selected_spell_sent = 0;
 			  action_mode=ACTION_ATTACK;
 			} else
-#endif
 			action_mode=ACTION_WALK;
 			spell_result=0;
 
@@ -2647,7 +1963,6 @@ void process_network_spell (const char *data, int len)
 
 /****** QUICKSPELLS FUNCTIONS *****/
 
-#ifdef FR_VERSION
 
 /* Retourne l'indice de la case de la barre rapide correspondant aux coordonnées de la souris */
 int get_quickspell_from_mouse(int mx, int my)
@@ -2738,7 +2053,6 @@ int resize_quickspells(int nb)
 	return nb;
 }
 
-#endif //FR_VERSION
 
 //Quickspell I/O start
 
@@ -2750,78 +2064,7 @@ void add_spell_to_quickbar()
 	if(!mqb_data[0])
 		return;
 
-#ifdef ENGLISH
-	for(i=1;i<num_quickbar_slots+1;i++) {
-		if(mqb_data[i] && mqb_data[0]->spell_id==mqb_data[i]->spell_id) {
-			return;
-		}
-	}
 
-	for (i = 1; i < num_quickbar_slots+1; i++)
-	{
-		if (mqb_data[i] == NULL)
-		{
-			// Free slot
-			mqb_data[i] = calloc(1, sizeof (mqbdata));
-			break;
-		}
-	}
-
-	if (i >= num_quickbar_slots+1)
-		// No free slot, overwrite the last entry
-		i = num_quickbar_slots;
-
-	memcpy (mqb_data[i], mqb_data[0], sizeof (mqbdata));
-	save_quickspells();
-	cm_update_quickspells();
-#else //ENGLISH
-
-#ifndef FR_MORE_MQB
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data[i] && mqb_data[0]->spell_id==mqb_data[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data[quickspells_size];
-				mqb_data[quickspells_size] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data[i] == NULL)
-		{
-			// Free slot
-			mqb_data[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data[i], mqb_data[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data[i], mqb_data[0], sizeof(mqbdata));
-	}
-#else //FR_MORE_MQB
 
 switch (quickspell_mqb_selected)
 {
@@ -3061,44 +2304,13 @@ default:
 }
 	
 
-#endif //FR_MORE_MQB
 	save_quickspells();
-#endif //ENGLISH
 }
 
 void remove_spell_from_quickbar (int pos)
 {
 	int i = 0;
 
-#ifdef ENGLISH
-	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) {
-		return;
-	}
-
-	// remove the spell
-	free (mqb_data[pos]);
-
-	// move the other spells one up
-	for (i = pos; i < MAX_QUICKBAR_SLOTS; i++) {
-		mqb_data[i] = mqb_data[i+1];
-	}
-
-	mqb_data[MAX_QUICKBAR_SLOTS] = NULL;
-	save_quickspells();
-	cm_update_quickspells();
-
-#else //ENGLISH
-#ifndef FR_MORE_MQB
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data[i] = mqb_data[i+1];
-		if (mqb_data[i] == NULL) break;
-	}
-
-	mqb_data[QUICKSPELLS_MAXSIZE] = NULL;
-#else //FR_MORE_MQB
 switch (quickspell_mqb_selected)
 {
 case 0:
@@ -3161,10 +2373,8 @@ default:
 	break;
 }
 	
-#endif //FR_MORE_MQB
 	resize_quickspells(i - 1);
 	save_quickspells();
-#endif //ENGLISH
 }
 
 
@@ -3172,36 +2382,6 @@ void move_spell_on_quickbar (int pos, int direction)
 {
 	int i=pos;
 	mqbdata * mqb_temp;
-#ifdef FR_VERSION
-#ifndef FR_MORE_MQB
-    if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-	switch (direction) {
-		case 0 : // up
-		    if (pos == 1) return;
-			mqb_temp = mqb_data[i-1];
-			mqb_data[i-1] = mqb_data[i];
-			mqb_data[i] = mqb_temp;
-			break;
-		case 1 : // down
-			if (pos == QUICKSPELLS_MAXSIZE) return;
-			mqb_temp = mqb_data[i+1];
-			mqb_data[i+1] = mqb_data[i];
-			mqb_data[i] = mqb_temp;
-			break;
-		case 2 : // first
-		    if (pos == 1) return;
-			mqb_temp = mqb_data[pos];
-			for (i=pos; i>1; i--) mqb_data[i] = mqb_data[i-1];
-			mqb_data[1] = mqb_temp;
-			break;
-		case 3 : // last
-			if (pos == quickspells_nb) return;
-			mqb_temp = mqb_data[pos];
-			for (i=pos; i<quickspells_nb; i++) mqb_data[i] = mqb_data[i+1];
-			mqb_data[quickspells_nb] = mqb_temp;
-			break;
-	}
-#else //FR_MORE_MQB
 	switch (quickspell_mqb_selected)
 	{
 	case 0:
@@ -3353,25 +2533,7 @@ void move_spell_on_quickbar (int pos, int direction)
 	default:
 		break;
 	}
-#endif //FR_MORE_MQB
 	save_quickspells();
-#else //FR_VERSION
-	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) return;
-	if ((pos ==1 && direction==0)||(pos==num_quickbar_slots && direction==1)) return;
-	if (direction==0){
-		mqb_temp=mqb_data[i-1];
-		mqb_data[i-1]=mqb_data[i]; //move it up
-		mqb_data[i]=mqb_temp; //move it up
-		save_quickspells();
-	}
-	else if(direction==1){
-		if(mqb_data[pos+1] == NULL) return;
-		mqb_temp=mqb_data[i+1];
-		mqb_data[i+1]=mqb_data[i]; //move it down
-		mqb_data[i]=mqb_temp; //move it down
-		save_quickspells();
-	}
-#endif //FR_VERSION
 }
 
 static mqbdata* build_quickspell_data(const Uint32 spell_id)
@@ -3447,109 +2609,6 @@ static mqbdata* build_quickspell_data(const Uint32 spell_id)
 	return result;
 }
 
-#ifndef FR_MORE_MQB
-void load_quickspells ()
-{
-	char fname[128];
-	Uint8 num_spells;
-	FILE *fp;
-	Uint32 i, index;
-
-	// Grum: move this over here instead of at the end of the function,
-	// so that quickspells are always saved when the player logs in.
-	// (We're only interested in if this function is called, not if it
-	// succeeds)
-	quickspells_loaded = 1;
-
-	//open the data file
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
-	my_tolower(fname);
-
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname)!=1)
-		return;
-
-	fp = open_file_config(fname,"rb");
-
-	if (fp == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname, strerror(errno));
-		return;
-	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname);
-		fclose (fp);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-#ifdef FR_VERSION
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-#else //FR_VERSION
-	if (num_spells > MAX_QUICKBAR_SLOTS)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, MAX_QUICKBAR_SLOTS);
-
-		num_spells = MAX_QUICKBAR_SLOTS;
-	}
-#endif //FR_VERSION
-
-	memset(mqb_data, 0, sizeof (mqb_data));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname);
-
-	index = 1;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname);
-			continue;
-		}
-
-		mqb_data[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data[index]->spell_name, index);
-
-		index++;
-	}
-	fclose (fp);
-
-#ifdef FR_VERSION
-	resize_quickspells(index - 1);
-#else //FR_VERSION
-	cm_update_quickspells();
-#endif //FR_VERSION
-
-	LEAVE_DEBUG_MARK("load spells");
-}
-#else //FR_MORE_MQB
 void load_quickspells ()
 {
 	char fname[128];
@@ -3956,71 +3015,7 @@ void load_quickspells ()
 
 	LEAVE_DEBUG_MARK("load spells");
 }
-#endif //FR_MORE_MQB
 
-#ifndef FR_MORE_MQB
-void save_quickspells()
-{
-	char fname[128];
-	FILE *fp;
-	Uint8 i;
-
-	if (!quickspells_loaded)
-		return;
-
-	//write to the data file, to ensure data integrity, we will write all the information
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
-	my_tolower(fname);
-	fp=open_file_config(fname,"wb");
-	if(fp == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname, strerror(errno));
-		return;
-	}
-
-#ifdef FR_VERSION
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-#else //FR_VERSION
-	for (i = 1; i < MAX_QUICKBAR_SLOTS+1; i++)
-#endif //FR_VERSION
-	{
-		if (mqb_data[i] == NULL)
-			break;
-	}
-
-	ENTER_DEBUG_MARK("save spells");
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname);
-
-#ifdef FR_VERSION
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-#else //FR_VERSION
-	for (i = 1; i < (MAX_QUICKBAR_SLOTS + 1); i++)
-#endif //FR_VERSION
-	{
-		if (mqb_data[i] == 0)
-		{
-			break;
-		}
-
-		if (fwrite(mqb_data[i], sizeof(mqbdata), 1, fp) != 1)
-	{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data[i]->spell_name, fname);
-			break;
-	}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data[i]->spell_name, fname);
-	}
-
-	fclose(fp);
-
-	LEAVE_DEBUG_MARK("save spells");
-}
-#else //FR_MORE_MQB
 void save_quickspells()
 {
 	char fname[128];
@@ -4229,73 +3224,30 @@ void save_quickspells()
 
 	LEAVE_DEBUG_MARK("save spells");
 }
-#endif //FR_MORE_MQB
 
 // Quickspell window start
 
 int quickspell_over=-1;
 
-#ifdef ENGLISH
-// get the quickbar length - it depends on the numbe rof slots active
-int get_quickspell_y_len(void)
-{
-	return num_quickbar_slots*30;
-}
-#endif //ENGLISH
 
 /*	returns the y coord position of the active base
 	of the quickspell window.  If spell slots are unused
 	the base is higher */
 int get_quickspell_y_base()
 {
-#ifdef FR_VERSION
 	if (quickspells_draggable) return 0;
 	if (quickspell_x > HUD_MARGIN_X) return 0;
 	return quickspell_y + quickspell_y_len;
-#else //FR_VERSION
-	int active_len = quickspell_y + get_quickspell_y_len();
-	int i;
-
-	if (!quickspells_loaded)
-		return quickspell_y;
-
-	for (i = num_quickbar_slots; i > 0; i--)
-	{
-		if (mqb_data[i] == NULL)
-			active_len -= 30;
-		else
-			break;
-	}
-
-	return active_len;
-#endif //FR_VERSION
 }
 
 
 int display_quickspell_handler(window_info *win)
 {
 	int x,y,width,i;
-#ifdef FR_VERSION
 	int over = -1;
 	width = (quickspells_dim - quickspells_ico) / 2;
-#else //FR_VERSION
-	static int last_num_quickbar_slots = -1;
-	// Check for a change of the number of quickbar slots
-	if (last_num_quickbar_slots == -1)
-		last_num_quickbar_slots = num_quickbar_slots;
-	else if (last_num_quickbar_slots != num_quickbar_slots)
-	{
-		last_num_quickbar_slots = num_quickbar_slots;
-		init_window(win->window_id, -1, 0, win->cur_x, win->cur_y, win->len_x, get_quickspell_y_len());
-		cm_update_quickspells();
-	}
-#endif //FR_VERSION
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
-#ifdef FR_MORE_MQB
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f,0.57f,0.39f);
 	if (quickspells_dir != VERTICAL){
@@ -4325,32 +3277,12 @@ CHECK_GL_ERRORS();
         glVertex3i(10+22, 4, 0); //top
         glEnd();
     }
-#endif //FR_MORE_MQB
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.20f);
 	glEnable(GL_BLEND);	// Turn Blending On
 	glBlendFunc(GL_SRC_ALPHA,GL_DST_ALPHA);
 
-#ifdef FR_VERSION
-#ifndef FR_MORE_MQB
-	for (i = 1; i <= quickspells_size; i++)
-	{
-		if (!mqb_data[i] || !mqb_data[i]->spell_name[0]) break;
-		y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-		  if (quickspell_over == i) {
-			over = y;
-			glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-		}
-		else
-		{
-			glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-		}
-		if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-		draw_spell_icon(mqb_data[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
-	}
-#else //FR_MORE_MQB
 	switch (quickspell_mqb_selected)
 	{
 	case 0:
@@ -4437,31 +3369,11 @@ CHECK_GL_ERRORS();
 	default:
 		break;
 	}
-#endif //FR_MORE_MQB
-#else //FR_VERSION
-	for(i=1;i<num_quickbar_slots+1;i++) {
-		if(mqb_data[i] && mqb_data[i]->spell_name[0]){
-			x=quickspell_size/2;
-			y=(i-1)*30+15;
-			width=quickspell_size/2;
-
-			if(quickspell_over==i){	//highlight if we are hovering over
-				glColor4f(1.0f,1.0f,1.0f,1.0f);
-			} else {	//otherwise shade it a bit
-				glColor4f(1.0f,1.0f,1.0f,0.6f);
-			}
-
-			draw_spell_icon(mqb_data[i]->spell_image,x-width,y-width,quickspell_size,0,0);
-		}
-	}
-#endif //FR_VERSION
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	glDisable(GL_BLEND);	// Turn Blending Off
 	glDisable(GL_ALPHA_TEST);
 	
-#ifdef FR_VERSION
-#ifdef FR_FAST_SPELL
 	if(selected_spell != -1) {
 	  int loc = (1+quickspells_dim)*(selected_spell-1) + (int)(selected_spell/quickspells_div)*quickspells_sep;
 	  if (quickspells_dir == VERTICAL)
@@ -4469,14 +3381,11 @@ CHECK_GL_ERRORS();
 	  else
 	    show_help("*", loc + width, 5 + quickspells_dim);
 	}
-#endif
 	mqbdata **m = mqb_data;
-#ifdef FR_MORE_MQB
 	mqbdata **ml[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5};
 	if ((unsigned)quickspell_mqb_selected < 5) {
 		m = ml[quickspell_mqb_selected];
 	}
-#endif //FR_MORE_MQB
 	mqbdata *d = m[quickspell_over];
 	if (quickspell_over > 0 && d) {
 		const char *n = d->spell_name;
@@ -4492,14 +3401,7 @@ CHECK_GL_ERRORS();
 			show_help(n, over + width, 5 + quickspells_dim);
 		}
 	}
-#else //FR_VERSION
-	if(quickspell_over!=-1 && mqb_data[quickspell_over])
-		show_help(mqb_data[quickspell_over]->spell_name,-10-strlen(mqb_data[quickspell_over]->spell_name)*8,(quickspell_over-1)*30+10);
-#endif //FR_VERSION
 	quickspell_over=-1;
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	return 1;
 }
@@ -4508,16 +3410,7 @@ int mouseover_quickspell_handler(window_info *win, int mx, int my)
 {
 	int pos;
 
-#ifdef FR_VERSION
 	pos = get_quickspell_from_mouse(mx, my) + 1;
-#ifndef FR_MORE_MQB
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
-		quickspell_over = pos;
-		elwin_mouse = CURSOR_WAND;
-		return 1;
-	}
-#else //FR_MORE_MQB
 	switch (quickspell_mqb_selected)
 	{
 	case 0:
@@ -4564,22 +3457,12 @@ int mouseover_quickspell_handler(window_info *win, int mx, int my)
 	default:
 		break;
 	}
-#endif //FR_MORE_MQB
-#else //FR_VERSION
-	pos=my/30+1;
-	if(pos<num_quickbar_slots+1 && pos>=1 && mqb_data[pos] && mqb_data[pos]->spell_name[0]) {
-		quickspell_over=pos;
-		elwin_mouse=CURSOR_WAND;
-		return 1;
-	}
-#endif //FR_VERSION
 	return 0;
 }
 
 int click_quickspell_handler(window_info *win, int mx, int my, Uint32 flags)
 {
 	int pos;
-#ifdef FR_VERSION
 	int ctrl_on = flags & ELW_CTRL;
 	int shift_on = flags & ELW_SHIFT;
 
@@ -4606,13 +3489,6 @@ int click_quickspell_handler(window_info *win, int mx, int my, Uint32 flags)
 	if (flags & ELW_RIGHT_MOUSE)
 	{
 		// clic droit sur un icone : affichage du menu contextuel des icones (général inclus)
-#ifndef FR_MORE_MQB
-		if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-		{
-			cm_show_direct(cm_quickspells_id, quickspell_win, -1);
-			return 1;
-		}
-#else //FR_MORE_MQB
 switch (quickspell_mqb_selected)
 {
 case 0:
@@ -4655,19 +3531,16 @@ default:
 	break;
 }
 
-#endif //FR_MORE_MQB
 
 		// clic droit en dehors des icones : affichage du menu contextuel général
 		cm_show_direct(cm_quickspells_win_id, quickspell_win, -1);
 		return 1;
 	}
 	mqbdata **m = mqb_data;
-#ifdef FR_MORE_MQB
 	mqbdata **ml[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5};
 	if ((unsigned)quickspell_mqb_selected < 5) {
 		m = ml[quickspell_mqb_selected];
 	}
-#endif //FR_MORE_MQB
 	// actions sur un raccourci (clic gauche)
 	mqbdata *d = m[pos];
 	if (pos > 0 && d && d->spell_name[0]) {
@@ -4691,7 +3564,6 @@ default:
 			return 1;
 		}
 	}
-#ifdef FR_MORE_MQB
 	if(pos==0){
 		if(quickspells_dir != VERTICAL){
 			if(mx >= 0 && mx <= 8 && my >= 0 && my <= 10){
@@ -4715,39 +3587,10 @@ default:
 			}
 		}
 	}
-#endif //FR_MORE_MQB
 
-#else //FR_VERSION
-	pos=my/30+1;
-
-	if(pos<num_quickbar_slots+1 && pos>=1 && mqb_data[pos])
-	{
-		if ((flags & ELW_LEFT_MOUSE)&&(flags & ELW_SHIFT))
-		{
-			move_spell_on_quickbar (pos,0);
-			return 1;
-		}
-		else if ((flags & ELW_RIGHT_MOUSE)&&(flags & ELW_SHIFT))
-		{
-			move_spell_on_quickbar (pos,1);
-			return 1;
-		}
-		else if (flags & ELW_LEFT_MOUSE && mqb_data[pos]->spell_str[0])
-		{
-			send_spell(mqb_data[pos]->spell_str, mqb_data[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if ((flags & ELW_RIGHT_MOUSE)&&(flags & ELW_CTRL))
-		{
-			remove_spell_from_quickbar (pos);
-			return 1;
-		}
-	}
-#endif //FR_VERSION
 	return 0;
 }
 
-#ifdef FR_VERSION
 // menu contextuel général (barre de titre ou fenêtre hors icones)
 static int context_quickspellwin_handler(window_info *win, int widget_id, int mx, int my, int option)
 {
@@ -4759,80 +3602,42 @@ static int context_quickspellwin_handler(window_info *win, int widget_id, int mx
 	}
 	return 1;
 }
-#endif //FR_VERSION
 
 static int context_quickspell_handler(window_info *win, int widget_id, int mx, int my, int option)
 {
-#ifdef FR_VERSION
 	int pos = get_quickspell_from_mouse(mx, my) + 1;
 	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-#else //FR_VERSION
-	int pos=my/30+1;
-	if(pos<num_quickbar_slots+1 && pos>=1 && mqb_data[pos])
-#endif //FR_VERSION
 	{
 		switch (option)
 		{
 			case 0: move_spell_on_quickbar (pos,0); break;
 			case 1: move_spell_on_quickbar (pos,1); break;
-#ifdef FR_VERSION
 			case 2: move_spell_on_quickbar (pos,2); break;
 			case 3: move_spell_on_quickbar (pos,3); break;
 			case 4: remove_spell_from_quickbar (pos); break;
-#ifdef FR_FAST_SPELL
 		case 5: fast_spell_cible(pos); break;
 		case 7: quickspells_draggable ^= 1; toggle_quickspells_draggable(); break;
 		case 8: flip_quickspells(); break;
 		case 9: reset_quickspells(); break;
-#else
-			case 6: quickspells_draggable ^= 1; toggle_quickspells_draggable(); break;
-			case 7: flip_quickspells(); break;
-			case 8: reset_quickspells(); break;
-#endif
-#else //FR_VERSION
-			case 2: remove_spell_from_quickbar (pos); break;
-#endif //FR_VERSION
 		}
 	}
 	return 1;
 }
 
-#ifndef FR_VERSION
-void cm_update_quickspells(void)
-{
-	int active_y_len = 0, i;
-	if (quickspell_win < 0)
-		return;
-	for (i = num_quickbar_slots; i > 0; i--)
-	{
-		if (mqb_data[i] != NULL)
-			active_y_len += 30;
-	}
-	cm_remove_regions(quickspell_win);
-	cm_add_region(cm_quickspells_id, quickspell_win, 0, 0, quickspell_x_len, active_y_len);
-}
-#endif //FR_VERSION
 
 void init_quickspell()
 {
-#ifdef FR_VERSION
 	// on remonte/descend les barres rapides placées sur le hud sous le logo
 	if ((! hud_x) && (! quickspells_draggable) && (quickspells_dir==VERTICAL) && (quickspell_x<=HUD_MARGIN_X))
 	{
 		if (quickspell_y == HUD_MARGIN_X) quickspell_y = 0;
 	}
-#endif //FR_VERSION
 	if (quickspell_win < 0){
-#ifdef FR_VERSION
 		quickspell_win = create_window ("Quickspell", -1, 0, window_width - quickspell_x, quickspell_y, quickspell_x_len, quickspell_y_len, ELW_CLICK_TRANSPARENT|ELW_TITLE_NONE|ELW_SHOW_LAST);
-#else //FR_VERSION
-		quickspell_win = create_window ("Quickspell", -1, 0, window_width - quickspell_x, quickspell_y, quickspell_x_len, get_quickspell_y_len(), ELW_CLICK_TRANSPARENT|ELW_TITLE_NONE|ELW_SHOW_LAST);
-#endif //FR_VERSION
 		set_window_handler(quickspell_win, ELW_HANDLER_DISPLAY, &display_quickspell_handler);
 		set_window_handler(quickspell_win, ELW_HANDLER_CLICK, &click_quickspell_handler);
 		set_window_handler(quickspell_win, ELW_HANDLER_MOUSEOVER, &mouseover_quickspell_handler );
 
-#ifdef FR_VERSION
 		// menu contextuel général (barre de titre + clic sur fond hors icones)
 		cm_quickspells_win_id = cm_create(cm_quickspellwin_menu_str, &context_quickspellwin_handler);
 		cm_bool_line(cm_quickspells_win_id, 0, &quickspells_draggable, NULL);
@@ -4840,20 +3645,10 @@ void init_quickspell()
 		// menu contextuel des icones (menu général intégré à la fin)
 		cm_quickspells_id = cm_create(cm_quickspell_menu_str, &context_quickspell_handler);
 		cm_add(cm_quickspells_id, cm_quickspellwin_menu_str, NULL);
-#ifdef FR_FAST_SPELL
 		cm_bool_line(cm_quickspells_id, 5, &fast_spell_cible_bool, NULL);
 		cm_bool_line(cm_quickspells_id, 7, &quickspells_draggable, NULL);
 		cm_bool_line(cm_quickspells_id, 10, &quickspells_on_top, NULL);
-#else
-		cm_bool_line(cm_quickspells_id, 6, &quickspells_draggable, NULL);
-		cm_bool_line(cm_quickspells_id, 9, &quickspells_on_top, NULL);
-#endif
-#else //FR_VERSION
-		cm_quickspells_id = cm_create(cm_quickspell_menu_str, &context_quickspell_handler);
-		cm_update_quickspells();
-#endif //FR_VERSION
 	} else {
-#ifdef FR_VERSION
 		change_flags(quickspell_win, ELW_CLICK_TRANSPARENT|ELW_TITLE_NONE|ELW_SHOW_LAST);
 		if (quickspells_draggable)
 		{
@@ -4867,19 +3662,13 @@ void init_quickspell()
 		{
 			move_window(quickspell_win, -1, 0, window_width - quickspell_x, quickspell_y);
 		}
-#else //FR_VERSION
-		show_window (quickspell_win);
-		move_window (quickspell_win, -1, 0, window_width - quickspell_x, quickspell_y);
-#endif //FR_VERSION
 	}
-#ifdef FR_VERSION
 	// on change les flags de la fenêtre draggable seulement maintenant pour éviter
 	// qu'elle soit créée avec le menu contextuel par défaut de la barre de titre
 	if (quickspells_draggable)
 	{
 		change_flags(quickspell_win, ELW_CLICK_TRANSPARENT|ELW_SHOW_LAST|ELW_TITLE_BAR|ELW_DRAGGABLE|ELW_USE_BACKGROUND|ELW_SWITCHABLE_OPAQUE);
 	}
-#endif //FR_VERSION
 }
 // Quickspells end
 
@@ -4911,11 +3700,7 @@ int action_spell_keys(Uint32 key)
 	size_t i;
 	Uint32 keys[] = {K_SPELL1, K_SPELL2, K_SPELL3, K_SPELL4, K_SPELL5, K_SPELL6,
 					 K_SPELL7, K_SPELL8, K_SPELL9, K_SPELL10, K_SPELL11, K_SPELL12 };
-#ifdef FR_VERSION
 	for (i=0; (i<sizeof(keys)/sizeof(Uint32)) & (i < quickspells_size); i++)
-#else //FR_VERSION
-	for (i=0; (i<sizeof(keys)/sizeof(Uint32)) & (i < num_quickbar_slots); i++)
-#endif //FR_VERSION
 		if(key == keys[i])
 		{
 			if (set_fast_spell_target) {
@@ -4923,11 +3708,6 @@ int action_spell_keys(Uint32 key)
 				set_fast_spell_target = 0;
 				return 1;
 			}
-#ifndef FR_MORE_MQB
-			if(mqb_data[i+1] && mqb_data[i+1]->spell_str[0])
-				send_spell(mqb_data[i+1]->spell_str, mqb_data[i+1]->spell_str[1]+2);
-			return 1;
-#else //FR_MORE_MQB
 			switch (quickspell_mqb_selected)
 			{
 			case 0:
@@ -4959,7 +3739,6 @@ int action_spell_keys(Uint32 key)
 			default:
 				break;
 			}
-#endif //FR_MORE_MQB
 		}
 
 		if(key == K_PREVQUICKSPELLBAR){
@@ -5063,7 +3842,6 @@ void calc_spell_windows(){
 	spell_mini_y_len=10+33*spell_mini_rows+20+30+37;
 }
 
-#ifdef FR_NECRO_RECETTES
 int invocation_depuis_sorts(Uint8 quantity)
 {
     if(nb_recettes_necro > 0)
@@ -5144,7 +3922,6 @@ int plusieurs_bebetes()
     if(nb_recettes_necro > 0) return invocation_depuis_sorts(255);
     else return 1;
 }
-#endif //FR_NECRO_RECETTES
 
 //Create and show/hide our windows
 void display_sigils_menu()
@@ -5207,12 +3984,8 @@ void display_sigils_menu()
 		if (!windows_on_top) {
 			our_root_win = game_root_win;
 		}
-#ifdef ENGLISH
-		spell_win= create_window("Spells", our_root_win, 0, sigil_menu_x, sigil_menu_y, spell_x_len, spell_y_len_ext, ELW_WIN_DEFAULT);
-#else
 		//@tosh : traduction de la fenêtre de sorts
 		spell_win= create_window("Grimoire - Recettes", our_root_win, 0, sigil_menu_x, sigil_menu_y, spell_x_len, spell_y_len_ext, ELW_WIN_DEFAULT);
-#endif
 
 		set_window_handler(spell_win, ELW_HANDLER_DISPLAY, &display_spells_handler );
 		set_window_handler(spell_win, ELW_HANDLER_CLICK, &click_spells_handler );
@@ -5225,9 +3998,6 @@ void display_sigils_menu()
 		widget_move(spell_win, cast2_button_id, spell_x_len-20-10-w_cast->len_x , spell_y_len_ext - w_cast->len_y - 4);
 
 		hide_window(spell_win);
-#ifndef FR_NECRO_RECETTES
-		if(!start_mini_spells) sigil_win=spell_win;
-#endif //FR_NECRO_RECETTES
 	}
 
 	if(spell_mini_win < 0){
@@ -5237,27 +4007,18 @@ void display_sigils_menu()
 		if (!windows_on_top) {
 			our_root_win = game_root_win;
 		}
-#ifdef ENGLISH
-		spell_mini_win= create_window("Spells", our_root_win, 0, sigil_menu_x, sigil_menu_y, spell_mini_x_len, spell_mini_y_len, ELW_WIN_DEFAULT);
-#else
 		//@tosh : Traduction du titre de la fenêtre
 		spell_mini_win= create_window("Grimoire - Sorts", our_root_win, 0, sigil_menu_x, sigil_menu_y, spell_mini_x_len, spell_mini_y_len, ELW_WIN_DEFAULT);
-#endif
 
 		set_window_handler(spell_mini_win, ELW_HANDLER_DISPLAY, &display_spells_mini_handler );
 		set_window_handler(spell_mini_win, ELW_HANDLER_CLICK, &click_spells_mini_handler );
 		set_window_handler(spell_mini_win, ELW_HANDLER_MOUSEOVER, &mouseover_spells_mini_handler );
 
 		hide_window(spell_mini_win);
-#ifndef FR_NECRO_RECETTES
-		if(start_mini_spells) sigil_win=spell_mini_win;
-#endif //FR_NECRO_RECETTES
 	}
-#ifdef FR_FENETRE_NECRO
     if(necro_win < 0)
 	{
 		int our_root_win = -1;
-#ifdef FR_NECRO_RECETTES
 		int i;
 		int necro_mixone_button_id=1001;
 		int necro_mixall_button_id=1002;
@@ -5279,7 +4040,6 @@ void display_sigils_menu()
 		    }
 		    nb_recettes_necro = chargement_necro_recettes(1);
 		}
-#endif //FR_NECRO_RECETTES
 		if (!windows_on_top)
 		{
 			our_root_win = game_root_win;
@@ -5288,7 +4048,6 @@ void display_sigils_menu()
 		set_window_handler(necro_win, ELW_HANDLER_DISPLAY, &display_necro_handler );
 		set_window_handler(necro_win, ELW_HANDLER_CLICK, &click_necro_handler );
 		set_window_handler(necro_win, ELW_HANDLER_MOUSEOVER, &mouseover_necro_handler );
-#ifdef FR_NECRO_RECETTES
 		if(nb_recettes_necro > 0)
 		{
 		    necro_mixone_button_id=button_add_extended(necro_win, necro_mixone_button_id, NULL, placement_x, placement_y, 43, 0, 0, 1.0f, 0.77f, 0.57f, 0.39f, ">");
@@ -5296,20 +4055,13 @@ void display_sigils_menu()
 		    necro_mixall_button_id=button_add_extended(necro_win, necro_mixall_button_id, NULL, placement_x + 85, placement_y, 66, 0, 0, 1.0f, 0.77f, 0.57f, 0.39f, ">>");
 		    widget_set_OnClick(necro_win, necro_mixall_button_id, plusieurs_bebetes);
 		}
-#endif //FR_NECRO_RECETTES
 		hide_window(necro_win);
-#ifndef FR_NECRO_RECETTES
-		if(start_mini_spells) sigil_win=necro_win;
-#endif //FR_NECRO_RECETTES
 	}
-#endif //FR_FENETRE_NECRO
 	check_castability();
-#ifdef FR_NECRO_RECETTES
 	if(start_mini_spells == 0) sigil_win = sigils_win;
     	else if (start_mini_spells == 1) sigil_win = spell_mini_win;
    	else if (start_mini_spells == 2) sigil_win = spell_win;
     	else if (start_mini_spells == 3) sigil_win = necro_win;
-#endif //FR_NECRO_RECETTES
 	switch_handler((init_ok) ? (sigil_win):(sigils_win));
 }
 
@@ -5474,128 +4226,14 @@ void init_sigils(){
 	my_strcp(sigils_list[i].description,(char*)sig_death.desc);
 	sigils_list[i].have_sigil=1;
 
-#ifndef ENGLISH
 	i++;
 	sigils_list[i].sigil_img=26;
 	my_strcp(sigils_list[i].name,(char*)sig_chant.str);
 	my_strcp(sigils_list[i].description,(char*)sig_chant.desc);
 	sigils_list[i].have_sigil=1;
-#endif //ENGLISH
 }
 
-#ifdef FR_RCM_MAGIE
 
-/**
-    Ouvre la fenêtre d'acceptation du sort type "sort bénéfique avec acceptation"
-**/
-void spell_you_answer( int player_id ){
-
-    int sort_win = 0;
-
-    int our_root_win = -1;
-    if (!windows_on_top) {
-        our_root_win = game_root_win;
-    }
-    sort_win= create_window(sort_win, our_root_win, 0, sort_menu_x, sort_menu_y, sort_menu_x_len, sort_menu_y_len, (ELW_WIN_DEFAULT& ~ELW_CLOSE_BOX));
-
-    set_window_handler(sort_win, ELW_HANDLER_DISPLAY, &display_sort_handler );
-    ///set_window_handler(sort_win, ELW_HANDLER_CLICK, &click_trade_handler );
-    ///set_window_handler(sort_win, ELW_HANDLER_MOUSEOVER, &mouseover_trade_handler );
-
-}
-
-int display_sort_handler(window_info *win) {
-	int x=10+33;
-	int i;
-	char str[20];
-
-	//Draw the names in the accept boxes
-
-	/*if(trade_you_accepted==1){
-		glColor3f(1.0f,1.0f,0.0f);
-	} else if(trade_you_accepted==2){
-		glColor3f(0.0f,1.0f,0.0f);
-	} else {
-		glColor3f(1.0f,0.0f,0.0f);
-	}*/
-
-	draw_string_small(x+33-strlen(accept_str)*4, button_y_top+2, (unsigned char*)accept_str, 1);
-
-	/*if(trade_other_accepted<=0){    // RED
-		glColor3f(1.0f,0.0f,0.0f);
-	} else if(trade_other_accepted==1){ // YELLOW
-		glColor3f(1.0f,1.0f,0.0f);
-	} else {    // all others default to GREEN
-		glColor3f(0.0f,1.0f,0.0f);
-	}*/
-
-	draw_string_small(x+6*33-strlen(accept_str)*4, button_y_top+2, (unsigned char*)accept_str, 1);
-
-	glColor3f(0.77f,0.57f,0.39f);
-
-	//Draw the trade session names
-	draw_string_small(10+2*33-strlen(you_str)*4,11,(unsigned char*)you_str,1);
-	///draw_string_small(10+7*33-strlen(other_player_trade_name)*4,11,(unsigned char*)other_player_trade_name,1);
-
-	//Draw the X for aborting the trade
-	draw_string(win->len_x-(ELW_BOX_SIZE-4), 2, (unsigned char*)"X", 1);
-
-	glColor3f(1.0f,1.0f,1.0f);
-
-	//Now let's draw the goods on trade...
-
-
-	glDisable(GL_TEXTURE_2D);
-
-	glColor3f(0.77f,0.57f,0.39f);
-	// grids for goods on trade
-	rendergrid (4, 4, 10, 30, 33, 33);
-	rendergrid (4, 4, 10+5*33, 30, 33, 33);
-
-	// Accept buttons
-	x=10+33;
-
-	glBegin (GL_LINE_LOOP);
-		glVertex3i(x,button_y_top,0);
-		glVertex3i(x+66,button_y_top,0);
-		glVertex3i(x+66,button_y_bot,0);
-		glVertex3i(x,button_y_bot,0);
-	glEnd ();
-
-	x+=5*33;
-
-	glBegin (GL_LINE_LOOP);
-		glVertex3i(x,button_y_top,0);
-		glVertex3i(x+66,button_y_top,0);
-		glVertex3i(x+66,button_y_bot,0);
-		glVertex3i(x,button_y_bot,0);
-	glEnd ();
-
-
-	//Draw the border for the "X"
-	glBegin(GL_LINE_STRIP);
-		glVertex3i(win->len_x, ELW_BOX_SIZE, 0);
-		glVertex3i(win->len_x-ELW_BOX_SIZE, ELW_BOX_SIZE, 0);
-		glVertex3i(win->len_x-ELW_BOX_SIZE, 0, 0);
-	glEnd();
-
-	//Draw the help text
-	///if(show_help_text && show_abort_help) show_help(abort_str, win->len_x-(ELW_BOX_SIZE-4)/2-strlen(abort_str)*4, 4+ELW_BOX_SIZE);
-
-	glEnable(GL_TEXTURE_2D);
-
-	//now, draw the inventory text, if any.
-
-
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-
-	return 1;
-}
-#endif
-
-#ifdef FR_FAST_SPELL
  void fast_spell_cible(int spell_id) {
    char str[100];
 
@@ -5610,12 +4248,10 @@ CHECK_GL_ERRORS();
      selected_spell = spell_id;
    }
    mqbdata **m = mqb_data;
-#ifdef FR_MORE_MQB
    mqbdata **ml[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5};
    if ((unsigned)quickspell_mqb_selected < 5) {
      m = ml[quickspell_mqb_selected];
    }
-#endif //FR_MORE_MQB
    if (m[spell_id]) {
      if (fast_spell_cible_bool) {
        safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", m[spell_id]->spell_name);
@@ -5658,4 +4294,3 @@ void fast_spell_decible(void) {
     selected_spell = -1;
     LOG_TO_CONSOLE(c_orange1, "Tu ne séléctionne plus aucuns sorts.");
 }
-#endif

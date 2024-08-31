@@ -10,17 +10,12 @@
 
 #include "eye_candy_wrapper.h"
 
-#ifdef FR_RCM_MAGIE
-    #include "elwindows.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef ENGLISH
 #define QUICKSPELLS_MAXSIZE 20
-#endif //ENGLISH
 
 #define NUM_ACTIVE_SPELLS 10
 
@@ -47,22 +42,15 @@ typedef struct {
 	//to be sent to the server, including CAST_SPELL and len bytes, len will be byte 2
 } mqbdata;
 
-#ifdef ENGLISH
-extern mqbdata * mqb_data[7];/*mqb_data holds a spell name, the image and spell ID as well as the data that's being send to the server.*/
-#else //ENGLISH
 extern mqbdata * mqb_data[QUICKSPELLS_MAXSIZE+1];//mqb_data will hold the magic quickbar name, image, pos.
-#ifdef FR_MORE_MQB
 extern int quickspell_mqb_selected;
 extern mqbdata * mqb_data2[QUICKSPELLS_MAXSIZE+1];//mqb_data will hold the magic quickbar name, image, pos.
 extern mqbdata * mqb_data3[QUICKSPELLS_MAXSIZE+1];//mqb_data will hold the magic quickbar name, image, pos.
 extern mqbdata * mqb_data4[QUICKSPELLS_MAXSIZE+1];//mqb_data will hold the magic quickbar name, image, pos.
 extern mqbdata * mqb_data5[QUICKSPELLS_MAXSIZE+1];//mqb_data will hold the magic quickbar name, image, pos.
-#endif //FR_MORE_MQB
-#endif //ENGLISH
 
 
 extern int spell_temp,spell_dragged;
-#ifndef ENGLISH
 extern int quickspell_x_len;
 extern int quickspell_y_len;
 extern int quickspells_size;      /*!< nombre de raccourcis affichés sur la barre rapide */
@@ -71,7 +59,6 @@ extern int quickspells_on_top;    /*!< barre toujours affichée au dessus ? */
 extern int quickspells_draggable; /*!< barre de raccourcis déplaçable ? */
 
 int resize_quickspells(int nb);
-#endif //ENGLISH
 
 /*!
  * \name windows handlers
@@ -136,14 +123,10 @@ int init_spells ();
  * \param pos   index in the list of which spell to change
  * \param spell the index of the spell to use.
  */
-#ifdef ENGLISH
-void get_active_spell(int pos, int spell);
-#else
 /*!
  * \param timer : information sur la durée restante du sort
  */
 void get_active_spell(int pos, int spell, int timer);
-#endif //ENGLISH
 
 /*!
  * \ingroup spells_window
@@ -231,36 +214,15 @@ void init_quickspell();
 void add_spell_to_quickbar();
 int get_quickspell_y_base();
 int we_are_poisoned();
-#ifdef NEW_SOUND
 void restart_active_spell_sounds(void);
-#endif
-#ifdef ENGLISH
-void increment_poison_incidence(void);
-void draw_spell_icon_strings(void);
-extern int show_poison_count;
-#endif //ENGLISH
 
-#ifdef FR_RCM_MAGIE
-    void spell_you_answer( int player_id );
-    int display_sort_handler( window_info *win );
-#endif
 
-#ifdef FR_FENETRE_NECRO
-#ifdef FR_NECRO_RECETTES
 //Trent en cours
 int chargement_necro_recettes(int choix);
 int une_bebete();
 int plusieurs_bebetes();
 int invocation_depuis_sorts(Uint8 quantity);
-#endif //FR_NECRO_RECETTES
-#endif //FR_FENETRE_NECRO
 
-#ifdef ENGLISH
-void here_is_a_buff_duration(Uint8 duration);
-void check_then_do_buff_duration_request(void);
-int command_buff_duration(char *text, int len);
-#endif //ENGLISH
-#ifdef FR_FAST_SPELL
   extern int selected_spell;
   extern int selected_spell_sent;
   extern int selected_spell_target;
@@ -269,7 +231,6 @@ int command_buff_duration(char *text, int len);
   void fast_spell_teleport(void);
   void fast_spell_cible(int spell_id);
   void fast_spell_decible(void);
-#endif
 extern int set_fast_spell_target;
 
 #ifdef __cplusplus

@@ -5,9 +5,7 @@
 #include "gamewin.h"
 #include "help.h"
 #include "knowledge.h"
-#ifndef ENGLISH
 #include "questlog.h"
-#endif //ENGLISH
 #include "rules.h"
 #include "session.h"
 #include "skills.h"
@@ -63,10 +61,8 @@ void display_tab_stats ()
 		knowledge_win = tab_add (tab_stats_win, tab_stats_collection_id, tab_knowledge, 0, 0, 0);
 		fill_knowledge_win ();
 
-#ifndef ENGLISH
 		questlog_win = tab_add (tab_stats_win, tab_stats_collection_id, tab_questlog, 0, 0, 0);
 		fill_questlog_win ();
-#endif //ENGLISH
 
 		counters_win = tab_add(tab_stats_win, tab_stats_collection_id, tab_counters, 0, 0, 0);
 		fill_counters_win();
@@ -101,16 +97,6 @@ void display_tab_help ()
 		help_win = tab_add (tab_help_win, tab_help_collection_id, tab_help, 0, 0, 0);
 		fill_help_win ();
 
-#ifdef ENGLISH
-		skills_win = tab_add (tab_help_win, tab_help_collection_id, tab_skills, 0, 0, 0);
-		fill_skills_win ();
-
-		encyclopedia_win = tab_add (tab_help_win, tab_help_collection_id, tab_encyclopedia, 0, 0, 0);
-		fill_encyclopedia_win ();
-
-		rules_win = tab_add(tab_help_win, tab_help_collection_id, tab_rules, 0, 0, 0);
-		fill_rules_window();
-#else //ENGLISH
         rules_win = tab_add(tab_help_win, tab_help_collection_id, tab_rules, 0, 0, 0);
         fill_rules_window();
 
@@ -123,7 +109,6 @@ void display_tab_help ()
     		encyclopedia_win = tab_add (tab_help_win, tab_help_collection_id, tab_encyclopedia, 0, 0, 0);
     		fill_encyclopedia_win ();
         }
-#endif //ENGLISH
 
 		tab_collection_select_tab (tab_help_win, tab_help_collection_id, (tab_selected >> 4) & 0xf);
 	}

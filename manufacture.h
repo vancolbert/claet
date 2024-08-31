@@ -12,18 +12,12 @@
 extern "C" {
 #endif
 
-#ifdef ENGLISH
-extern int wanted_num_recipe_entries; /*!< option window set number of recipe entries */
-extern int disable_manuwin_keypress; /*!< option to disable key presses in the main manu window */
-extern const int max_num_recipe_entries;  /*!< max number of recipe entries */
-#else //ENGLISH
 extern item manufacture_list[ITEM_WEAR_START+6]; /*!< taille exacte de la liste des ingrédients dispo + recette */
 
 extern int cm_listrecipe_enabled;
 extern int cm_manurecipe_invertwheel;
 extern int cm_manurecipe_addnolimit;
 extern int cm_manurecipe_wheelaffect;
-#endif //ENGLISH
 
 extern int manufacture_menu_x;
 extern int manufacture_menu_y;
@@ -99,15 +93,6 @@ void check_for_recipe_name(const char *name);
  */
 void cleanup_manufacture(void);
 
-#ifdef ENGLISH
-/*!
- * \ingroup manufacture_window
- * \brief Called when the number of recipe entries is changed in the options window.
- *
- * \callgraph
- */
- void change_num_recipe_entries(int * var, int value);
-#endif //ENGLISH
 
 #ifdef __cplusplus
 } // extern "C"

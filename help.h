@@ -34,9 +34,7 @@ int help_menu_y_len=200;
  */
 void fill_help_win ();
 
-#ifndef ENGLISH
 void reset_help();
-#endif //ENGLISH
 
 #ifdef __cplusplus
 } // extern "C"

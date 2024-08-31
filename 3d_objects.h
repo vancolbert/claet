@@ -174,7 +174,6 @@ void clear_objects_list_placeholders(void);
  */
 void inc_objects_list_placeholders(void);
 
-#ifdef NEW_SOUND
 /*!
  * \ingroup	load_3d
  * \brief	Searches for a 3d object at a location
@@ -190,7 +189,6 @@ void inc_objects_list_placeholders(void);
  * \callgraph
  */
 char * get_3dobject_at_location(float x_pos, float y_pos);
-#endif // NEW_SOUND
 
 /*!
  * \ingroup	display_3d

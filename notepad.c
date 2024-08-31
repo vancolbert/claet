@@ -224,11 +224,7 @@ void display_popup_win (INPUT_POPUP *ipu, const char* label)
 		widget_set_color (ipu->popup_win, ipu->popup_label, 0.77f, 0.57f, 0.39f);
 
 		// Input
-#ifdef FR_VERSION
 		ipu->popup_field = text_field_add_extended (ipu->popup_win, 101, NULL, 5, 28, ipu->popup_x_len - 10, 28*ipu->rows, ipu->text_flags, 1.0f, 0, 0.77f, 0.57f, 0.39f, &ipu->popup_text, 1, FILTER_ALL, 5, 5);
-#else //FR_VERSION
-		ipu->popup_field = text_field_add_extended (ipu->popup_win, 101, NULL, 5, 28, ipu->popup_x_len - 10, 28*ipu->rows, ipu->text_flags, 1.0f, 0.77f, 0.57f, 0.39f, &ipu->popup_text, 1, FILTER_ALL, 5, 5);
-#endif //FR_VERSION
 		widget_set_color (ipu->popup_win, ipu->popup_field, 0.77f, 0.57f, 0.39f);
 
 		// Accept
@@ -383,21 +379,13 @@ static void update_note_button_scrollbar(int nr)
 	if (nr_rows <= max_nr_rows)
 	{
 		widget_set_flags (main_note_tab_id, note_button_scroll_id, WIDGET_INVISIBLE|WIDGET_DISABLED);
-#ifdef FR_VERSION
 		vscrollbar_set_bar_len (main_note_tab_id, note_button_scroll_id, nr_rows);
-#else //FR_VERSION
-		vscrollbar_set_bar_len (main_note_tab_id, note_button_scroll_id, 0);
-#endif //FR_VERSION
 		scroll_to_note_button (0);
 	}
 	else
 	{
 		widget_unset_flags (main_note_tab_id, note_button_scroll_id, WIDGET_INVISIBLE|WIDGET_DISABLED);
-#ifdef FR_VERSION
 		vscrollbar_set_bar_len (main_note_tab_id, note_button_scroll_id, nr_rows);
-#else //FR_VERSION
-		vscrollbar_set_bar_len (main_note_tab_id, note_button_scroll_id, nr_rows - max_nr_rows);
-#endif //FR_VERSION
 		scroll_to_note_button (nr);
 	}
 }
@@ -488,11 +476,7 @@ static int notepad_load_file()
 			free (name);
 			xmlFree (xmlName);
 
-#ifdef FR_VERSION
 			rewrap_message (&note_list[nr_notes].text, 1.0f, 0, notepad_win_x_len - 70, NULL);
-#else //FR_VERSION
-			rewrap_message (&note_list[nr_notes].text, 1.0f, notepad_win_x_len - 70, NULL);
-#endif //FR_VERSION
 
 			nr_notes++;
 		}
@@ -651,11 +635,7 @@ static void open_note_tab_continued(int id)
 	widget_set_color (notepad_win, note_list[id].window, 0.77f, 0.57f, 0.39f);
 
 	// input text field
-#ifdef FR_VERSION
 	note_list[id].input = text_field_add_extended (note_list[id].window, note_widget_id++, NULL, tf_x, tf_y, tf_width, tf_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_CAN_GROW|TEXT_FIELD_SCROLLBAR, note_zoom, 0, 0.77f, 0.57f, 0.39f, &note_list[id].text, 1, FILTER_ALL, 5, 5);
-#else //FR_VERSION
-	note_list[id].input = text_field_add_extended(note_list[id].window, note_widget_id++, NULL, tf_x, tf_y, tf_width, tf_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_CAN_GROW|TEXT_FIELD_SCROLLBAR, note_zoom, 0.77f, 0.57f, 0.39f, &note_list[id].text, 1, FILTER_ALL, 5, 5);
-#endif //FR_VERSION
 
 	// remove button
 	note_list[id].button = button_add (note_list[id].window, NULL, button_remove_category, 20, 8);
@@ -837,13 +817,9 @@ void fill_notepad_window()
 		popup_str.x = (notepad_win_x_len - popup_str.popup_x_len) / 2;
 		popup_str.y = (notepad_win_y_len - popup_str.popup_y_len) / 2;
 
-#ifdef FR_VERSION
 		note_button_scroll_id = vscrollbar_add (main_note_tab_id, NULL, note_tabs_width - note_button_scroll_width - 5, 50, note_button_scroll_width, note_button_scroll_height);
 		widget_set_size (main_note_tab_id, note_button_scroll_id, note_button_scroll_height / (note_button_height + note_button_y_space));
 		vscrollbar_set_bar_len (main_note_tab_id, note_button_scroll_id, 0);
-#else //FR_VERSION
-		note_button_scroll_id = vscrollbar_add (main_note_tab_id, NULL, note_tabs_width - note_button_scroll_width - 5, 50, note_button_scroll_width, note_button_scroll_height);
-#endif //FR_VERSION
 		widget_set_OnClick (main_note_tab_id, note_button_scroll_id, note_button_scroll_handler);
 		widget_set_OnDrag (main_note_tab_id, note_button_scroll_id, note_button_scroll_handler);
 
@@ -863,11 +839,7 @@ void notepad_win_update_zoom()
 		return;
 
 	for (i = 0; i < nr_notes; i++)
-#ifdef ENGLISH
-		widget_set_size (notepad_win, note_list[i].input, note_zoom);
-#else
 		//@tosh : il faut bien appliquer le zoom sur chaque fenêtre de la note_list :)
 		widget_set_size (note_list[i].window, note_list[i].input, note_zoom);
-#endif
 }
 

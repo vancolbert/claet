@@ -42,17 +42,6 @@ Uint32 my_timer(Uint32 some_int, void * data);
  * \callgraph
  */
 Uint32 check_misc(Uint32 interval, void * data);
-#ifdef TIMER_CHECK
-/*!
- * \ingroup 	thread
- * \brief 	If TIMER_CHECK is defined this will make sure that the timers are alive.
- *
- *      	If TIMER_CHECK is defined this will make sure that the timers are alive, but comparing the last time the timers were called with the current time. It is not normally a problem.
- *
- * \callgraph
- */
-void check_timers(void);
-#endif
 
 #ifdef __cplusplus
 } // extern "C"

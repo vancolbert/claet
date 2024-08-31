@@ -10,9 +10,6 @@
 extern "C"
 {
 #endif
-#ifdef ENGLISH
-extern Uint32 use_animation_program;
-#endif //ENGLISH
 
 int load_vertex_programs();
 void unload_vertex_programs();

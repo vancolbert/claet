@@ -54,10 +54,6 @@ GLfloat light_view_bottom=-10.0;
 GLfloat light_view_near=-30.0;
 GLfloat light_view_far=6.0;
 
-#ifdef  DEBUG
-extern int e3d_count, e3d_total;    // LRNR:stats testing only
-extern int cur_e3d_count;
-#endif
 extern e3d_object   *cur_e3d;
 
 void free_shadow_framebuffer()
@@ -189,9 +185,6 @@ void calc_shadow_matrix()
 			proj_on_ground[15] = dot - light_pos[3] * ground_plane[3];
 		}
 	main_bbox_tree->intersect[INTERSECTION_TYPE_SHADOW].intersect_update_needed = 1;
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_3d_object_shadows(unsigned int object_type)
@@ -199,18 +192,8 @@ void draw_3d_object_shadows(unsigned int object_type)
 	unsigned int    start, stop;
 	unsigned int    i, j, l;
 	int is_transparent;
-#ifdef SIMPLE_LOD
-	int x, y;
-	int dist;
-
-	x= -camera_x;
-	y= -camera_y;
-#endif //SIMPLE_LOD
 
 	cur_e3d= NULL;
-#ifdef  DEBUG
-	cur_e3d_count= 0;
-#endif  //DEBUG
 
 	get_intersect_start_stop(main_bbox_tree, object_type, &start, &stop);
 	// nothing to draw?
@@ -252,11 +235,6 @@ void draw_3d_object_shadows(unsigned int object_type)
 		//track the usage
 		cache_use(objects_list[l]->e3d_data->cache_ptr);
 		if(!objects_list[l]->display) continue;	// not currently on the map, ignore it
-#ifdef  SIMPLE_LOD
-		// simple size/distance culling
-		dist= (x-objects_list[l]->x_pos)*(x-objects_list[l]->x_pos) + (y-objects_list[l]->y_pos)*(y-objects_list[l]->y_pos);
-		if(objects_list[l]->e3d_data->materials && (10000*objects_list[l]->e3d_data->materials[get_3dobject_material(j)].max_size)/(dist) < ((is_transparent)?15:10)) continue;
-#endif  //SIMPLE_LOD
 		draw_3d_object_detail(objects_list[l], get_3dobject_material(j), 0, is_transparent, 0);
 	}
 
@@ -276,14 +254,6 @@ void draw_3d_object_shadows(unsigned int object_type)
 	else glEnable(GL_TEXTURE_2D);
 
 	CHECK_GL_ERRORS();
-#ifdef  DEBUG
-	// final statistics
-	if(cur_e3d_count > 0){
-		e3d_count++;
-		e3d_total+= cur_e3d_count;
-	}
-	cur_e3d_count= 0;
-#endif  //DEBUG
 	cur_e3d= NULL;
 }
 
@@ -316,14 +286,9 @@ void display_shadows()
 	glDisable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
-#ifndef MAP_EDITOR2
 	display_actors(0, DEPTH_RENDER_PASS);
-#endif
 	glCullFace(GL_BACK);
 	glDisable(GL_POLYGON_OFFSET_FILL);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void display_3d_ground_objects()
@@ -337,11 +302,7 @@ void display_3d_ground_objects()
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -364,9 +325,6 @@ void display_3d_ground_objects()
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisable(GL_CULL_FACE);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void display_3d_non_ground_objects()
@@ -384,11 +342,7 @@ void display_3d_non_ground_objects()
 		//bind the detail texture
 		ELglActiveTextureARB(detail_unit);
 		glEnable(GL_TEXTURE_2D);
-#ifdef	NEW_TEXTURES
 		bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-		glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -412,9 +366,6 @@ void display_3d_non_ground_objects()
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glDisable(GL_CULL_FACE);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void render_light_view()
@@ -473,9 +424,7 @@ void render_light_view()
 
 			glDisable(GL_LIGHTING);
 			glEnable(GL_DEPTH_TEST);
-#ifndef MAP_EDITOR2
 			if (use_fog) glDisable(GL_FOG);
-#endif
 			glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 			CHECK_GL_ERRORS();
 			glMatrixMode(GL_PROJECTION);
@@ -544,9 +493,6 @@ void setup_2d_texgen()
 	glTexGeni(GL_Q,GL_TEXTURE_GEN_MODE,GL_EYE_LINEAR);
 	plane[0]=shadow_texgen_mat[3];plane[1]=shadow_texgen_mat[7];plane[2]=shadow_texgen_mat[11];plane[3]=shadow_texgen_mat[15];
 	glTexGenfv(GL_Q,GL_EYE_PLANE,plane);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void disable_texgen()
@@ -555,9 +501,6 @@ void disable_texgen()
 	glDisable(GL_TEXTURE_GEN_T);
 	glDisable(GL_TEXTURE_GEN_R);
 	glDisable(GL_TEXTURE_GEN_Q);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void setup_shadow_mapping()
@@ -619,9 +562,6 @@ void setup_shadow_mapping()
 	glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_ALPHA_EXT,GL_SRC_ALPHA);
 #endif
 	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_sun_shadowed_scene(int any_reflection)
@@ -634,9 +574,7 @@ void draw_sun_shadowed_scene(int any_reflection)
 			base_unit=GL_TEXTURE1_ARB;
 			detail_unit=GL_TEXTURE2_ARB;
 
-#ifndef MAP_EDITOR2
 			if (use_fog) glDisable(GL_FOG);
-#endif
 			ELglActiveTextureARB(shadow_unit);
 			glEnable(depth_texture_target);
 			setup_shadow_mapping();
@@ -652,16 +590,10 @@ void draw_sun_shadowed_scene(int any_reflection)
 			last_texture=-1;
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			CHECK_GL_ERRORS();
-#ifndef MAP_EDITOR2
 			if (use_fog) glEnable(GL_FOG);
-#endif
 			glNormal3f(0.0f,0.0f,1.0f);
 			if(any_reflection)draw_lake_tiles();
 			draw_tile_map();
-#ifdef MAP_EDITOR2
-			get_world_x_y ();
-			display_mode();
-#endif
 			CHECK_GL_ERRORS();
 			display_2d_objects();
 			CHECK_GL_ERRORS();
@@ -669,15 +601,11 @@ void draw_sun_shadowed_scene(int any_reflection)
 
 			display_objects();
 			display_ground_objects();
-#ifndef MAP_EDITOR2
 			display_actors(1, SHADOW_RENDER_PASS);  // Affects other textures ????????? (FPS etc., unless there's a particle system...)
-#endif
 			display_alpha_objects();
 			display_blended_objects();
 
-#ifndef MAP_EDITOR2
 			if (use_fog) glDisable(GL_FOG);
-#endif
 
 			ELglActiveTextureARB(shadow_unit);
 			glDisable(depth_texture_target);
@@ -713,10 +641,6 @@ void draw_sun_shadowed_scene(int any_reflection)
 			if(any_reflection)draw_lake_tiles();
 
 			draw_tile_map();
-#ifdef MAP_EDITOR2
-			get_world_x_y ();
-			display_mode();
-#endif
 			CHECK_GL_ERRORS();
 			display_2d_objects();
 			CHECK_GL_ERRORS();
@@ -748,9 +672,7 @@ void draw_sun_shadowed_scene(int any_reflection)
 			glDepthMask(GL_FALSE);
 			glDisable(GL_DEPTH_TEST);
 
-#ifndef MAP_EDITOR2
 			if (use_fog) glEnable(GL_FOG);
-#endif
 
 			glEnable(GL_BLEND);
 			// need this function (or both flipped) for correctly working fog too
@@ -776,13 +698,8 @@ void draw_sun_shadowed_scene(int any_reflection)
 			glDisable(GL_STENCIL_TEST);
 
 			display_3d_non_ground_objects();
-#ifndef MAP_EDITOR2
 			display_actors(1, DEFAULT_RENDER_PASS);
-#endif
 			display_blended_objects();
 
 		}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }

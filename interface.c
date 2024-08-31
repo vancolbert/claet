@@ -22,9 +22,6 @@
 #include "openingwin.h"
 #include "pathfinder.h"
 #include "rules.h"
-#ifdef DEBUG_MAP_SOUND
-#include "sound.h"
-#endif // DEBUG_MAP_SOUND
 #include "spells.h"
 #include "textures.h"
 #include "tiles.h"
@@ -36,13 +33,9 @@
  #include "io/elpathwrapper.h"
  #include "io/elfilewrapper.h"
 #include "3d_objects.h"
-#ifdef	NEW_TEXTURES
 #include "image_loading.h"
-#endif	/* NEW_TEXTURES */
-#ifdef FR_VERSION
 #include "sound.h"
 #include "themes.h"
-#endif //FR_VERSION
 
 #define DEFAULT_CONTMAPS_SIZE 20
 
@@ -69,41 +62,14 @@ int password_text_length=0;
 int have_a_map=0;
 int auto_camera=0;
 int view_health_bar=1;
-#ifdef ENGLISH
-int view_ether_bar=0;
-#endif //ENGLISH
 int view_names=1;
 int view_hp=0;
-#ifdef DISPLAY_MANAPOINT
 int view_mp=0;
 int view_mana_bar=0;
-#endif //DISPLAY_MANAPOINT
-#ifdef SELECT_WITH_MOUSE_ON_BANNER
 int select_with_mouse_on_banner=0;
-#endif //SELECT_WITH_MOUSE_ON_BANNER
-#ifdef ENGLISH
-int view_ether=0;
-#endif //ENGLISH
-#ifdef FR_VERSION
 int voir_pdv = 0;
 int voir_musique_carte = 0;
-#endif //FR_VERSION
 int view_chat_text_as_overtext=0;
-#ifdef ENGLISH
-int view_mode_instance=0;
-float view_mode_instance_banner_height=5.0f;
-
-//instance mode banners config:
-int im_creature_view_names = 1;
-int im_creature_view_hp = 1;
-int im_creature_view_hp_bar = 0;
-int im_creature_banner_bg = 0;
-int im_other_player_view_names = 1;
-int im_other_player_view_hp = 1;
-int im_other_player_view_hp_bar = 0;
-int im_other_player_banner_bg = 0;
-int im_other_player_show_banner_on_damage = 0;
-#endif //ENGLISH
 
 int limit_fps=0;
 
@@ -118,15 +84,9 @@ GLint viewport[4];
 // Grum: attempt to work around bug in Ati linux drivers.
 int ati_click_workaround = 0;
 
-#ifdef FR_VERSION
 float mapmark_zoom=1.0f;
-#else //FR_VERSION
-float mapmark_zoom=0.3f;
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 int cur_cont_map = -1;
-#endif //FR_VERSION
 
 void save_scene_matrix ()
 {
@@ -296,9 +256,6 @@ void get_old_world_x_y (short *scene_x, short *scene_y)
 
 void Enter2DModeExtended(int width, int height)
 {
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	if (use_fog) glDisable(GL_FOG);
 	glPushAttrib(GL_LIGHTING_BIT|GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_LIGHTING);
@@ -306,9 +263,6 @@ CHECK_GL_ERRORS();
 
 	glViewport(0, 0, width, height);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
@@ -316,9 +270,6 @@ CHECK_GL_ERRORS();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void Enter2DMode()
@@ -328,9 +279,6 @@ void Enter2DMode()
 
 void Leave2DMode()
 {
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -341,9 +289,6 @@ CHECK_GL_ERRORS();
 	if (use_fog) glEnable(GL_FOG);
 	else glDisable(GL_FOG);
 	//glViewport(0, 0, window_width-hud_x, window_height-hud_y);	// Reset The Current Viewport
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 /* The video modes start with index 1. So field 0 stands for video mode 1 */
@@ -414,7 +359,6 @@ void build_video_mode_array()
 
 void draw_console_pic(int which_texture)
 {
-#ifdef	NEW_TEXTURES
 	bind_texture(which_texture);
 
 	glColor3f(1.0f,1.0f,1.0f);
@@ -434,30 +378,6 @@ void draw_console_pic(int which_texture)
 	glVertex3i(window_width,0,0);
 
 	glEnd();
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(which_texture);
-
-	glColor3f(1.0f,1.0f,1.0f);
-	glBegin(GL_QUADS);
-	//draw the texture
-
-	glTexCoord2f(0.0f,1.0f);
-	glVertex3i(0,0,0);
-
-	glTexCoord2f(0.0f,0.0f);
-	glVertex3i(0,window_height,0);
-
-	glTexCoord2f(1.0f,0.0f);
-	glVertex3i(window_width,window_height,0);
-
-	glTexCoord2f(1.0f,1.0f);
-	glVertex3i(window_width,0,0);
-
-	glEnd();
-#endif	/* NEW_TEXTURES */
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_2d_thing(float u_start,float v_start,float u_end,float v_end,int x_start,
@@ -494,14 +414,9 @@ void draw_2d_thing_r(float u_start,float v_start,float u_end,float v_end,int x_s
 
 void add_char_to_username(unsigned char ch)
 {
-#ifdef ENGLISH
-	if (((ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch=='_'))
-		&& username_text_length < MAX_USERNAME_LENGTH - 1)		// MAX_USERNAME_LENGTH includes the null terminator
-#else //ENGLISH
     //@tosh : le MAX_USERNAME_LENGTH-1 permet d'éviter qu'un caractère dépasse du champ
 	if((/*(ch>=48 && ch<=57) || */(ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch=='_'))
 		&& username_text_length < MAX_USERNAME_LENGTH - 1)		// MAX_USERNAME_LENGTH includes the null terminator
-#endif //ENGLISH
 	{
 		username_str[username_text_length]=ch;
 		username_str[username_text_length+1]=0;
@@ -540,35 +455,12 @@ void add_char_to_password(unsigned char ch)
 
 void draw_ingame_interface()
 {
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-#ifdef	OLD_CLOSE_BAG
-	// watch for closing a bag
-	if(ground_items_win >= 0)
-		{
-			int	old_view= view_ground_items;
-
-			view_ground_items= get_show_window(ground_items_win);
-			// watch for telling the server we need to close the bag
-			if(old_view && !view_ground_items)
-				{
-					unsigned char protocol_name;
-
-					protocol_name= S_CLOSE_BAG;
-					my_tcp_send(my_socket,&protocol_name,1);
-				}
-		}
-#endif	//OLD_CLOSE_BAG
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	draw_hud_frame();
 
 	//draw_hud_interface();
 	display_spells_we_have();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 GLuint map_text;
@@ -579,32 +471,12 @@ int show_continent_map_boundaries = 1;
 GLuint legend_text=0;
 int cur_map;  //Is there a better way to do this?
 
-#ifdef DEBUG_MAP_SOUND
-int cur_tab_map = -1;
-#endif // DEBUG_MAP_SOUND
 
-#ifdef	NEW_TEXTURES
 static const char* cont_map_file_names[] =
 {
-#ifdef FR_VERSION
 	"./maps/1_seridia",
 	"./maps/2_irilion"
-#else //FR_VERSION
-	"./maps/seridia",
-	"./maps/irilion"
-#endif //FR_VERSION
 };
-#else	/* NEW_TEXTURES */
-static const char* cont_map_file_names[] = {
-#ifdef FR_VERSION
-	"./maps/1_seridia.bmp",
-	"./maps/2_irilion.bmp"
-#else //FR_VERSION
-	"./maps/seridia.bmp",
-	"./maps/irilion.bmp"
-#endif //FR_VERSION
-};
-#endif	/* NEW_TEXTURES */
 static const int nr_continents = sizeof (cont_map_file_names) / sizeof (const char *);
 struct draw_map *continent_maps = NULL;
 
@@ -645,11 +517,7 @@ void read_mapinfo ()
 				// not a valid continent
 				continue;
 
-#ifdef ENGLISH
-			if (imap >= maps_size - 1)
-#else //ENGLISH
 			if (imap >= maps_size /*- 1*/)
-#endif //ENGLISH
 			{
 				// Uh oh, we didn't allocate enough space
 				maps_size += DEFAULT_CONTMAPS_SIZE;
@@ -679,21 +547,11 @@ void read_mapinfo ()
 
 int switch_to_game_map()
 {
-#ifdef	NEW_TEXTURES
 	char buffer[1024];
-#else	/* NEW_TEXTURES */
-	int len;
-	texture_cache_struct tex;
-#ifndef ENGLISH
-    char map_map_file_name_png[256];
-#endif //ENGLISH
-#endif	/* NEW_TEXTURES */
 	short int cur_cont;
 	static short int old_cont = -1;
-#ifdef FR_VERSION
 	// force l'affichage du hud horizontal avec la carte (évite les zones sous les boutons)
 	hud_y = HUD_MARGIN_Y;
-#endif //FR_VERSION
 
 	/* check we loaded the mapinfo data */
 	if (continent_maps == NULL || continent_maps[0].name == NULL)
@@ -702,58 +560,15 @@ int switch_to_game_map()
 		return 0;
 	}
 
-#ifdef	NEW_TEXTURES
 	if (check_image_name(map_file_name, sizeof(buffer), buffer) == 1)
 	{
 		map_text = load_texture_cached(buffer, tt_image);
 	}
 	else
 	{
-#ifdef FR_VERSION
 		check_image_name("./textures/paper1.bmp", sizeof(buffer), buffer);
 		map_text = load_texture_cached(buffer, tt_image);
-#else //FR_VERSION
-		map_text = 0;
-#endif //FR_VERSION
 	}
-#else	/* NEW_TEXTURES */
-	my_strcp(tex.file_name,map_file_name);
-	len=strlen(tex.file_name);
-	tex.file_name[len-3]='b';
-	tex.file_name[len-2]='m';
-	tex.file_name[len-1]='p';
-	tex.alpha = 128;
-
-#ifndef ENGLISH
-    // --- Utilisation de la fonction de chargement de MAP de type PNG
-    my_strcp(map_map_file_name_png , map_file_name);
-
-    // --- Remplacement de l'extension du fichier png
-    len=strlen(map_map_file_name_png);
-	map_map_file_name_png[len-3]='p';
-	map_map_file_name_png[len-2]='n';
-	map_map_file_name_png[len-1]='g';
-
-    // --- si le fichier existe on prefere celui-ci sinon on continue en bmp
-    if( file_exists( map_map_file_name_png) )
-    {
-        map_text = loadPNGTexture (map_map_file_name_png);
-    }
-    else
-    {
-#endif //ENGLISH
-
-#ifndef ENGLISH
-	if (!el_file_exists(tex.file_name)) my_strcp(tex.file_name, "./textures/paper1.bmp");
-#endif //ENGLISH
-	if (!el_file_exists(tex.file_name))
-		map_text = 0;
-	else
-		map_text=load_bmp8_fixed_alpha(&tex, tex.alpha);
-#ifndef ENGLISH
-    }
-#endif //ENGLISH
-#endif	/* NEW_TEXTURES */
 	if(!map_text)
 	{
 		LOG_TO_CONSOLE(c_yellow2,err_nomap_str);
@@ -768,22 +583,13 @@ int switch_to_game_map()
 	{
 		cur_cont = continent_maps[cur_map].cont;
 	}
-#ifdef FR_VERSION
 	old_cont = cur_cont_map;
 	cur_cont_map = cur_cont;
-#endif //FR_VERSION
 	if (cur_cont != old_cont && cur_cont >= 0 && cur_cont < nr_continents)
 	{
-#ifdef	NEW_TEXTURES
 		cont_text = load_texture_cached (cont_map_file_names[cur_cont], tt_image);
-#else	/* NEW_TEXTURES */
-		cont_text = load_texture_cache (cont_map_file_names[cur_cont], 128);
-#endif	/* NEW_TEXTURES */
 		old_cont = cur_cont;
 	}
-#ifdef DEBUG_MAP_SOUND
-	cur_tab_map = cur_map;
-#endif // DEBUG_MAP_SOUND
 
 	if(current_cursor != CURSOR_ARROW)
 	{
@@ -792,33 +598,18 @@ int switch_to_game_map()
 	return 1;
 }
 
-#ifdef FR_VERSION
 void switch_continent()
 {
 	cur_cont_map = ! cur_cont_map;
-#ifdef	NEW_TEXTURES
 	cont_text = load_texture_cached (cont_map_file_names[cur_cont_map], tt_image);
-#else	/* NEW_TEXTURES */
-	cont_text = load_texture_cache (cont_map_file_names[cur_cont_map], 128);
-#endif	/* NEW_TEXTURES */
 }
-#endif //FR_VERSION
 
 void switch_from_game_map()
 {
-#ifdef FR_VERSION
 	// restauration du paramétrage du hud
 	if (! hud_x) hud_y = 0;
-#endif //FR_VERSION
-#ifndef	NEW_TEXTURES
-	glDeleteTextures(1,&map_text);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-#endif	/* NEW_TEXTURES */
 }
 
-#ifdef FR_VERSION
 static void draw_mark_pin(int x, int y, float zoom, float cr, float cv, float cb)
 {
 	glDisable(GL_TEXTURE_2D);
@@ -851,7 +642,6 @@ static void draw_mark_pin(int x, int y, float zoom, float cr, float cv, float cb
 
 	glEnable(GL_TEXTURE_2D);
 }
-#endif //FR_VERSION
 
 static void draw_mark_filter(void)
 {
@@ -859,17 +649,10 @@ static void draw_mark_filter(void)
 	int screen_y=0;
 
 	// display the Mark filter title
-#ifdef FR_VERSION
 	glColor3f(0.9f,0.8f,0.0f);
 	screen_x = 75 - 4.5*strlen(label_mark_filter);
 	screen_y = 450 + 75;
 	draw_string_zoomed(screen_x, screen_y, (unsigned char*)label_mark_filter, 1, 0.8);
-#else //FR_VERSION
-	glColor3f(1.0f,1.0f,0.0f);
-	screen_x = 25 - 1.5*strlen(label_mark_filter);
-	screen_y = 150 + 22;
-	draw_string_zoomed(screen_x, screen_y, (unsigned char*)label_mark_filter, 1, 0.3);
-#endif //FR_VERSION
 
 	// if filtering marks, display the label and the current filter text
 	if (mark_filter_active) {
@@ -881,26 +664,16 @@ static void draw_mark_filter(void)
 			show_mark_filter_text = "_";
 		else
 		  show_mark_filter_text = mark_filter_text;
-#ifdef FR_VERSION
 		screen_x = 75 - 4.5*strlen(show_mark_filter_text);
 		screen_y = 450 + 90;
 		draw_string_zoomed(screen_x, screen_y, (unsigned char*)show_mark_filter_text, 1, 0.8);
-#else //FR_VERSION
-		screen_x = 25 - 1.5*strlen(show_mark_filter_text);
-		screen_y = 150 + 29;
-		draw_string_zoomed(screen_x, screen_y, (unsigned char*)show_mark_filter_text, 1, 0.3);
-#endif //FR_VERSION
 	}
 	// display which key to activate the filter
 	else
 	{
 		char buf[20];
 		get_key_string(K_MARKFILTER, buf, sizeof(buf));
-#ifdef FR_VERSION
 		draw_string_zoomed(75 - 4.5*strlen(buf), 450 + 90, (const unsigned char *)buf, 1, 0.8);
-#else //FR_VERSION
-		draw_string_zoomed(25 - 1.5*strlen(buf), 150 + 29, (const unsigned char *)buf, 1, 0.3);
-#endif //FR_VERSION
 	}
 }
 
@@ -911,9 +684,7 @@ static void draw_marks(marking *the_marks, int the_max_mark, int the_tile_map_si
 	int screen_y=0;
 
 	// crave the markings
-#ifdef FR_VERSION
 	set_font(police_carte);
-#endif //FR_VERSION
 	for(i=0;i<the_max_mark;i++)
 	 {
 		int x = the_marks[i].x;
@@ -925,7 +696,6 @@ static void draw_marks(marking *the_marks, int the_max_mark, int the_tile_map_si
 				  && (get_string_occurance(mark_filter_text, the_marks[i].text, strlen(the_marks[i].text), 1) == -1))
 				continue;
 
-#ifdef FR_VERSION
 			screen_x=(151+600*x/(the_tile_map_size_x*6));
 			screen_y=601-600*y/(the_tile_map_size_y*6);
 
@@ -939,30 +709,9 @@ static void draw_marks(marking *the_marks, int the_max_mark, int the_tile_map_si
 				draw_mark_pin(screen_x, screen_y, mapmark_zoom, (float)the_marks[i].r/255,(float)the_marks[i].g/255,(float)the_marks[i].b/255);
 				draw_string_zoomed_shadowed(screen_x, screen_y, (unsigned char*)the_marks[i].text, 1, mapmark_zoom, (float)the_marks[i].r/255,(float)the_marks[i].g/255,(float)the_marks[i].b/255, 0.0f,0.0f,0.0f);
 			}
-#else //FR_VERSION
-			screen_x=(51+200*x/(the_tile_map_size_x*6));
-			screen_y=201-200*y/(the_tile_map_size_y*6);
-
-			if(!the_marks[i].server_side) glColor3f((float)the_marks[i].r/255,(float)the_marks[i].g/255,(float)the_marks[i].b/255);//glColor3f(0.4f,1.0f,0.0f);
-			else glColor3f(0.33f,0.6f,1.0f);
-			glDisable(GL_TEXTURE_2D);
-			glBegin(GL_LINES);
-				glVertex2i(screen_x-9*mapmark_zoom,screen_y-9*mapmark_zoom);
-				glVertex2i(screen_x+6*mapmark_zoom,screen_y+6*mapmark_zoom);
-
-				glVertex2i(screen_x+6*mapmark_zoom,screen_y-9*mapmark_zoom);
-				glVertex2i(screen_x-9*mapmark_zoom,screen_y+6*mapmark_zoom);
-			glEnd();
-				glEnable(GL_TEXTURE_2D);
-				if(!the_marks[i].server_side) glColor3f((float)the_marks[i].r/255,(float)the_marks[i].g/255,(float)the_marks[i].b/255);//glColor3f(0.2f,1.0f,0.0f);
-				else glColor3f(0.33f,0.6f,1.0f);
-			draw_string_zoomed(screen_x, screen_y, (unsigned char*)the_marks[i].text, 1, mapmark_zoom);
-#endif //FR_VERSION
 		}
 	}
-#ifdef FR_VERSION
 	set_font(0);
-#endif //FR_VERSION
 }
 
 void draw_coordinates(int the_tile_map_size_x, int the_tile_map_size_y)
@@ -976,7 +725,6 @@ void draw_coordinates(int the_tile_map_size_x, int the_tile_map_size_y)
 		// we're pointing on the map, display position
 		char buf[10];
 		safe_snprintf(buf, sizeof(buf), "%d,%d", map_x, map_y);
-#ifdef FR_VERSION
 		glColor3f(0.9f,0.8f,0.0f);
 		screen_x = 75 - 4.5*strlen(buf);
 		screen_y = 450 + 25;
@@ -984,15 +732,6 @@ void draw_coordinates(int the_tile_map_size_x, int the_tile_map_size_y)
 		screen_x = 75 - 4.5*strlen(label_cursor_coords);
 		screen_y = 450 + 5;
 		draw_string_zoomed(screen_x, screen_y, (unsigned char*)label_cursor_coords, 1, 0.8);
-#else //FR_VERSION
-		glColor3f(1.0f,1.0f,0.0f);
-		screen_x = 25 - 1.5*strlen(buf);
-		screen_y = 150 + 8;
-		draw_string_zoomed(screen_x, screen_y, (unsigned char*)buf, 1, 0.3);
-		screen_x = 25 - 1.5*strlen(label_cursor_coords);
-		screen_y = 150 + 1;
-		draw_string_zoomed(screen_x, screen_y, (unsigned char*)label_cursor_coords, 1, 0.3);
-#endif //FR_VERSION
 	}
 }
 
@@ -1010,22 +749,14 @@ void draw_game_map (int map, int mouse_mini)
 	if (cont_text < 0)
 	{
 		if (fallback_text < 0)
-#ifdef	NEW_TEXTURES
 		{
 			fallback_text = load_texture_cached("./textures/paper1", tt_gui);
 		}
-#else	/* NEW_TEXTURES */
-			fallback_text = load_texture_cache ("./textures/paper1.bmp", 0);
-#endif	/* NEW_TEXTURES */
 		cont_text = fallback_text;
 	}
 
 	if(map){
-#ifdef	NEW_TEXTURES
 		map_small = cont_text;
-#else	/* NEW_TEXTURES */
-		map_small=get_texture_id(cont_text);
-#endif	/* NEW_TEXTURES */
 		if(inspect_map_text == 0) {
 			map_large=map_text;
 		} else {
@@ -1033,11 +764,7 @@ void draw_game_map (int map, int mouse_mini)
 		}
 	} else {
 		map_small=map_text;
-#ifdef	NEW_TEXTURES
 		map_large = cont_text;
-#else	/* NEW_TEXTURES */
-		map_large=get_texture_id(cont_text);
-#endif	/* NEW_TEXTURES */
 		if(cur_map!=-1){
 			x_size = ((float)(continent_maps[cur_map].x_end - continent_maps[cur_map].x_start)) / tile_map_size_x;
 			y_size = ((float)(continent_maps[cur_map].y_end - continent_maps[cur_map].y_start)) / tile_map_size_y;
@@ -1054,11 +781,7 @@ void draw_game_map (int map, int mouse_mini)
 	glPushMatrix();
 	glLoadIdentity();
 
-#ifdef FR_VERSION
 	glOrtho(900, (GLdouble)0, (GLdouble)0, 600, -750.0, 750.0);
-#else //FR_VERSION
-	glOrtho(300, (GLdouble)0, (GLdouble)0, 200, -250.0, 250.0);
-#endif //FR_VERSION
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
@@ -1067,55 +790,23 @@ void draw_game_map (int map, int mouse_mini)
 	glColor3f(0.0f, 0.0f, 0.0f);
 
 	glBegin(GL_QUADS);
-#ifdef FR_VERSION
 		glVertex2i(0,   0);
 		glVertex2i(900, 0);
 		glVertex2i(900, 600);
 		glVertex2i(0,   600);
-#else //FR_VERSION
-		glVertex2i(0,   0);
-		glVertex2i(300, 0);
-		glVertex2i(300, 200);
-		glVertex2i(0,   200);
-#endif //FR_VERSION
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-#ifdef	NEW_TEXTURES
 	bind_texture(map_large);
 
 	glBegin(GL_QUADS);
-#ifdef FR_VERSION
 		glTexCoord2f(1.0f, 1.0f); glVertex3i(150,0,0);
 		glTexCoord2f(1.0f, 0.0f); glVertex3i(150,600,0);
 		glTexCoord2f(0.0f, 0.0f); glVertex3i(750,600,0);
 		glTexCoord2f(0.0f, 1.0f); glVertex3i(750,0,0);
-#else //FR_VERSION
-		glTexCoord2f(1.0f, 1.0f); glVertex3i(50,0,0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3i(50,200,0);
-		glTexCoord2f(0.0f, 0.0f); glVertex3i(250,200,0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3i(250,0,0);
-#endif //FR_VERSION
 	glEnd();
-#else	/* NEW_TEXTURES */
-	bind_texture_id(map_large);
-
-	glBegin(GL_QUADS);
-#ifdef FR_VERSION
-		glTexCoord2f(1.0f,0.0f); glVertex3i(150,0,0);
-		glTexCoord2f(1.0f,1.0f); glVertex3i(150,600,0);
-		glTexCoord2f(0.0f,1.0f); glVertex3i(750,600,0);
-		glTexCoord2f(0.0f,0.0f); glVertex3i(750,0,0);
-#else //FR_VERSION
-		glTexCoord2f(1.0f,0.0f); glVertex3i(50,0,0);
-		glTexCoord2f(1.0f,1.0f); glVertex3i(50,200,0);
-		glTexCoord2f(0.0f,1.0f); glVertex3i(250,200,0);
-		glTexCoord2f(0.0f,0.0f); glVertex3i(250,0,0);
-#endif //FR_VERSION
-	glEnd();
-#endif	/* NEW_TEXTURES */
 
 	if (mouse_mini)
 		glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
@@ -1124,77 +815,27 @@ void draw_game_map (int map, int mouse_mini)
 
 	glEnable(GL_ALPHA_TEST);
 
-#ifdef	NEW_TEXTURES
 	bind_texture(map_small);
 
     	glBegin(GL_QUADS);
-#ifdef FR_VERSION
 		glTexCoord2f(1.0f, 1.0f); glVertex3i(750,450,0);
 		glTexCoord2f(1.0f, 0.0f); glVertex3i(750,600,0);
 		glTexCoord2f(0.0f, 0.0f); glVertex3i(900,600,0);
 		glTexCoord2f(0.0f, 1.0f); glVertex3i(900,450,0);
-#else //FR_VERSION
-		glTexCoord2f(1.0f, 1.0f); glVertex3i(250,150,0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3i(250,200,0);
-		glTexCoord2f(0.0f, 0.0f); glVertex3i(300,200,0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3i(300,150,0);
-#endif //FR_VERSION
 	glEnd();
-#else	/* NEW_TEXTURES */
-	bind_texture_id(map_small);
-
-    	glBegin(GL_QUADS);
-#ifdef FR_VERSION
-		glTexCoord2f(1.0f,0.0f); glVertex3i(750,450,0);
-		glTexCoord2f(1.0f,1.0f); glVertex3i(750,600,0);
-		glTexCoord2f(0.0f,1.0f); glVertex3i(900,600,0);
-		glTexCoord2f(0.0f,0.0f); glVertex3i(900,450,0);
-#else //FR_VERSION
-		glTexCoord2f(1.0f,0.0f); glVertex3i(250,150,0);
-		glTexCoord2f(1.0f,1.0f); glVertex3i(250,200,0);
-		glTexCoord2f(0.0f,1.0f); glVertex3i(300,200,0);
-		glTexCoord2f(0.0f,0.0f); glVertex3i(300,150,0);
-#endif //FR_VERSION
-	glEnd();
-#endif	/* NEW_TEXTURES */
 
 	glDisable(GL_ALPHA_TEST);
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-#ifdef	NEW_TEXTURES
 	bind_texture(legend_text);
 
     	glBegin(GL_QUADS);
-#ifdef FR_VERSION
 		glTexCoord2f(1.0f, 1.0f); glVertex3i(750,150,0);
 		glTexCoord2f(1.0f, 0.0f); glVertex3i(750,450,0);
 		glTexCoord2f(0.0f, 0.0f); glVertex3i(900,450,0);
 		glTexCoord2f(0.0f, 1.0f); glVertex3i(900,150,0);
-#else //FR_VERSION
-		glTexCoord2f(1.0f, 1.0f); glVertex3i(250,50,0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3i(250,150,0);
-		glTexCoord2f(0.0f, 0.0f); glVertex3i(300,150,0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3i(300,50,0);
-#endif //FR_VERSION
 	glEnd();
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(legend_text);
-
-    	glBegin(GL_QUADS);
-#ifdef FR_VERSION
-		glTexCoord2f(1.0f,0.0f); glVertex3i(750,150,0);
-		glTexCoord2f(1.0f,1.0f); glVertex3i(750,450,0);
-		glTexCoord2f(0.0f,1.0f); glVertex3i(900,450,0);
-		glTexCoord2f(0.0f,0.0f); glVertex3i(900,150,0);
-#else //FR_VERSION
-		glTexCoord2f(1.0f,0.0f); glVertex3i(250,50,0);
-		glTexCoord2f(1.0f,1.0f); glVertex3i(250,150,0);
-		glTexCoord2f(0.0f,1.0f); glVertex3i(300,150,0);
-		glTexCoord2f(0.0f,0.0f); glVertex3i(300,50,0);
-#endif //FR_VERSION
-	glEnd();
-#endif	/* NEW_TEXTURES */
 
 // this is necessary for the text over map
 // need to execute this for any map now
@@ -1204,11 +845,7 @@ void draw_game_map (int map, int mouse_mini)
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glLoadIdentity();
-#ifdef FR_VERSION
 		glOrtho((GLdouble)0, (GLdouble)900, (GLdouble)600, (GLdouble)0, -750.0, 750.0);
-#else //FR_VERSION
-		glOrtho((GLdouble)0, (GLdouble)300, (GLdouble)200, (GLdouble)0, -250.0, 250.0);
-#endif //FR_VERSION
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadIdentity();
@@ -1219,16 +856,10 @@ void draw_game_map (int map, int mouse_mini)
 			char keybuf[20];
 			glEnable(GL_TEXTURE_2D);
 			safe_snprintf(buf, sizeof(buf), "%s %s", win_minimap, get_key_string(K_MINIMAP, keybuf, sizeof(keybuf)));
-#ifdef FR_VERSION
 			glColor3f (0.9f, 0.8f, 0.0f);
 			draw_string_zoomed(75 - 4.5*strlen(buf), 450 + 130, (const unsigned char *)buf, 1, 0.8);
-#else //FR_VERSION
-			glColor3f (1.0f, 1.0f, 0.0f);
-			draw_string_zoomed(25 - 1.5*strlen(buf), 150 + 43, (const unsigned char *)buf, 1, 0.3);
-#endif //FR_VERSION
 		}
 
-#ifdef FR_VERSION
 		// affichage des marques placé avant l'éventuelle marque en cours d'édition
 		if (inspect_map_text == 0) {
 			draw_marks(marks, max_mark, tile_map_size_x, tile_map_size_y);
@@ -1238,78 +869,34 @@ void draw_game_map (int map, int mouse_mini)
 			draw_marks(marks, max_mark, temp_tile_map_size_x, temp_tile_map_size_y);
 			draw_coordinates(temp_tile_map_size_x, temp_tile_map_size_y);
 		}
-#endif //FR_VERSION
 
 		// draw a temporary mark until the text is entered
 		if (adding_mark) {
 			int x = mark_x;
 			int y = mark_y;
 
-#ifdef FR_VERSION
 			screen_x=(151+600*x/(tile_map_size_x*6));
 			screen_y=601-600*y/(tile_map_size_y*6);
-#else //FR_VERSION
-			screen_x=(51+200*x/(tile_map_size_x*6));
-			screen_y=201-200*y/(tile_map_size_y*6);
-#endif //FR_VERSION
-#ifdef FR_VERSION
 			// mise à l'échelle avec les dimensions de la carte observée
 			if (inspect_map_text != 0)
             {
-#ifdef FR_VERSION
 				if (temp_tile_map_size_x>0) screen_x=(151+600*x/(temp_tile_map_size_x*6));
 				if (temp_tile_map_size_y>0) screen_y=601-600*y/(temp_tile_map_size_y*6);
-#else //FR_VERSION
-				if (temp_tile_map_size_x>0) screen_x=(51+200*x/(temp_tile_map_size_x*6));
-				if (temp_tile_map_size_y>0) screen_y=201-200*y/(temp_tile_map_size_y*6);
-#endif //FR_VERSION
 			}
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 			set_font(police_carte);
-#endif //FR_VERSION
-#ifdef FR_VERSION
 			draw_mark_pin(screen_x, screen_y, mapmark_zoom, 0.9f,0.8f,0.0f);
 			draw_string_zoomed_shadowed(screen_x, screen_y, (unsigned char*)input_text_line.data, 1, mapmark_zoom, 0.9f,0.8f,0.0f, 0.0f,0.0f,0.0f);
-#else //FR_VERSION
-			glColor3f(1.0f,1.0f,0.0f);
-			glDisable(GL_TEXTURE_2D);
-			glBegin(GL_LINES);
-				glVertex2i(screen_x-9*mapmark_zoom,screen_y-9*mapmark_zoom);
-				glVertex2i(screen_x+6*mapmark_zoom,screen_y+6*mapmark_zoom);
-
-				glVertex2i(screen_x+6*mapmark_zoom,screen_y-9*mapmark_zoom);
-				glVertex2i(screen_x-9*mapmark_zoom,screen_y+6*mapmark_zoom);
-			glEnd();
-		        glEnable(GL_TEXTURE_2D);
-		        glColor3f(1.0f,1.0f,0.0f);
-			draw_string_zoomed (screen_x, screen_y, (unsigned char*)input_text_line.data, 1, mapmark_zoom);
-#endif //FR_VERSION
-#ifdef FR_VERSION
 			set_font(0);
-#endif //FR_VERSION
 		}
 
 		draw_mark_filter();
 
-#ifdef ENGLISH
-		if(inspect_map_text == 0) {
-			draw_marks(marks, max_mark, tile_map_size_x, tile_map_size_y);
-			draw_coordinates(tile_map_size_x, tile_map_size_y);
-		}
-		else {
-			draw_marks(temp_marks, max_temp_mark, temp_tile_map_size_x, temp_tile_map_size_y);
-			draw_coordinates(temp_tile_map_size_x, temp_tile_map_size_y);
-		}
-#endif //ENGLISH
 
-#ifdef FR_VERSION
 		if (voir_musique_carte)
 		{
 			voir_musique_sur_carte();
 		}
-#endif //FR_VERSION
 	}
 
 	//if we're following a path, draw the destination on the map
@@ -1322,44 +909,20 @@ void draw_game_map (int map, int mouse_mini)
 		{
 			if (cur_map!=-1)
 			{
-#ifdef FR_VERSION
 				screen_x = 900 - (150 + 600 * ( (px * x_size / 6) + continent_maps[cur_map].x_start) / 512);
 				screen_y = 600 * ( (py * y_size / 6) + continent_maps[cur_map].y_start) / 512;
-#else //FR_VERSION
-				screen_x = 300 - (50 + 200 * ( (px * x_size / 6) + continent_maps[cur_map].x_start) / 512);
-				screen_y = 200 * ( (py * y_size / 6) + continent_maps[cur_map].y_start) / 512;
-#endif //FR_VERSION
 			}
 			else
 			{
 				screen_x = screen_y = 0;
 			}
 		}
-#ifdef FR_VERSION
 		else
 		{
 			screen_x=151+600*px/(tile_map_size_x*6);
 			screen_y=601-600*py/(tile_map_size_y*6);
 		}
 		draw_mark_pin(screen_x, screen_y, mapmark_zoom, 0.9f, 0.0f, 0.0f);
-#else //FR_VERSION
-		else
-		{
-			screen_x=51 +200*px/(tile_map_size_x*6);
-			screen_y=201-200*py/(tile_map_size_y*6);
-		}
-
-		glColor3f(1.0f,0.0f,0.0f);
-
-		glDisable(GL_TEXTURE_2D);
-		glBegin(GL_LINES);
-
-		glVertex2i(screen_x-9*mapmark_zoom,screen_y-9*mapmark_zoom);
-		glVertex2i(screen_x+6*mapmark_zoom,screen_y+6*mapmark_zoom);
-
-		glVertex2i(screen_x+6*mapmark_zoom,screen_y-9*mapmark_zoom);
-		glVertex2i(screen_x-9*mapmark_zoom,screen_y+6*mapmark_zoom);
-#endif //FR_VERSION
 
 		glEnd();
 	}
@@ -1379,19 +942,10 @@ void draw_game_map (int map, int mouse_mini)
 
 	if (!map)
 	{
-#ifdef FR_VERSION
 		if ((cur_map != -1) && (continent_maps[cur_map].cont == cur_cont_map))
-#else //FR_VERSION
-		if (cur_map != -1)
-#endif //FR_VERSION
 		{
-#ifdef FR_VERSION
 			screen_x = 900 - (150 + 600 * ( (x * x_size / 6) + continent_maps[cur_map].x_start) / 512);
 			screen_y = 600 * ( (y * y_size / 6) + continent_maps[cur_map].y_start) / 512;
-#else //FR_VERSION
-			screen_x = 300 - (50 + 200 * ( (x * x_size / 6) + continent_maps[cur_map].x_start) / 512);
-			screen_y = 200 * ( (y * y_size / 6) + continent_maps[cur_map].y_start) / 512;
-#endif //FR_VERSION
 		}
 		else
 		{
@@ -1400,36 +954,13 @@ void draw_game_map (int map, int mouse_mini)
 	}
 	else
 	{
-#ifdef FR_VERSION
 		screen_x=151+600*x/(tile_map_size_x*6);
 		screen_y=601-600*y/(tile_map_size_y*6);
-#else //FR_VERSION
-		screen_x=51 +200*x/(tile_map_size_x*6);
-		screen_y=201-200*y/(tile_map_size_y*6);
-#endif //FR_VERSION
 	}
 
 	if ( (map || !dungeon) && x != -1 )
 	{
-#ifdef FR_VERSION
 		draw_mark_pin(screen_x, screen_y, mapmark_zoom, 0.0f, 0.0f, 0.9f);
-#else //FR_VERSION
-		glColor3f (0.0f, 0.0f, 1.0f);
-		glDisable (GL_TEXTURE_2D);
-		glPushAttrib(GL_LINE_BIT);
-		glLineWidth(2.0);
-		glEnable(GL_LINE_SMOOTH);
-		glBegin (GL_LINES);
-
-		glVertex2i(screen_x-9*mapmark_zoom,screen_y-9*mapmark_zoom);
-		glVertex2i(screen_x+6*mapmark_zoom,screen_y+6*mapmark_zoom);
-
-		glVertex2i(screen_x+6*mapmark_zoom,screen_y-9*mapmark_zoom);
-		glVertex2i(screen_x-9*mapmark_zoom,screen_y+6*mapmark_zoom);
-
-		glEnd();
-		glPopAttrib();
-#endif //FR_VERSION
 	}
 
 	if(!map && show_continent_map_boundaries && cont_text!=fallback_text) {
@@ -1451,11 +982,7 @@ void draw_game_map (int map, int mouse_mini)
 		/* Draw borders for the maps except the one with the mouse over it */
 		glColor3f (0.267f, 0.267f, 0.267f);
 		for(i = 0; continent_maps[i].name != NULL; i++) {
-#ifdef FR_VERSION
 			if(continent_maps[i].cont == cur_cont_map)
-#else //FR_VERSION
-			if(continent_maps[i].cont == continent_maps[cur_map].cont)
-#endif //FR_VERSION
 			{
 				if(!mouse_mini && mouse_over == -1
 				&& m_px > continent_maps[i].x_start && m_px < continent_maps[i].x_end
@@ -1464,17 +991,10 @@ void draw_game_map (int map, int mouse_mini)
 					/* Mouse over this map */
 					mouse_over = i;
 				} else {
-#ifdef FR_VERSION
 					int x_start = 900-(150+600*continent_maps[i].x_start/512);
 					int x_end = 900-(150+600*continent_maps[i].x_end/512);
 					int y_start = 600*continent_maps[i].y_start / 512;
 					int y_end = 600*continent_maps[i].y_end / 512;
-#else //FR_VERSION
-					int x_start = 300-(50+200*continent_maps[i].x_start/512);
-					int x_end = 300-(50+200*continent_maps[i].x_end/512);
-					int y_start = 200*continent_maps[i].y_start / 512;
-					int y_end = 200*continent_maps[i].y_end / 512;
-#endif //FR_VERSION
 
 					glVertex2i(x_start, y_start);
 					glVertex2i(x_start, y_end);
@@ -1493,17 +1013,10 @@ void draw_game_map (int map, int mouse_mini)
 		/* Draw border for the map with the mouse over it */
 		if(mouse_over >= 0) {
 			float flash_effect_colour = 0.90f - sin((float)SDL_GetTicks()/100.0f) / 10.0f;
-#ifdef FR_VERSION
 			int x_start = 900-(150+600*continent_maps[mouse_over].x_start/512);
 			int x_end = 900-(150+600*continent_maps[mouse_over].x_end/512);
 			int y_start = 600*continent_maps[mouse_over].y_start / 512;
 			int y_end = 600*continent_maps[mouse_over].y_end / 512;
-#else //FR_VERSION
-			int x_start = 300-(50+200*continent_maps[mouse_over].x_start/512);
-			int x_end = 300-(50+200*continent_maps[mouse_over].x_end/512);
-			int y_start = 200*continent_maps[mouse_over].y_start / 512;
-			int y_end = 200*continent_maps[mouse_over].y_end / 512;
-#endif //FR_VERSION
 
 			glColor3f(flash_effect_colour, flash_effect_colour, flash_effect_colour);
 			glVertex2i(x_start, y_start);
@@ -1521,12 +1034,6 @@ void draw_game_map (int map, int mouse_mini)
 		glEnd();
 	}
 
-#ifdef DEBUG_MAP_SOUND
-	// If we are in map view (not continent view) draw the sound area boundaries
-	if (map) {
-		print_sound_boundaries(cur_tab_map);
-	}
-#endif // DEBUG_MAP_SOUND
 
 	if (map)
 	{
@@ -1548,15 +1055,11 @@ void draw_game_map (int map, int mouse_mini)
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 
 int put_mark_on_position(int map_x, int map_y, char * name)
 {
-#ifdef FR_VERSION
 		// une marque peut être ajoutée sur une carte inspectée
 		if (map_x < 0 || map_y < 0) return 0;
 		if (inspect_map_text)
@@ -1571,15 +1074,6 @@ int put_mark_on_position(int map_x, int map_y, char * name)
 			|| map_y >= tile_map_size_y*6)
 			return 0;
 		}
-#else //FR_VERSION
-		if (map_x < 0
-		|| map_x >= tile_map_size_x*6
-		|| map_y < 0
-		|| map_y >= tile_map_size_y*6)
-		{
-			return 0;
-		}
-#endif //FR_VERSION
 		if (max_mark>=MAX_USER_MARKS)
 		{
 			LOG_TO_CONSOLE(c_red2, err_mapmarks_str);
@@ -1605,12 +1099,8 @@ int put_mark_on_position(int map_x, int map_y, char * name)
 
 void put_mark_on_map_on_mouse_position()
 {
-#ifdef FR_VERSION
 		// détermine les coordonnées en fonction de la carte inspectée
 		if (map_get_mouse_position(mouse_x, mouse_y, &mark_x, &mark_y)) {
-#else //FR_VERSION
-		if (pf_get_mouse_position(mouse_x, mouse_y, &mark_x, &mark_y)) {
-#endif //FR_VERSION
 				/* Lachesis: reusing available code from pathfinder.c
         int min_mouse_x = (window_width-hud_x)/6;
         int min_mouse_y = 0;
@@ -1641,14 +1131,12 @@ int put_mark_on_current_position(char *name)
 	actor *me = get_our_actor ();
 	if (me != NULL)
 	{
-#ifdef FR_VERSION
 		// n'a de sens sur la carte courante : annule une éventuelle inspection
 		if (inspect_map_text != 0)
 		{
 			inspect_map_text = 0;
 			load_map_marks();
 		}
-#endif //FR_VERSION
 		if (put_mark_on_position(me->x_tile_pos, me->y_tile_pos, name))
 			return 1;
 		/* Lachesis: reusing available code
@@ -1667,37 +1155,12 @@ int put_mark_on_current_position(char *name)
 
 void delete_mark_on_map_on_mouse_position()
 {
-#ifdef FR_VERSION
 	int mx , my , i;
 	int min_distance;
 	marking * closest_mark;
 
 	// détermine les coordonnées en fonction de la carte inspectée
 	if (! map_get_mouse_position(mouse_x, mouse_y, &mx, &my)) return;
-#else //FR_VERSION
-	int min_mouse_x = (window_width-hud_x)/6;
-	int min_mouse_y = 0;
-	int mx , my , i;
-	int max_mouse_x = min_mouse_x+((window_width-hud_x)/1.5);
-	int max_mouse_y = window_height - hud_y;
-
-	int screen_map_width = max_mouse_x - min_mouse_x;
-	int screen_map_height = max_mouse_y - min_mouse_y;
-
-	int min_distance;
-	marking * closest_mark;
-
-	// FIXME (Malaclypse): should be moved above the screen_map_* init, to avoid additional computation
-	if (mouse_x < min_mouse_x
-	|| mouse_x > max_mouse_x
-	|| mouse_y < min_mouse_y
-	|| mouse_y > max_mouse_y) {
-		return;
-	}
-
-	mx = ((mouse_x - min_mouse_x) * tile_map_size_x * 6) / screen_map_width;
-	my = (tile_map_size_y * 6) - ((mouse_y * tile_map_size_y * 6) / screen_map_height);
-#endif //FR_VERSION
 
 	// delete mark closest to cursor
 	min_distance = 20*20; // only check close marks
@@ -1732,7 +1195,6 @@ void delete_mark_on_map_on_mouse_position()
 
 }
 
-#ifdef FR_VERSION
 // possibilité d'éditer une marque existante
 void edit_mark_on_map_on_mouse_position()
 {
@@ -1776,7 +1238,6 @@ void edit_mark_on_map_on_mouse_position()
 
 	save_markings();
 }
-#endif //FR_VERSION
 
 void destroy_all_root_windows ()
 {
@@ -1817,9 +1278,7 @@ void resize_all_root_windows (Uint32 w, Uint32 h)
 		widget_resize (input_widget->window_id, input_widget->id, w-HUD_MARGIN_X, input_widget->len_y);
 		widget_move (input_widget->window_id, input_widget->id, 0, h-input_widget->len_y-HUD_MARGIN_Y);
 	}
-#ifdef NEW_NEW_CHAR_WINDOW
 	resize_newchar_hud_window();
-#endif
 }
 
 /* currently UNUSED

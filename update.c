@@ -41,9 +41,7 @@ char *update_servers[32];	// we cant handle more then 32 different servers
 int is_this_files_lst= 0;	// files.lst changes its name if it is a custom update
 char files_lst[256]= {0};
 
-#ifdef FR_VERSION
     char name_BlackLst[32] = "files_bl.lst";
-#endif //FR_VERSION
 
 // we need a simple queue system so that the MD5 processing is in parallel with downloading
 #define	MAX_UPDATE_QUEUE_SIZE	32768
@@ -55,9 +53,7 @@ char    download_temp_file[1024];
 Uint8	*download_MD5s[MAX_UPDATE_QUEUE_SIZE];
 Uint8	*download_cur_md5;
 int doing_custom = 0;
-#ifndef ENGLISH
 char fichier_telecharge[1024];
-#endif //ENGLISH
 
 // keep a track of download threads so we can wait for there completion hence freeing resources
 #define MAX_THREADS 5
@@ -226,21 +222,12 @@ static void do_handle_update_download(struct http_get_struct *get)
 		if(fp == NULL){
 			LOG_ERROR("%s: %s \"tmp/temp000.dat\": %s\n", reg_error_str, cant_open_file, strerror(errno));
 		} else {
-#ifdef ENGLISH
-			if(is_this_files_lst)	//files.lst
-			{
-			     safe_snprintf(filename, sizeof(filename), "http://%s/updates%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, files_lst);
-			} else {	//custom_files.lst
-			     safe_snprintf(filename, sizeof(filename), "http://%s/updates/%s", update_server, files_lst);
-			}
-#else //ENGLISH
 			if(is_this_files_lst)	//files.lst
 			{
 			     safe_snprintf(filename,sizeof(filename),  "http://%s/~ale/updates%d%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, VER_BUILD, files_lst);
 			} else {	//custom_files.lst
 			     safe_snprintf(filename, sizeof(filename), "http://%s/~ale/updates/%s", update_server, files_lst);
 			}
-#endif //ENGLISH
 			LOG_DEBUG("* server %s filename %s", update_server, filename);
 			http_threaded_get_file(update_server, filename, fp, NULL, EVENT_UPDATES_DOWNLOADED);
 		}
@@ -356,7 +343,6 @@ void   add_to_download(const char *filename, const Uint8 *md5)
 		download_queue[download_queue_size]= strdup(filename);
 		download_MD5s[download_queue_size]= calloc(1, 16);
 		memcpy(download_MD5s[download_queue_size], md5, 16);
-#ifdef FR_VERSION
 		// char *curr_file = download_queue[--download_queue_size];
 		// Uint8 *curr_md5 = download_MD5s[download_queue_size];
 
@@ -367,16 +353,13 @@ void   add_to_download(const char *filename, const Uint8 *md5)
 			CHECK_AND_UNLOCK_MUTEX(download_mutex);
 			return;
 		}
-#endif //FR_VERSION
 		download_queue_size++;
 
 		// start a thread if one isn't running
 		if(!download_cur_file){
 			char  buffer[1024];
 			FILE  *fp;
-#ifdef FR_VERSION
 			fichier_telecharge[sizeof(fichier_telecharge)-1]= '\0';
-#endif //FR_VERSION
 
                 safe_snprintf(download_temp_file, sizeof(download_temp_file), "tmp/temp%03d.dat", ++temp_counter);
                 buffer[sizeof(buffer)-1]= '\0';
@@ -387,20 +370,12 @@ void   add_to_download(const char *filename, const Uint8 *md5)
 				// build the proper URL to download
                     download_cur_file= download_queue[--download_queue_size];
                     download_cur_md5= download_MD5s[download_queue_size];
-#ifndef ENGLISH
 				safe_snprintf(fichier_telecharge, sizeof(fichier_telecharge), "Fichier : %s", download_cur_file);
 				if(is_this_files_lst){
 					safe_snprintf(buffer, sizeof(buffer), "http://%s/~ale/updates%d%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, VER_BUILD, download_cur_file);
 				} else {
 					safe_snprintf(buffer, sizeof(buffer), "http://%s/~ale/updates/%s", update_server, download_cur_file);
 				}
-#else //ENGLISH
-				if(is_this_files_lst){
-					safe_snprintf(buffer, sizeof(buffer), "http://%s/updates%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, download_cur_file);
-				} else {
-					safe_snprintf(buffer, sizeof(buffer), "http://%s/updates/%s", update_server, download_cur_file);
-				}
-#endif //ENGLISH
 				buffer[sizeof(buffer)-1]= '\0';
 				LOG_DEBUG("@@ %s %s",update_server,buffer);
 				http_threaded_get_file(update_server, buffer, fp, download_cur_md5, EVENT_DOWNLOAD_COMPLETE);
@@ -476,19 +451,11 @@ void    handle_file_download(struct http_get_struct *get)
 			// build the proper URL to download
 			download_cur_file= download_queue[--download_queue_size];
 			download_cur_md5= download_MD5s[download_queue_size];
-#ifdef ENGLISH
-			if(is_this_files_lst) {
-				safe_snprintf(buffer, sizeof(buffer), "http://%s/updates%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, download_cur_file);
-			} else {
-				safe_snprintf(buffer, sizeof(buffer), "http://%s/updates/%s", update_server, download_cur_file);
-			}
-#else //ENGLISH
 			if(is_this_files_lst) {
                 safe_snprintf(buffer, sizeof(buffer), "http://%s/~ale/updates%d%d%d%d/%s", update_server, VER_MAJOR, VER_MINOR, VER_RELEASE, VER_BUILD, download_cur_file);
 			} else {
                 safe_snprintf(buffer, sizeof(buffer), "http://%s/~ale/updates/%s", update_server, download_cur_file);
 			}
-#endif //ENGLISH
 			buffer[sizeof(buffer)-1]= '\0';
 			http_threaded_get_file(update_server, buffer, fp, download_cur_md5, EVENT_DOWNLOAD_COMPLETE);
 		}
@@ -689,9 +656,7 @@ void draw_update_interface (int len_x, int len_y)
 
 	draw_string ((len_x - (strlen(update_complete_str) * 11)) / 2, 200 * window_ratio, (unsigned char*)update_complete_str, 0);
 
-#ifndef ENGLISH
 	draw_string ((len_x - (strlen(fichier_telecharge) * 11)) / 2, 230 * window_ratio, (unsigned char*)fichier_telecharge, 0);
-#endif //ENGLISH
 
 /*	Possibly use this box to display the list of files updated?
 
@@ -721,9 +686,6 @@ void draw_update_interface (int len_x, int len_y)
 	draw_string ((len_x - (strlen (str) * 11)) / 2, len_y - (200 * window_ratio), (unsigned char*)str, 0);
 
 	glDisable (GL_ALPHA_TEST);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int display_update_root_handler (window_info *win)
@@ -796,7 +758,6 @@ void create_update_root_window (int width, int height, int time)
 }
 
 
-#ifdef FR_VERSION
 // fonction de recherche si le nom chemin du fichier est present de le fichier bl
 // name_BlackLst
 int file_in_bl( char *wget_file, Uint8 *wget_md5 )
@@ -830,4 +791,3 @@ int file_in_bl( char *wget_file, Uint8 *wget_md5 )
 
     return iReturn;
 }
-#endif //FR_VERSION

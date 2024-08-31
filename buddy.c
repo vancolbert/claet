@@ -17,9 +17,6 @@
 #include "multiplayer.h"
 #include "queue.h"
 #include "translate.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 
 #define MAX_ACCEPT_BUDDY_WINDOWS MAX_BUDDY
 
@@ -44,10 +41,8 @@ int buddy_type_input_id = -1;
 int buddy_change_button_id = -1;
 int buddy_delete = 0; //For the checkbox
 char *buddy_to_change = NULL;
-#ifndef ENGLISH
 //BUDDY-FIXME: once server-side offline buddies are supported, this variable will be unneeded
 time_t c_time;//used to prevent buddylist flood when changing colours, etc
-#endif //ENGLISH
 
 
 struct accept_window {
@@ -63,10 +58,8 @@ queue_t *buddy_request_queue;
 unsigned char buddy_name_buffer[16] = {0};
 char description_buffer[255] = {0};
 _buddy buddy_list[MAX_BUDDY];
-#ifdef FR_VERSION
 int buddy_nb = 0;     // nombre d'éléments présents dans la liste
 int buddy_lines = 19; // nombre d'éléments affichables dans la fenêtre
-#endif //FR_VERSION
 
 int create_buddy_interface_win(const char *title, void *argument);
 
@@ -86,20 +79,12 @@ int display_buddy_handler(window_info *win)
 
 	glEnable(GL_TEXTURE_2D);
 	// Draw buddies
-#ifdef FR_VERSION
 	/* mieux vaut effectuer le tri à la source dans le add_buddy() */
-#else //FR_VERSION
-	qsort(buddy_list,MAX_BUDDY,sizeof(_buddy),buddy_list_name_cmp);
-#endif //FR_VERSION
 
 	offset = vscrollbar_get_pos (buddy_win,buddy_scroll_id);
 	if (offset >= 0)
 	{
-#ifdef FR_VERSION
 		for (i = offset; i < offset + buddy_lines && i < buddy_nb; i++)
-#else //FR_VERSION
-		for (i = offset; i < offset + 19; i++)
-#endif //FR_VERSION
 		{
 			switch(buddy_list[i].type){
 				case 0:glColor3f(1.0,1.0,1.0);break;
@@ -129,9 +114,6 @@ int display_buddy_handler(window_info *win)
 		draw_string_zoomed(win->len_x/3+10,1,(unsigned char*)buddy_request_str,1,0.7);
 	}
 	glColor3f(0.77f, 0.57f, 0.39f);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -169,13 +151,8 @@ int click_buddy_handler (window_info *win, int mx, int my, Uint32 flags)
 	// clicked on a buddy's name
 	y /= 10;
 	y += vscrollbar_get_pos(buddy_win,buddy_scroll_id);
-#ifdef ENGLISH
-	if((strlen(buddy_list[y].name) == 0)||(buddy_list[y].type > 0xFE)) {
-		//There's no name. Fall through.
-#else //ENGLISH
 	if((strlen(buddy_list[y].name) == 0)||(buddy_list[y].type >= 0xFE)) {
 		//There's no name, or buddy is offline. Fall through.
-#endif //ENGLISH
 		return 0;
 	}
 	if(flags&ELW_RIGHT_MOUSE) {
@@ -187,11 +164,7 @@ int click_buddy_handler (window_info *win, int mx, int my, Uint32 flags)
 			//Right click, open edit window
 			create_buddy_interface_win(buddy_change_str, &buddy_list[y]);
 		}
-#ifdef ENGLISH
-	} else {
-#else //ENGLISH
 	} else if (buddy_list[y].type < 0xFE) {
-#endif //ENGLISH
 		//start a pm to them
 		// clear the buffer
 		clear_input_line();
@@ -214,21 +187,17 @@ void init_buddy()
 		buddy_list[i].type = 0xff;
 		memset (buddy_list[i].name, 0, sizeof (buddy_list[i].name));
 	}
-#ifdef FR_VERSION
 	buddy_nb = 0;
 	vscrollbar_set_bar_len(buddy_win, buddy_scroll_id, buddy_nb);
-#endif //FR_VERSION
 	for(i = 0; i < MAX_ACCEPT_BUDDY_WINDOWS; i++)
 	{
 		accept_windows[i].window_id = -1;
 		memset(accept_windows[i].name, 0, sizeof(accept_windows[i].name));
 	}
 	queue_initialise(&buddy_request_queue);
-#ifndef ENGLISH
 	//BUDDY-FIXME: once server-side offline buddies are supported, the next 2 lines can go
 	time(&c_time);//note the current time
 	c_time += 10;
-#endif //ENGLISH
 }
 
 /*
@@ -263,33 +232,16 @@ int click_add_buddy_handler(widget_list *w, int mx, int my, Uint32 flags)
 int click_change_buddy_handler(widget_list *w, int mx, int my, Uint32 flags)
 {
 	char string[255];
-#ifdef ENGLISH
-	int send_message = 1;
-#endif //ENGLISH
 
 	if(buddy_delete) {
 		safe_snprintf(string, sizeof(string), "%c#del_buddy %s", RAW_TEXT, buddy_to_change);
 		buddy_delete = 0;
-#ifdef ENGLISH
-	} else if (buddy_type_input_id != -1) {
-		safe_snprintf(string, sizeof(string), "%c#change_buddy %s %i", RAW_TEXT, buddy_to_change, multiselect_get_selected(buddy_change_win, buddy_type_input_id));
-#endif //ENGLISH
 	} else {
-#ifdef ENGLISH
-		send_message = 0;
-#else //ENGLISH
 		safe_snprintf(string, sizeof(string), "%c#change_buddy %s %i", RAW_TEXT, buddy_to_change, multiselect_get_selected(buddy_change_win, buddy_type_input_id));
-#endif //ENGLISH
 	}
-#ifdef ENGLISH
-	if (send_message) {
-		my_tcp_send(my_socket, (Uint8*)string, strlen(string+1)+1);
-	}
-#else //ENGLIDH
 	my_tcp_send(my_socket, (Uint8*)string, strlen(string+1)+1);
 	//BUDDY-FIXME: once server-side offline buddies are supported, the next line can go
 	time(&c_time);
-#endif //ENGLISH
 	destroy_window(buddy_change_win);
 	buddy_change_win = -1;
 	buddy_to_change = NULL;
@@ -307,9 +259,6 @@ int display_add_buddy_handler(window_info *win)
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 	draw_string_small(5, win->len_y-5-30, (unsigned char*)description_buffer, 2);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 int name_onmouseover_handler(widget_list *widget, int mx, int my)
@@ -467,11 +416,7 @@ int create_buddy_interface_win(const char *title, void *argument)
 			buddy_delete = 0;
 		}
 		/* Create the window */
-#ifdef ENGLISH
-		buddy_change_win = create_window(title, buddy_win, 0, buddy_menu_x_len/2, buddy_menu_y_len/4, buddy_change_x_len, buddy_change_y_len - ((buddy->type==0xFE)?127:0), ELW_WIN_DEFAULT);
-#else //ENGLISH
 		buddy_change_win = create_window(title, buddy_win, 0, buddy_menu_x_len/2, buddy_menu_y_len/4, buddy_change_x_len, buddy_change_y_len, ELW_WIN_DEFAULT);
-#endif //ENGLISH
 		set_window_handler(buddy_change_win, ELW_HANDLER_DISPLAY, &display_add_buddy_handler);
 		/* Add name label and name */
 		label_id = label_add_extended(buddy_change_win, label_id, NULL, x, y, 0, 0.9f, 0.77f, 0.57f, 0.39f, buddy_name_str);
@@ -481,18 +426,9 @@ int create_buddy_interface_win(const char *title, void *argument)
 		widget_set_OnMouseover(buddy_change_win, label_id, name_onmouseover_handler);
 		label_id++;
 		x = 5;
-#ifdef ENGLISH
-		y += 25;
-
-		x += string_width = get_string_width((unsigned char*)buddy_type_str)*0.9f;
-		buddy_type_input_id = -1;
-		if (buddy->type < 0xFE) {
-#endif //ENGLISH
 		/* Add type label and input widget */
-#ifndef ENGLISH
 		y += 25;
 		x += string_width = get_string_width((unsigned char*)buddy_type_str)*0.9f;
-#endif //ENGLISH
 		label_id = label_add_extended(buddy_change_win, label_id, NULL, 5, y, 0, 0.9f, 0.77f, 0.57f, 0.39f, buddy_type_str);
 
 		buddy_type_input_id = multiselect_add(buddy_change_win, NULL, x, y, buddy_add_x_len-string_width*2);
@@ -507,9 +443,6 @@ int create_buddy_interface_win(const char *title, void *argument)
 		widget_set_OnMouseover(buddy_change_win, buddy_type_input_id, type_onmouseover_handler);
 		label_id++;
 		y += 5+multiselect_get_height(buddy_change_win, buddy_type_input_id);
-#ifdef ENGLISH
-        }
-#endif //ENGLISH
 		/* Delete buddy checkbox and label */
 		//Center the checkbox+label
 		extra_space = 2+ceilf((buddy_change_x_len-string_width*2 - (20 + get_string_width((unsigned char*)buddy_delete_str)*0.9f))/2.0);
@@ -596,7 +529,6 @@ int click_buddy_button_handler(widget_list *w, int mx, int my, Uint32 flags)
 	return 1;
 }
 
-#ifdef FR_VERSION
 static int resize_buddy_handler(window_info *win)
 {
 	// controles tailles min et max
@@ -617,7 +549,6 @@ static int resize_buddy_handler(window_info *win)
 	widget_move(buddy_win, buddy_button_id, 0, buddy_menu_y_len-20);
 	return 0;
 }
-#endif //FR_VERSION
 
 void display_buddy()
 {
@@ -627,25 +558,16 @@ void display_buddy()
 			if (!windows_on_top) {
 				our_root_win = game_root_win;
 			}
-#ifdef FR_VERSION
 			buddy_win = create_window(win_buddy, our_root_win, 0, buddy_menu_x, buddy_menu_y, buddy_menu_x_len, buddy_menu_y_len, ELW_RESIZEABLE|ELW_WIN_DEFAULT);
 			set_window_handler(buddy_win, ELW_HANDLER_RESIZE, &resize_buddy_handler);
 			/* appel la fonction du resize pour valider les tailles & positions */
 			resize_buddy_handler(&windows_list.window[buddy_win]);
-#else //FR_VERSION
-			buddy_win = create_window(win_buddy, our_root_win, 0, buddy_menu_x, buddy_menu_y, buddy_menu_x_len, buddy_menu_y_len, ELW_WIN_DEFAULT);
-#endif //FR_VERSION
 
 			set_window_handler(buddy_win, ELW_HANDLER_DISPLAY, &display_buddy_handler );
 			set_window_handler(buddy_win, ELW_HANDLER_CLICK, &click_buddy_handler );
 
-#ifdef FR_VERSION
 			buddy_scroll_id = vscrollbar_add_extended (buddy_win, buddy_scroll_id, NULL, buddy_menu_x_len-20, 20, 20, buddy_menu_y_len-40, 0, buddy_lines, 0.77f, 0.57f, 0.39f, 0, 1, buddy_nb);
 			buddy_button_id = button_add_extended(buddy_win, buddy_button_id, NULL, 0, buddy_menu_y_len-20, buddy_menu_x_len-20, 20, 0, 1.0, 0.77f, 0.57f, 0.39f, buddy_add_str);
-#else //FR_VERSION
-			buddy_scroll_id = vscrollbar_add_extended (buddy_win, buddy_scroll_id, NULL, 130, 20, 20, 180, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1, MAX_BUDDY-19);
-			buddy_button_id = button_add_extended(buddy_win, buddy_button_id, NULL, 0, buddy_menu_y_len-20, buddy_menu_x_len, 20, 0, 1.0, -1.0, -1.0, -1.0, buddy_add_str);
-#endif //FR_VERSION
 			widget_set_OnClick(buddy_win, buddy_button_id, click_buddy_button_handler);
 			widget_set_type(buddy_win, buddy_button_id, &square_button_type);
 		}
@@ -658,12 +580,8 @@ void display_buddy()
 void add_buddy (const char *name, int type, int len)
 {
 	int i, found = 0;
-#ifdef ENGLISH
-	char message[35];
-#else
     //@tosh : Le message est sinon coupé
     char message[41];
-#endif //ENGLISH
 
 	add_name_to_tablist(name);
 	// Check if the buddy already exists
@@ -699,19 +617,11 @@ void add_buddy (const char *name, int type, int len)
 				// found then add buddy
 				buddy_list[i].type = type;
 				safe_snprintf (buddy_list[i].name, sizeof(buddy_list[i].name), "%.*s", len, name);
-#ifdef FR_VERSION
 				// on tient à jour un compteur des amis dans la liste
 				if (++buddy_nb >= MAX_BUDDY) buddy_nb = MAX_BUDDY-1;
 				vscrollbar_set_bar_len(buddy_win, buddy_scroll_id, buddy_nb);
 				// on tri la liste une fois ici plutot que dans le display handler
 				qsort(buddy_list, MAX_BUDDY, sizeof(_buddy), buddy_list_name_cmp);
-#endif //FR_VERSION
-#ifdef ENGLISH
-				// write optional online message
-				if ((buddy_log_notice == 1) && (type != 0xFE))
-				{
-					safe_snprintf (message, sizeof(message), buddy_online_str, len, name);
-#else //ENGLISH
 				//BUDDY-FIXME: once server-side offline buddies are supported, this if-block will be removed (as del_buddy will only happen when the buddy really is deleted)
 				if (buddy_log_notice == 1)
 				{
@@ -726,13 +636,8 @@ void add_buddy (const char *name, int type, int len)
 					if (difftime (c_time, n_time) > -5.0f) break;
 
 					safe_snprintf (message, sizeof(message), buddy_logon_str, len, name);
-#endif //ENGLISH
 					LOG_TO_CONSOLE (c_green1, message);
-#ifdef FR_VERSION
 					flash_icon(tt_buddy, 10);
-#else //FR_VERSION
-					flash_icon(tt_buddy, 5);
-#endif//FR_VERSION
 				}
 				break;
 			}
@@ -743,10 +648,8 @@ void add_buddy (const char *name, int type, int len)
 void del_buddy (const char *name, int len)
 {
 	int i;
-#ifndef ENGLISH
     //@tosh : passage de [36] à [41] pour éviter que le message soit coupé
 	char message[41];
-#endif //ENGLISH
 
 	// find buddy
 	for (i = 0; i < MAX_BUDDY; i++)
@@ -755,12 +658,9 @@ void del_buddy (const char *name, int len)
 		{
 			buddy_list[i].type = 0xff;
 			memset (buddy_list[i].name, 0, sizeof (buddy_list[i].name));
-#ifdef FR_VERSION
 				// on tient à jour un compteur des amis dans la liste
 				if (--buddy_nb < 0) buddy_nb = 0;
 				vscrollbar_set_bar_len(buddy_win, buddy_scroll_id, buddy_nb);
-#endif //FR_VERSION
-#ifndef ENGLISH
 			//BUDDY-FIXME: once server-side offline buddies are supported, this if-block will be removed (as del_buddy will only happen when the buddy really is deleted)
 			if (buddy_log_notice == 1)
 			{
@@ -777,7 +677,6 @@ void del_buddy (const char *name, int len)
 				safe_snprintf (message, sizeof(message), buddy_logoff_str, len, name);
 				LOG_TO_CONSOLE (c_green1, message);
 			}
-#endif //ENGLISH
 			break;
 		}
 	}
@@ -790,10 +689,8 @@ void clear_buddy()
 		buddy_list[i].type= 0xff;
 		buddy_list[i].name[0]=0;
 	}
-#ifdef FR_VERSION
 	buddy_nb = 0;
 	vscrollbar_set_bar_len(buddy_win, buddy_scroll_id, buddy_nb);
-#endif //FR_VERSION
 }
 
 int is_in_buddylist(const char *name)
@@ -813,11 +710,7 @@ int is_in_buddylist(const char *name)
 	onlyname[i] = '\0';
 
 	for(i = 0; i < MAX_BUDDY; i++) {
-#ifdef ENGLISH
-		if(buddy_list[i].type < 0xff && strcasecmp(buddy_list[i].name, onlyname) == 0) {
-#else //ENGLISH
 		if(buddy_list[i].type < 0xff && strncasecmp(buddy_list[i].name, onlyname, strlen(buddy_list[i].name)) == 0) {
-#endif //ENGLISH
 			return 1;
 		}
 	}

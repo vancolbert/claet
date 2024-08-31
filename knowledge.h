@@ -24,22 +24,18 @@ typedef struct
 	Uint8 mouse_over; /*!< flag, indicating whether the mouse is over an entry in the knowledge window */
 	char name[KNOWLEDGE_NAME_SIZE]; /*!< name of the knowledge */
 	Uint8 has_book; /*!< flag, indicating whether the knowledge item has an assosiated book */
-#ifndef ENGLISH
 	Uint8 is_stored; /*!< flag, indicating whether the knowledge item can be stored */
     Uint8 affiche; /*!< flag indiquant si la connaissance doit etre affiche ou non */
     Uint8 type;
     Uint16 id;
     Uint8 click;
-#endif //ENGLISH
 }knowledge;
 
-#ifndef ENGLISH
 typedef struct
 {
 	char * nom;
 	int numero;
 } translation_categ;
-#endif //ENGLISH
 
 /*!
  * \name windows handlers
@@ -55,7 +51,6 @@ extern knowledge knowledge_list[KNOWLEDGE_LIST_SIZE]; /*!< global array of knowl
 extern char knowledge_string[400];
 extern int	knowledge_count;
 
-#ifndef ENGLISH
 /*!
  * \ingroup knowledge_window
  * \brief   Initialise la liste des categories
@@ -66,7 +61,6 @@ extern int	knowledge_count;
  * \callgraph
  */
 void init_categories();
-#endif //ENGLISH
 
 /*!
  * \ingroup knowledge_window

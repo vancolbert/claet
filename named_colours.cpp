@@ -182,9 +182,6 @@ namespace ELGL_Colour
 		add("minimap.otherplayer", Colour_Tuple(1.0f, 1.0f, 1.0f));
 		add("global.mousehighlight", Colour_Tuple(0.5f, 0.5f, 1.0f));
 		add("global.mouseselected", Colour_Tuple(0.4f, 0.8f, 1.0f));
-#ifdef ENGLISH
-		add("buff.duration.background", Colour_Tuple(0.1f, 0.3f, 1.0f, 0.7f));
-#endif //ENGLISH
 	}
 
 } // end namespace

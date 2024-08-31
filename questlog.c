@@ -1,4 +1,3 @@
-#ifndef NEW_QUESTLOG
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,10 +12,6 @@
 #include "errors.h"
 #include "translate.h"
 #include "io/elpathwrapper.h"
-#ifdef POPUP_AIDE_FR
-#include "popup.h"
-#include "session.h"
-#endif
 
 int questlog_win=0;
 int questlog_menu_x=150;
@@ -224,9 +219,6 @@ int add_questlog_line(char *t, int len)
 		str[p - t - 2] = ']';
 		str[p - t - 1] = '\0';
 		finish = 1;
-		#ifdef POPUP_AIDE_FR
-        if (!strcmp(str,(char*)"[Combat]\0")&&fullsession_start_time>10000) {afficher_message_aide(6);}
-        #endif
 	}
 	// Message silencieux = le titre de la quête commence par [#
 	if (str[1] == '#')
@@ -702,8 +694,4 @@ void draw_highlight(int topleftx, int toplefty, int widthx, int widthy, size_t c
 	glVertex2i(topleftx + widthx, toplefty);
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
-#endif // #ifndef NEW_QUESTLOG

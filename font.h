@@ -28,10 +28,8 @@ extern "C" {
 #define SMALL_FONT_X_LEN 8.0f
 #define SMALL_FONT_Y_LEN 15.0f
 #define DEFAULT_SMALL_RATIO (SMALL_FONT_X_LEN/DEFAULT_FONT_X_LEN)
-#ifdef FR_VERSION
 #define LEGENDE_FONT_X_LEN 6.0f
 #define LEGENDE_FONT_Y_LEN 11.0f
-#endif //FR_VERSION
 /*! @} */
 
 extern int	chat_font; /*!< font size used for chat font */
@@ -83,10 +81,8 @@ int draw_string(int x, int y, const unsigned char * our_string, int max_lines);
 
 int draw_string_shadowed (int x, int y, const unsigned char * our_string, int max_lines, float fr,float fg,float fb, float br,float bg,float bb);
 int draw_string_shadowed_width (int x, int y, const unsigned char * our_string, int max_width, int max_lines, float fr,float fg,float fb, float br,float bg,float bb);
-#ifdef FR_VERSION
 int draw_string_scaled_shadowed(int x, int y, const unsigned char * our_string, int max_lines, float displayed_font_x_size, float displayed_font_y_size, float fr,float fg,float fb, float br,float bg,float bb);
 int draw_string_zoomed_shadowed(int x, int y, const unsigned char * our_string, int max_lines, float text_zoom, float fr,float fg,float fb, float br,float bg,float bb);
-#endif //FR_VERSION
 /*!
  * \ingroup text_font
  * \brief   draws the given string \a our_string at the desired position (\a x, \a y) with a zoom factor of \a text_zoom.
@@ -175,16 +171,10 @@ int reset_soft_breaks (char *str, int len, int size, float zoom, int width, int 
  *
  * \callgraph
  */
-#ifdef FR_VERSION
 int draw_string_small(int x, int y,const unsigned char * our_string,int max_lines);
 int draw_string_small_shadowed(int x, int y,const unsigned char * our_string,int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
 int draw_string_legende(int x, int y,const unsigned char * our_string,int max_lines);
-#else //FR_VERSION
-void draw_string_small(int x, int y,const unsigned char * our_string,int max_lines);
-void draw_string_small_shadowed(int x, int y,const unsigned char * our_string,int max_lines, float fr, float fg, float fb, float br, float bg, float bb);
-#endif //FR_VERSION
 
-#ifdef	ELC
 /*!
  * \ingroup text_font
  * \brief   draws the string \a our_string in-game at the desired position (\a x, \a y), with the specified font scalings.
@@ -202,7 +192,6 @@ void draw_string_small_shadowed(int x, int y,const unsigned char * our_string,in
  */
 void draw_ingame_string(float x, float y, const unsigned char * our_string, int max_lines, float font_x_scale, float font_y_scale);
 void draw_ortho_ingame_string(float x, float y, float z, const unsigned char * our_string, int max_lines, float font_x_scale, float font_y_scale);
-#endif	//ELC
 
 /*!
  * \ingroup text_font
@@ -228,9 +217,7 @@ int get_char_width(unsigned char cur_char);
  * \callgraph
  */
 int get_string_width(const unsigned char *str);
-#ifdef FR_VERSION
 int get_font_width(int chr);
-#endif //FR_VERSION
 
 /*!
  * \ingroup text_font
@@ -268,25 +255,12 @@ int init_fonts();
  */
 int load_font_textures ();
 
-#ifndef	NEW_TEXTURES
-/*!
- * \ingroup other
- * \brief Reloads the font textures
- *
- * 	Reloads the font textures (call this when changing resolution)
- *
- * \sa load_font_textures;
- */
-void reload_fonts();
-#endif	/* NEW_TEXTURES */
 
 void cleanup_fonts(void);
 
 int get_font_char(unsigned char cur_char);
 
-#ifdef FR_VERSION
 void libere_memoire_livres();
-#endif //FR_VERSION
 
 #ifdef __cplusplus
 } // extern "C"

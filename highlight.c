@@ -3,9 +3,6 @@
 #include "global.h"
 #include "platform.h"
 #include "tiles.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include <math.h>
 
 #define HIGHLIGHT_MARKER_LIFESPAN	(500)
@@ -168,7 +165,4 @@ void display_highlight_markers() {
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }

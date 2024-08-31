@@ -105,10 +105,6 @@
 	#include <OpenAL/alc.h>
 	#include <OpenAL/MacOSX_OALExtensions.h>
 #else
-	#ifdef ENGLISH
-		#include <AL/al.h>
-		#include <AL/alc.h>
-	#endif //ENGLISH
 	#ifdef WINDOWS
 		#if __MINGW32__
 			#include <AL/al.h>
@@ -128,9 +124,7 @@
 	#endif
 #endif //lib location platform checking
 
-#ifndef ENGLISH
 
-#endif //ENGLISH
 
 
 #include <math.h>
@@ -147,11 +141,7 @@
 #define UNUSED(x) x
 #endif // __GNUC__
 
-#ifdef EL_BIG_ENDIAN
- #define SwapLEFloat(X) SwapFloat(X)
-#else
  #define SwapLEFloat(X) (X)
-#endif
 
 #ifdef __cplusplus
 extern "C" {

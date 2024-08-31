@@ -41,11 +41,6 @@ extern "C" {
 #define UNDER_MOUSE_3D_OBJ 3
 #define UNDER_MOUSE_NOTHING 4
 #define UNDER_MOUSE_NO_CHANGE 5
-#ifdef MAP_EDITOR2
- #define UNDER_MOUSE_2D_OBJ 6
- #define UNDER_MOUSE_PARTICLE 7
- #define UNDER_MOUSE_LIGHT 8
-#endif
 /*! @} */
 
 extern actor *actor_under_mouse;
@@ -64,19 +59,7 @@ struct cursors_struct
 	Uint8 *cursor_pointer; /*!< pointer to the actual cursor */
 };
 
-#ifndef FASTER_MAP_LOAD
-/*!
- * contains the names of harvestable items
- */
-extern char harvestable_objects[300][80];
 
-/*!
- * contains the name of entrable items
- */
-extern char entrable_objects[300][80];
-#endif
-
-#ifdef FASTER_MAP_LOAD
 /*!
  * \ingroup other
  * \brief Load and initialize the list of harvestable objects
@@ -110,7 +93,6 @@ void load_entrable_list(void);
  *    otherwise.
  */
 int is_entrable(const char* fname);
-#endif // FASTER_MAP_LOAD
 
 /*!
  * \ingroup other

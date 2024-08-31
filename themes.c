@@ -18,9 +18,7 @@
 #include "spells.h"
 #include "themes.h"
 
-#ifdef FR_VERSION
 #include "hud.h"
-#endif //FR_VERSION
 
 
 theme liste_themes[LISTE_THEMES_MAX]; // liste des thèmes trouvés (updates + datadir)
@@ -480,7 +478,6 @@ void section_infocombat(const xmlNode * noeud)
 
 // -----------------------------------------------------------------------------
 
-#ifdef FR_VERSION
 int icon_posx_theme[MAX_ICONES] = {-1};
 
 void section_hudicons(const xmlNode * noeud)
@@ -515,12 +512,6 @@ void section_hudicons(const xmlNode * noeud)
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "inventaire"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "sorts"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "fabrication"));
-#ifdef EMOTES
-			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "emotes"));
-#endif //EMOTES
-#ifdef ENGLISH
-			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "quetes"));
-#endif //ENGLISH
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "carte"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "notes"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "amis"));
@@ -529,9 +520,7 @@ void section_hudicons(const xmlNode * noeud)
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "aide"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "options"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "musiques"));
-#ifdef FR_VERSION
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "quitter"));
-#endif //FR_VERSION
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "obtenir"));
 			else if ((++icon_no < MAX_ICONES) && !strcmp(prop, "fabriquer"));
 			else {
@@ -544,7 +533,6 @@ void section_hudicons(const xmlNode * noeud)
 		else LOG_ERROR("theme : hudicons - balise '%s' inconnue !\n", noeud->name);
 	}
 }
-#endif //FR_VERSION
 
 
 /*******************************************************************************
@@ -572,9 +560,7 @@ int recherche_sections(const xmlNode * noeud)
 			else if (! strcmp(type, "polices"))      section_polices(noeud);
 			else if (! strcmp(type, "barre_rapide")) section_quickitems(noeud);
 			else if (! strcmp(type, "info_combat"))  section_infocombat(noeud);
-#ifdef FR_VERSION
 			else if (! strcmp(type, "barre_icones")) section_hudicons(noeud);
-#endif //FR_VERSION
 			else LOG_ERROR("theme : section '%s' inconnue !\n", type);
 		}
 		else LOG_ERROR("theme : section attendue - Balise '%s' inconnue !\n", noeud->name);

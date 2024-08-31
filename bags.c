@@ -21,9 +21,7 @@
 #include "translate.h"
 #include "eye_candy_wrapper.h"
 #include "gl_init.h"
-#ifdef NEW_SOUND
 #include "actors.h"
-#endif // NEW_SOUND
 #include "sound.h"
 
 ground_item ground_item_list[ITEMS_PER_BAG];
@@ -145,9 +143,7 @@ void put_bag_on_ground(int bag_x,int bag_y,int bag_id)
 {
 	float x,y,z;
 	int obj_3d_id;
-#ifdef NEW_SOUND
 	int snd;
-#endif // NEW_SOUND
 
 	//now, get the Z position
 	if (!get_tile_valid(bag_x, bag_y))
@@ -173,12 +169,7 @@ void put_bag_on_ground(int bag_x,int bag_y,int bag_id)
         //Launch the animation
 	if (use_eye_candy) {
 		ec_create_bag_drop(x, y, z, (poor_man ? 6 : 10));
-#ifdef ONGOING_BAG_EFFECT
-		// start an ongoing effect until the ongoing bag effect is coded
-		bag_list[bag_id].ongoing_bag_effect_reference = ec_create_lamp(x, y, z, 0.0, 1.0, 0.75, (poor_man ? 6 : 10));
-#endif // ONGOING_BAG_EFFECT
 	}
-#ifdef NEW_SOUND
 	if (your_actor && bag_x == your_actor->x_pos * 2 && bag_y == your_actor->y_pos * 2)
 	{
 		snd = get_sound_index_for_particle_file_name("./particles/bag_in.part");
@@ -187,13 +178,8 @@ void put_bag_on_ground(int bag_x,int bag_y,int bag_id)
 			add_sound_object (snd, bag_x, bag_y, 0);
 		}
 	}
-#endif // NEW_SOUND
 
-#ifdef OLD_MISC_OBJ_DIR
-	obj_3d_id=add_e3d("./3dobjects/misc_objects/bag1.e3d", x, y, z,
-#else
 	obj_3d_id=add_e3d("./3dobjects/bag1.e3d", x, y, z,
-#endif
 		get_bag_tilt(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y), 0,
 		get_bag_rotation(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y),
 		1 ,0 ,1.0f ,1.0f, 1.0f, 1);
@@ -248,10 +234,6 @@ void add_bags_from_list (const Uint8 *data)
 			get_bag_tilt(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y));
 
 		if (use_eye_candy) {
-	#ifdef ONGOING_BAG_EFFECT
-			// start an ongoing effect until the ongoing bag effect is coded
-			bag_list[bag_id].ongoing_bag_effect_reference = ec_create_lamp(x, y, z, 0.0, 1.0, 0.75, (poor_man ? 6 : 10));
-	#endif // ONGOING_BAG_EFFECT
 		}
 
 		// Now, find a place into the bags list, so we can destroy the bag properly
@@ -263,11 +245,7 @@ void add_bags_from_list (const Uint8 *data)
 			return;
 		}
 
-#ifdef OLD_MISC_OBJ_DIR
-		obj_3d_id = add_e3d("./3dobjects/misc_objects/bag1.e3d", x, y, z,
-#else
 		obj_3d_id = add_e3d("./3dobjects/bag1.e3d", x, y, z,
-#endif
 			get_bag_tilt(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y), 0,
 			get_bag_rotation(bag_x, bag_y, bag_id, tile_map_size_x, tile_map_size_y),
 			1, 0, 1.0f, 1.0f, 1.0f, 1);
@@ -284,9 +262,7 @@ void remove_item_from_ground(Uint8 pos)
 
 void remove_bag(int bag_id)
 {
-#ifdef NEW_SOUND
 	int snd;
-#endif // NEW_SOUND
 
 	if (bag_id >= NUM_BAGS) return;
 
@@ -298,14 +274,7 @@ void remove_bag(int bag_id)
 
 	if (use_eye_candy) {
 		ec_create_bag_pickup(objects_list[bag_list[bag_id].obj_3d_id]->x_pos, objects_list[bag_list[bag_id].obj_3d_id]->y_pos, objects_list[bag_list[bag_id].obj_3d_id]->z_pos, (poor_man ? 6 : 10));
-#ifdef ONGOING_BAG_EFFECT
-		if (bag_list[bag_id].ongoing_bag_effect_reference != NULL) {
-			ec_recall_effect(bag_list[bag_id].ongoing_bag_effect_reference);
-			bag_list[bag_id].ongoing_bag_effect_reference = NULL;
-		}
-#endif // ONGOING_BAG_EFFECT
 	}
-#ifdef NEW_SOUND
 	if (your_actor && bag_list[bag_id].x == your_actor->x_pos * 2 && bag_list[bag_id].y == your_actor->y_pos * 2)
 	{
 		snd = get_sound_index_for_particle_file_name("./particles/bag_out.part");
@@ -314,7 +283,6 @@ void remove_bag(int bag_id)
 			add_sound_object (snd, bag_list[bag_id].x, bag_list[bag_id].y, 0);
 		}
 	}
-#endif // NEW_SOUND
 
 	destroy_3d_object(bag_list[bag_id].obj_3d_id);
 	bag_list[bag_id].obj_3d_id=-1;
@@ -469,49 +437,6 @@ int display_ground_items_handler(window_info *win)
 	//ok, now let's draw the objects...
 	for(i=ITEMS_PER_BAG-1; i>=0; --i) {
 		if(ground_item_list[i].quantity > 0) {
-#ifdef ENGLISH
-			float u_start,v_start,u_end,v_end;
-			int this_texture,cur_item,cur_pos;
-			int x_start,x_end,y_start,y_end;
-
-			//get the UV coordinates.
-			cur_item=ground_item_list[i].image_id%25;
-#ifdef	NEW_TEXTURES
-			get_item_uv(cur_item, &u_start, &v_start, &u_end,
-				&v_end);
-#else	/* NEW_TEXTURES */
-			u_start=0.2f*(cur_item%5);
-			u_end=u_start+(float)50/256;
-			v_start=(1.0f+((float)50/256)/256.0f)-((float)50/256*(cur_item/5));
-			v_end=v_start-(float)50/256;
-#endif	/* NEW_TEXTURES */
-
-			//get the x and y
-			cur_pos=i;
-			x_start=GRIDSIZE*(cur_pos%ground_items_grid_cols)+1;
-			x_end=x_start+32;
-			y_start=GRIDSIZE*(cur_pos/ground_items_grid_cols);
-			y_end=y_start+32;
-
-			//get the texture this item belongs to
-			this_texture=get_items_texture(ground_item_list[i].image_id/25);
-
-#ifdef	NEW_TEXTURES
-			bind_texture(this_texture);
-#else	/* NEW_TEXTURES */
-			get_and_set_texture_id(this_texture);
-#endif	/* NEW_TEXTURES */
-
-			glBegin(GL_QUADS);
-				draw_2d_thing(u_start,v_start,u_end,v_end,x_start,y_start,x_end,y_end);
-			glEnd();
-
-			safe_snprintf(str,sizeof(str),"%i",ground_item_list[i].quantity);
-			if ((mouseover_ground_item_pos == i) && enlarge_text())
-				draw_string_shadowed(x_start,y_end-(i&1?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-			else
-				draw_string_small_shadowed(x_start,y_end-(i&1?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#else //ENGLISH
 			/* autant réutiliser la fonction draw_item */
 			int x_start,y_start;
 			x_start=GRIDSIZE*(i%ground_items_grid_cols)+1;
@@ -524,7 +449,6 @@ int display_ground_items_handler(window_info *win)
 				draw_string_shadowed(x_start,y_start+33-(i&1?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 			else
 				draw_string_small_shadowed(x_start,y_start+33-(i&1?22:12),(unsigned char*)str,1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#endif //ENGLISH
 		}
 	}
 	mouseover_ground_item_pos = -1;
@@ -556,9 +480,6 @@ int display_ground_items_handler(window_info *win)
 
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -665,11 +586,7 @@ static int resize_ground_items_handler(window_info *win)
 				ground_items_grid_cols++;
 		}
 
-#ifdef FR_VERSION
 		set_window_scroll_len(win->window_id, ground_items_grid_rows*GRIDSIZE);
-#else //FR_VERSION
-		set_window_scroll_len(win->window_id, ground_items_grid_rows*GRIDSIZE-win->len_y);
-#endif //FR_VERSION
 		return 0;
 }
 
@@ -696,11 +613,7 @@ void draw_pick_up_menu()
 		set_window_handler(ground_items_win, ELW_HANDLER_RESIZE, &resize_ground_items_handler );
 		set_window_handler(ground_items_win, ELW_HANDLER_CLOSE, &clear_groundlist );
 		set_window_min_size(ground_items_win, (min_grid_cols+1)*GRIDSIZE, min_grid_rows*GRIDSIZE);
-#ifdef FR_VERSION
 		set_window_scroll_inc(ground_items_win, GRIDSIZE);
-#else //FR_VERSION
-		set_window_scroll_inc(ground_items_win, GRIDSIZE/3);
-#endif //FR_VERSION
 		set_window_scroll_yoffset(ground_items_win, GRIDSIZE);
 		resize_ground_items_handler(&windows_list.window[ground_items_win]);
 	} else {

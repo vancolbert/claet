@@ -17,9 +17,6 @@
 #include <SDL_timer.h>
 #include "errors.h"
 #include "text.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "sky.h"
 
 int use_fog = 1;
@@ -112,9 +109,7 @@ float current_weather_density;
 float random_table[RANDOM_TABLE_SIZE];
 int last_random_number = -1;
 
-#ifdef NEW_SOUND
 unsigned int rain_sound = 0;
-#endif //NEW_SOUND
 
 float weather_color[4] = {0.0, 0.0, 0.0, 1.0};
 float fog_alpha;
@@ -207,10 +202,6 @@ void weather_set_area(int area, float x, float y, float radius, int type, float 
 	weather_areas[area].intensity_change_duration = change_duration * 1000;
 	weather_areas[area].intensity_change_speed = (intensity - weather_areas[area].intensity) / weather_areas[area].intensity_change_duration;
 
-#ifdef DEBUG
-	printf("setting area %d at %f,%f with radius %f\n",
-		   area, x, y, radius);
-#endif // DEBUG
 }
 
 void weather_get_from_server(const Uint8* data)
@@ -473,9 +464,6 @@ void weather_render_fog()
 	glFogf(GL_FOG_DENSITY, skybox_fog_density);
 	glFogfv(GL_FOG_COLOR, skybox_fog_color);
 
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void weather_render()
@@ -579,11 +567,7 @@ void weather_render()
 					  weather_defs[type].color[2]*light_level[2],
 					  weather_defs[type].color[3]);
 
-#ifdef	NEW_TEXTURES
 			bind_texture(weather_defs[type].texture);
-#else	/* NEW_TEXTURES */
-			get_and_set_texture_id(weather_defs[type].texture);
-#endif	/* NEW_TEXTURES */
             glDrawArrays(GL_QUADS, 0, weather_drops_count[type]);
 		}
 
@@ -591,9 +575,6 @@ void weather_render()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisable(GL_BLEND);
 	glPopAttrib();
-#ifdef OPENGL_TRACE
-	CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int weather_get_drops_count(int type)
@@ -678,11 +659,7 @@ void weather_render_lightning()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-#ifdef	NEW_TEXTURES
 		bind_texture(lightnings_defs[lightning_type%lightnings_defs_count].texture);
-#else	/* NEW_TEXTURES */
-		get_and_set_texture_id(lightnings_defs[lightning_type%lightnings_defs_count].texture);
-#endif	/* NEW_TEXTURES */
 
 		glColor4fv(lightning_color);
 		glBegin(GL_QUADS);
@@ -712,7 +689,6 @@ float weather_get_lightning_intensity(float x, float y)
 		return 1.0 - dist / (LIGHTNING_LIGHT_RADIUS*LIGHTNING_LIGHT_RADIUS);
 }
 
-#ifdef NEW_SOUND
 void weather_sound_control()
 {
 	static Uint32 last_sound_update = 0;
@@ -732,11 +708,9 @@ void weather_sound_control()
 			// Torg: Only load sounds when we need them so we aren't wasting sources.
 			// This is really only for NEW_SOUND.
 			if (rain_sound == 0)
-#ifdef NEW_SOUND
 				rain_sound = add_server_sound(snd_rain, 0, 0, weather_ratios[WEATHER_RAIN]);
 			else
 				sound_source_set_gain(rain_sound, weather_ratios[WEATHER_RAIN]);
-#endif	//NEW_SOUND
 		}
 		else
 		{
@@ -771,9 +745,7 @@ void weather_sound_control()
 
 				if (snd_thunder)
 				{
-#ifdef NEW_SOUND
 					add_server_sound(snd_thunder, 0, 0, 1.0f);
-#endif	//NEW_SOUND
 				}
 			}
 
@@ -784,9 +756,7 @@ void weather_sound_control()
 		else ++i;
 	}
 }
-#endif	//NEW_SOUND
 
-#ifdef NEW_SOUND
 float weather_adjust_gain(float in_gain, int in_cookie)
 {
 	if (weather_ratios[WEATHER_RAIN] > 0.0 && in_cookie != rain_sound)
@@ -797,7 +767,6 @@ float weather_adjust_gain(float in_gain, int in_cookie)
 
 	return in_gain;
 }
-#endif // NEW_SOUND
 
 int weather_parse_effect(xmlNode *node)
 {
@@ -871,11 +840,7 @@ int weather_parse_effect(xmlNode *node)
 				weather_defs[id].wind_effect = get_float_value(item);
 			}
 			else if (xmlStrcasecmp(item->name, (xmlChar*)"texture") == 0) {
-#ifdef	NEW_TEXTURES
 				weather_defs[id].texture = load_texture_cached((char*)item->children->content, tt_mesh);
-#else	/* NEW_TEXTURES */
-				weather_defs[id].texture = load_texture_cache((char*)item->children->content, 0);
-#endif	/* NEW_TEXTURES */
 			}
 			else {
 				LOG_ERROR("unknown node for weather effect: %s", item->name);
@@ -907,11 +872,7 @@ int weather_parse_lightning(xmlNode *node)
 		if (attr->type == XML_ATTRIBUTE_NODE)
 		{
 			if (!xmlStrcasecmp (attr->name, (xmlChar*)"texture"))
-#ifdef	NEW_TEXTURES
 				lightnings_defs[id].texture = load_texture_cached((char*)attr->children->content, tt_mesh);
-#else	/* NEW_TEXTURES */
-				lightnings_defs[id].texture = load_texture_cache((char*)attr->children->content, 0);
-#endif	/* NEW_TEXTURES */
 			else if (!xmlStrcasecmp (attr->name, (xmlChar*)"x1"))
 				lightnings_defs[id].coords[0] = atof((char*)attr->children->content);
 			else if (!xmlStrcasecmp (attr->name, (xmlChar*)"y1"))
@@ -960,7 +921,6 @@ int weather_read_defs(const char *file_name)
 	xmlNode *root;
 	xmlDoc *doc;
 	int ok = 1;
-#ifdef FR_VERSION
     /*
         @TRINITA 10/10/2012
         Suite à des soucis d'écran noir sur Fedora Core, je me suis aperçu d'un soucis
@@ -969,9 +929,6 @@ int weather_read_defs(const char *file_name)
         A ce jour pas de soucis sur plusieurs OS/système
     */
     doc = xmlReadFile (file_name, NULL, XML_PARSE_NOENT);
-#else
-    doc = xmlReadFile(file_name, NULL, 0);
-#endif
 
 	if (doc == NULL) {
 		LOG_ERROR("Unable to read weather definition file %s", file_name);

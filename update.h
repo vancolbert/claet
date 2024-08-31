@@ -124,7 +124,6 @@ int http_get_file_thread_handler(void *specs);
  */
 int http_get_file(char *server, char *path, FILE *fp);
 
-#ifdef FR_VERSION
  /*!
  * \ingroup	update
  * \brief   Traitement du fichier files_bl.lst
@@ -132,7 +131,6 @@ int http_get_file(char *server, char *path, FILE *fp);
  *
  */
 int file_in_bl( char *wget_file, Uint8 *wget_md5 );
-#endif //FR_VERSION
 
 #ifdef __cplusplus
 } // extern "C"

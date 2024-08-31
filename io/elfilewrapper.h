@@ -95,7 +95,6 @@ el_file_ptr el_open_anywhere(const char* file_name);
  * \see el_open
  */
 Sint64 el_read(el_file_ptr file, Sint64 size, void* buffer);
-#ifdef FASTER_STARTUP
 /*!
  * \brief Read a float
  *
@@ -114,7 +113,6 @@ int el_read_float(el_file_ptr file, float *f);
  * \return 1 on success, 0 on failure
  */
 int el_read_int(el_file_ptr file, int *i);
-#endif
 
 /*!
  * \brief Sets the position in the file.
@@ -217,7 +215,6 @@ int el_file_exists_anywhere(const char* file_name);
  */
 const char* el_file_name(const el_file_ptr file);
 
-#ifdef FASTER_MAP_LOAD
 /*!
  * \brief Return the checksum of a file
  *
@@ -240,7 +237,6 @@ Uint32 el_crc32(el_file_ptr file);
  * \return \a str on success, NULL on failure
  */
 char *el_fgets(char *str, int size, el_file_ptr file);
-#endif // FASTER_MAP_LOAD
 
 #ifdef __cplusplus
 }

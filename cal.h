@@ -15,19 +15,9 @@ void CalCoreSkeleton_Scale(struct CalCoreSkeleton *self,float factor);
 void CalMixer_RemoveAction(struct CalMixer *self,int id);
 void CalCoreAnimation_Scale(struct CalCoreAnimation *self, float factor);
 void CalCoreMesh_Scale(struct CalCoreMesh *self,float factor);
-#ifdef NEW_SOUND
 void cal_set_anim_sound(struct cal_anim *my_cal_anim, const char *sound, const char *sound_scale);
-#endif // NEW_SOUND
-#ifdef EMOTES
-enum CalBoolean CalMixer_ExecuteActionExt(struct CalMixer *self, int id, float delayIn, float delayOut, float weight, int autoLock);
-#endif
  
 
-#ifdef EMOTES
-void cal_actor_set_emote_anim(actor *pActor, emote_frame *anims);
-void handle_cur_emote(actor *pActor);
-void cal_reset_emote_anims(actor *pActor, int cycles_too);
-#endif
 /*!
  * \brief	Draw a specific actor
  * 
@@ -41,11 +31,7 @@ void cal_reset_emote_anims(actor *pActor, int cycles_too);
  * \callgraph
  */
 void cal_render_actor(actor *act, Uint32 use_lightning, Uint32 use_textures, Uint32 use_glow);
-	#ifdef NEW_SOUND
 struct cal_anim cal_load_anim(actor_types *act, const char *str, const char *sound, const char *sound_scale, int duration);
-	#else
-struct cal_anim cal_load_anim(actor_types *act, const char *str, int duration);
-	#endif	//NEW_SOUND
 
 #define cal_cycle_blending_delay  0.1f	/*!< time in seconds for blending from cycle to action or cycle. */
 #define cal_action_blending_delay 0.6f	/*!< time in seconds for blending from action to action or cycle. */

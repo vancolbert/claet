@@ -6,26 +6,13 @@
 #include "multiplayer.h"
 #include "shadows.h"
 #include "weather.h"
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif
-#ifdef EXTRA_DEBUG
-#include "errors.h"
-#endif
 #include "eye_candy_wrapper.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
 #include "elconfig.h"
 #include "sky.h"
 #include "draw_scene.h"
-#ifndef ENGLISH
 #include "counters.h"
-#endif //ENGLISH
 
-#ifdef DEBUG_TIME
-const float debug_time_accel = 120.0f;
-#endif
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -73,9 +60,6 @@ int test_point_visible(float x,float y,float z)
 
 	gluProject(x,y,z,&MV[0],&PROJ[0],&viewp[0],&winx,&winy,&winz);
 	glReadPixels(winx,winy,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&z_value);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 
 	if (winz<z_value)
 		return 1;
@@ -91,9 +75,6 @@ void disable_local_lights()
     glDisable(GL_LIGHT1);
     glDisable(GL_LIGHT2);
     glDisable(GL_LIGHT3);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void enable_local_lights()
@@ -104,18 +85,12 @@ void enable_local_lights()
     if(show_lights >= 1)	glEnable(GL_LIGHT1);
     if(show_lights >= 2)	glEnable(GL_LIGHT2);
     if(show_lights >= 3)	glEnable(GL_LIGHT3);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_lights()
 {
 	unsigned int i, j, l, start, stop;
 	VECTOR4 vec4;
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-#endif
 
 	if(show_lights <0){
 		if(max_enabled >= 0){
@@ -135,14 +110,8 @@ void draw_lights()
 		l= get_intersect_item_ID(main_bbox_tree, i);
 		// and make sure it's a valid light
 		if (l < 0 || l >= MAX_LIGHTS || !lights_list[l]
-#ifdef CLUSTER_INSIDES_OLD
-		   || (lights_list[l]->cluster && lights_list[l]->cluster != cluster)
-#endif
 		)
 		{
-#ifdef EXTRA_DEBUG
-			ERR();
-#endif
 			continue;
 		}
 		vec4[0] = lights_list[l]->pos_x;
@@ -159,9 +128,6 @@ void draw_lights()
 		else j++;
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void destroy_light(int i)
@@ -173,11 +139,7 @@ void destroy_light(int i)
 	lights_list[i]= NULL;
 }
 
-#if defined (MAP_EDITOR2) || defined (MAP_EDITOR)
-int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, GLfloat intensity, int locked, unsigned int dynamic)
-#else
 int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, GLfloat intensity, unsigned int dynamic)
-#endif
 {
 	int i;
 	light *new_light;
@@ -204,14 +166,9 @@ int add_light(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLfloat g, GLfloat b, 
 	new_light->g= g*intensity;
 	new_light->b= b*intensity;
 
-#ifdef MAP_EDITOR2
-	new_light->locked=locked;
-#endif
 
-#ifdef CLUSTER_INSIDES
 	new_light->cluster = get_cluster ((int)(x/0.5f), (int)(y/0.5f));
 	current_cluster = new_light->cluster;
-#endif
 
 	lights_list[i] = new_light;
 	if (i >= num_lights) num_lights = i+1;
@@ -294,9 +251,6 @@ void init_lights()
 	glEnable(GL_LIGHTING);
 
 	glNormal3f(0.0f,0.0f,1.0f);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 
@@ -309,9 +263,6 @@ void reset_material()
 
 	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void set_material(float r, float g, float b)
@@ -321,9 +272,6 @@ void set_material(float r, float g, float b)
 	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_emission);
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_emission);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 int sun_use_static_position=0;
@@ -335,15 +283,9 @@ void draw_global_light()
 	GLfloat global_light_position[] = { 400.0, 400.0, 500.0, 0.0 };
 
 	//add the thunder light to the ambient/diffuse light
-#ifndef MAP_EDITOR2
 	memcpy(ambient_light, skybox_light_ambient_color, 3*sizeof(float));
 	memcpy(diffuse_light, skybox_light_diffuse_color, 3*sizeof(float));
 	// the thunder is handled elsewhere for the new weather
-#else // MAP_EDITOR2
-	diffuse_light[0]=global_diffuse_light[i][0];
-	diffuse_light[1]=global_diffuse_light[i][1];
-	diffuse_light[2]=global_diffuse_light[i][2];
-#endif // MAP_EDITOR2
 
 	for (i = 0; i < 3; i++)
 	{
@@ -376,9 +318,6 @@ void draw_global_light()
 			glLightfv(GL_LIGHT7, GL_POSITION, sun_position);
 		}
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void draw_dungeon_light()
@@ -408,9 +347,6 @@ void draw_dungeon_light()
 	glLightfv(GL_LIGHT7,GL_AMBIENT,ambient_light);
 	glLightfv(GL_LIGHT7, GL_POSITION, global_light_position);
 	glLightfv(GL_LIGHT7,GL_DIFFUSE,diffuse_light);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 
@@ -551,9 +487,6 @@ void build_sun_pos_table()
 
 void new_minute()
 {
-#ifdef EXTRA_DEBUG
-	ERR();
-#endif
 	if (!freeze_time) game_minute = real_game_minute;
 	if (!freeze_time) game_second = real_game_second;
 
@@ -599,13 +532,11 @@ void new_minute()
 	if (skybox_update_delay > 0)
 		skybox_update_colors();
 
-#ifndef ENGLISH
     // Sauvegarde toutes les 32 minutes des compteurs de statistiques
     if ((game_minute & 31) == 0)
     {
        flush_counters();
     }
-#endif // nENGLISH
 }
 
 void new_second()

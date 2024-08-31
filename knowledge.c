@@ -9,9 +9,6 @@
 #include "gamewin.h"
 #include "hud.h"
 #include "multiplayer.h"
-#ifdef ENGLISH
-#include "named_colours.h"
-#endif //ENGLISH
 #include "notepad.h"
 #include "paste.h"
 #include "sound.h"
@@ -20,12 +17,7 @@
 #include "textures.h"
 #include "translate.h"
 #include "widgets.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
-#ifdef FR_VERSION
 #include "init.h"
-#endif //FR_VERSION
 
 int knowledge_win= -1;
 int knowledge_menu_x= 100;
@@ -33,11 +25,6 @@ int knowledge_menu_y= 20;
 int knowledge_menu_x_len= STATS_TAB_WIDTH;
 int knowledge_menu_y_len= STATS_TAB_HEIGHT;
 int knowledge_scroll_id= 13;
-#ifdef ENGLISH
-int knowledge_book_image_id;
-int knowledge_book_label_id;
-int knowledge_book_id= 0;
-#endif //ENGLISH
 
 knowledge knowledge_list[KNOWLEDGE_LIST_SIZE];
 int knowledge_count= 0;
@@ -49,12 +36,7 @@ static INPUT_POPUP ipu_know;
 static char highlight_string[KNOWLEDGE_NAME_SIZE] = "";
 static int know_show_win_help = 0;
 static int mouse_over_progress_bar = 0;
-#ifdef ENGLISH
-static int selected_book = -1;
-#endif //ENGLISH
 
-#ifdef FR_VERSION
-#ifdef INGENIERIE
 #define MAX_NOMS_CATEGORIES 13
 const char* noms_categories[] =
 {
@@ -73,25 +55,6 @@ const char* noms_categories[] =
 	"Ingénierie",
 	"Inconnue"
 };
-#else //INGENIERIE
-#define MAX_NOMS_CATEGORIES 12
-const char* noms_categories[] =
-{
-	"Armes",
-	"Armures",
-	"Bijoux",
-	"Combat",
-	"Cristaux",
-	"Essences",
-	"Extraction",
-	"Fabrication",
-	"Généralités",
-	"Invocation",
-	"Métallurgie",
-	"Potions",
-	"Inconnue"
-};
-#endif //INGENIERIE
 
 
 typedef struct
@@ -113,42 +76,8 @@ knowledge liste_courante[KNOWLEDGE_LIST_SIZE]; // connaissances de la catégorie 
 
 int separation = 133;        // aligné avec l'onglet pour faire joli...
 int saut_ligne = 13;
-#endif //FR_VERSION
 
 
-#ifdef ENGLISH
-int add_knowledge_book_image() {
-	// Book image
-	int isize, tsize, tid, picsperrow, xtile, ytile, id;
-	float ftsize, u, v, uend, vend;
-
-	isize=256;
-	tsize=51;
-	tid=21;
-	picsperrow=isize/tsize;
-	xtile=tid%picsperrow;
-	ytile=tid/picsperrow;
-	ftsize=(float)tsize/isize;
-	u=ftsize*xtile;
-	v=-ftsize*ytile;
-	uend=u+ftsize;
-	vend=v-ftsize;
-#ifdef	NEW_TEXTURES
-	id = load_texture_cached("textures/items1", tt_gui);
-#else	/* NEW_TEXTURES */
-	id= load_texture_cache_deferred("textures/items1.bmp", 0);
-#endif	/* NEW_TEXTURES */
-	return image_add_extended(knowledge_win, 0, NULL, 500, 215, 50, 50, WIDGET_DISABLED, 1.0, 1.0, 1.0, 1.0, id, u, v, uend, vend, 0.05f);
-}
-
-int handle_knowledge_book()
-{
-	open_book(knowledge_book_id + 10000);
-	// Bring the new window to the front               <----- Doesn't work. Is in front for the first usage, but not after that
-	select_window(book_win);
-	return 1;
-}
-#endif //ENGLISH
 
 void check_book_known()
 {
@@ -218,16 +147,11 @@ char *get_research_eta_str(char *str, size_t size)
 	else
 	{
 		int ieta = (int)(eta + 0.5);
-#ifdef FR_VERSION
 		safe_snprintf(str, size, "Temps : %i %s", ieta, (ieta==1)?minute_str:minutes_str);
-#else //FR_VERSION
-		safe_snprintf(str, size, "ETA: %i %s", ieta, (ieta==1)?minute_str:minutes_str);
-#endif //FR_VERSION
 	}
 	return str;
 }
 
-#ifdef FR_VERSION
 // Change la catégorie courante et recompose la liste des connaissances à afficher
 void change_categorie(int cat)
 {
@@ -264,14 +188,9 @@ void change_categorie(int cat)
 	}
 */
     // réajustement de la barre de défilement
-#ifdef FR_VERSION
 	vscrollbar_set_bar_len(knowledge_win, knowledge_scroll_id, nb_liste_courante);
-#else //FR_VERSION
-	vscrollbar_set_bar_len(knowledge_win, knowledge_scroll_id, (nb_liste_courante>15)?nb_liste_courante-15:0);
-#endif //FR_VERSION
 	vscrollbar_set_pos(knowledge_win, knowledge_scroll_id, 0);
 }
-#endif //FR_VERSION
 
 int display_knowledge_handler(window_info *win)
 {
@@ -279,7 +198,6 @@ int display_knowledge_handler(window_info *win)
 	int scroll = vscrollbar_get_pos (knowledge_win, knowledge_scroll_id);
 	char points_string[16];
 	char *research_string = not_researching_anything;
-#ifdef FR_VERSION
 	int is_researching = 1;
 	int progress = (125*your_info.research_completed+1)/(your_info.research_total+1);
 	x+= separation+2;
@@ -306,14 +224,6 @@ int display_knowledge_handler(window_info *win)
 		draw_string_zoomed(4, 2+saut_ligne*i, (unsigned char*)categories[i].nom, 1, 0.8);
     }
 	float max_name_x = win->len_x - x - 32;
-#else //FR_VERSION
-	int rx = win->len_x - 15;
-	int lx = win->len_x - 15 - (455-330);
-	int points_pos;
-	float font_ratio = 0.7;
-	float max_name_x = (win->len_x-4)/2;
-	int is_researching = 1;
-#endif //FR_VERSION
 
 	if(your_info.research_total &&
 	   (your_info.research_completed==your_info.research_total))
@@ -322,7 +232,6 @@ int display_knowledge_handler(window_info *win)
 		safe_snprintf(points_string, sizeof(points_string), "%i/%i",your_info.research_completed,your_info.research_total);
 	if(your_info.researching < knowledge_count)
 	{
-#ifdef FR_VERSION
         int j;
         for (j=0; j <= knowledge_count; j++)
         {
@@ -332,9 +241,6 @@ int display_knowledge_handler(window_info *win)
                 break;
             }
         }
-#else //FR_VERSION
-		research_string = knowledge_list[your_info.researching].name;
-#endif //FR_VERSION
 	}
 	else if (your_info.researching < KNOWLEDGE_LIST_SIZE)
 	{
@@ -344,24 +250,17 @@ int display_knowledge_handler(window_info *win)
 	{
 		research_string = not_researching_anything;
 		points_string[0] = '\0';
-#ifdef FR_VERSION
 		progress = 1;
-#endif //FR_VERSION
 		is_researching = 0;
 	}
-#ifdef ENGLISH
-	points_pos = (rx - lx - strlen(points_string)*8) / 2;
-#endif //ENGLISH
 
 	glDisable(GL_TEXTURE_2D);
-#ifdef FR_VERSION
     // trait de separation
     glBegin(GL_LINES);
 	    glColor4f(0.77f,0.57f,0.39f,1.0f);
         glVertex3i(separation, 5, 0);
         glVertex3i(separation, 195, 0);
     glEnd();
-#endif //FR_VERSION
 	glColor3f(0.77f,0.57f,0.39f);
 	glBegin(GL_LINES);
 	// window separators
@@ -369,7 +268,6 @@ int display_knowledge_handler(window_info *win)
 	glVertex3i(win->len_x,200,0);
 	glVertex3i(0,300,0);
 	glVertex3i(win->len_x,300,0);
-#ifdef FR_VERSION
 	//progress bar
 	glVertex3i(445,315,0);
 	glVertex3i(570,315,0);
@@ -397,76 +295,23 @@ int display_knowledge_handler(window_info *win)
 	draw_string_small(10,320,(unsigned char*)researching_str,1);
 	draw_string_small(100,320,(unsigned char*)research_string,1);
 	draw_string_small(480,320,(unsigned char*)points_string,1);
-#else //FR_VERSION
-	//progress bar
-	glVertex3i(lx,315,0);
-	glVertex3i(rx,315,0);
-	glVertex3i(lx,335,0);
-	glVertex3i(rx,335,0);
-	glVertex3i(lx,315,0);
-	glVertex3i(lx,335,0);
-	glVertex3i(rx,315,0);
-	glVertex3i(rx,335,0);
-	glEnd();
-	//progress bar
-	if (is_researching)
-	{
-		int progress = 125*get_research_fraction();
-	glBegin(GL_QUADS);
-	glColor3f(0.40f,0.40f,1.00f);
-	glVertex3i(lx+1+gx_adjust,315+gy_adjust,0);
-		glVertex3i(lx+1+progress+gx_adjust,315+gy_adjust,0);
-	glColor3f(0.10f,0.10f,0.80f);
-		glVertex3i(lx+1+progress+gx_adjust,334+gy_adjust,0);
-	glVertex3i(lx+1+gx_adjust,334+gy_adjust,0);
-	glColor3f(0.77f,0.57f,0.39f);
-	glEnd();
-	}
-	glEnable(GL_TEXTURE_2D);
-	//draw text
-	draw_string_small(4,210,(unsigned char*)knowledge_string,4);
-	glColor3f(1.0f,1.0f,1.0f);
-	draw_string_small(10,320,(unsigned char*)researching_str,1);
-	draw_string_small(120,320,(unsigned char*)research_string,1);
-	draw_string_small(lx+points_pos,320,(unsigned char*)points_string,1);
-#endif //FR_VERSION
 	if (is_researching && mouse_over_progress_bar)
 	{
-#ifdef FR_VERSION
 		char eta_string[21];
-#else //FR_VERSION
-		char eta_string[20];
-#endif //FR_VERSION
 		int eta_pos;
 		get_research_eta_str(eta_string, sizeof(eta_string));
-#ifdef FR_VERSION
 		eta_pos = (int)(rx - strlen(eta_string)*SMALL_FONT_X_LEN) / 2;
 		draw_string_small(500+eta_pos,285,(unsigned char*)eta_string,1);
-#else //FR_VERSION
-		eta_pos = (int)(rx - lx - strlen(eta_string)*SMALL_FONT_X_LEN) / 2;
-		draw_string_small(lx+eta_pos,285,(unsigned char*)eta_string,1);
-#endif //FR_VERSION
 		mouse_over_progress_bar=0;
 	}
 	// Draw knowledges
-#ifdef FR_VERSION
 	for(i = scroll; i<scroll+15 && i<nb_liste_courante; i++)
-#else //FR_VERSION
-	for(i = 2*scroll; i < 2 * (scroll + 19); i++)
-#endif //FR_VERSION
 	{
 		int highlight = 0;
-#ifdef FR_VERSION
 		if (*highlight_string && (strlen(liste_courante[i].name) > 0) &&
 			(get_string_occurance(highlight_string, liste_courante[i].name, strlen(liste_courante[i].name), 1) != -1))
-#else //FR_VERSION
-		float colour_brightness = (knowledge_list[i].present) ?1.0 : 0.6;
-		if (*highlight_string && (strlen(knowledge_list[i].name) > 0) &&
-			(get_string_occurance(highlight_string, knowledge_list[i].name, strlen(knowledge_list[i].name), 1) != -1))
-#endif //FR_VERSION
 			highlight = 1;
 
-#ifdef FR_VERSION
 		if (liste_courante[i].mouse_over)
 		{
 			glColor3f (0.1f,0.1f,0.9f);
@@ -496,64 +341,11 @@ int display_knowledge_handler(window_info *win)
 			else
                 glColor3f (0.5f, 0.5f, 0.5f);
 		}
-#else //FR_VERSION
-		if (!highlight && (i == selected_book))
-		{
-		{
-			GLfloat cols[3];
-			elglGetColour3v("global.mouseselected", cols);
-			glColor3f (cols[0]*colour_brightness, cols[1]*colour_brightness, cols[2]*colour_brightness);
-		}
-		else if (knowledge_list[i].mouse_over)
-			elglColourN("global.mousehighlight");
-		else if (highlight)
-			glColor3f (1.0f*colour_brightness, 0.6f*colour_brightness, 0.0f*colour_brightness);
-		else
-			glColor3f (1.0f*colour_brightness, 1.0f*colour_brightness, 1.0f*colour_brightness);
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 		draw_string_zoomed_width(x, y, (unsigned char*)liste_courante[i].name, max_name_x, 1, 0.7);
         y += saut_ligne;
-#else //FR_VERSION
-		/* truncate the string if it is too long */
-		if ((get_string_width((unsigned char*)knowledge_list[i].name) * font_ratio) > max_name_x)
-		{
-			const char *append_str = "... ";
-			size_t dest_max_len = strlen(knowledge_list[i].name)+strlen(append_str)+1;
-			char *used_name = (char *)malloc(dest_max_len);
-			truncated_string(used_name, knowledge_list[i].name, dest_max_len, append_str, max_name_x, font_ratio);
-			draw_string_zoomed(x, y, (unsigned char*)used_name,1,font_ratio);
-			/* if the mouse is over this line and its truncated, tooltip to full name */
-			if (knowledge_list[i].mouse_over)
-			{
-				show_help(knowledge_list[i].name, 0, win->len_y+5);
-				know_show_win_help = 0;
-			}
-			free(used_name);
-		}
-		else
-			draw_string_zoomed(x,y,(unsigned char*)knowledge_list[i].name,1,font_ratio);
-
-		x += (win->len_x-20)/2;
-		if (i % 2 == 1)
-		{
-			y += 10;
-			x = 2;
-		}
-#endif //FR_VERSION
 	}
 
-#ifdef ENGLISH
-	if (know_show_win_help)
-	{
-		show_help(cm_help_options_str, 0, win->len_y+5);
-		know_show_win_help = 0;
-	}
-#endif //ENGLISH
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 1;
 }
 
@@ -567,19 +359,14 @@ int mouseover_knowledge_handler(window_info *win, int mx, int my)
 	if (cm_window_shown()!=CM_INIT_VALUE)
 		return 0;
 
-#ifdef FR_VERSION
 	for (i=0; i<=nb_liste_courante; i++) liste_courante[i].mouse_over = 0;
 	for (i=0; i<=nb_categories; i++) categories[i].mouse_over = 0;
-#else //FR_VERSION
-	for(i=0;i<knowledge_count;i++)knowledge_list[i].mouse_over=0;
-#endif //FR_VERSION
 	if (my>0)
 		know_show_win_help = 1;
 	if(mx>win->len_x-20)
 		return 0;
 	if(my>192)
 		return 0;
-#ifdef FR_VERSION
 	i = my / saut_ligne;
 	if (mx >= separation)
 	{
@@ -590,11 +377,6 @@ int mouseover_knowledge_handler(window_info *win, int mx, int my)
 	{
 		if (i < nb_categories) categories[i].mouse_over = 1;
 	}
-#else //FR_VERSION
-	mx = (mx < (win->len_x-20)/2) ?0 :1;
-	my/=10;
-	knowledge_list[mx+2*(my+vscrollbar_get_pos (knowledge_win, knowledge_scroll_id))].mouse_over=1;
-#endif //FR_VERSION
 	return 0;
 }
 
@@ -618,7 +400,6 @@ int click_knowledge_handler(window_info *win, int mx, int my, Uint32 flags)
 		vscrollbar_scroll_down(knowledge_win, knowledge_scroll_id);
 		return 1;
 	} else {
-#ifdef FR_VERSION
 		// On clique dans la liste des connaissances
 		if (x >= separation)
 		{
@@ -638,28 +419,6 @@ int click_knowledge_handler(window_info *win, int mx, int my, Uint32 flags)
 		{
 			if (y <= nb_categories * saut_ligne) change_categorie(y/saut_ligne);
 		}
-#else //FR_VERSION
-		selected_book = -1;
-		x = (x < (win->len_x-20)/2) ?0 :1;
-		y/=10;
-		idx = x + 2 *(y + vscrollbar_get_pos (knowledge_win, knowledge_scroll_id));
-		if(idx < knowledge_count)
-			{
-				str[0] = GET_KNOWLEDGE_INFO;
-				*(Uint16 *)(str+1) = SDL_SwapLE16((short)idx);
-				my_tcp_send(my_socket,str,3);
-				// Check if we display the book image and label
-				knowledge_book_id = idx;
-				if (knowledge_list[idx].present && knowledge_list[idx].has_book) {
-					widget_unset_flags (knowledge_win, knowledge_book_image_id, WIDGET_DISABLED);
-					widget_unset_flags (knowledge_win, knowledge_book_label_id, WIDGET_DISABLED);
-				} else {
-					widget_set_flags(knowledge_win, knowledge_book_image_id, WIDGET_DISABLED);
-					widget_set_flags(knowledge_win, knowledge_book_label_id, WIDGET_DISABLED);
-				}
-				selected_book = idx;
-			}
-#endif //FR_VERSION
 		do_click_sound();
     }
 	return 1;
@@ -683,7 +442,6 @@ void get_knowledge_list (Uint16 size, const char *list)
 	// now copy the data
 	for(i=0; i<size; i++)
 	{
-#ifdef FR_VERSION
         int j;
         int k;
         for (j=0; j<8; j++)
@@ -728,27 +486,14 @@ void get_knowledge_list (Uint16 size, const char *list)
                 }
             }
         }
-#else //FR_VERSION
-		knowledge_list[i*8+0].present= list[i] & 0x01;
-		knowledge_list[i*8+1].present= list[i] & 0x02;
-		knowledge_list[i*8+2].present= list[i] & 0x04;
-		knowledge_list[i*8+3].present= list[i] & 0x08;
-		knowledge_list[i*8+4].present= list[i] & 0x10;
-		knowledge_list[i*8+5].present= list[i] & 0x20;
-		knowledge_list[i*8+6].present= list[i] & 0x40;
-		knowledge_list[i*8+7].present= list[i] & 0x80;
-#endif //FR_VERSION
 	}
-#ifdef FR_VERSION
 	// Pour mettre à jour les compteurs des catégories le plus simple est de réinitialiser
 	init_categories();
 	change_categorie(categorie_courante);
-#endif //FR_VERSION
 }
 
 void get_new_knowledge(Uint16 idx)
 {
-#ifdef FR_VERSION
 	int idx_connaissance, idx_categorie;
 
 	// changement de l'état dans la liste des connaissances
@@ -777,11 +522,6 @@ void get_new_knowledge(Uint16 idx)
 		if (idx_connaissance == nb_liste_courante) return; // connaissance non trouvée !
 		liste_courante[idx_connaissance].present = 1;
 	}
-#else //FR_VERSION
-	if(idx < KNOWLEDGE_LIST_SIZE){
-		knowledge_list[idx].present= 1;
-	}
-#endif //FR_VERSION
 }
 
 static void set_hightlight_callback(const char *new_highlight_string, void *data)
@@ -807,21 +547,12 @@ static int cm_knowledge_handler(window_info *win, int widget_id, int mx, int my,
 		case 2:
 			{
 				int i;
-#ifdef FR_VERSION
 				for (i=0; i<=nb_liste_courante; i++) {
 					if (liste_courante[i].mouse_over) {
 						copy_to_clipboard(liste_courante[i].name);
 						break;
 					}
 				}
-#else //FR_VERSION
-				for(i=0; i<knowledge_count; i++)
-					if (knowledge_list[i].mouse_over)
-					{
-						copy_to_clipboard(knowledge_list[i].name);
-						break;
-					}
-#endif //FR_VERSION
 			}
 			break;
 	}
@@ -834,15 +565,7 @@ void fill_knowledge_win ()
 	set_window_handler(knowledge_win, ELW_HANDLER_CLICK, &click_knowledge_handler );
 	set_window_handler(knowledge_win, ELW_HANDLER_MOUSEOVER, &mouseover_knowledge_handler );
 
-#ifdef FR_VERSION
 	knowledge_scroll_id = vscrollbar_add_extended (knowledge_win, knowledge_scroll_id, NULL, knowledge_menu_x_len - 20,  0, 20, 200, 0, 15, 0.77f, 0.57f, 0.39f, 0, 1, nb_liste_courante);
-#else //FR_VERSION
-	knowledge_scroll_id = vscrollbar_add_extended (knowledge_win, knowledge_scroll_id, NULL, knowledge_menu_x_len - 20,  0, 20, 200, 0, 1.0, 0.77f, 0.57f, 0.39f, 0, 1, (knowledge_count+2)/2-19);
-	knowledge_book_image_id = add_knowledge_book_image();
-	widget_set_OnClick(knowledge_win, knowledge_book_image_id, &handle_knowledge_book);
-	knowledge_book_label_id = label_add_extended(knowledge_win, knowledge_book_image_id + 1, NULL, 485, 265, WIDGET_DISABLED, 0.8, 1.0, 1.0, 1.0, knowledge_read_book);
-	widget_set_OnClick(knowledge_win, knowledge_book_label_id, &handle_knowledge_book);
-#endif //FR_VERSION
 	if (cm_valid(!cm_know_id))
 	{
 		cm_know_id = cm_create(know_highlight_cm_str, cm_knowledge_handler);
@@ -865,7 +588,6 @@ void display_knowledge()
 	}
 }
 
-#ifdef FR_VERSION
 void init_categories()
 {
 	int i, empty_slot = -1;
@@ -912,5 +634,4 @@ void init_categories()
 	// si jamais la catégorie courante n'est plus valide
 	if (categorie_courante >= nb_categories) change_categorie(-1);
 }
-#endif //FR_VERSION
 

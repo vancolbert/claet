@@ -20,26 +20,13 @@ extern "C" {
 #define VERTICAL 1
 /*! @} */
 
-#ifdef FR_VERSION
 void reload_icon_pos();
 void confirmation_quitter();
-#endif //FR_VERSION
 
-#ifndef ENGLISH
 extern int show_coord;
-#ifdef SHOW_COORD_SETTER
 extern int show_coord_2;
-#endif //SHOW_COORD_SETTER
 extern int rot_boussole; //Type de rotation de la boussole
 extern Uint32 exp_lev[200];
-#else //ENGLISH
-/*!
- * \name Quickbar defines
- */
-/*! @{ */
-#define MAX_QUICKBAR_SLOTS 12
-/*! @} */
-#endif //ENGLISH
 
 typedef enum
 {
@@ -57,9 +44,7 @@ extern int stats_bar_win; /*!< the window id for the stats bar of the bottom HUD
 extern int watch_this_stats[]; /*!< used for displaying more than 1 stat in the hud */
 extern int max_food_level; /*!< normally 45 but can be set from options for people with diffent values (big belly) */
 
-#ifdef SHOW_ATTR_BOOSTED
 extern int show_attr_boosted; /*!< show the attributes boosted in the hud */
-#endif //SHOW_ATTR_BOOSTED
 /*!
  * \name windows handlers
  */
@@ -67,9 +52,6 @@ extern int show_attr_boosted; /*!< show the attributes boosted in the hud */
 extern int	quickbar_win; /*!< quickbar windows handler */
 /*! @} */
 
-#ifdef ENGLISH
-extern int 	quickbar_relocatable; /*!< flag that indicates whether the quickbar is relocatable. */
-#endif //ENGLISH
 
 /*!
  * \ingroup display_2d
@@ -77,9 +59,6 @@ extern int 	quickbar_relocatable; /*!< flag that indicates whether the quickbar 
  *
  *      Initializes the quickbar, it's event handlers and shows it. If the quickbar has been moved by the player it will be drawn in its new position.
  */
-#ifdef ENGLISH
-void init_quickbar();
-#endif //ENGLISH
 void switch_action_mode(int * mode, int id);
 
 extern int hud_x;
@@ -90,13 +69,6 @@ extern int view_digital_clock;
 extern int view_knowledge_bar;
 extern int view_hud_timer;
 
-#ifdef ENGLISH
-extern int quickbar_x;
-extern int quickbar_y;
-extern int quickbar_dir;
-extern int quickbar_draggable;
-extern int num_quickbar_slots;
-#endif //ENGLISH
 extern int copy_next_LOCATE_ME;
 
 extern int show_help_text;
@@ -270,22 +242,6 @@ void view_map_win(int *win, int id);
  */
 void show_help(const char *message, int x, int y);
 
-#ifdef ENGLISH
-/*!
- * \ingroup windows
- * \brief Shows the \a message at the given position (\a x, \a y).
- *
- *      Shows the \a message at the given position (\a x, \a y).
- *
- * \param message   the help message to show
- * \param x         the x coordinate of the position to draw the help message
- * \param y         the y coordinate of the position to draw the help message
- * \param big       if zero use the small font, otherwise the default
- *
- * \callgraph
- */
-void show_sized_help(const char *message, int x, int y, int big);
-#endif //ENGLISH
 
 /*!
  * \ingroup windows
@@ -404,9 +360,7 @@ Uint32 get_flags(int win_id);
  */
 int show_exp(char *text, int len);
 
-#ifdef FR_VERSION
 void change_max_nutri(int max);
-#endif //FR_VERSION
 
 #ifdef __cplusplus
 } // extern "C"

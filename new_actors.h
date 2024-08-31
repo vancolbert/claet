@@ -61,7 +61,6 @@ void unwear_item_from_actor(int actor_id,Uint8 which_part);
  */
 void actor_wear_item(int actor_id,Uint8 which_part, Uint8 which_id);
 
-#ifdef FR_VERSION
 /*!
  * \ingroup network_actors
  * \brief   Enregistre le titre du personnage.
@@ -74,7 +73,6 @@ void actor_wear_item(int actor_id,Uint8 which_part, Uint8 which_id);
  * \callgraph
  */
 void ajout_titre (const char *donnees, int longueur);
-#endif //FR_VERSION
 
 /*!
  * \ingroup network_actors
@@ -123,13 +121,8 @@ void build_glow_color_table();
  * \sa		client_serv.h
  * \callgraph
  */
-#ifdef NEW_EYES
-actor * add_actor_interface(float x, float y, float z_rot, float scale, int actor_type, short skin, short hair, short eyes,
-							short shirt, short pants, short boots, short head);
-#else //NEW_EYES
 actor * add_actor_interface(float x, float y, float z_rot, float scale, int actor_type, short skin, short hair,
 							short shirt, short pants, short boots, short head);
-#endif //NEW_EYES
 
 #ifdef __cplusplus
 } // extern "C"

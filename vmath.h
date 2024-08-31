@@ -7,15 +7,7 @@
 #define	VMATH_H
 #include <math.h>
 #include <string.h>
-#ifdef MAP_EDITOR
-#ifdef ENGLISH
-#include "../map_editor/misc.h"
-#else //ENGLISH
-#include "../editeur_sources/misc.h"
-#endif //ENGLSIH
-#else
 #include "misc.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {

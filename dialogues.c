@@ -16,23 +16,12 @@
 #include "sound.h"
 #include "textures.h"
 #include "translate.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
-#ifndef ENGLISH
 #include <limits.h>
-#endif //ENGLISH
-#ifdef FR_VERSION
 #include "themes.h"
-#endif //FR_VERSION
 
 unsigned char dialogue_string[2048];
 unsigned char npc_name[20] = "";
-#ifdef FR_VERSION
 char npc_mark_str[20] = "%s (pnj)";
-#else //FR_VERSION
-char npc_mark_str[20] = "%s (npc)";
-#endif //FR_VERSION
 int cur_portrait=8;
 int portraits_tex[MAX_PORTRAITS_TEXTURES];
 
@@ -104,23 +93,13 @@ void build_response_entries (const Uint8 *data, int total_length)
 		orig_len=len=SDL_SwapLE16(*((Uint16 *)(data+last_index)));
 
 		// break if we don't have a complete response
-#ifdef ENGLISH
-		if (last_index + 3 + len + 2 + 2 > total_length)
-#else //ENGLISH
 		if (last_index + 3 + len + 2 + 4 > total_length)
-#endif //ENGLISH
 			break;
 		dialogue_responces[i].in_use=1;
 		my_strncp(dialogue_responces[i].text,(char*)&data[last_index+2], len);
-#ifdef ENGLISH
-		dialogue_responces[i].response_id=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+len)));
-		dialogue_responces[i].to_actor=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+2+len)));
-		last_index+=len+2+2+2;//why not len+6?
-#else //ENGLISH
 		dialogue_responces[i].response_id=SDL_SwapLE32(*((Uint32 *)(data+last_index+2+len)));
 		dialogue_responces[i].to_actor=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+4+len)));
 		last_index+=len+2+2+4;
-#endif //ENGLISH
 		dialogue_responces[i].orig_x_len=orig_len*SMALL_FONT_X_LEN;
 		dialogue_responces[i].orig_y_len=SMALL_FONT_Y_LEN;
 		if(i<36) // [1-0, a-z] [']'] [space] eg 1] Physique 2] Coordination 3] Will
@@ -200,17 +179,10 @@ static int	display_dialogue_handler(window_info *win)
 	if(cur_portrait!=-1)
 	{
 		//get the UV coordinates.
-#ifdef	NEW_TEXTURES
 		u_start = 0.25f * (cur_portrait % 4);
 		u_end = u_start + 0.25f;
 		v_start = 0.25f * (cur_portrait / 4);
 		v_end = v_start + 0.25f;
-#else	/* NEW_TEXTURES */
-		u_start=0.25f*(cur_portrait%4);
-		u_end=u_start+0.25f;
-		v_start=1.0f-(0.25f*(cur_portrait/4));
-		v_end=v_start-0.25f;
-#endif	/* NEW_TEXTURES */
 
 		//get the x and y
 		x_start=1;
@@ -222,11 +194,7 @@ static int	display_dialogue_handler(window_info *win)
 		this_texture=cur_portrait/16;
 		this_texture=portraits_tex[this_texture];
 
-#ifdef	NEW_TEXTURES
 		bind_texture(this_texture);
-#else	/* NEW_TEXTURES */
-		get_and_set_texture_id(this_texture);
-#endif	/* NEW_TEXTURES */
 		glBegin(GL_QUADS);
 		draw_2d_thing(u_start,v_start,u_end,v_end,x_start,y_start,x_end,y_end);
 		glEnd();
@@ -275,12 +243,8 @@ static int	display_dialogue_handler(window_info *win)
         win->len_y=win->orig_len_y;
 
 	//now, draw the character name
-#ifdef FR_VERSION
     set_font(police_nom_pnj_dialogue);
 	glColor3f(couleur_nom_pnj_dialogue.rouge, couleur_nom_pnj_dialogue.vert, couleur_nom_pnj_dialogue.bleu);
-#else //FR_VERSION
-	glColor3f(1.0f,1.0f,1.0f);
-#endif //FR_VERSION
 	draw_string_small(npc_name_x_start,win->len_y-(SMALL_FONT_Y_LEN+1),npc_name,1);
 
 	if (highlight_close)
@@ -288,9 +252,7 @@ static int	display_dialogue_handler(window_info *win)
 	else
 		glColor3f(1.0f,1.0f,1.0f);
 	draw_string_small(win->len_x-(str_edge+close_str_width),win->len_y-(SMALL_FONT_Y_LEN+1),(unsigned char*)close_str,1);
-#ifdef FR_VERSION
     set_font(0);
-#endif //FR_VERSION
 
 	if (copy_end_highlight_time > SDL_GetTicks())
 		glColor3f(1.0f,0.25f,0.0f);
@@ -330,9 +292,6 @@ static int	display_dialogue_handler(window_info *win)
 			win->len_y-(SMALL_FONT_Y_LEN+1), repeat_str_width, SMALL_FONT_Y_LEN);
 	}
 
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 	return 0;
 }
 
@@ -398,9 +357,7 @@ static int mouseover_dialogue_handler(window_info *win, int mx, int my)
 	return 0;
 }
 
-#ifndef ENGLISH
 int mon_acteur=-1;
-#endif //nENGLISH
 
 #if 0
 /* just for debug */
@@ -434,9 +391,7 @@ static void save_response(const response *last_response)
 			{
 				saved_response_list_cur = i;
 				return;
-#ifdef FR_VERSION
 			}
-#endif //FR_VERSION
 			if (i == saved_response_list_bot)
 				break;
 			if (i == 0)
@@ -475,15 +430,8 @@ static void send_response(window_info *win, const response *the_response)
 	Uint8 str[16];
 	str[0]=RESPOND_TO_NPC;
 	*((Uint16 *)(str+1))=SDL_SwapLE16((short)the_response->to_actor);
-#ifdef FR_VERSION
 	*((Uint32 *)(str+3))=SDL_SwapLE32((Uint32)the_response->response_id);
 	my_tcp_send(my_socket,str,7);
-#else
-	*((Uint16 *)(str+3))=SDL_SwapLE16((short)the_response->response_id);
-	my_tcp_send(my_socket,str,5);
-	if (autoclose_storage_dialogue && strcmp(the_response->text, open_storage_str) == 0)
- 		hide_window(win->window_id);
-#endif
 	save_response(the_response);
 }
 
@@ -555,18 +503,14 @@ static void do_copy(void)
 static int click_dialogue_handler(window_info *win, int mx, int my, Uint32 flags)
 {
 	int i;
-#ifndef ENGLISH
 	Uint8 str[16];
-#endif //ENGLISH
 
 	// only handle mouse button clicks, not scroll wheels moves
 	if ( (flags & ELW_MOUSE_BUTTON) == 0) return 0;
 
 	for(i=0;i<MAX_RESPONSES;i++)
 		{
-#ifndef ENGLISH
 			if (dialogue_responces[i].in_use && (mon_acteur == -1)) mon_acteur=dialogue_responces[i].to_actor;
-#endif //nENGLISH
 			if(dialogue_responces[i].in_use && dialogue_responces[i].mouse_over)
 				{
 					send_response(win, &dialogue_responces[i]);
@@ -577,7 +521,6 @@ static int click_dialogue_handler(window_info *win, int mx, int my, Uint32 flags
 	if(mx>=win->len_x-(str_edge+close_str_width) && mx<win->len_x-str_edge && my>=win->len_y-(SMALL_FONT_Y_LEN+1))
 	{
 			do_window_close_sound();
-#ifndef ENGLISH
 		if ((port%2000) > 999)
 		{
 		    str[0]=RESPOND_TO_NPC;
@@ -586,7 +529,6 @@ static int click_dialogue_handler(window_info *win, int mx, int my, Uint32 flags
 		    my_tcp_send(my_socket,str,7);
 		}
 		mon_acteur=-1;
-#endif
 			hide_window(win->window_id);
 			return 1;
 		}
@@ -726,22 +668,14 @@ void display_dialogue()
 		do_icon_click_sound();
 
 	if(dialogue_win < 0){
-#ifndef ENGLISH
 		if((port%2000) > 999)
 		{
-#ifdef FR_DIALOGUE
-	   	   dialogue_win= create_window("Dialogue", game_root_win, 0, dialogue_menu_x, dialogue_menu_y, dialogue_menu_x_len, dialogue_menu_y_len, ELW_DIALOGUE);
-#else //FR_DIALOGUE
 		   dialogue_win= create_window("Dialogue", game_root_win, 0, dialogue_menu_x, dialogue_menu_y, dialogue_menu_x_len, dialogue_menu_y_len, ELW_WIN_DEFAULT^ELW_CLOSE_BOX);
-#endif //FR_DIALOGUE
 		}
 		else
 		{
-#endif //ENGLISH
 		dialogue_win= create_window("Dialogue", game_root_win, 0, dialogue_menu_x, dialogue_menu_y, dialogue_menu_x_len, dialogue_menu_y_len, ELW_WIN_DEFAULT^ELW_CLOSE_BOX);
-#ifndef ENGLISH
 		}
-#endif //ENGLISH
 
 		set_window_handler(dialogue_win, ELW_HANDLER_DISPLAY, &display_dialogue_handler );
 		set_window_handler(dialogue_win, ELW_HANDLER_MOUSEOVER, &mouseover_dialogue_handler );
@@ -752,12 +686,7 @@ void display_dialogue()
 		cm_add(windows_list.window[dialogue_win].cm_id, cm_dialog_options_str, NULL);
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+1, &use_keypress_dialogue_boxes, "use_keypress_dialog_boxes");
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+2, &use_full_dialogue_window, "use_full_dialogue_window");
-#ifndef FR_VERSION
-		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+3, &autoclose_storage_dialogue, NULL);
-		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+4, &auto_select_storage_option, NULL);
-#else //FR_VERSION
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+3, &auto_select_storage_option, NULL);
-#endif //FR_VERSION
 
 		cm_npcname_id = cm_create(cm_npcname_menu_str, cm_npcname_handler);
 		cm_dialog_copy_id = cm_create(cm_dialog_copy_menu_str, NULL);

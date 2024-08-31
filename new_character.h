@@ -26,7 +26,6 @@ extern int newchar_root_win; /*!< window handler for the character creation inte
  * \name Books
  */
 /*! @{ */
-#ifdef FR_VERSION
 extern int book_eldo;
 extern int book_haut_elfe;
 extern int book_dwarf;
@@ -35,14 +34,6 @@ extern int book_sinan;
 extern int book_elfe_noir;
 extern int book_gnome;
 extern int book_draegoni;
-#else //FR_VERSION
-extern int book_human;
-extern int book_dwarf;
-extern int book_elf;
-extern int book_gnome;
-extern int book_orchan;;
-extern int book_draegoni;
-#endif //FR_VERSION
 /*! @} */
 
 /*!
@@ -112,12 +103,7 @@ void login_from_new_char();
 void create_newchar_root_window (void);
 
 
-#ifdef NEW_NEW_CHAR_WINDOW
 void resize_newchar_hud_window(void);
-#else
-void show_account_win (void);
-void show_color_race_win(void);
-#endif
 
 #ifdef __cplusplus
 } // extern "C"

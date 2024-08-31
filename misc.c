@@ -9,17 +9,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include	<zlib.h>
-#ifdef PNG_SCREENSHOT
 	#ifdef OSX
-		#ifdef ENGLISH
-			#include <png/png.h>
-		#else
 			#include <png.h>
-		#endif
 	#else
 		#include <png.h>
 	#endif
-#endif //PNG_SCREENSHOT
 #ifdef OSX
 #include <ApplicationServices/ApplicationServices.h>
 #endif
@@ -214,7 +208,6 @@ gzFile my_gzopen(const char * filename, const char * mode)
 }
 
 
-#ifdef PNG_SCREENSHOT
 /* Save a PNG type image to an SDL datasource */
 static void png_write_data(png_structp ctx, png_bytep area, png_size_t size)
 {
@@ -371,16 +364,12 @@ void makeScreenShot ()
 	int amask = 0x00000000;
 
 	/* see if the screenshots directory exists */
-#ifdef ENGLISH
-	safe_snprintf (fname, sizeof (fname), "%sscreenshots", configdir);
-#else //ENGLISH
 #ifdef WINDOWS
      safe_snprintf (fname, sizeof (fname), "%sscreenshots", configdir);
 	//safe_snprintf (fname, sizeof (fname), "./data/screenshots");
 #else //WINDOWS
 	safe_snprintf (fname, sizeof (fname), "%sscreenshots", configdir);
 #endif //WINDOWS
-#endif //ENGLISH
 
 	ret = file_exists(fname);
 	if(ret == 0)
@@ -439,7 +428,6 @@ void makeScreenShot ()
 	free (pixels);
 	SDL_FreeSurface (surf);
 }
-#endif
 
 void draw_circle_ext(int x, int y, int radius, int interval, int angle_from, int angle_to)
 {
@@ -447,10 +435,8 @@ void draw_circle_ext(int x, int y, int radius, int interval, int angle_from, int
 	int angle;
 	x += gx_adjust;
 	y += gy_adjust;
-#ifdef FR_VERSION
 //	angle_to++;            // plus simple que de changer < en <= dans le for ;)
 	angle_from+= interval; // solution alternative : un coup en moins au commencement
-#endif //FR_VERSION
 
 	if(radius==0){
 		glVertex2f(x, y);
@@ -507,9 +493,6 @@ void draw_box(char * name, int x, int y, int w, int h, int rad)
 		glEnd();
 	}
 	glEnable(GL_TEXTURE_2D);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 
@@ -576,9 +559,6 @@ void draw_smooth_button(char * str, float size, int x, int y, int w, int lines, 
 	if(str) {
 		draw_string_zoomed(xstr + gx_adjust, y+radius/2.0f + gy_adjust, (unsigned char*)str, lines, size);
 	}
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 

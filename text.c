@@ -3,18 +3,12 @@
 #include <ctype.h>
 #include <time.h>
 #include "text.h"
-#ifdef ACHIEVEMENTS
-#include "achievements.h"
-#endif
 #include "actors.h"
 #include "asc.h"
 #include "buddy.h"
 #include "chat.h"
 #include "console.h"
 #include "consolewin.h"
-#ifdef ENGLISH
-#include "elconfig.h"
-#endif //ENGLISH
 #include "errors.h"
 #include "filter.h"
 #include "gl_init.h"
@@ -32,27 +26,13 @@
 #include "url.h"
 #include "counters.h"
 #include "io/elpathwrapper.h"
-#ifdef ENGLISH
-#include "spells.h"
-#endif //ENGLISH
 #include "serverpopup.h"
 #include "sky.h"
 #include "sound.h"
 #include "trade_log.h"
-#ifdef EMOTES
-#include "actor_scripts.h"
-#include "emotes.h"
-#endif // EMOTES
-#ifndef ENGLISH
 #include "elconfig.h"
-#endif //ENGLISH
-#ifdef FR_VERSION
 #include "themes.h"
-#endif //FR_VERSION
 
-#ifdef EMOTES
-int emote_filter=0;
-#endif
 int summoning_filter=0;
 
 text_message display_text_buffer[DISPLAY_TEXT_BUFFER_SIZE];
@@ -76,12 +56,6 @@ char not_from_the_end_console=0;
 
 int dark_channeltext = 0;
 
-#ifdef ENGLISH
-static int is_special_day = 0;
-int today_is_special_day(void) { return is_special_day; };
-void set_today_is_special_day(void) { is_special_day = 1; };
-void clear_today_is_special_day(void) { is_special_day = 0; };
-#endif //ENGLISH
 
 int log_chat = LOG_SERVER;
 
@@ -91,9 +65,6 @@ FILE	*srv_log=NULL;
 
 ec_reference harvesting_effect_reference = NULL;
 
-#ifndef NEW_SOUND
-int afk_snd_warning = 0;
-#endif
 
 /* forward declaration */
 void put_small_colored_text_in_box (Uint8 color, const Uint8 *text_to_add, int len, int pixels_limit, char *buffer);
@@ -156,11 +127,7 @@ void update_text_windows (text_message * pmsg)
 	if (console_root_win >= 0) update_console_win (pmsg);
 	switch (use_windowed_chat) {
 		case 0:
-#ifdef FR_VERSION
 			rewrap_message(pmsg, chat_zoom, chat_font, get_console_text_width(), NULL);
-#else //FR_VERSION
-			rewrap_message(pmsg, chat_zoom, get_console_text_width(), NULL);
-#endif //FR_VERSION
 			lines_to_show += pmsg->wrap_lines;
 			if (lines_to_show > 10) lines_to_show = 10;
 			break;
@@ -176,44 +143,6 @@ void update_text_windows (text_message * pmsg)
 void open_chat_log(){
 	char starttime[200], sttime[200];
 	struct tm *l_time; time_t c_time;
-#ifdef ENGLISH
-
-	char chat_log_file[100];
-	char srv_log_file[100];
-
-	time(&c_time);
-	l_time = localtime(&c_time);
-
-	if (get_rotate_chat_log())
-	{
-		char logsuffix[7];
-		strftime(logsuffix, sizeof(logsuffix), "%Y%m", l_time);
-		safe_snprintf (chat_log_file, sizeof (chat_log_file),  "chat_log_%s.txt", logsuffix);
-		safe_snprintf (srv_log_file, sizeof (srv_log_file), "srv_log_%s.txt", logsuffix);
-	}
-	else
-	{
-		safe_strncpy(chat_log_file, "chat_log.txt", sizeof(chat_log_file));
-		safe_strncpy(srv_log_file, "srv_log.txt", sizeof(srv_log_file));
-	}
-
-	chat_log = open_file_config (chat_log_file, "a");
-	if (log_chat == LOG_SERVER || log_chat == LOG_SERVER_SEPERATE)
-		srv_log = open_file_config (srv_log_file, "a");
-	if (chat_log == NULL)
-	{
-		LOG_TO_CONSOLE(c_red3, "Unable to open log file to write. We will NOT be recording anything.");
-		log_chat = LOG_NONE;
-		return;
-	}
-	else if ((log_chat == LOG_SERVER || log_chat == LOG_SERVER_SEPERATE) && srv_log == NULL)
-	{
-		LOG_TO_CONSOLE(c_red3, "Unable to open server log file to write. We will fall back to recording everything in chat_log.txt.");
-		log_chat = LOG_CHAT;
-		return;
-	}
-	strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime", l_time);
-#else //ENGLISH
 	char chat_log_file[100];
 
 	time(&c_time);
@@ -244,24 +173,17 @@ void open_chat_log(){
 		LOG_TO_CONSOLE(c_red3, "Impossible d'ouvrir les journaux pour le serveur. Tout sera enregsitré dans le fichier chat_log.txt.");
 		return;
 	}
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime", l_time);
-#else //ENGLISH
 	strftime(sttime, sizeof(sttime), "\n\nDébut du journal %Y-%m-%d %H:%M:%S (heure locale)", l_time);
-#endif //ENGLISH
 	safe_snprintf(starttime, sizeof(starttime), "%s (%s)\n\n", sttime, tzname[l_time->tm_isdst>0]);
 	fwrite (starttime, strlen(starttime), 1, chat_log);
 }
 
-#ifndef ENGLISH
 void close_chat_log() {
 	if (chat_log == NULL) return;
 	fclose(chat_log);
 	chat_log = NULL;
 }
-#endif //ENGLISH
 
 void timestamp_chat_log(){
 	char starttime[200], sttime[200];
@@ -291,10 +213,8 @@ void write_to_log (Uint8 channel, const Uint8* const data, int len)
 	struct tm *l_time; time_t c_time;
 	FILE *fout;
 
-#ifdef NEW_SOUND
 	// Check if this string matches text we play a sound for
 	check_sound_alerts(data, len, channel);
-#endif // NEW_SOUND
 
 	if(log_chat == LOG_NONE || (channel == CHAT_SERVER && log_chat == LOG_CHAT))
 		// We're not logging at all, or this is a server message and
@@ -311,25 +231,10 @@ void write_to_log (Uint8 channel, const Uint8* const data, int len)
 	// The file we'll write to
 	fout = (channel == CHAT_SERVER && log_chat >= 3) ? srv_log : chat_log;
 
-#ifdef FR_VERSION
 	time(&c_time);
 	l_time = localtime(&c_time);
 	// 'data' already contains timestamp if 'show_timestamp'
 	j = strftime(str, sizeof(str), show_timestamp ? "%d " : "%d [%H:%M:%S] ", l_time);
-#else //FR_VERSION
-	if(!show_timestamp)
-	{
-	// Start filling the buffer with the time stamp
-	time (&c_time);
-	l_time = localtime (&c_time);
-	j = strftime (str, sizeof(str), "[%H:%M:%S] ", l_time);
-	}
-	else
-	{
-		//we already have a time stamp
-		j=0;
-	}
-#endif //FR_VERSION
 
 	i = 0;
 	while (i < len)
@@ -365,16 +270,10 @@ void send_input_text_line (char *line, int line_len)
 	switch(use_windowed_chat)
 	{
 		case 1:
-#ifndef ENGLISH
 			if(tabs_1[current_tab].channel != CHAT_ALL)
             {
 				change_to_current_tab(line);
 			}
-#else //ENGLISH
-			if(tabs[current_tab].channel != CHAT_ALL) {
-				change_to_current_tab(line);
-			}
-#endif //ENGLISH
 		break;
 		case 2:
 			if(channels[active_tab].chan_nr != CHAT_ALL) {
@@ -418,90 +317,6 @@ void send_input_text_line (char *line, int line_len)
 	return;
 }
 
-#ifdef EMOTES
-int match_emote(emote_dict *command, actor *act, int send)
-{
-	hash_entry *match;
-
-	// Try to match the input against an emote command and actor type
-	match=hash_get(emote_cmds,(void*)command->command);
-
-	if(match){
-		//printf("Emote <%s> sent (%p)\n",((emote_dict*)match->item)->command,((emote_dict*)match->item)->emote);
-		//SEND emote to server
-		if (send) send_emote(((emote_dict*)match->item)->emote->id);
-
-			return 1;
-		}
-	return 0;
-}
-
-
-int parse_text_for_emote_commands(const char *text, int len)
-{
-	int i=0, j = 0, wf=0,ef=0, itsme=0;
-	char name[20];	// Yeah, this should be done correctly
-	emote_dict emote_text;
-	actor *act;
-
-
-	//printf("parsing local for emotes\n");
-	//extract name
-	while(text[i]&&i<20){
-		if (is_color(text[i])) {i++; continue;}
-		name[j]=text[i];
-		if(text[i]==' ' || text[i]==':') {
-			name[j]=0;
-			if(text[i]==':') i++;
-			break;
-		}
-		i++;j++;
-	}
-
-	if(j>=20||name[j]) return 0; 		//out of bound or not terminated
-
-	//check if we are saying text
-	LOCK_ACTORS_LISTS();
-
-	act = get_actor_ptr_from_id(yourself);
-	if (!act){
-		UNLOCK_ACTORS_LISTS();
-		LOG_ERROR("Unable to find actor who just said local text?? name: %s", name);
-		return 1;		// Eek! We don't have an actor match... o.O
-	}
-
-	if (!(!strncasecmp(act->actor_name, name, strlen(name)) &&
-			(act->actor_name[strlen(name)] == ' ' ||
-			act->actor_name[strlen(name)] == '\0'))){
-		//we are not saying this text, return
-		//UNLOCK_ACTORS_LISTS();
-		//return 0;
-			itsme=0;
-	} else itsme=1;
-
-	j=0;
-	do {
-		if (is_color(text[i])) continue;
-		if ((text[i]==' ' || text[i]==0)) {
-			if (j&&j<=MAX_EMOTE_LEN) {
-				wf++;
-				emote_text.command[j]=0;
-				ef+=match_emote(&emote_text,act,itsme);
-			} else wf+= (j) ? 1:0;
-			j=0;
-		} else {
-			if (j<MAX_EMOTE_LEN)
-				emote_text.command[j]=text[i];
-					j++;
-				}
-	} while(text[i++]);
-	//printf("ef=%i, wf=%i, filter=>%i\n",ef,wf,emote_filter);
-	UNLOCK_ACTORS_LISTS();
-
-	return  ((ef==wf) ? (emote_filter):(0));
-
-}
-#endif // EMOTES
 
 
 /* stop or restart the harvesting eye candy effect depending on the harvesting state */
@@ -543,113 +358,15 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 		auto_open_encyclopedia = 0;
 	}
 
-#ifdef ENGLISH
-	/*
-	DANGER, WILL ROBINSON!
 
-	The below code should not exist in it's present form.  I'd change it,
-	but I'd need access to the server.  Simply checking text output (which
-	is used for all sorts of things) for the phrase "Game Date" is very
-	dangerous.  Example: what if, in the future, we allow spaces in
-	character names?  Someone chooses the name "Game Date" and walks around
-	saying "hi".  Everyone's clients in the area interpret this as being a
-	Game Date command.
-
-	I've made the below code not *as* dangerous. Had a user been able to
-	fake out the below code, previously, it would have caused a buffer overflow
-	in their client if they didn't write in only numbers after it.  Now, they
-	won't crash; it'll just be misparsed.
-
-	General practice recommendation: don't mix server commands with user
-	input.
-
-	 - Karen
-	*/
-	/*
-	ed (ttlanhil): made it check if it's a server colour. still not perfect
-	(this should have been done server-side instead of parsing the date), but safer
-	*/
-	if (from_color_char (text_to_add[0]) == c_green1 && my_strncompare(text_to_add+1,"Game Date", 9))
-	{
-		//we assume that the server will still send little-endian dd/mm/yyyy... we could make it safer by parsing the format too, but it's simpler to assume
-		const char * const month_names[] = { "Aluwia", "Seedar", "Akbar", "Zartia", "Elandra", "Viasia", "Fruitfall", "Mortia", "Carnelar", "Nimlos", "Chimar", "Vespia" };
-		const char * const day_names[] = { "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th" };
-		char new_str[100];
-		const char *ptr=text_to_add;
-		short unsigned int day=1, month=1, year=0;
-		int offset = 0;
-
-		while(!isdigit(ptr[offset]))
-		{
-			offset++;
-			if (offset >= sizeof(new_str))
-			{
-				LOG_ERROR("error (1) parsing date string: %s",text_to_add);
-				//something evil this way comes...
-				return 0;
-			}
-		}
-		ptr += offset;
-
-		if (sscanf (ptr,"%hu%*[-/]%hu%*[-/]%hu",&day,&month,&year) < 3
-		    || day <= 0 || month <= 0
-		    || day > 30 || month > 12 || year > 9999)
-		{
-			LOG_ERROR("error (2) parsing date string: %s",text_to_add);
-			//something evil this way comes...
-		}
-		else
-		{
-			// only display initial or "#date" user requested date
-			if (!set_date(ptr))
-			{
-			safe_snprintf(new_str, sizeof(new_str), date_format, day_names[day-1], month_names[month-1], year);
-			LOG_TO_CONSOLE(c_green1, new_str);
-			}
-
-			//Calculate fraction Big Lunar month (2 conjunction months) less game clock time
-			//Represented in Degrees.
-			skybox_time_d = (SDL_GetTicks()%( 1296000 * 1000 ));
-			skybox_time_d *= 360.0/( 1296000.0 * 1000.0);
-			skybox_time_d = -skybox_time_d;
-			skybox_time_d += 360.0 * (((month%2)*30 + day-1)*360 + game_minute)/21600.0;
-			skybox_update_positions();
-			return 0;
-		}
-	}
-
-	if (from_color_char (text_to_add[0]) == c_green1 && my_strncompare(text_to_add+1,"Game Time", 9))
-	{
-		real_game_second = atoi(&text_to_add[18]);
-#ifdef ENGLISH
-		set_real_game_second_valid();
-#endif //ENGLISH
-		next_second_time = cur_time + 1000;
-        new_second();
-	}
-#endif //ENGLISH
-
-#ifdef EMOTES
-	// Check for local messages to be translated into actor movements (contains [somthing])
-	if (channel == CHAT_LOCAL)
-	{
-		if(parse_text_for_emote_commands(text_to_add, len)) return 0;
-	}
-#endif // EMOTES
 
 	if (channel == CHAT_SERVER) {
-#ifndef ENGLISH
 		int index = 0;
 		if (my_strncompare(text_to_add+1, "Tu commences la récolte de ", 27)) index = 27;
 		else if (my_strncompare(text_to_add+1, "Tu commences la récolte d'", 26)) index = 26;
 		if (index > 0) {
 			strncpy(harvest_name, text_to_add+index+1, len-1-index-1);
 			harvest_name[len-1-index-1] = '\0';
-#else // ENGLISH
-		if (my_strncompare(text_to_add+1, "You started to harvest ", 23)) {
-			strncpy(harvest_name, text_to_add+1+23, len-1-23-1);
-			harvest_name[len-1-23-1] = '\0';
-#endif // ENGLISH
 			set_now_harvesting();
 			if (use_eye_candy == 1 && use_harvesting_eye_candy == 1)
 			{
@@ -665,17 +382,6 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 					UNLOCK_ACTORS_LISTS();
 				}
 			}
-#ifdef ENGLISH
-		}
-		else if ((my_strncompare(text_to_add+1, "You stopped harvesting.", 23)) ||
-			(my_strncompare(text_to_add+1, "You can't harvest while fighting (duh)!", 39)) ||
-			(my_strncompare(text_to_add+1, "You can't do that while trading!", 32)) ||
-			(my_strncompare(text_to_add+1, "You can't harvest here", 22)) ||
-			(my_strncompare(text_to_add+1, "You lack the knowledge of ", 26)) ||
-			((my_strncompare(text_to_add+1, "You need to wear ", 17) && strstr(text_to_add, "order to harvest") != NULL)) ||
-			((my_strncompare(text_to_add+1, "You need to have a ", 19) && strstr(text_to_add, "order to harvest") != NULL)))
-		{
-#else // ENGLISH
 		}
         else if ((my_strncompare(text_to_add+1, "Tu as arrêté de récolter.", 25)) ||
 			(my_strncompare(text_to_add+1, "Tu ne peux pas récolter pendant un combat (tsssk) !", 51)) ||
@@ -683,7 +389,6 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 			(my_strncompare(text_to_add+1, "Tu ne peux pas récolter ici !", 29)) ||
 			((my_strncompare(text_to_add+1, "Tu dois avoir un ", 17) && strstr(text_to_add, "pour récolter ça!") != NULL)))
         {
-#endif // ENGLISH
 			clear_now_harvesting();
 		}
 		else if (is_death_message(text_to_add+1)) {
@@ -699,24 +404,15 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 				item_uid_enabled = 1;
 			printf("item_uid_enabled=%d\n", item_uid_enabled);
 		}
-#ifdef ENGLISH
-		else if ((copy_next_LOCATE_ME > 0) && my_strncompare(text_to_add+1, "You are in ", 11)) {
-#else // ENGLISH
 		else if (copy_next_LOCATE_ME > 0&& my_strncompare(text_to_add+1, "Tu es dans ", 11)) {
-#endif // ENGLISH
 			char buffer[4096];
-#ifdef FR_VERSION
             char *texte;
-#endif //FR_VERSION
 			switch (copy_next_LOCATE_ME)
 			{
 				case 1:
 			        copy_to_clipboard(text_to_add+1);
 					break;
 				case 2:
-#ifdef ENGLISH
-					snprintf(buffer, sizeof(buffer), "@My Position: %s", text_to_add + 12);
-#else // ENGLISH
                     // On est sur le canal RP ou les canaux de peuples, on supprime les coordonnees
                     if ((active_channels[current_channel] == 2) ||
                        ((active_channels[current_channel] >= 11) && (active_channels[current_channel] <= 19)))
@@ -725,44 +421,18 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
                         texte[0]='\0';
                     }
 					snprintf(buffer, sizeof(buffer), "@Ma position : %s", text_to_add + 12);
-#endif // ENGLISH
 					send_input_text_line(buffer, strlen(buffer));
 					break;
 			}
 			copy_next_LOCATE_ME = 0;
 			return 0;
 		}
-#ifdef ACHIEVEMENTS
-		else if (my_strncompare(text_to_add+1, "You see: ", 9)) {
-			achievements_player_name(text_to_add+10, len-10);
-		}
-#endif
-#ifdef ENGLISH
-		else if ((my_strncompare(text_to_add+1, "You just got food poisoned!", 27)) ||
-			(my_strncompare(text_to_add+1, "Oh well, no invisibility, but we got poisoned.", 46)))
-		{
-			increment_poison_incidence();
-		}
-#endif //ENGLISH
 		else if (strstr(text_to_add+1, "aborted the trade.")) {
 			trade_aborted(text_to_add+1);
 		}
 		else if (strstr(text_to_add+1, "Trade session failed")) {
 			trade_aborted(text_to_add+1);
 		}
-#ifdef ENGLISH
-		else if (strstr(text_to_add+1, "You have been saved!")) {
-			last_save_time = time(NULL);
-		}
-		else if (strstr(text_to_add+1, "Day ends:") || strstr(text_to_add+1, "This day was removed by ")) {
-			clear_today_is_special_day();
-		}
-		else if (strstr(text_to_add+1, "Today is a special day:")) {
-			set_today_is_special_day();
-		}
-		else if (my_strncompare(text_to_add+1, "You are too far away! Get closer!", 33)) {
-#endif //ENGLSIH
-#ifdef FR_VERSION
 		else if	(my_strncompare(text_to_add+1, "Tu es trop loin ! Rapproche-toi !", 33)) {
 			static Uint32 last_time = 0;
 			static int done_one = 0;
@@ -776,49 +446,14 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 			done_one = 1;
 			last_time = new_time;
 		}
-#else //FR_VERSION
-		else {
-			static Uint32 last_time[] = { 0, 0 };
-			static int done_one[] = { 0, 0 };
-			int match_index = -1;
-			if (my_strncompare(text_to_add+1, "You are too far away! Get closer!", 33))
-				match_index = 0;
-			else if (my_strncompare(text_to_add+1, "Can't do, your target is already fighting with someone else,", 60))
-				match_index = 1;
-			if (match_index > -1)
-			{
-				Uint32 new_time = SDL_GetTicks();
-				clear_now_harvesting();
-				if(your_actor != NULL)
-					add_highlight(your_actor->x_tile_pos,your_actor->y_tile_pos, HIGHLIGHT_SOFT_FAIL);
-				/* suppress further messages within for 5 seconds of last */
-				if (done_one[match_index] && (abs(new_time - last_time[match_index]) < 5000))
-					return 0;
-				done_one[match_index] = 1;
-				last_time[match_index] = new_time;
-			}
-		}
-#endif //FR_VERSION
 	} else if (channel == CHAT_LOCAL) {
 		if (now_harvesting() && my_strncompare(text_to_add+1, username_str, strlen(username_str))) {
 			char *ptr = text_to_add+1+strlen(username_str);
-#ifdef ENGLISH
-			if (my_strncompare(ptr, " found a ", 9)) {
-#else // ENGLISH
 			if (my_strncompare(ptr, " trouvé un ", 11)) {
-#endif // ENGLISH
 				ptr += 9;
-#ifdef ENGLISH
-				if (my_strncompare(ptr, "bag of gold, getting ", 21)) {
-#else // ENGLISH
 				if (my_strncompare(ptr, "sac d'or, contenant ", 20)) {
-#endif // ENGLISH
 					decrement_harvest_counter(atoi(ptr+21));
-#ifdef ENGLISH
-				} else if (!strstr(ptr, " could not carry ")) {
-#else // ENGLISH
 				} else if (!strstr(ptr, "Trop lourd, tu es surchargé !")) {
-#endif // ENGLISH
 					decrement_harvest_counter(1);
 				}
 			}
@@ -877,11 +512,7 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 						break;
 					}
 				}
-#ifdef ENGLISH
-				if (i < len-15 && strncasecmp (&text_to_add[i], " wants to trade", 15) == 0) {
-#else // ENGLISH
 				if (i < len-23 && strncasecmp (&text_to_add[i], " veut négocier avec toi", 23) == 0) {
-#endif // ENGLISH
 					send_afk_message (&text_to_add[1], len - 1, channel);
 					if (afk_snd_warning) {
 						do_afk_sound();
@@ -891,18 +522,12 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 		}
 	} else {	//We sent this PM or MODPM. Can we expect a reply?
 		int len = 0;
-#ifdef FR_VERSION
 		int type=0;
-#endif //FR_VERSION
 		char name[MAX_USERNAME_LENGTH];
 		for(;text_to_add[len+8] != ':' && len < MAX_USERNAME_LENGTH - 1; ++len);
 		safe_strncpy(name, text_to_add+8, len+1);
-#ifdef FR_VERSION
 		type=(channel==CHAT_PERSONAL)? IGN_MP : IGN_CANAUX;
 		if(check_if_ignored(name, type) && channel != CHAT_SERVER){
-#else //FR_VERSION
-		if(check_if_ignored(name)){
-#endif //FR_VERSION
 			char msg[65];
 			safe_snprintf(msg, sizeof(msg), warn_currently_ignoring, name);
 			LOG_TO_CONSOLE(c_red2, msg);
@@ -945,15 +570,7 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 		}
 	}
 
-#ifdef ENGLISH
-	// look for astrology messages
-	if((channel == CHAT_SERVER) && is_astrology_message (text_to_add))
-	{
-		return 0;
-	}
-#endif //ENGLISH
 
-#ifdef FR_VERSION
 	if(is_color (text_to_add[0]))
 	{
 		//@tosh couleurs personnalisées pour les différents canaux
@@ -985,7 +602,6 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
             }
       }
 	}
-#endif //FR_VERSION
 	// filter any naughty words out
 	return filter_text (text_to_add, len, size);
 }
@@ -1329,9 +945,7 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
 	// set invalid wrap data to force rewrapping
 	msg->wrap_lines = 0;
 	msg->wrap_zoom = 0.0f;
-#ifdef FR_VERSION
 	msg->wrap_font = 0;
-#endif //FR_VERSION
 	msg->wrap_width = 0;
 
 	msg->deleted = 0;
@@ -1339,9 +953,6 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
 	update_text_windows(msg);
 
 	// log the message
-#ifdef ENGLISH
-	write_to_log (channel, (unsigned char*)msg->data, msg->len);
-#else //ENGLISH
     if (strlen(username_str)>0)
     {
 	    write_to_log (channel, (unsigned char*)msg->data, msg->len);
@@ -1350,7 +961,6 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
     {
         log_conn((unsigned char*)msg->data, msg->len);
     }
-#endif //ENGLISH
 
 	return;
 }
@@ -1500,17 +1110,11 @@ int find_line_nr (int nr_lines, int line, Uint8 filter, int *msg, int *offset, f
 			case CHAT_SERVER:   if (!server_chat_separate)   msgchan = CHAT_ALL; break;
 			case CHAT_MOD:      if (!mod_chat_separate)      msgchan = CHAT_ALL; break;
 			case CHAT_MODPM:                                 msgchan = CHAT_ALL; break;
-#ifndef ENGLISH
 			case CHAT_DEV:      if (!dev_chat_separate)      msgchan = CHAT_ALL; break;
 			case CHAT_COORD:      if (!coord_chat_separate)      msgchan = CHAT_ALL; break;
-#endif //ENGLISH
 		}
 
-#ifdef FR_VERSION
 		if (msgchan == filter || msgchan == CHAT_ALL || (filter == FILTER_ALL && msgchan != CHAT_COMBAT))
-#else //FR_VERSION
-		if (msgchan == filter || msgchan == CHAT_ALL || filter == FILTER_ALL)
-#endif //FR_VERSION
 		{
 			data = display_text_buffer[imsg].data;
 			if (data == NULL)
@@ -1518,11 +1122,7 @@ int find_line_nr (int nr_lines, int line, Uint8 filter, int *msg, int *offset, f
 				// happening.
 				break;
 
-#ifdef FR_VERSION
 			rewrap_message(&display_text_buffer[imsg], zoom, chat_font, width, NULL);
-#else //FR_VERSION
-			rewrap_message(&display_text_buffer[imsg], zoom, width, NULL);
-#endif //FR_VERSION
 
 			for (ichar = display_text_buffer[imsg].len - 1; ichar >= 0; ichar--)
 			{
@@ -1580,7 +1180,6 @@ void clear_display_text_buffer ()
 	}
 }
 
-#ifdef FR_VERSION
 int rewrap_message(text_message * msg, float zoom, int font, int width, int * cursor)
 {
 	int nlines;
@@ -1607,31 +1206,3 @@ int rewrap_message(text_message * msg, float zoom, int font, int width, int * cu
 
 	return nlines;
 }
-#else //FR_VERSION
-int rewrap_message(text_message * msg, float zoom, int width, int * cursor)
-{
-	int nlines;
-	float max_line_width = 0;
-
-	if (msg == NULL || msg->data == NULL || msg->deleted)
-		return 0;
-
-	if (msg->wrap_width != width || msg->wrap_zoom != zoom)
-	{
-		if (msg->chan_idx != CHAT_NONE)
-			total_nr_lines -= msg->wrap_lines;
- 		nlines = reset_soft_breaks(msg->data, msg->len, msg->size, zoom, width, cursor, &max_line_width);
-		if (msg->chan_idx != CHAT_NONE)
-			total_nr_lines += nlines;
-		msg->len = strlen(msg->data);
-		msg->wrap_lines = nlines;
-		msg->wrap_width = width;
-		msg->wrap_zoom = zoom;
-		msg->max_line_width = max_line_width;
-	} else {
-		nlines = msg->wrap_lines;
-	}
-
-	return nlines;
-}
-#endif //FR_VERSION

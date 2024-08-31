@@ -17,15 +17,8 @@
 #include "tiles.h"
 #include "translate.h"
 #include "io/elfilewrapper.h"
-#ifdef OPENGL_TRACE
-#include "gl_init.h"
-#endif
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif
-#ifdef FSAA
 #include "fsaa/fsaa.h"
-#endif /* FSAA */
 
 #define INVALID -1
 #define GROUND 0
@@ -34,12 +27,8 @@
 
 obj_2d *obj_2d_list[MAX_OBJ_2D];
 
-#ifdef FASTER_MAP_LOAD
 static obj_2d_def* obj_2d_def_cache[MAX_OBJ_2D_DEF];
 static int obj_2d_cache_used = 0;
-#else
-obj_2d_cache_struct obj_2d_def_cache[MAX_OBJ_2D_DEF];
-#endif
 
 int map_meters_size_x;
 int map_meters_size_y;
@@ -92,11 +81,7 @@ void draw_2d_object(obj_2d *object_id)
 		glRotatef(y_rot, 0.0f, 1.0f, 0.0f);
 	}
 
-#ifdef	NEW_TEXTURES
 	bind_texture(obj_def_pointer->texture_id);
-#else	/* NEW_TEXTURES */
-	get_and_set_texture_id(obj_def_pointer->texture_id);
-#endif	/* NEW_TEXTURES */
 
 	if (dungeon || (!clouds_shadows && !use_shadow_mapping))
 		{
@@ -182,12 +167,8 @@ void draw_2d_object(obj_2d *object_id)
     		glEnd();
 		}
 	glPopMatrix();//restore the scene
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
-#ifdef FASTER_MAP_LOAD
 static void parse_2d0(const char* desc, Uint32 len, const char* cur_dir,
 	obj_2d_def *def)
 {
@@ -255,11 +236,7 @@ static void parse_2d0(const char* desc, Uint32 len, const char* cur_dir,
 			char texture_file_name[256];
 			safe_snprintf(texture_file_name, sizeof(texture_file_name),
 				"%s/%s", cur_dir, value);
-#ifdef	NEW_TEXTURES
 			def->texture_id = load_texture_cached(texture_file_name, tt_mesh);
-#else	/* NEW_TEXTURES */
-			def->texture_id = load_texture_cache_deferred(texture_file_name, 0);
-#endif	/* NEW_TEXTURES */
 		}
 		else if (!strcmp(name, "type"))
 		{
@@ -278,13 +255,8 @@ static void parse_2d0(const char* desc, Uint32 len, const char* cur_dir,
 
 	def->u_start = (float)u_start/file_x_len;
 	def->u_end = (float)u_end/file_x_len;
-#ifdef NEW_TEXTURES
 	def->v_start = 1.0f + (float)v_start/file_y_len;
 	def->v_end = 1.0f + (float)v_end/file_y_len;
-#else
-	def->v_start = 1.0f - (float)v_start/file_y_len;
-	def->v_end = 1.0f - (float)v_end/file_y_len;
-#endif
 	if (def->alpha_test < 0)
 		def->alpha_test = 0;
 }
@@ -330,162 +302,7 @@ static obj_2d_def* load_obj_2d_def(const char *file_name)
 
 	return cur_object;
 }
-#else  // FASTER_MAP_LOAD
-static obj_2d_def* load_obj_2d_def(const char *file_name)
-{
-	int f_size;
-	int i,k,l;
-	el_file_ptr file = NULL;
-	char cur_dir[200]={0};
-	obj_2d_def *cur_object;
-	char *obj_file_mem;
-	char texture_file_name[256] = {0};
-	float x_size,y_size;
-	float alpha_test;
-	int file_x_len;
-	int file_y_len;
-	int u_start,u_end,v_start,v_end;
 
-	cur_object=calloc(1, sizeof(obj_2d_def));
-	//get the current directory
-	l=strlen(file_name);
-	//parse the string backwards, until we find a /
-	while(l>0)
-		{
-			if(file_name[l]=='/' || file_name[l]=='\\')break;
-			l--;
-		}
-
-	i=0;
-	if(l)//prevent invalid dir names
-		{
-			while(l>=0)
-				{
-					cur_dir[i]=file_name[i];
-					i++;
-					l--;
-				}
-			cur_dir[i+1]=0;
-		}
-
-
-	file = el_open(file_name);
-	if(file == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, file_name, strerror(errno));
-		free(cur_object);
-		return NULL;
-	}
-
-	obj_file_mem = el_get_pointer(file);
-
-	if(obj_file_mem == NULL){
-		LOG_ERROR("%s: %s (read)\"%s\"\n", reg_error_str, cant_open_file, file_name);
-		el_close(file);
-		free(cur_object);
-		return NULL;
-	}
-
-	f_size = el_get_size(file);
-
-	//ok, the file is loaded, so parse it
-	file_x_len=get_integer_after_string("file_x_len:",obj_file_mem,f_size);
-	file_y_len=get_integer_after_string("file_y_len:",obj_file_mem,f_size);
-	u_start=get_integer_after_string("u_start:",obj_file_mem,f_size);
-	u_end=get_integer_after_string("u_end:",obj_file_mem,f_size);
-	v_start=get_integer_after_string("v_start:",obj_file_mem,f_size);
-	v_end=get_integer_after_string("v_end:",obj_file_mem,f_size);
-	x_size=get_float_after_string("x_size:",obj_file_mem,f_size);
-	y_size=get_float_after_string("y_size:",obj_file_mem,f_size);
-	alpha_test=get_float_after_string("alpha_test:",obj_file_mem,f_size);
-	if(alpha_test<0)alpha_test=0;
-
-	//get the proper u/v coordinates
-	cur_object->u_start=(float)u_start/file_x_len;
-	cur_object->u_end=(float)u_end/file_x_len;
-	cur_object->v_start=1.0f-(float)v_start/file_y_len;
-	cur_object->v_end=1.0f-(float)v_end/file_y_len;
-	cur_object->x_size=x_size;
-	cur_object->y_size=y_size;
-	cur_object->alpha_test=alpha_test;
-
-	//now  find the texture name
-	i=get_string_occurance("texture:",obj_file_mem,40,0);
-	obj_file_mem+=i;
-	k=0;
-	//find the file name
-	while(k<128)
-		{
-			if(obj_file_mem[k]!=' ' && obj_file_mem[k]!=0x0a)break;
-			k++;
-		}
-	//we found the beginning of the file name
-	//now, copy the current directory string to the file_name string
-	i=strlen(cur_dir);
-	l=0;
-	while(l<i)
-		{
-			texture_file_name[l]=cur_dir[l];
-			l++;
-		}
-	while(l<128)
-		{
-			if(obj_file_mem[k]!=' ' && obj_file_mem[k]!=0x0a
-			   && obj_file_mem[k]!=0x0d)
-				{
-					texture_file_name[l]=obj_file_mem[k];
-					k++;
-					l++;
-				}
-			else
-				{
-					texture_file_name[l]=0;
-					break;
-				}
-		}
-
-#ifdef	NEW_TEXTURES
-	cur_object->texture_id = load_texture_cached(texture_file_name, tt_mesh);
-#else	/* NEW_TEXTURES */
-	cur_object->texture_id=load_texture_cache_deferred(texture_file_name,0);
-#endif	/* NEW_TEXTURES */
-	//now get the object type
-	i=get_string_occurance("type:",obj_file_mem,f_size,0);
-	obj_file_mem+=i;
-	k=0;
-	for(k=0;k<10;k++)
-		{
-			if(obj_file_mem[k]==0x0a)
-				{
-					cur_object->object_type=INVALID;
-					break;
-				}
-			if(obj_file_mem[k]==' ')continue;
-
-			if(obj_file_mem[k]=='g' || obj_file_mem[k]=='G')
-				{
-					cur_object->object_type=GROUND;
-					break;
-				}
-
-			if(obj_file_mem[k]=='p' || obj_file_mem[k]=='P')
-				{
-					cur_object->object_type=PLANT;
-					break;
-				}
-
-			if(obj_file_mem[k]=='f' || obj_file_mem[k]=='F')
-				{
-					cur_object->object_type=FENCE;
-					break;
-				}
-		}
-	el_close(file);
-
-	return cur_object;
-}
-#endif // FASTER_MAP_LOAD
-
-#ifdef FASTER_MAP_LOAD
 static int cache_cmp_string(const void* str, const void *dptr)
 {
 	const obj_2d_def *def = *((const obj_2d_def**)dptr);
@@ -531,54 +348,7 @@ static obj_2d_def* load_obj_2d_def_cache(const char* file_name)
 
 	return def;
 }
-#else  // FASTER_MAP_LOAD
-//Tests to see if an obj_2d object is already loaded.
-//If it is, return the handle.
-//If not, load it, and return the handle
-static obj_2d_def* load_obj_2d_def_cache(const char * file_name)
-{
-	int i;
-	obj_2d_def * obj_2d_def_id;
 
-	for(i=0;i<MAX_OBJ_2D_DEF;i++)
-		{
-			if(!strcasecmp(obj_2d_def_cache[i].file_name, file_name))
-				{
-					// we found a cached copy, use it
-					return obj_2d_def_cache[i].obj_2d_def_id;
-				}
-			/*
-			j=0;
-			while(j<file_name_length)
-				{
-					if(obj_2d_def_cache[i].file_name[j]!=file_name[j])break;
-					j++;
-				}
-			if(file_name_length==j)//ok, obj_2d_def already loaded
-				return obj_2d_def_cache[i].obj_2d_def_id;
-			*/
-		}
-	//asc not found in the cache, so load it, and store it
-	obj_2d_def_id= load_obj_2d_def(file_name);
-
-	//find a place to store it
-	i=0;
-	while(i<MAX_OBJ_2D_DEF)
-		{
-			if(!obj_2d_def_cache[i].file_name[0])//we found a place to store it
-				{
-					safe_snprintf(obj_2d_def_cache[i].file_name, sizeof(obj_2d_def_cache[i].file_name), "%s", file_name);
-					obj_2d_def_cache[i].obj_2d_def_id=obj_2d_def_id;
-					return obj_2d_def_id;
-				}
-			i++;
-		}
-
-	return obj_2d_def_id;
-}
-#endif // FASTER_MAP_LOAD
-
-#ifdef CLUSTER_INSIDES
 int get_2d_bbox (int id, AABBOX* box)
 {
 	const obj_2d* obj;
@@ -623,9 +393,7 @@ int get_2d_bbox (int id, AABBOX* box)
 
 	return 1;
 }
-#endif // CLUSTER_INSIDES
 
-#ifdef FASTER_MAP_LOAD
 int add_2d_obj(int id_hint, const char* file_name,
 	float x_pos, float y_pos, float z_pos,
 	float x_rot, float y_rot, float z_rot, unsigned int dynamic)
@@ -634,9 +402,6 @@ int add_2d_obj(int id_hint, const char* file_name,
 	char fname[128];
 	obj_2d_def *returned_obj_2d_def;
 	obj_2d *our_object;
-#ifndef CLUSTER_INSIDES
-	float len_x, len_y;
-#endif
 	unsigned int alpha_test, texture_id;
 	AABBOX bbox;
 
@@ -679,7 +444,6 @@ int add_2d_obj(int id_hint, const char* file_name,
 
 	obj_2d_list[id] = our_object;
 
-#ifdef CLUSTER_INSIDES
 	if (returned_obj_2d_def->object_type == PLANT)
 	{
 		x_rot += 90.0f;
@@ -693,45 +457,10 @@ int add_2d_obj(int id_hint, const char* file_name,
 
 	our_object->cluster = get_cluster((int)(x_pos/0.5f), (int)(y_pos/0.5f));
 	current_cluster = our_object->cluster;
-#else
-	len_x = (returned_obj_2d_def->x_size);
-	len_y = (returned_obj_2d_def->y_size);
-	bbox.bbmin[X] = -len_x*0.5f;
-	bbox.bbmax[X] = len_x*0.5f;
-	if (returned_obj_2d_def->object_type == GROUND)
-	{
-		bbox.bbmin[Y] = -len_y*0.5f;
-		bbox.bbmax[Y] = len_y*0.5f;
-	}
-	else
-	{
-		bbox.bbmin[Y] = 0.0f;
-		bbox.bbmax[Y] = len_y;
-		if (returned_obj_2d_def->object_type == PLANT)
-		{
-			x_rot += 90.0f;
-			z_rot = 0.0f;
-			bbox.bbmin[X] *= M_SQRT2;
-			bbox.bbmax[X] *= M_SQRT2;
-			bbox.bbmin[Y] *= M_SQRT2;
-			bbox.bbmax[Y] *= M_SQRT2;
-		}
-		else if (returned_obj_2d_def->object_type == FENCE)
-		{
-			x_rot += 90.0f;
-		}
-	}
-	bbox.bbmin[Z] = z_pos;
-	bbox.bbmax[Z] = z_pos;
-
-	calc_rotation_and_translation_matrix(our_object->matrix, x_pos, y_pos, 0.0f, x_rot, y_rot, z_rot);
-	matrix_mul_aabb(&bbox, our_object->matrix);
-#endif // CLUSTER_INSIDES
 
 	alpha_test = returned_obj_2d_def->alpha_test ? 1 : 0;
 	texture_id = returned_obj_2d_def->texture_id;
 
-#ifdef CLUSTER_INSIDES
 	if (get_2d_bbox(id, &bbox))
 	{
 		if (main_bbox_tree_items != NULL && dynamic == 0)
@@ -739,129 +468,10 @@ int add_2d_obj(int id_hint, const char* file_name,
 		else
 			add_2dobject_to_abt(main_bbox_tree, id, bbox, alpha_test, texture_id, dynamic);
 	}
-#else
-	if (main_bbox_tree_items != NULL && dynamic == 0)
-		add_2dobject_to_list(main_bbox_tree_items, id, bbox, alpha_test, texture_id);
-	else
-		add_2dobject_to_abt(main_bbox_tree, id, bbox, alpha_test, texture_id, dynamic);
-#endif // CLUSTER_INSIDES
 
 	return id;
 }
-#else  // FASTER_MAP_LOAD
-int add_2d_obj(char * file_name, float x_pos, float y_pos, float z_pos,
-			   float x_rot, float y_rot, float z_rot, unsigned int dynamic)
-{
-	int i;//,len,k;
-	char	fname[128];
-	obj_2d_def *returned_obj_2d_def;
-	obj_2d *our_object;
-#ifndef CLUSTER_INSIDES
-	float len_x, len_y;
-#endif
-	unsigned int alpha_test, texture_id;
-	AABBOX bbox;
 
-	//find a free spot, in the obj_2d_list
-	for(i=0; i<MAX_OBJ_2D; i++)
-		{
-			if(!obj_2d_list[i])break;
-		}
-
-	// but first convert to lower case and replace any '\' by '/'
-	clean_file_name(fname, file_name, sizeof(fname));
-
-	returned_obj_2d_def=load_obj_2d_def_cache(fname);
-	if(!returned_obj_2d_def)
-	{
-		LOG_ERROR ("%s: %s: %s", reg_error_str, cant_load_2d_object, fname);
-		return -1;
-	}
-
-	our_object = calloc(1, sizeof(obj_2d));
-	my_strncp(our_object->file_name, fname, 80);
-	our_object->x_pos=x_pos;
-	our_object->y_pos=y_pos;
-	our_object->z_pos=z_pos;
-
-	our_object->x_rot=x_rot;
-	our_object->y_rot=y_rot;
-	our_object->z_rot=z_rot;
-	our_object->obj_pointer=returned_obj_2d_def;
-	our_object->display= 1;
-	our_object->state= 0;
-
-	obj_2d_list[i]=our_object;
-
-#ifdef CLUSTER_INSIDES
-	if (returned_obj_2d_def->object_type == PLANT)
-	{
-		x_rot += 90.0f;
-		z_rot = 0.0f;
-	}
-	else if (returned_obj_2d_def->object_type == FENCE)
-	{
-		x_rot += 90.0f;
-	}
-	calc_rotation_and_translation_matrix(our_object->matrix, x_pos, y_pos, 0.0f, x_rot, y_rot, z_rot);
-
-	our_object->cluster = get_cluster ((int)(x_pos/0.5f), (int)(y_pos/0.5f));
-	current_cluster = our_object->cluster;
-#else
-	len_x = (returned_obj_2d_def->x_size);
-	len_y = (returned_obj_2d_def->y_size);
-	bbox.bbmin[X] = -len_x*0.5f;
-	bbox.bbmax[X] = len_x*0.5f;
-	if (returned_obj_2d_def->object_type == GROUND)
-	{
-		bbox.bbmin[Y] = -len_y*0.5f;
-		bbox.bbmax[Y] = len_y*0.5f;
-	}
-	else
-	{
-		bbox.bbmin[Y] = 0.0f;
-		bbox.bbmax[Y] = len_y;
-		if (returned_obj_2d_def->object_type == PLANT)
-		{
-			x_rot += 90.0f;
-			z_rot = 0.0f;
-			bbox.bbmin[X] *= M_SQRT2;
-			bbox.bbmax[X] *= M_SQRT2;
-			bbox.bbmin[Y] *= M_SQRT2;
-			bbox.bbmax[Y] *= M_SQRT2;
-		}
-		else if (returned_obj_2d_def->object_type == FENCE) x_rot += 90.0f;
-	}
-	bbox.bbmin[Z] = z_pos;
-	bbox.bbmax[Z] = z_pos;
-
-	calc_rotation_and_translation_matrix(our_object->matrix, x_pos, y_pos, 0.0f, x_rot, y_rot, z_rot);
-	matrix_mul_aabb(&bbox, our_object->matrix);
-#endif // CLUSTER_INSIDES
-
-	if (returned_obj_2d_def->alpha_test) alpha_test = 1;
-	else alpha_test = 0;
-
-	texture_id = returned_obj_2d_def->texture_id;
-
-#ifdef CLUSTER_INSIDES
-	if (get_2d_bbox (i, &bbox))
-	{
-		if (main_bbox_tree_items != NULL && dynamic == 0)
-			add_2dobject_to_list (main_bbox_tree_items, i, bbox, alpha_test, texture_id);
-		else
-			add_2dobject_to_abt (main_bbox_tree, i, bbox, alpha_test, texture_id, dynamic);
-	}
-#else
-	if ((main_bbox_tree_items != NULL) && (dynamic == 0)) add_2dobject_to_list(main_bbox_tree_items, i, bbox, alpha_test, texture_id);
-	else add_2dobject_to_abt(main_bbox_tree, i, bbox, alpha_test, texture_id, dynamic);
-#endif // CLUSTER_INSIDES
-
-	return i;
-}
-#endif // FASTER_MAP_LOAD
-
-#ifdef NEW_SOUND
 const char* get_2dobject_at_location(float x_pos, float y_pos)
 {
 	int i;
@@ -873,92 +483,23 @@ const char* get_2dobject_at_location(float x_pos, float y_pos)
 			&& obj_2d_list[i]->y_pos > (y_pos - offset) && obj_2d_list[i]->y_pos < (y_pos + offset)
 			&& obj_2d_list[i]->display && obj_2d_list[i]->obj_pointer->object_type == GROUND)
 		{
-#ifdef FASTER_MAP_LOAD
 			return obj_2d_list[i]->obj_pointer->file_name;
-#else
-			return obj_2d_list[i]->file_name;
-#endif
 		}
 	}
 	return "";
 }
-#endif // NEW_SOUND
 
-#ifdef MAP_EDITOR2
-void get_2d_object_under_mouse()
-{
-	unsigned int i, l;
-	float least_z = 1.0f;
-
-	//First draw everyone with the same alpha test
-
-	glPushMatrix();
-	glClearDepth(least_z);
-	glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-
-	for (i = get_intersect_start(main_bbox_tree, TYPE_2D_NO_ALPHA_OBJECT); i < get_intersect_stop(main_bbox_tree, TYPE_2D_NO_ALPHA_OBJECT); i++)
-	{
-		l = get_intersect_item_ID(main_bbox_tree, i);
-#ifdef EXTRA_DEBUG
-		if (!obj_2d_list[l])
-		{
-			ERR();
-			continue;
-		}
-#endif
-		draw_2d_object(obj_2d_list[l]);
-		if(evaluate_collision(&least_z)){
-			selected_2d_object = l;
-		}
-	}
-
-	//Then draw all that needs a change
-	for (i = get_intersect_start(main_bbox_tree, TYPE_2D_ALPHA_OBJECT); i < get_intersect_stop(main_bbox_tree, TYPE_2D_ALPHA_OBJECT); i++)
-	{
-		l = get_intersect_item_ID(main_bbox_tree, i);
-#ifdef EXTRA_DEBUG
-		if (!obj_2d_list[l])
-		{
-			ERR();
-			continue;
-		}
-#endif
-		draw_2d_object(obj_2d_list[l]);
-		if(evaluate_collision(&least_z)){
-			selected_2d_object = l;
-		}
-	}
-
-	glPopMatrix();
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-}
-#endif
 
 void display_2d_objects()
 {
 	unsigned int i, l, start, stop;
-#ifdef  SIMPLE_LOD
-	int dist;
-	int x, y;
-#endif //SIMPLE_LOD
-#ifdef CLUSTER_INSIDES_OLD
-	short cluster = get_actor_cluster ();
-#endif
 
-#ifdef  SIMPLE_LOD
-	x= -camera_x;
-	y= -camera_y;
-#endif //SIMPLE_LOD
 
 	//First draw everyone with the same alpha test
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.18f);
 
@@ -970,11 +511,7 @@ void display_2d_objects()
 			ELglActiveTextureARB(detail_unit);
 			glEnable(GL_TEXTURE_2D);
 			//glBindTexture(GL_TEXTURE_2D, texture_cache[ground_detail_text].texture_id);
-#ifdef	NEW_TEXTURES
 			bind_texture_unbuffered(ground_detail_text);
-#else	/* NEW_TEXTURES */
-			glBindTexture(GL_TEXTURE_2D, get_texture_id(ground_detail_text));
-#endif	/* NEW_TEXTURES */
 		}
 		ELglActiveTextureARB(base_unit);
 		glEnable(GL_TEXTURE_2D);
@@ -984,16 +521,6 @@ void display_2d_objects()
 	for (i = start; i < stop; i++)
 	{
 		l = get_intersect_item_ID(main_bbox_tree, i);
-#ifdef CLUSTER_INSIDES_OLD
-		if (obj_2d_list[l]->cluster && obj_2d_list[l]->cluster != cluster)
-			// Object is on a different cluster as our actor, don't show it
-			continue;
-#endif
-#ifdef  SIMPLE_LOD
-		// simple size/distance culling
-		dist= (x-obj_2d_list[l]->x_pos)*(x-obj_2d_list[l]->x_pos) + (y-obj_2d_list[l]->y_pos)*(y-obj_2d_list[l]->y_pos);
-		if(/*dist > 10*10 &&*/ 1000*max2f(obj_2d_list[l]->obj_pointer->x_size, obj_2d_list[l]->obj_pointer->y_size)/(dist) < 5) continue;
-#endif  //SIMPLE_LOD
 		draw_2d_object(obj_2d_list[l]);
 	}
 
@@ -1002,11 +529,6 @@ void display_2d_objects()
 	for (i = start; i < stop; i++)
 	{
 		l = get_intersect_item_ID(main_bbox_tree, i);
-#ifdef  SIMPLE_LOD
-		// simple size/distance culling
-		dist= (x-obj_2d_list[l]->x_pos)*(x-obj_2d_list[l]->x_pos) + (y-obj_2d_list[l]->y_pos)*(y-obj_2d_list[l]->y_pos);
-		if(/*dist > 10*10 &&*/ 1000*max2f(obj_2d_list[l]->obj_pointer->x_size, obj_2d_list[l]->obj_pointer->y_size)/(dist) < 5) continue;
-#endif  //SIMPLE_LOD
 		glAlphaFunc(GL_GREATER, obj_2d_list[l]->obj_pointer->alpha_test);
 		draw_2d_object(obj_2d_list[l]);
 	}
@@ -1019,16 +541,11 @@ void display_2d_objects()
 		ELglActiveTextureARB(base_unit);
 	}
 
-#ifdef	FSAA
 	if (fsaa > 1)
 	{
 		glDisable(GL_MULTISAMPLE);
 	}
-#endif	/* FSAA */
 	glDisable(GL_ALPHA_TEST);
-#ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
 }
 
 void destroy_2d_object(int i)
@@ -1053,20 +570,12 @@ void destroy_all_2d_objects()
 void destroy_all_2d_object_defs()
 {
 	int i;
-#ifdef FASTER_MAP_LOAD
 	for (i = 0; i < obj_2d_cache_used; i++)
 	{
 		free(obj_2d_def_cache[i]);
 		obj_2d_def_cache[i] = NULL;
 	}
 	obj_2d_cache_used=0;
-#else
-	for (i = 0; i < MAX_OBJ_2D_DEF; i++)
-	{
-		free(obj_2d_def_cache[i]);
-		obj_2d_def_cache[i] = NULL;
-	}
-#endif
 }
 
 // for support of the 1.0.3 server, change if an object is to be displayed or not
@@ -1092,15 +601,9 @@ void set_2d_object (Uint8 display, const void *ptr, int len)
 
 			if(obj_id < MAX_OBJ_2D && obj_2d_list[obj_id]){
 				obj_2d_list[obj_id]->display= display;
-#ifdef ENGLISH
-				idx++;
-				len-= sizeof(*id_ptr);
-#endif //ENGLISH
 			}
-#ifndef ENGLISH
 	    	idx++;
 			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }
@@ -1128,15 +631,11 @@ void state_2d_object (Uint8 state, const void *ptr, int len)
 
 			if(obj_id < MAX_OBJ_2D && obj_2d_list[obj_id]){
 				obj_2d_list[obj_id]->state= state;
-#ifndef ENGLISH
 				idx++;
 				len -= sizeof (*id_ptr);
-#endif //ENGLISH
 			}
-#ifndef ENGLISH
 	    	idx++;
 			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }

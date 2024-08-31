@@ -4,15 +4,7 @@
 #include "../asc.h"
 #include "../platform.h"
 #include "../textures.h"
-#ifdef MAP_EDITOR
-#ifdef ENGLISH
- #include "../map_editor/misc.h"
-#else //ENGLISH
- #include "../../editeur_sources/misc.h"
-#endif //ENGLISH
-#else
  #include "../misc.h"
-#endif
 #include "../errors.h"
 #include "elfilewrapper.h"
 #include "normal.h"
@@ -585,32 +577,7 @@ static e3d_object* do_load_e3d_detail(e3d_object* cur_object)
 		safe_snprintf(text_file_name, sizeof(text_file_name), "%s%s", cur_dir, material.material_name);
 
 		cur_object->materials[i].options = SDL_SwapLE32(material.options);
-#ifdef	MAP_EDITOR
-#ifdef	NEW_TEXTURES
 		cur_object->materials[i].texture = load_texture_cached(text_file_name, tt_mesh);
-#else	/* NEW_TEXTURES */
-		cur_object->materials[i].texture = load_texture_cache(text_file_name,0);
-#endif	/* NEW_TEXTURES */
-#else	//MAP_EDITOR
-#ifdef	NEW_TEXTURES
-		cur_object->materials[i].texture = load_texture_cached(text_file_name, tt_mesh);
-#else	/* NEW_TEXTURES */
-#ifdef	NEW_ALPHA
-		// prepare to load the textures depending on if it is transparent or not (diff alpha handling)
-		if (material_is_transparent(cur_object->materials[i].options))
-		{	// is this object transparent?
-			cur_object->materials[i].texture= load_texture_cache_deferred(text_file_name, -1);
-		}
-		else
-		{
-			cur_object->materials[i].texture= load_texture_cache_deferred(text_file_name, -1);	//255);
-		}
-#else	//NEW_ALPHA
-//		cur_object->materials[i].texture = load_texture_cache_deferred(text_file_name, 255);
-		cur_object->materials[i].texture = load_texture_cache_deferred(text_file_name, 0);
-#endif	//NEW_ALPHA
-#endif	/* NEW_TEXTURES */
-#endif	//MAP_EDITOR
 
 		cur_object->materials[i].min_x = SwapLEFloat(material.min_x);
 		cur_object->materials[i].min_y = SwapLEFloat(material.min_y);
@@ -653,10 +620,8 @@ static e3d_object* do_load_e3d_detail(e3d_object* cur_object)
 		ELglBufferDataARB(GL_ARRAY_BUFFER_ARB,
 			cur_object->vertex_no * cur_object->vertex_layout->size,
 			cur_object->vertex_data, GL_STATIC_DRAW_ARB);
-#ifndef	MAP_EDITOR
 		free(cur_object->vertex_data);
 		cur_object->vertex_data = 0;
-#endif	//MAP_EDITOR
 
 		ELglGenBuffersARB(1, &cur_object->indices_vbo);
 		ELglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB,
@@ -664,10 +629,8 @@ static e3d_object* do_load_e3d_detail(e3d_object* cur_object)
 		ELglBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB,
 			cur_object->index_no * indices_size,
 			cur_object->indices, GL_STATIC_DRAW_ARB);
-#ifndef	MAP_EDITOR
 		free(cur_object->indices);
 		cur_object->indices = 0;
-#endif	//MAP_EDITOR
 
 		ELglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 		ELglBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -678,12 +641,10 @@ static e3d_object* do_load_e3d_detail(e3d_object* cur_object)
 		cur_object->indices_vbo = 0;
 	}
 
-#ifndef	MAP_EDITOR
 	LOG_DEBUG("Adding e3d file '%s' to cache.",
 		cur_object->file_name);
 
 	cache_adj_size(cache_e3d, mem_size, cur_object);
-#endif	//MAP_EDITOR
 	return cur_object;
 }
 

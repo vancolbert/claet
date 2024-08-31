@@ -27,9 +27,7 @@ extern "C" {
  */
 typedef struct
 {
-#ifdef FASTER_MAP_LOAD
 	char file_name[128];    /*!< name of the file that contains the definition of the 2d object */
-#endif
 
     /*! \name start and end coordinates of the texture @{ */
 	float u_start; /*!< start position of the u coordinate */
@@ -57,9 +55,6 @@ typedef struct
  */
 typedef struct
 {
-#ifndef FASTER_MAP_LOAD
-	char file_name[80];    /*!< name of the file that contains the definition of the 2d object */
-#endif
 
     /*! \name position of the object @{ */
 	float x_pos;
@@ -78,23 +73,9 @@ typedef struct
 	char state; /*!< state flag for future expansion & data alignment. */
 	obj_2d_def *obj_pointer; /**< Points to the 2d object type in the obj_2d_def list */
 
-#ifdef CLUSTER_INSIDES
 	short cluster;
-#endif
 } obj_2d;
 
-#ifndef FASTER_MAP_LOAD
-/*!
- * This is used for searching the 2d object cache for an already existing instance of the object definition
- */
-typedef struct
-{
-	char file_name[128];   /*!< the filename of the object */
-	obj_2d_def *obj_2d_def_id; /*!< a pointer to the header structure of this object */
-}obj_2d_cache_struct;
-
-extern obj_2d_cache_struct obj_2d_def_cache[MAX_OBJ_2D_DEF]; /*!< The 2d object cache array - holds all loaded 2d object definitions*/
-#endif // FASTER_MAP_LOAD
 extern obj_2d *obj_2d_list[MAX_OBJ_2D]; /*!< The 2d object array - holds all 2d objects on that map*/
 
 extern float texture_scale; /*!< scaling factor for textures */
@@ -119,7 +100,6 @@ void draw_2d_object(obj_2d * object_id);
  */
 void display_2d_objects();
 
-#ifdef CLUSTER_INSIDES
 /*!
  * \ingroup	load_2d
  * \brief	Get the bounding box of a 2D object
@@ -131,9 +111,7 @@ void display_2d_objects();
  * \retval int	0 on failure, 1 on success
  */
 int get_2d_bbox (int id, AABBOX* box);
-#endif // CLUSTER_INSIDES
 
-#ifdef FASTER_MAP_LOAD
 /*!
  * \ingroup     load_2d
  * \brief       Adds a 2d object at the given location.
@@ -158,27 +136,6 @@ int get_2d_bbox (int id, AABBOX* box);
 int add_2d_obj(int id_hint, const char* file_name,
 	float x_pos, float y_pos, float z_pos,
 	float x_rot, float y_rot, float z_rot, unsigned int dynamic);
-#else  // FASTER_MAP_LOAD
-/*!
- * \ingroup	load_2d
- * \brief	Adds a 2d object at the given location.
- *
- * 		Adds a 2d object at the given location.
- * 		It's usually called in the map loading process. Requires a location and rotation for the 2d object, that's loaded from the file given by the first parameter
- *
- * \param	file_name The filename of the object we wish to add
- * \param	x_pos The x position
- * \param	y_pos The y position
- * \param	z_pos The z position
- * \param	x_rot The x rotation
- * \param	y_rot The y rotation
- * \param	z_rot The z rotation
- * \retval int 	Returns -1 on failure and the location in the obj_2d_list if it succeeds
- * \callgraph
- */
-int add_2d_obj(char * file_name, float x_pos, float y_pos, float z_pos,
-			   float x_rot, float y_rot, float z_rot, unsigned int dynamic);
-#endif // FASTER_MAP_LOAD
 
 /*!
  * \ingroup	load_2d
@@ -240,7 +197,6 @@ void destroy_all_2d_objects(void);
  */
 void destroy_all_2d_object_defs(void);
 
-#ifdef NEW_SOUND
 /*!
  * \ingroup	load_2d
  * \brief	Searches for a 2d ground object at a location
@@ -256,17 +212,7 @@ void destroy_all_2d_object_defs(void);
  * \callgraph
  */
 const char* get_2dobject_at_location(float x_pos, float y_pos);
-#endif // NEW_SOUND
 
-#ifdef MAP_EDITOR2
-/*!
- * \ingroup	display_2d
- * \brief Draws all 2D objects and evaluates collision with the mouse pointer
- *
- * 	Draws all 2D objects and evaluates collision with the mouse pointer - if there's a collision it sets selected_2d_object accordingly
- */
-void get_2d_object_under_mouse();
-#endif
 
 #ifdef __cplusplus
 } // extern "C"

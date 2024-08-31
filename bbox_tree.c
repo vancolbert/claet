@@ -1,9 +1,6 @@
 #include "bbox_tree.h"
 #include "draw_scene.h"
 #include "lights.h"
-#ifdef EXTRA_DEBUG
-#include "errors.h"
-#endif
 
 #ifdef OSX
 #include <sys/malloc.h>
@@ -15,18 +12,12 @@
 #endif   //BSD
 #endif   //OSX
 
-#ifdef CLUSTER_INSIDES
 #include "cluster.h"
-#endif // CLUSTER_INSIDES
 
 BBOX_TREE* main_bbox_tree = NULL;
 BBOX_ITEMS* main_bbox_tree_items = NULL;
 
-#ifdef	EXTRA_DEBUG
-#define BBOX_TREE_LOG_INFO(item)	log_error_detailed("%s is NULL", __FILE__, __FUNCTION__, __LINE__, item);
-#else	//DEBUG
 #define BBOX_TREE_LOG_INFO(item)	/*!< NOP */
-#endif	//DEBUG
 
 #define	NO_INDEX	0xFFFFFFFF
 
@@ -65,9 +56,7 @@ static __inline__ void adapt_intersect_list_size(BBOX_TREE* bbox_tree, Uint32 co
 
 static __inline__ void add_intersect_item_to_list(BBOX_TREE* bbox_tree, BBOX_ITEM* item, Uint32 idx)
 {
-#ifdef CLUSTER_INSIDES
 	if (item->cluster && item->cluster != current_cluster) return;
-#endif // CLUSTER_INSIDES
 	adapt_intersect_list_size(bbox_tree, 1);
 	memcpy(&bbox_tree->intersect[idx].items[bbox_tree->intersect[idx].count], item, sizeof(BBOX_ITEM));
 	bbox_tree->intersect[idx].count++;
@@ -526,10 +515,8 @@ static __inline__ void free_bbox_tree_data(BBOX_TREE* bbox_tree)
 
 	bbox_tree->items_count = 0;
 
-#ifdef FR_VERSION
 	if (bbox_tree->nodes != NULL)
     {
-#endif //FR_VERSION
 	for (i = 0; i < bbox_tree->nodes_count; i++)
 	{
 		if (bbox_tree->nodes[i].dynamic_objects.items != NULL)
@@ -538,9 +525,7 @@ static __inline__ void free_bbox_tree_data(BBOX_TREE* bbox_tree)
 			bbox_tree->nodes[i].dynamic_objects.items = NULL;
 		}
 	}
-#ifdef FR_VERSION
     }
-#endif //FR_VERSION
 	if (bbox_tree->nodes != NULL)
 	{
 		free(bbox_tree->nodes);
@@ -604,7 +589,6 @@ static int compboxes(const void *in_a, const void *in_b)
 		return 0;
 }
 
-#ifdef FASTER_MAP_LOAD
 static __inline__ void build_area_table(const BBOX_TREE *bbox_tree,
 	Uint32 a, Uint32  b, float *areas)
 {
@@ -694,108 +678,6 @@ static __inline__ void find_axis_and_bbox(const BBOX_TREE *bbox_tree,
 	ret[1] = a2;
 	ret[2] = a3;
 }
-#else  // FASTER_MAP_LOAD
-static __inline__ void build_area_table(BBOX_TREE *bbox_tree, Uint32 a, Uint32  b, float *areas)
-{
-	int i, imin, dir;
-	VECTOR3 bmin, bmax, len;
-
-	if (a < b)
-	{
-		imin = a;
-		dir =  1;
-	}
-	else
-	{
-		imin = b;
-		dir = -1;
-	}
-
-	VFill(bmin, BOUND_HUGE);
-	VFill(bmax, -BOUND_HUGE);
-
-	for (i = a; i != (b + dir); i += dir)
-	{
-		VMin(bmin, bmin, bbox_tree->items[i].bbox.bbmin);
-		VMax(bmax, bmax, bbox_tree->items[i].bbox.bbmax);
-		VSub(len, bmax, bmin);
-
-		areas[i - imin] = len[X] * len[Y] * len[Z];
-	}
-}
-
-static __inline__ void find_axis(BBOX_TREE *bbox_tree, Uint32 first, Uint32 last, Uint32 *ret)
-{
-	Uint32 i, a1, a2, a3;
-	VECTOR3 bmin, bmax;
-	float d, e;
-
-	VFill(bmin, BOUND_HUGE);
-	VFill(bmax, -BOUND_HUGE);
-
-	for (i = first; i < last; i++)
-	{
-		VMin(bmin, bmin, bbox_tree->items[i].bbox.bbmin);
-		VMax(bmax, bmax, bbox_tree->items[i].bbox.bbmax);
-	}
-
-	a1 = 0;
-	a2 = 1;
-	a3 = 2;
-
-	d = bmax[a1] - bmin[a1];
-	e = bmax[a2] - bmin[a2];
-
-	if (d < e)
-	{
-		i = a2;
-		a2 = a1;
-		a1 = i;
-	}
-
-	d = bmax[a1] - bmin[a1];
-	e = bmax[a3] - bmin[a3];
-
-	if (d < e)
-	{
-		i = a2;
-		a2 = a1;
-		a1 = i;
-	}
-
-	d = bmax[a2] - bmin[a2];
-	e = bmax[a3] - bmin[a3];
-
-	if (d < e)
-	{
-		i = a3;
-		a3 = a2;
-		a2 = i;
-	}
-
-	ret[0] = a1;
-	ret[1] = a2;
-	ret[2] = a3;
-}
-
-static __inline__ void calc_bbox(AABBOX *bbox, BBOX_TREE *bbox_tree, Uint32 first, Uint32 last)
-{
-	int i;
-	VECTOR3 bmin, bmax;
-
-	VFill(bmin, BOUND_HUGE);
-	VFill(bmax, -BOUND_HUGE);
-
-	for (i = first; i < last; i++)
-	{
-		VMin(bmin, bmin, bbox_tree->items[i].bbox.bbmin);
-		VMax(bmax, bmax, bbox_tree->items[i].bbox.bbmax);
-	}
-
-	VAssign(bbox->bbmin, bmin);
-	VAssign(bbox->bbmax, bmax);
-}
-#endif // FASTER_MAP_LOAD
 
 static __inline__ Uint32 sort_and_split(BBOX_TREE* bbox_tree, Uint32 node, Uint32* index, Uint32 first, Uint32 last)
 {
@@ -803,19 +685,13 @@ static __inline__ Uint32 sort_and_split(BBOX_TREE* bbox_tree, Uint32 node, Uint3
 	int best_loc;
 	float *area_left, *area_right;
 	float best_index, new_index;
-#ifdef FASTER_MAP_LOAD
 	AABBOX bbox;
-#endif
 
 	size = last - first;
 
 	if (size < 1) return -1;
 
-#ifdef FASTER_MAP_LOAD
 	find_axis_and_bbox(bbox_tree, first, last, axis, &bbox);
-#else
-	find_axis(bbox_tree, first, last, axis);
-#endif
 
 	best_loc = -1;
 
@@ -857,16 +733,10 @@ static __inline__ Uint32 sort_and_split(BBOX_TREE* bbox_tree, Uint32 node, Uint3
 		free(area_right);
 	}
 
-#ifdef FASTER_MAP_LOAD
 	VAssign(bbox_tree->nodes[node].bbox.bbmin, bbox.bbmin);
 	VAssign(bbox_tree->nodes[node].bbox.bbmax, bbox.bbmax);
 	VAssign(bbox_tree->nodes[node].orig_bbox.bbmin, bbox.bbmin);
 	VAssign(bbox_tree->nodes[node].orig_bbox.bbmax, bbox.bbmax);
-#else
-	calc_bbox(&bbox_tree->nodes[node].bbox, bbox_tree, first, last);
-	VAssign(bbox_tree->nodes[node].orig_bbox.bbmin, bbox_tree->nodes[node].bbox.bbmin);
-	VAssign(bbox_tree->nodes[node].orig_bbox.bbmax, bbox_tree->nodes[node].bbox.bbmax);
-#endif
 	bbox_tree->nodes[node].items_index = first;
 	bbox_tree->nodes[node].items_count = size;
 
@@ -939,9 +809,7 @@ static __inline__ void add_aabb_to_list(BBOX_ITEMS *bbox_items, const AABBOX bbo
 	bbox_items->items[index].extra = 0;
 	bbox_items->items[index].texture_id = texture_id;
 	bbox_items->items[index].ID = ID;
-#ifdef CLUSTER_INSIDES
 	bbox_items->items[index].cluster = current_cluster;
-#endif // CLUSTER_INSIDES
 	bbox_items->index = index + 1;
 }
 
@@ -1112,9 +980,7 @@ static __inline__ void add_dynamic_item_to_node(BBOX_TREE *bbox_tree, Uint32 nod
 		bbox_tree->nodes[node].dynamic_objects.items[index].extra = extra;
 		bbox_tree->nodes[node].dynamic_objects.items[index].texture_id = texture_id;
 		bbox_tree->nodes[node].dynamic_objects.items[index].type = type;
-#ifdef CLUSTER_INSIDES
 		bbox_tree->nodes[node].dynamic_objects.items[index].cluster = current_cluster;
-#endif // CLUSTER_INSIDES
 		VAssign(bbox_tree->nodes[node].dynamic_objects.items[index].bbox.bbmin, bbox.bbmin);
 		VAssign(bbox_tree->nodes[node].dynamic_objects.items[index].bbox.bbmax, bbox.bbmax);
 		bbox_tree->nodes[node].dynamic_objects.index = index + 1;
@@ -1416,9 +1282,6 @@ static __inline__ void get_point_from_aabbox(VECTOR3 point, const AABBOX bbox, U
 			break;
 		default:
 			VMakeI(mask, 0x00000000, 0x00000000, 0x00000000);
-#ifdef	DEBUG
-			LOG_ERROR("Wrong number (%d) for get_point_from_aabbox!", number);
-#endif
 			break;
 	}
 	VSelect(point, bbox.bbmin, bbox.bbmax, mask);

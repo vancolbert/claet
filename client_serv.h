@@ -16,17 +16,10 @@ extern "C" {
 /*! @{ */
 typedef enum actor_types_type
 {
-#ifdef FR_VERSION
 	eldo_female = 0,
 	eldo_male = 1,
 	haut_elfe_female = 2,
 	haut_elfe_male = 3,
-#else //FR_VERSION
-	human_female = 0,
-	human_male = 1,
-	elf_female = 2,
-	elf_male = 3,
-#endif //FR_VERSION
 	dwarf_female = 4,
 	dwarf_male = 5,
 	wraith = 6,
@@ -102,7 +95,6 @@ typedef enum actor_types_type
 	snake4 = 76,
 	feros = 77,
 	dragon1 = 78,
-#ifdef FR_VERSION
 	gentoo_penguin = 79,
 	king_penguin = 80,
 	chinstrap_penguin = 81,
@@ -145,7 +137,6 @@ typedef enum actor_types_type
 	test_perso = 118,
 	chiroptera = 119,
 	chacal = 120
-#endif //FR_VERSION
 } actor_types_type;
 /*! @} */
 
@@ -158,18 +149,11 @@ typedef enum actor_types_type
 #define SKIN_PALE		2
 #define SKIN_TAN		3
 #define SKIN_DARK_BLUE	4	// for Elf
-#ifdef ENGLISH
-#define SKIN_WHITE		5	// for Draegoni
-#endif //ENGLISH
-#ifdef FR_VERSION
 #define SKIN_EN_CLAIR    5
 #define SKIN_EN_FONCE    6
 #define SKIN_EN_GRIS     7
 #define SKIN_EN_MEDIUM   8
-#endif //FR_VERSION
-#ifdef FR_MASQUE
 #define SKIN_MASQUE_PNJ 9
-#endif //FR_MASQUE
 /*! @} */
 
 /*!
@@ -198,12 +182,10 @@ typedef enum actor_types_type
 #define SHIRT_STEEL_PLATE_ARMOR 19
 #define SHIRT_TITANIUM_PLATE_ARMOR 20
 #define SHIRT_BRONZE_PLATE_ARMOR 21
-#ifndef ENGLISH
 #define SHIRT_CUIR_NOIR 22
 #define SHIRT_FUR_LEO 23
 #define SHIRT_RED_DRAGON 24
 #define SHIRT_SORCIERE 27
-#endif //ENGLISH
 /*! @} */
 
 /*!
@@ -228,35 +210,7 @@ typedef enum actor_types_type
 #define HAIR_BLUE	6	// for Draegoni
 #define HAIR_GREEN	7	// for Draegoni
 #define HAIR_PURPLE 8	// for Draegoni
-#ifdef ENGLISH
-#define HAIR_DARK_BROWN	9
-#define HAIR_STRAWBERRY	10
-#define HAIR_LIGHT_BLOND	11
-#define HAIR_DIRTY_BLOND	12
-#define HAIR_BROWN_GRAY	13
-#define HAIR_DARK_GRAY	14
-#define HAIR_DARK_RED	15
-#endif //ENGLISH
 
-#ifdef NEW_EYES
-/*!
- * \name Eyes colors
- */
-/*! @{ */
-#define EYES_BROWN	0
-#define EYES_DARK_BROWN	1
-#define EYES_BROWN_RED	2
-#define EYES_LIGHT_BLUE	3
-#define EYES_BLUE	4
-#define EYES_DARK_BLUE	5
-#define EYES_LIGHT_GREEN	6
-#define EYES_GREEN	7
-#define EYES_DARK_GREEN	8
-#define EYES_LAVENDER	9
-#define EYES_VIOLET	10
-#define EYES_GOLD	11
-/*! @} */
-#endif //NEW_EYES
 
 /*!
  * \name Boots colors
@@ -274,13 +228,9 @@ typedef enum actor_types_type
 #define BOOTS_STEEL_GREAVE 9
 #define BOOTS_TITANIUM_GREAVE 10
 #define BOOTS_BRONZE_GREAVE 11
-#ifdef ENGLISH
-#define BOOTS_AUGMENTED_LEATHER_GREAVE 12
-#else //ENGLISH
 #define BOOTS_CUIR_NOIR 12
 #define BOOTS_FUR_LEO 13
 #define BOOTS_RED_DRAGON 14
-#endif
 /*! @} */
 
 /*!
@@ -303,12 +253,10 @@ typedef enum actor_types_type
 #define PANTS_TITANIUM_CUISSES 13
 #define PANTS_BRONZE_CUISSES 14
 #define PANTS_AUGMENTED_LEATHER_CUISSES 15
-#ifndef ENGLISH
 #define PANTS_CUIR_NOIR 16
 #define PANTS_FUR_LEO 17
 #define PANTS_RED_DRAGON 18
 #define PANTS_SORCIERE 21
-#endif
 /*! @} */
 
 /*!
@@ -338,9 +286,6 @@ typedef enum actor_types_type
 #define CAPE_SOLDUS 20
 #define CAPE_LOTHARION 21
 #define CAPE_LEARNER 22
-#ifdef ENGLISH
-#define CAPE_NONE 30
-#else //ENGLISH
 #define CAPE_MOONSHADOW 23
 #define CAPE_ROGUE 24
 #define CAPE_WYTTER 25
@@ -363,7 +308,6 @@ typedef enum actor_types_type
 #define CAPE_FUR_LEO 42
 #define CAPE_GILDE_MAGE 43
 #define CAPE_GILDE_CI 44
-#endif //ENGLISH
 /*! @} */
 
 /*!
@@ -377,7 +321,6 @@ typedef enum actor_types_type
 #define HEAD_5 4
 /*! @} */
 
-#ifdef FR_VERSION
 /*!
  * \name Tailles des personnanges
  */
@@ -394,7 +337,6 @@ typedef enum actor_types_type
 #define SCALE_10  9 // 104%
 #define SCALE_11 10 // 105%
 /*! @} */
-#endif //FR_VERSION
 
 /*!
  * \name Types of wearable items
@@ -407,10 +349,8 @@ typedef enum actor_types_type
 #define KIND_OF_LEG_ARMOR 4
 #define KIND_OF_BODY_ARMOR 5
 #define KIND_OF_BOOT_ARMOR 6
-#ifdef MEDAILLON_DUEL_VIEW
     #define KIND_OF_MEDAILLON 7
     #define MEDAILLON_NONE 0
-#endif
 /*! @} */
 
 /*!
@@ -427,7 +367,6 @@ typedef enum actor_types_type
 #define HELMET_STEEL 7
 #define HELMET_TITANIUM 8
 #define HELMET_BRONZE 9
-#ifndef ENGLISH
 #define CAPUCHON_CUIR_NOIR 10
 #define HELMET_RED_DRAGON 11
 #define CHAPEAU_BLEU 12
@@ -448,7 +387,6 @@ typedef enum actor_types_type
 #define BANDEAU_VERT 28
 #define MASQUE 29
 #define CAPELINE_LEO 30
-#endif
 #define HELMET_NONE 20
 #define HELMET_SORCIERE 34
 /*! @} */
@@ -463,11 +401,6 @@ typedef enum actor_types_type
 #define SHIELD_STEEL 3
 #define SHIELD_TITANIUM 4
 #define SHIELD_BRONZE 5
-#ifdef ENGLISH
-#define QUIVER_ARROWS 7
-#define SHIELD_NONE 11
-#define QUIVER_BOLTS 13
-#else //ENGLISH
 #define SHIELD_BLEU 6
 #define SHIELD_ELDORIAN 7
 #define SHIELD_ELFENOIR 8
@@ -479,7 +412,6 @@ typedef enum actor_types_type
 #define SHIELD_SINAN 14
 #define QUIVER_ARROWS 15
 #define QUIVER_BOLTS 16
-#endif //ENGLISH
 /*! @} */
 
 /*!
@@ -496,11 +428,7 @@ typedef enum actor_types_type
 #define SWORD_7 7
 #define STAFF_1 8
 #define STAFF_2 9
-#ifdef FR_VERSION
 #define BATON_MAGE 10
-#else //FR_VERSION
-#define STAFF_3 10
-#endif //FR_VERSION
 #define STAFF_4 11
 #define HAMMER_1 12
 #define HAMMER_2 13
@@ -549,13 +477,6 @@ typedef enum actor_types_type
 #define SWORD_RAPIER 56
 #define SWORD_JAGGED_SABER 57
 #define SWORD_BRONZE 58
-#ifdef ENGLISH
-#define BOW_LONG 64
-#define BOW_SHORT 65
-#define BOW_RECURVE 66
-#define BOW_ELVEN 67
-#define BOW_CROSS 68
-#else //ENGLISH
 #define GANTS_CUIR_NOIR 59
 #define SPEAR 60
 #define HALBERD 61
@@ -565,11 +486,8 @@ typedef enum actor_types_type
 #define MASSUE_1 65
 #define GLOVE_FUR_LEO 66
 #define GLOVE_LEATHER_3 69
-#endif //ENGLISH
-#ifdef FR_VERSION
 #define BATON_MAGE_DIAMANT 74
 
-#ifdef NEW_EFFECT_ADA_SWORD
 #define SWORD_EMERALD_CLAYMORE_F 103
 #define SWORD_EMERALD_CLAYMORE_G 104
 #define SWORD_EMERALD_CLAYMORE_A 105
@@ -594,14 +512,12 @@ typedef enum actor_types_type
 #define SWORD_JAGGED_SABER_G 128
 #define SWORD_JAGGED_SABER_A 129
 #define SWORD_JAGGED_SABER_L 130
-#endif //NEW_EFFECT_ADA_SWORD
 
 #define BOW_LONG 175
 #define BOW_SHORT 176
 #define BOW_RECURVE 177
 #define BOW_ELVEN 178
 #define BOW_CROSS 179
-#endif //FR_VERSION
 /*! @} */
 
 /*!
@@ -646,14 +562,7 @@ typedef enum actor_types_type
 #define frame_attack_up_8 35
 #define frame_attack_up_9 36
 #define frame_attack_up_10 37
-#ifdef EMOTES
-//frame values for poses (40 different poses)
-#define frame_poses_start 100
-#define frame_poses_end 140
-#endif
-#ifdef FR_VERSION
 #define frame_salut 50
-#endif //FR_VERSION
 /*! @} */
 
 /*!
@@ -689,23 +598,15 @@ typedef enum actor_types_type
 #define c_grey2 13
 #define c_grey3 20
 #define c_grey4 27
-#ifdef ENGLISH
-#define c_ubound 27
-#else //ENGLISH
 #define c_rose1 28
 #define c_ubound 28
-#endif //ENGLISH
 /*! @} */
 
 /*!
  * \name Foreign chars
  */
 /*! @{ */
-#ifdef ENGLISH
-#define SPECIALCHAR_LBOUND 180
-#else //ENGLISH
 #define UUML 180
-#endif //ENGLISH
 #define EACUTE 181
 #define ACIRC 182
 #define AGRAVE 183
@@ -715,18 +616,10 @@ typedef enum actor_types_type
 #define EGRAVE 187
 #define IUML 188
 #define OCIRC 189
-#ifdef ENGLISH
-#define uGRAVE 190
-#else //ENGLISH
 #define UGRAVE 190
-#endif //ENGLISH
 #define aUMLAUT 191
 #define oUMLAUT 192
-#ifdef ENGLISH
-#define uUMLAUT 193
-#else //ENGLISH
 #define uUMLAUT 192
-#endif //ENGLISH
 #define AUMLAUT 194
 #define OUMLAUT 195
 #define UUMLAUT 196
@@ -748,12 +641,8 @@ typedef enum actor_types_type
 #define OACCENT 212
 #define uACCENT 213
 #define UACCENT 214
-#ifdef ENGLISH
-#define SPECIALCHAR_UBOUND 214
-#else //ENGLISH
 #define uCIRC 215
 #define iCIRC 216
-#endif //ENGLISH
 /*! @} */
 
 /*!
@@ -834,16 +723,6 @@ typedef enum actor_commands
   attack_down_1 = 50,
   attack_down_2 = 51,
 
-#ifdef MISSILES
-  enter_aim_mode = 52,
-  leave_aim_mode = 53,
-  aim_mode_reload = 54,
-  aim_mode_fire = 55,
-  missile_miss = 56,
-  //unwear_bow = 57,
-  //unwear_quiver = 58,
-  missile_critical = 59,
-#endif // MISSILES
 
   attack_down_3 = 60,
   attack_down_4 = 61,
@@ -860,21 +739,14 @@ typedef enum actor_commands
   attack_up_8 = 71,
   attack_up_9 = 72,
   attack_up_10 = 73,
-#ifdef FR_VERSION
   salut = 74,
-    #ifdef FR_NEW_ANIM
         danse = 75,
         salto = 76,
         roue = 77,
-    #endif
-#endif //FR_VERSION
 
   emote_cmd = 100,
 
   //from 100 to 255, commands are reserved for emotes
-#ifdef MORE_ATTACHED_ACTORS
-  wait_cmd=256, //to synch actor/horse (not sent by server)
-#endif
 } actor_commands;
 
 /*! @} */
@@ -945,52 +817,28 @@ typedef enum
 #define ATTACK_SOMEONE 40
 #define GET_KNOWLEDGE_INFO 41
 #define ITEM_ON_ITEM 42
-#ifdef FR_VERSION
 #define OUVRE_LIVRE 43
-#else //FR_VERSION
-#define SEND_BOOK 43
-#endif //FR_VERSION
 #define GET_STORAGE_CATEGORY 44
 #define DEPOSITE_ITEM 45
 #define WITHDRAW_ITEM 46
 #define LOOK_AT_STORAGE_ITEM 47
 #define SPELL_NAME 48
-#ifdef FR_VERSION
 #define SALUT 49
 #define SEND_VIDEO_INFO 52
-#else //FR_VERSION
-#define SEND_VIDEO_INFO 49
-#endif //FR_VERSION
 #define POPUP_REPLY 50
 #define FIRE_MISSILE_AT_OBJECT 51
-#ifndef ENGLISH
 #define CLOSE_BOOK_FROM_CLIENT 52
-#endif //ENGLISH
-#ifdef FR_VERSION
 #define CONTINUE_LIVRE 53
 #define TOUT_DEPOT 55
-#endif //FR_VERSION
 
 #define PING_RESPONSE 60
 #define SET_ACTIVE_CHANNEL 61
-#ifdef FR_VERSION
-    #ifdef FR_NEW_ANIM
         #define DANSE 62
         #define SALTO 63
         #define ROUE 64
-    #endif
-#endif //FR_VERSION
-#ifdef ENGLISH
-/* send: 16 bit quest id, request the server to supply quest title using HERE_IS_QUEST_ID */
-#define WHAT_QUEST_IS_THIS_ID 63
-#endif //ENGLISH
 
 #define DO_EMOTE 70
 
-#ifdef ENGLISH
-/* send: 16 bit buff bit-mask (only one set bit), server responds with SEND_BUFF_DURATION */
-#define GET_BUFF_DURATION 71
-#endif //ENGLISH
 
 #define LOG_IN 140
 #define CREATE_CHAR 141
@@ -999,9 +847,7 @@ typedef enum
 #define GET_TIME 231
 #define SERVER_STATS 232
 #define ORIGINAL_IP 233
-#ifdef FR_VERSION
 #define GET_DATE_2 235
-#endif //FR_VERSION
 /*! @} */
 
 /*!
@@ -1098,43 +944,17 @@ typedef enum
 #define ADD_ACTOR_ANIMATION 89
 #define SEND_MAP_MARKER 90
 #define REMOVE_MAP_MARKER 91
-#ifdef ENGLISH
-/* sent: 16 bit quest id for the next npc message */
-#define NEXT_NPC_MESSAGE_IS_QUEST 92
-/* sent: non null terminated string giving the title of the quest */
-#define HERE_IS_QUEST_ID 93
-/* sent: 16 bit quest id, this quest should be shown as finished */
-#define QUEST_FINISHED 94
-/* sent: 5 x 32 bit integers, each active bit is an achievement the last "You see: name" player has */
-#define SEND_ACHIEVEMENTS 95
-/* sent: 1 single byte buff duration, time remaining in seconds */
-#define SEND_BUFF_DURATION 96
-#endif //ENGLISH
-#ifdef FR_VERSION
 #define COMBAT_INFO 92
-#endif //FR_VERSION
-#ifdef FR_VERSION
 #define CHANGE_PAGE 93
 
-#ifdef FR_RCM_MAGIE
-    //TODO SORT AVEC ACCEPTATION COM client
-    #define GET_SPELL_ANSWER 130
-    #define GET_SPELL_ACCEPT 131
-    #define GET_SPELL_REJECT 132
-    #define GET_SPELL_ABANDON 133
-#endif
 
 #define MAX_NUTRI 99
-#endif //FR_VERSION
 #define SEND_ACHIEVEMENTS 98
 
 #define SEND_WEATHER 100
-#ifdef FR_VERSION
 #define SEND_IMAGE 120
 #define SEND_DATE 121
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 /*!
  * \name Combat infos types
 */
@@ -1149,22 +969,15 @@ typedef enum
 #define DEGAT_MAGIE 7
 #define DEGAT_LUMIERE 8
 #define DEGAT_POISON 9
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 #define GET_NEW_ROCHE 94
 #define GET_ROCHE_LIST 95
 #define DESTROY_ROCHE 96
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 #define GET_ACTOR_TITRE 97
-#endif //FR_VERSION
 
-#ifndef ENGLISH
 #define MANU_ITEM_TEXT 20	// devrait devenir 127 à terme
 #define DISPLAY_COORD 128
-#endif // ENGLISH
 // reserved for future expansion 220-229, not being used in the server yet
 #define MAP_SET_OBJECTS 220
 #define MAP_STATE_OBJECTS 221
@@ -1273,39 +1086,16 @@ typedef enum
 #define CRA_EXP_NEXT 72
 #define CRA_S_CUR 73
 #define CRA_S_BASE 74
-#ifdef ENGLISH
-#define ENG_EXP 75
-#define ENG_EXP_NEXT 76
-#define ENG_S_CUR 77
-#define ENG_S_BASE 78
-#define RANG_EXP 79
-#define RANG_EXP_NEXT 80
-#define RANG_S_CUR 81
-#define RANG_S_BASE 82
-#define TAIL_EXP 83
-#define TAIL_EXP_NEXT 84
-#define TAIL_S_CUR 85
-#define TAIL_S_BASE 86
-#define ACTION_POINTS_CUR 87
-#define ACTION_POINTS_BASE 88
-#else
 #define NOTORIETE 75
 #define RELIGION 76
 #define RELIGION_LEV 77
 #define RACE 78
 
-#ifdef INGENIERIE
 	#define ENG_EXP 79
 	#define ENG_EXP_NEXT 80
 	#define ENG_S_CUR 81
 	#define ENG_S_BASE 82
-#endif
 
- #ifdef FR_RCM_WRAITH
- #define SANGF_CUR 80
- #define SANGF_BASE 81
- #endif //FR_RCM_WRAITH
-#ifdef FR_NEXUS
     #define DEFENSE_N_CUR 90
     #define DEFENSE_N_BASE 91
     #define NECRO_N_CUR 92
@@ -1322,13 +1112,9 @@ typedef enum
     #define MAGIE_N_BASE 103
     #define ALCHIMIE_N_CUR 104
     #define ALCHIMIE_N_BASE 105
-#ifdef INGENIERIE
 	#define ENGINEER_N_CUR 106
 	#define ENGINEER_N_BASE 107
-#endif
-#endif
 
-#ifdef FR_ATTRIBUTS_SECONDAIRE
     /// attribut secondaire
     #define MIGHT_CUR 110           // Capacité
     #define MIGHT_BASE 111
@@ -1349,7 +1135,6 @@ typedef enum
     #define ETHEREALITY_CUR 126     // Ether
     #define ETHEREALITY_BASE 127
 
-#endif
 
 /*! @} */
 
@@ -1366,7 +1151,6 @@ typedef enum
 #define NAIN 6
 #define HUMAIN_SINAN 7
 #define HUMAIN_INDEFINI 8
-#endif //ENGLISH
 /*! @} */
 
 /*!
@@ -1393,7 +1177,6 @@ typedef enum
 #define CHAT_PERSONAL	1
 #define CHAT_GM		2
 #define CHAT_SERVER	3
-#ifndef ENGLISH
 #define CHAT_MOD	4
 #define CHAT_MODPM	5
 #define CHAT_CHANNEL1	6
@@ -1405,14 +1188,6 @@ typedef enum
 #define CHAT_COORD  	12
 #define CHAT_COMBAT		13
 #define CHAT_POPUP 0xFF
-#else //ENGLISH
-#define CHAT_MOD	4
-#define CHAT_CHANNEL1	5
-#define CHAT_CHANNEL2	6
-#define CHAT_CHANNEL3	7
-#define CHAT_MODPM	8
-#define CHAT_POPUP 0xFF
-#endif //ENGLISH
 /*! @} */
 
 /*!
@@ -1423,10 +1198,8 @@ typedef enum
 #define	ACTOR_SCALE_MAX		0x7FFF
 /*! @} */
 
-#ifndef ENGLISH
 #define drapeau_coord	1
 #define drapeau_am		2
-#endif //ENGLISH
 
 /*!
  * \name Special spell effects
@@ -1591,7 +1364,6 @@ typedef enum {
 #define MINE_TYPE_MAGIC_IMMUNITY_REMOVAL 10
 /*! @} */
 
-#ifdef FR_VERSION
 /*!
  * \name Etat sante
  */
@@ -1605,7 +1377,6 @@ typedef enum {
 #define ETAT_SANTE_100 6
 #define PAS_ETAT_SANTE 7
 /*! @} */
-#endif //FR_VERSION
 
 
 /*!

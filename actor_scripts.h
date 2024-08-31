@@ -8,9 +8,6 @@
 
 #include <SDL_types.h>
 
-#ifdef EMOTES
-#include "actors.h"			// Should we just move the function that needs this include away?
-#endif // EMOTES
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,10 +106,6 @@ void destroy_all_actors();
  */
 void add_command_to_actor(int actor_id, unsigned char command);
 
-#ifdef EMOTES
-void add_emote_command_to_actor(actor * act, emote_data *emote);
-void add_emote_to_actor(int actor_id, int emote_id);
-#endif // EMOTES
 
 /*!
  * \ingroup	network_actors
@@ -123,11 +116,7 @@ void add_emote_to_actor(int actor_id, int emote_id);
  * \param	actor_id The server-side actor ID
  * \param	damage The damage given by the actor
  */
-#ifdef FR_VERSION
 void get_actor_damage(int actor_id, int damage, int sante);
-#else //FR_VERSION
-void get_actor_damage(int actor_id, int damage);
-#endif //FR_VERSION
 
 /*!
  * \ingroup	network_actors
@@ -138,11 +127,7 @@ void get_actor_damage(int actor_id, int damage);
  * \param	actor_id The server-side actor ID
  * \param	damage The damage given by the actor
  */
-#ifdef FR_VERSION
 void get_actor_health(int actor_id, int damage, int sante);
-#else //FR_VERSION
-void get_actor_health(int actor_id, int damage);
-#endif //FR_VERSION
 
 /*!
  * \ingroup	network_actors
@@ -153,11 +138,7 @@ void get_actor_health(int actor_id, int damage);
  * \param	actor_id The server-side actor ID
  * \param	quantity The amount of healthpoints healed.
  */
-#ifdef FR_VERSION
 void get_actor_heal(int actor_id, int quantity, int sante);
-#else //FR_VERSION
-void get_actor_heal(int actor_id, int quantity);
-#endif //FR_VERSION
 
 /*!
  * \ingroup	events_actors
@@ -209,19 +190,6 @@ void free_actor_defs();
 
 int checkvisitedlist(int x, int y);
 
-#ifdef EMOTES
-/*!
- * \ingroup other
- * \brief loads the emotes def list
- *
- *      Loads the emotes def list
- *
- * \callgraph
- */
-int read_emotes_defs(const char *dir, const char *index);
-
-void free_emotes();
-#endif // EMOTES
 
 #ifdef __cplusplus
 } // extern "C"

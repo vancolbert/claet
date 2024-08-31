@@ -20,9 +20,7 @@ extern TCPsocket my_socket; /*!< our TCP socket to communiate with the server */
 
 /*! \name Version information
  * @{ */
-#ifdef FR_VERSION
 extern char nom_version[]; /*!< Nom de la version */
-#endif //FR_VERSION
 extern char version_string[]; /*!< a buffer for the complete version string */
 extern int client_version_major; /*!< The clients Major version number */
 extern int client_version_minor; /*!< The clients Minor version number */
@@ -31,9 +29,6 @@ extern int client_version_patch; /*!< The clients Patchlevel number */
 extern int version_first_digit; /*!< the first digit of the version */
 extern int version_second_digit; /*!< the second digit of the version */
 extern int always_pathfinding; /*!< use pathfinding for walk click on far visible tiles of the 3d map */
-#ifdef ENGLISH
-extern int mixed_message_filter; /*!< If true, do not display console messages for mixed items when other windows are closed */
-#endif //ENGLISH
 /*! @} */
 
 
@@ -41,42 +36,9 @@ extern Uint32 next_second_time; /*!< the time of the next second */
 extern short real_game_minute; /*!< the real game minute */
 extern short real_game_second; /*!< the real game second */
 
-#ifdef ENGLISH
-/*!
- * \brief	check validity of game seconds
- *
- * \retval	true if we have set seconds.
-*/
-int is_real_game_second_valid(void);
-
-/*!
- * \brief	Set game seconds as valid.
- *
-*/
-void set_real_game_second_valid(void);
-
-/*!
- * \brief	Get the current game time.
- *
- * \retval	game time in seconds.
-*/
-Uint32 get_game_time_sec(void);
-
-/*!
- * \brief	Get the time difference from current game time.
- *
- * \param	the relative time to compare
- *
- * \retval	the time difference in seconds, wrapped appropriately
-*/
-Uint32 diff_game_time_sec(Uint32 ref_time);
-#endif //ENGLISH
 
 extern time_t last_heart_beat; /*!< a timestamp that inidicates when the last message was sent to the server */
 
-#ifdef ENGLISH
-extern time_t last_save_time; /*!< a timestamp inidicating the last #save */
-#endif //ENGLISH
 
 extern int log_conn_data; /*!< indicates whether we should log connection data or not */
 
@@ -182,11 +144,7 @@ void send_login_info();
  * \pre If the length of \a pass_str is less than 4, this function will create an error and returns.
  * \pre If the \a conf_pass_str doesn't match the \a pass_str, this function will create an error and returns.
  */
-#ifdef FR_VERSION
 void send_new_char(char * user_str, char * pass_str, char skin, char hair, char shirt, char pants, char boots,char head, char type, char scale);
-#else //FR_VERSION
-void send_new_char(char * user_str, char * pass_str, char skin, char hair, char eyes, char shirt, char pants, char boots,char head, char type);
-#endif //FR_VERSION
 
 /*!
  * \ingroup network_actors

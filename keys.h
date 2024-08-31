@@ -37,10 +37,8 @@ extern Uint32 K_ADVANCE;        /*!< key used to move one step (tile) forward */
 extern Uint32 K_HEALTHBAR;      /*!< key used to toggle display of the healthbar */
 extern Uint32 K_VIEWNAMES;      /*!< key used to toggle display of names */
 extern Uint32 K_VIEWHP;         /*!< key used to toggle display of hitpoints (material points) */
-#ifdef DISPLAY_MANAPOINT
 extern Uint32 K_VIEWMP;         /*!< key used to toggle display of manapoints (etherals points) */
 extern Uint32 K_VIEWMANABAR;    /*!< key used to toggle display of manabar (etherals bar) */
-#endif //DISPLAY_MANAPOINT
 extern Uint32 K_STATS;          /*!< key to toggle display of \ref stats_window */
 extern Uint32 K_QUESTLOG;       /*!< key to toggle display of \ref questlog_window */
 extern Uint32 K_SESSION;        /*!< key to toggle display of session tab in stats_window */
@@ -73,9 +71,6 @@ extern Uint32 K_SCREENSHOT;		/*!< key used to make a screenshot */
 extern Uint32 K_VIEWTEXTASOVERTEXT; /*!< key used to toggle display of text bubbles (overtext) */
 extern Uint32 K_AFK;                /*!< key used to display AFK messages */
 extern Uint32 K_SIT;                /*!< key used to toggle sitting status, i.e. sit down/stand up */
-#ifdef MISSILES
-extern Uint32 K_RANGINGLOCK;        /*!< key used to toggle ranging-lock status */
-#endif //MISSILES
 extern Uint32 K_BUDDY;              /*!< key used to toggle the buddy window */
 extern Uint32 K_NEXT_CHAT_TAB;      /*!< key used to switch to next chat tab */
 extern Uint32 K_PREV_CHAT_TAB;      /*!< key used to switch to previous tab */
@@ -91,26 +86,10 @@ extern Uint32 K_COPY;               /*!< key used to copy text into a clipboard 
 extern Uint32 K_PASTE;              /*!< key used to copy text from a clipboard into EL */
 extern Uint32 K_COPY_ALT;           /*!< alternative key used to copy text into a clipboard */
 extern Uint32 K_PASTE_ALT;          /*!< alternative key used to copy text from a clipboard into EL */
-#ifdef ECDEBUGWIN
-extern Uint32 K_ECDEBUGWIN;         /*!< open Eye Candy debug window */
-#endif /* ECDEBUGWIN */
-#ifdef EMOTES
-extern Uint32 K_EMOTES;    /*!< key used to toggle display of \ref emotes_window */
-#endif
-#ifdef MISSILES
-extern Uint32 K_RANGINGWIN;         /*!< key used to toggle display of ranging win */
-#endif //MISSILES
-#ifdef FR_VERSION
 extern Uint32 K_INCUNABLES;         /*!< ouvrir les incunables */
 extern Uint32 K_OBTENIR;            /*!< ouvrir et ramasser le sac à ses pieds */
-#else //FR_VERSION
-extern Uint32 K_COUNTERS;           /*!< key used to toggle display of counters window  */
-extern Uint32 K_HELPSKILLS;         /*!< key used to toggle display of help window skills tab  */
-#endif //FR_VERSION
-#ifdef FR_VERSION
 extern Uint32 K_VOIR_MUSIQUE_CARTE; /*!< voir les zones des musiques sur les cartes */
 extern Uint32 K_FENETRE_MUSIQUE;    /*!< affiche une fenetre avec les musiques disponibles */
-#endif //FR_VERSION
 /*! @} */
 
 /*! \name Quickbar access keys */
@@ -121,14 +100,12 @@ extern Uint32 K_ITEM3;
 extern Uint32 K_ITEM4;
 extern Uint32 K_ITEM5;
 extern Uint32 K_ITEM6;
-#ifndef ENGLISH
 extern Uint32 K_ITEM7;
 extern Uint32 K_ITEM8;
 extern Uint32 K_ITEM9;
 extern Uint32 K_ITEM10;
 extern Uint32 K_ITEM11;
 extern Uint32 K_ITEM12;
-#endif //ENGLISH
 
 /*! @} */
 
@@ -140,18 +117,14 @@ extern Uint32 K_SPELL3;
 extern Uint32 K_SPELL4;
 extern Uint32 K_SPELL5;
 extern Uint32 K_SPELL6;
-#ifndef ENGLISH
 extern Uint32 K_SPELL7;
 extern Uint32 K_SPELL8;
 extern Uint32 K_SPELL9;
 extern Uint32 K_SPELL10;
 extern Uint32 K_SPELL11;
 extern Uint32 K_SPELL12;
-#endif //ENGLISH
-#ifdef FR_MORE_MQB
 extern Uint32 K_PREVQUICKSPELLBAR;
 extern Uint32 K_NEXTQUICKSPELLBAR;
-#endif
 extern Uint32 K_SPELLTARGET;
 /*! @} */
 

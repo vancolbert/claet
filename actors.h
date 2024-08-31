@@ -6,11 +6,6 @@
 #ifndef __ACTORS_H__
 #define __ACTORS_H__
 
-#ifdef MUTEX_DEBUG
-#include <assert.h>
-#include <stdlib.h>
-#include <SDL.h>
-#endif
 #include <SDL_mutex.h>
 #include "bbox_tree.h"
 #include "cal_types.h"
@@ -19,9 +14,6 @@
 #include "tiles.h"
 #include "buffs.h"
 #include "eye_candy_types.h"
-#ifdef EMOTES
-#include "hash.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,9 +27,7 @@ extern int yourself; 	/*!< This variable holds the actor_id (as the server sees 
 extern int you_sit; 	/*!< Specifies if you are currently sitting down.*/
 extern int sit_lock; 	/*!< The sit_lock variable holds you in a sitting position.*/
 extern float name_zoom; /*!< The name_zoom defines how large the text used for drawing the names should be*/
-#ifdef FR_VERSION
 extern float titre_zoom; /*< Taille pour le texte des titres */
-#endif //FR_VERSION
 extern int use_alpha_banner;	/*!< Use_alpha_banner defines if an alpha background is drawn behind the name/health banner.*/
 
 /*!
@@ -93,10 +83,8 @@ typedef struct {
 } near_actor;
 
 extern int no_near_actors;
-#ifdef NEW_SOUND
 extern int no_near_enhanced_actors;
 extern float distanceSq_to_near_enhanced_actors;
-#endif // NEW_SOUND
 extern near_actor near_actors[MAX_ACTORS];
 
 /*!
@@ -114,9 +102,7 @@ typedef struct
 	int weapon_meshindex;
 	int shield_meshindex;
 	int helmet_meshindex;
-#ifdef NECK_ITEMS
 	int neck_meshindex;
-#endif
 	int cape_meshindex;
 	int boots_meshindex;
 
@@ -145,20 +131,12 @@ typedef struct
 	char boots_base[MAX_FILE_PATH];
 
 	char hair_tex[MAX_FILE_PATH];
-#ifdef NEW_EYES
-	char eyes_tex[MAX_FILE_PATH];
-#endif //NEW_EYES
 	char weapon_tex[MAX_FILE_PATH];
 	char shield_tex[MAX_FILE_PATH];
 	char helmet_tex[MAX_FILE_PATH];
-#ifdef NECK_ITEMS
 	char neck_tex[MAX_FILE_PATH];
-#endif
 	char cape_tex[MAX_FILE_PATH];
 	char hands_tex_save[MAX_FILE_PATH];
-#ifndef	NEW_TEXTURES
-	char has_alpha;//is there alpha masking?
-#endif	/* NEW_TEXTURES */
 
 	/*! \} */
 
@@ -167,9 +145,7 @@ typedef struct
 	int weapon_glow;
 	int shield_glow;
 	int helmet_glow;
-#ifdef NECK_ITEMS
 	int neck_glow;
-#endif
 	int cape_glow;
 	int legs_glow;
 	/*! \} */
@@ -195,9 +171,6 @@ typedef struct
 	int glow;
 	int mesh_index;
 
-#ifdef MISSILES
-	int missile_type; /*!< The type of equipped missiles (>=0 if a quiver is equipped, -1 if a regular shield is equipped) */
-#endif // MISSILES
 }shield_part;
 
 /*! Sets the weapon type (including animation frame names)*/
@@ -208,10 +181,6 @@ typedef struct
 	char skin_mask[MAX_FILE_PATH];
 	int glow;
 	int mesh_index;
-#ifdef MORE_ATTACHED_ACTORS
-	int turn_horse;
-	int unarmed;
-#endif
 
 	struct cal_anim cal_frames[NUM_WEAPON_FRAMES];
 
@@ -250,15 +219,6 @@ typedef struct
 
 }hair_part;
 
-#ifdef NEW_EYES
-/*! Sets the models eyes name*/
-typedef struct
-{
-	char eyes_name[MAX_FILE_PATH];
-	int mesh_index;
-
-}eyes_part;
-#endif //NEW_EYES
 
 /*! Holds info about the boots */
 typedef struct
@@ -292,15 +252,12 @@ typedef struct cal_anim_group
 	struct cal_anim anim[16];
 } cal_animations;
 
-#ifdef NEW_SOUND
 typedef struct
 {
 	int sound;
 	float scale;
 } act_extra_sound;
-#endif // NEW_SOUND
 
-#ifdef ATTACHED_ACTORS
 typedef struct
 {
 	int is_holder;      /*!< Specifies if this type of actor hold the actor to which it is attached or if he is held */
@@ -317,7 +274,6 @@ typedef struct
 {
 	attachment_props actor_type[MAX_ACTOR_DEFS]; /*!< Attachment properties for each kind of actor */
 } attached_actors_types;
-#endif // ATTACHED_ACTORS
 
 typedef enum {
 	ACTOR_HEAD_SIZE = 0,
@@ -330,12 +286,7 @@ typedef enum {
 	ACTOR_HAIR_SIZE,
 	ACTOR_BOOTS_SIZE,
 	ACTOR_LEGS_SIZE,
-#ifdef NECK_ITEMS
 	ACTOR_NECK_SIZE,
-#endif
-#ifdef NEW_EYES
-	ACTOR_EYES_SIZE,
-#endif //NEW_EYES
     ACTOR_NUM_PARTS
 } actor_parts_enum;
 
@@ -365,16 +316,11 @@ typedef struct
 	int group_count;
 
 	struct cal_anim cal_frames[NUM_ACTOR_FRAMES];
-#ifdef EMOTES
-	hash_table *emote_frames;
-#endif
 
 	int skeleton_type;
 
-#ifdef NEW_SOUND
 	// Extra sounds
 	act_extra_sound battlecry;
-#endif // NEW_SOUND
 
 	/*! \name The different body parts (different head shapes, different armour/weapon shapes etc.)*/
 	/*! \{ */
@@ -382,9 +328,7 @@ typedef struct
 	shield_part *shield;
 	body_part *cape;
 	body_part *helmet;
-#ifdef NECK_ITEMS
 	body_part *neck;
-#endif
 	weapon_part *weapon;
 	/*! \} */
 
@@ -393,9 +337,6 @@ typedef struct
 	shirt_part *shirt;
 	skin_part  *skin;
 	hair_part  *hair;
-#ifdef NEW_EYES
-	eyes_part  *eyes;
-#endif //NEW_EYES
 	boots_part *boots;
 	legs_part *legs;
 	/*! \} */
@@ -407,129 +348,19 @@ typedef struct
 	char ghost;
 	/*! \} */
 
-#ifdef VARIABLE_SPEED
-	int step_duration;
-#endif // VARIABLE_SPEED
 
 } actor_types;
 
-#ifdef MISSILES
-typedef struct
-{
-	float aim_position[3];  /*!< Position of the target to aim at */
-	float fire_position[3]; /*!< Position of the target to fire at */
-	int aim_actor;          /*!< Actor ID to aim at */
-	int fire_actor;         /*!< Actor ID to fire at */
-	char shot_type;         /*!< The type of the shot (0: normal, 1: missed, 2: critical) */
-	char reload; /*!< To tell if the char must reload after the next fire */
-	char state; /*!< The state of the action (0: aim needed, 1: aim done, 2: fire needed, 3: fire done) */
-} range_action;
-#endif // MISSILES
-#ifdef ATTACHED_ACTORS
 #define MY_HORSE(a) (actors_list[actors_list[a]->attached_actor])
 #define MY_HORSE_ID(a) (actors_list[a]->attached_actor)
 #define HAS_HORSE(a) ((MY_HORSE_ID(a)>=0)&&(MY_HORSE(a)->actor_id<0))
 #define IS_HORSE(a) (actors_list[a]->attached_actor>=0&&actors_list[a]->actor_id<0)
 #define ACTOR(a) (actors_list[a])
 #define ACTOR_WEAPON(a) (&(actors_defs[ACTOR(a)->actor_type].weapon[ACTOR(a)->cur_weapon]))
-#endif //ATTACHED_ACTORS
-
-#ifdef MORE_ATTACHED_ACTORS
-#define HORSE_FIGHT_ROTATION 60
-#define HORSE_RANGE_ROTATION 45
-#define HORSE_FIGHT_TIME 180
-void rotate_actor_and_horse(int id, int mul);
-#endif
 
 
 
-#ifdef EMOTES
-#define MAX_EMOTE_LEN 20
-#define MAX_EMOTE_FRAME 8
 
-#define EMOTE_SITTING 0
-#define EMOTE_WALKING 1
-#define EMOTE_RUNNING 2
-#define EMOTE_STANDING 3
-
-#define EMOTE_ACTOR_TYPES 13
-#define EMOTE_TIMEOUT 2000
-#define EMOTE_CMDS_HASH 100
-
-
-#define EMOTE_BARE_L 2
-#define EMOTE_BARE_R 4
-
-//ugliest mapping functions ever :/
-static __inline__ int emote_actor_type(int actor_type){
-	switch(actor_type){
-		case human_female: return 0;
-		case human_male: return 1;
-		case elf_female: return 2;
-		case elf_male: return 3;
-		case dwarf_female: return 4;
-		case dwarf_male: return 5;
-		case orchan_female: return 6;
-		case orchan_male: return 7;
-		case gnome_female: return 8;
-		case gnome_male: return 9;
-		case draegoni_female: return 10;
-		case draegoni_male: return 11;
-		default: return 12; //all other mobs
-	}
-}
-
-
-typedef struct _emote_frame {
-	int nframes;
-	int ids[MAX_EMOTE_FRAME];
-	struct _emote_frame *next;
-} emote_frame;
-
-typedef struct _emote_type
-{
-	int id;
-	char barehanded;
-	unsigned char pose;
-	int timeout; //default 2 sec
-	emote_frame *anims[EMOTE_ACTOR_TYPES][4][2];
-	char name[20];
-	char desc[80];
-} emote_data;
-
-
-typedef struct _emote_anim {
-	Uint32 start_time;
-	Uint32 max_duration;
-	int nframes;
-	char active;
-	struct cal_anim frames[MAX_EMOTE_FRAME];
-	struct cal_anim idle;
-	emote_frame *flow;
-} emote_anim;
-
-typedef struct _emote_dict {
-	char command[MAX_EMOTE_LEN+1];	// The command to trigger the emote
-	emote_data *emote;
-} emote_dict;
-
-extern hash_table *emote_cmds;  //used to search through emotes commands
-extern hash_table *emotes; //used to store emotes
-
-
-#define NO_EMOTE 0
-#define SERVER_EMOTE 1
-#define CLIENT_EMOTE 2
-typedef struct _emote_command {
-	Uint32 create_time;
-	emote_data *emote;
-	char origin;
-} emote_command;
-
-
-#define	MAX_EMOTE_QUEUE	20
-#define EMOTE_MOTION(act) ((act->buffs & BUFF_DOUBLE_SPEED) ? (EMOTE_RUNNING):(EMOTE_WALKING))
-#endif // EMOTES
 
 /*! The main actor structure.*/
 #define	MAX_CMD_QUEUE	31
@@ -545,19 +376,7 @@ typedef struct
 
 	struct CalModel *calmodel;
 	struct cal_anim cur_anim;
-#ifdef EMOTES
-	emote_anim cur_emote;	//current performed emote
-	emote_data *poses[4];	//current emote ids for idle states (standing, walking...)
-	emote_command emote_que[MAX_EMOTE_QUEUE+1];	/*!< Holds the queued emotes*/
-	unsigned int cur_emote_sound_cookie;		/*!< The currently played emote sound*/
-#endif
 
-#ifdef MORE_EMOTES
-	int startIdle;
-	int endIdle;
-	int idleTime;
-	int idleDuration;
-#endif
 
 	unsigned int cur_anim_sound_cookie;		/*!< The currently played animation sound*/
 	struct cal_anim cur_idle_anims[16];
@@ -566,21 +385,6 @@ typedef struct
 	Uint32	last_anim_update;
 	AABBOX bbox;
 
-#ifdef MISSILES
-	/*! \name Range mode parameters */
-	/*! \{ */
-	float cal_h_rot_start;    /*!< The starting horizontal rotation */
-	float cal_h_rot_end;      /*!< The ending horizontal rotation */
-	float cal_v_rot_start;    /*!< The starting vertical rotation */
-	float cal_v_rot_end;      /*!< The ending vertical rotation */
-	float cal_rotation_blend; /*!< The blend to applay between the starting and the ending rotations */
-	float cal_rotation_speed; /*!< The speed of the rotation */
-    int cal_last_rotation_time; /*!< The last time when the rotation has been updated */
-	char are_bones_rotating;  /*!< To tell if the char is rotating */
-	char in_aim_mode;         /*!< To tell if the char is already aiming something (0: not in aim mode; 1: in aim mode; 2: leaving aim mode) */
-	range_action range_actions[MAX_RANGE_ACTION_QUEUE]; /*!< Stores the actions to be done */
-	int range_actions_count; /*<! The number of actions stored */
-#endif // MISSILES
 
 	int delayed_item_changes[MAX_ITEM_CHANGES_QUEUE]; /*!< Used to delay a sword/shield equip while in range mode (-1: item removed; >= 0: item equipped) */
 	int delayed_item_type_changes[MAX_ITEM_CHANGES_QUEUE]; /*!< Used to delay a sword/shield equip while in range mode */
@@ -614,9 +418,6 @@ typedef struct
 	/*! \{ */
 	int boots;		/*!< Sets the boots ID (loaded from the actor_defs array)*/
 	int hair;		/*!< Sets the hair ID (loaded from the actor_defs array)*/
-#ifdef NEW_EYES
-	int eyes;		/*!< Sets the eyes ID (loaded from the actor_defs array)*/
-#endif //NEW_EYES
 	int skin;		/*!< Sets the skin ID (loaded from the actor_defs array)*/
 	int pants;		/*!< Sets the pants ID (loaded from the actor_defs array)*/
 	int shirt;		/*!< Sets the shirt ID (loaded from the actor_defs array)*/
@@ -634,20 +435,12 @@ typedef struct
 	GLuint texture_id;			/*!< Sets the texture ID, if the remapped_colors==1 - remember to glDeleteTextures*/
 	char skin_name[256];	/*!< Sets the skin name*/
 	char actor_name[256];	/*!< Sets the actors name - holds the guild name as well after a special 127+color character*/
-#ifdef FR_VERSION
     char titre[20];
-#endif //FR_VERSION
-#ifdef FR_AFFICHE_NOM
-    char nom_acteur_affiche[66];
-#endif // FR_AFFICHE_NOM
 	/*! \} */
 
 	/*! \name Command queue and current animations*/
 	/*! \{ */
 	actor_commands que[MAX_CMD_QUEUE+1];	/*!< Holds the current command queue*/
-#ifdef	ANIMATION_SCALING
-	float animation_scale;			/*!< scale factor for animations */
-#endif	/* ANIMATION_SCALING */
 	char last_command;	/*!< Holds the last command*/
 	char busy;			/*!< if the actor is busy executing the current command*/
 	char sitting;		/*!< Specifies if the actor is currently sitting*/
@@ -670,9 +463,6 @@ typedef struct
 
 	/*! \name Misc. animations*/
 	/*! \{ */
-#ifdef MORE_ATTACHED_ACTORS
-	char horse_rotated;
-#endif
 	char moving;		/*!< Specifies if the actor is currently on the move*/
 	char rotating;		/*!< Specifies if the actor is currently rotating*/
 	char stop_animation;	/*!< Don't loop trough the current animation (like for die, jump, etc.)*/
@@ -692,11 +482,7 @@ typedef struct
 
 	/*! \name Overhead text (text bubbles)*/
 	/*! \{ */
-#ifdef FR_VERSION
 	char current_displayed_text[160]; /*!< If the text is displayed in a bubble over the actor, this holds the text*/
-#else //FR_VERSION
-	char current_displayed_text[MAX_CURRENT_DISPLAYED_TEXT_LEN]; /*!< If the text is displayed in a bubble over the actor, this holds the text*/
-#endif //FR_VERSION
 	int current_displayed_text_time_left;	/*!< Defines the remaining time the overhead text should be displayed*/
 	/*! \} */
 
@@ -713,18 +499,11 @@ typedef struct
 	int async_z_rot;
 	int last_range_attacker_id;
 
-#ifdef VARIABLE_SPEED
-	int step_duration;
-#endif // VARIABLE_SPEED
 
-#ifdef ATTACHED_ACTORS
 	int attached_actor;
 	float attachment_shift[3];
-#endif // ATTACHED_ACTORS
 
-#ifdef CLUSTER_INSIDES
 	short cluster;
-#endif
 	ec_reference ec_buff_reference[NUM_BUFFS];
 }actor;
 
@@ -740,20 +519,9 @@ extern actor *your_actor; /*!< A pointer to your own character, if available. Sh
 extern int	max_actors;		/*!< The current number of actors in the actors_list + 1*/
 extern actor_types actors_defs[MAX_ACTOR_DEFS];	/*!< The actor definitions*/
 
-#ifdef ATTACHED_ACTORS
 extern attached_actors_types attached_actors_defs[MAX_ACTOR_DEFS]; /*!< The definitions for the attached actors */
-#endif // ATTACHED_ACTORS
 
 
-#ifdef EMOTES
-static __inline__ int is_actor_barehanded(actor *act, int hand){
-	if(hand==EMOTE_BARE_L)
-		return (act->cur_shield==SHIELD_NONE||act->cur_shield==QUIVER_ARROWS||act->cur_shield==QUIVER_BOLTS);
-	else
-		return (act->cur_weapon==WEAPON_NONE||act->cur_weapon==GLOVE_FUR||act->cur_weapon==GLOVE_LEATHER);
-}
-
-#endif
 
 /*!
  * \ingroup	display_actors
@@ -778,11 +546,9 @@ void draw_actor_banner(actor * actor_id, float offset_z);
  */
 void display_actors(int banner, int render_pass);
 
-#ifdef ATTACHED_ACTORS
 void add_actor_attachment (int actor_id, int attachment_type);
 
 void remove_actor_attachment (int actor_id);
-#endif // ATTACHED_ACTORS
 
 /*!
  * \ingroup	network_actors
@@ -808,27 +574,6 @@ void add_actor_from_server (const char * in_data, int len);
  */
 extern void	init_actors_lists();
 
-#ifdef MUTEX_DEBUG
-extern Uint32 have_actors_lock;
-/*!
- * \ingroup mutex
- * \name Actor list thread synchronization
- */
-/*! @{ */
-#define	LOCK_ACTORS_LISTS() 	\
-	{\
-		fprintf(stderr,"Last locked by: %s %s %d\n",__FILE__,__FUNCTION__,__LINE__);\
-		if(SDL_LockMutex(actors_lists_mutex)==-1) {fprintf(stderr,"We're fucked!! The mutex on %s %s %d was not locked even though we asked it to!\n",__FILE__,__FUNCTION__,__LINE__); abort(); }\
-		assert(have_actors_lock==0); have_actors_lock=SDL_ThreadID(); \
-	}
-#define	UNLOCK_ACTORS_LISTS() 	\
-	{\
-		fprintf(stderr,"Last unlocked by: %s %s %d\n",__FILE__,__FUNCTION__,__LINE__);\
-		assert(have_actors_lock); assert(have_actors_lock==SDL_ThreadID()); have_actors_lock=0; \
-		if(SDL_UnlockMutex(actors_lists_mutex)==-1)  {fprintf(stderr,"We're fucked!! The mutex on %s %s %d was not unlocked even though we asked it to!\n",__FILE__,__FUNCTION__,__LINE__); abort(); }\
-	}
-/*! @} */
-#else
 /*!
  * \ingroup mutex
  * \name Actor list thread synchronization
@@ -837,7 +582,6 @@ extern Uint32 have_actors_lock;
 #define LOCK_ACTORS_LISTS()	SDL_LockMutex(actors_lists_mutex)
 #define UNLOCK_ACTORS_LISTS() SDL_UnlockMutex(actors_lists_mutex)
 /*! @} */
-#endif
 
 /*!
  * \ingroup	network_text
@@ -933,7 +677,6 @@ void transform_actor_local_position_to_absolute(actor *in_act, float *in_local_p
 
 void draw_actor_without_banner(actor * actor_id, Uint32 use_lightning, Uint32 use_textures, Uint32 use_glow);
 
-#ifdef ATTACHED_ACTORS
 static __inline__ int is_actor_held(actor *act)
 {
     return ((act->attached_actor >= 0) &&
@@ -966,7 +709,6 @@ static __inline__ int get_held_actor_motion_frame(actor *act)
 	else
 		return cal_attached_walk_frame;
 }
-#endif // ATTACHED_ACTORS
 
 static __inline__ int get_actor_motion_frame(actor *act)
 {

@@ -7,7 +7,6 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
-#ifdef NEW_SOUND
 
 #include "platform.h"
 #include "actors.h"
@@ -58,12 +57,6 @@ extern int have_sound_config; /*!< flag indicating whether the sound config was 
 #define SOUND_CONFIG_PATH "sound/sound_config.xml"
 #define SOUND_WARNINGS_PATH "sound_warnings.txt"
 
-#ifdef DEBUG
-void print_sound_types();
-void print_sound_samples();
-void print_sounds_list();
-void print_sound_sources();
-#endif // DEBUG
 
 /*!
  * \ingroup other
@@ -301,9 +294,6 @@ void clear_sound_data();
 void handle_walking_sound(actor *pActor, int def_snd);
 int check_sound_loops(unsigned int cookie);
 void check_sound_alerts(const Uint8* text, size_t len, Uint8 channel);
-#ifdef DEBUG_MAP_SOUND
-void print_sound_boundaries(int map);
-#endif // DEBUG_MAP_SOUND
 
 static __inline__ void do_click_sound(){
 	add_sound_object(get_index_for_sound_type_name("Button Click"), 0, 0, 1);
@@ -342,7 +332,6 @@ static __inline__ void do_afk_sound(){
 /////// MUSIC FUNCTIONALITY ///////////
 ///////////////////////////////////////
 
-#ifdef FR_VERSION
 /*!
  * \ingroup music
  * \brief Affiche les zones de musiques des cartes
@@ -378,9 +367,7 @@ void modif_playlist(int num);
  *
  */
 void raz_playlist() ;
-#endif //FR_VERSION
 
-#ifdef FR_VERSION
 #define MAX_NOMBRE_MUSIQUE  50     /* Nombre de musique maximum */
 typedef struct
 {
@@ -395,7 +382,6 @@ extern int musique_carte;
 extern int fenetre_musique;
 extern int auto_serveur_musique;
 void affiche_fenetre_musique ();
-#endif //FR_VERSION
 /*!
  * \ingroup music
  * \brief Retrieves the playlist for the current map.
@@ -468,17 +454,4 @@ void toggle_music(int * var);
 } // extern "C"
 #endif
 
-#else
-static __inline__ void do_click_sound(){}
-static __inline__ void do_drag_item_sound(){}
-static __inline__ void do_alert1_sound(){}
-static __inline__ void do_drop_item_sound(){}
-static __inline__ void do_get_item_sound(){}
-static __inline__ void do_window_close_sound(){}
-static __inline__ void do_icon_click_sound(){}
-static __inline__ void do_error_sound(){}
-static __inline__ void do_disconnect_sound(){}
-static __inline__ void do_connect_sound(){}
-static __inline__ void do_afk_sound(){}
-#endif // NEW_SOUND
 #endif // __SOUND_H__

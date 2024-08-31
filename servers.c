@@ -70,11 +70,7 @@ void set_server_details()
 		}
 	}
 	// We found a valid profile so set some vars
-#ifdef ENGLISH
-	LOG_DEBUG("Using the server profile: %s", servers[num].id);
-#else //ENGLISH
 	LOG_DEBUG("Utilisation du profil pour le serveur : %s", servers[num].id);
-#endif //ENGLISH
 	cur_server = num;
 	safe_strncpy((char *)server_address, (char *)servers[num].address, sizeof(server_address));
 	port = servers[num].port;
@@ -87,25 +83,14 @@ void set_server_details()
 
 		mkdir_tree(get_path_config(), 0);
 		// First, try to copy the ini file out of $CONF/main
-#ifdef ENGLISH
-		safe_snprintf(src, sizeof(src), "%smain/el.ini", get_path_config_base());
-		safe_snprintf(dest, sizeof(dest), "%sel.ini", get_path_config());
-#else //ENGLISH
 		safe_snprintf(src, sizeof(src), "%smain/le.ini", get_path_config_base());
 		safe_snprintf(dest, sizeof(dest), "%sle.ini", get_path_config());
-#endif //ENGLISH
 		copy_file(src, dest);
 		// Secondly, try to copy the ini file out of $CONF (this will fail without harm if above succeeds)
-#ifdef ENGLISH
-		safe_snprintf(src, sizeof(src), "%s/el.ini", get_path_config_base());
-		safe_snprintf(dest, sizeof(dest), "%sel.ini", get_path_config());
-#else //ENGLISH
 		safe_snprintf(src, sizeof(src), "%s/le.ini", get_path_config_base());
 		safe_snprintf(dest, sizeof(dest), "%sle.ini", get_path_config());
-#endif //ENGLISH
 		copy_file(src, dest);
 	}
-#ifdef FR_VERSION
 	/**
 	 * en copiant le fichier servers.lst à la racine du dossier perso,
 	 * il pourra être chargé quelque soit l'emplacement du jeu
@@ -118,7 +103,6 @@ void set_server_details()
 		safe_snprintf(dest, sizeof(dest), "%sservers.lst", get_path_config_base());
 		if (file_exists("servers.lst") && ! file_exists(dest)) copy_file("servers.lst", dest);
 	}
-#endif //FR_VERSION
 }
 
 const char * get_server_dir()
