@@ -18,23 +18,17 @@ extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis lib
 winlibdir := $(SYSROOT)/$(HOST)/lib
 winlibs := libopengl32 libglu32 libdxguid libgdi32 libwinmm libmincore libole32 libstdc++
 libs := $(extlibs:%=$(extlibdir)/%.a) $(winlibs:%=$(winlibdir)/%.a)
-ENCYCLOPEDIA_COBJ = books/fontdef.o books/parser.o books/symbol.o books/typesetter.o sort.o symbol_table.o
-MEMORY_DEBUG_COBJ = elmemory.o
 TEXT_ALIASES_COBJ = text_aliases.o
-MISSILES_COBJ = missiles.o
-PAWN_COBJ = pawn/amx.o pawn/amxaux.o pawn/amxcons.o pawn/amxel.o pawn/amxfloat.o pawn/amxstring.o pawn/elpawn.o
 FR_VERSION_COBJ = themes.o fr_quickitems.o
 NEW_TEXTURES_COBJ = image_loading.o
 NEW_TEXTURES_CXXOBJ = engine/hardwarebuffer.o
-CUSTOM_UPDATE_COBJ = custom_update.o new_update.o
 FSAA_COBJ = fsaa/fsaa_dummy.o fsaa/fsaa.o
-ACHIEVEMENTS_CXXOBJ = achievements.o
 srcdirs := io shader eye_candy exceptions xz xml fsaa engine
 cobjs := 2d_objects.o 3d_objects.o \
 	actor_scripts.o actors.o alphamap.o asc.o astrology.o \
 	bbox_tree.o books.o buddy.o buffs.o bags.o \
 	cache.o cal.o calc.o chat.o cluster.o colors.o console.o consolewin.o \
-	counters.o cursors.o dds.o ddsimage.o dialogues.o draw_scene.o eye_candy_debugwin.o \
+	counters.o cursors.o dds.o ddsimage.o dialogues.o draw_scene.o \
 	elconfig.o elwindows.o encyclopedia.o errors.o events.o	\
 	filter.o font.o framebuffer.o frustum.o	\
 	gamewin.o gl_init.o hud.o help.o highlight.o	\
@@ -43,7 +37,7 @@ cobjs := 2d_objects.o 3d_objects.o \
 	io/half.o io/normal.o io/elfilewrapper.o io/unzip.o io/ioapi.o io/zip.o io/ziputil.o	\
 	keys.o knowledge.o langselwin.o lights.o list.o load_gl_extensions.o loginwin.o loading_win.o	\
 	main.o manufacture.o map.o mapwin.o memory.o	\
-	md5.o mines.o minimap.o misc.o missiles.o multiplayer.o	\
+	md5.o minimap.o misc.o multiplayer.o	\
 	new_actors.o new_character.o notepad.o \
 	openingwin.o image.o roche.o \
 	shader/noise.o shader/shader.o	\
@@ -52,7 +46,7 @@ cobjs := 2d_objects.o 3d_objects.o \
 	skeletons.o skills.o serverpopup.o servers.o session.o shadows.o sound.o	\
 	spells.o stats.o storage.o special_effects.o	\
 	tabs.o text.o textures.o tile_map.o timers.o translate.o trade.o	\
-	update.o url.o weather.o widgets.o makeargv.o popup.o hash.o emotes.o \
+	update.o url.o weather.o widgets.o makeargv.o popup.o hash.o \
 	xz/7zCrc.o xz/7zCrcOpt.o xz/Alloc.o xz/Bra86.o xz/Bra.o xz/BraIA64.o	\
 	xz/CpuArch.o xz/Delta.o xz/LzFind.o xz/Lzma2Dec.o xz/Lzma2Enc.o	\
 	xz/LzmaDec.o xz/LzmaEnc.o xz/Sha256.o xz/Xz.o xz/XzCrc64.o xz/XzDec.o	\
