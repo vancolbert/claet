@@ -225,14 +225,6 @@ int start_rendering() {
 	/* Destroy our GL context, etc. */
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 	SDL_QuitSubSystem(SDL_INIT_TIMER);
-/*#ifdef WINDOWS
-        // attempt to restart if requested
-        if(restart_required > 0){
-                LOG_INFO("Restarting %s", win_command_line);
-                SDL_CreateThread(system, win_command_line);
-        }
- #endif  //WINDOWS
- */
 	final_sound_exit();
 	clear_zip_archives();
 	clean_update();
