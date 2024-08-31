@@ -31,7 +31,7 @@
  #endif  // !WINDOWS
 #endif  // _WIN32 || _WIN64
 
-#ifdef WINDOWS
+#if defined(WINDOWS)
  #ifndef NOMINMAX
  #define NOMINMAX
  #endif
@@ -76,7 +76,7 @@
  #endif
 #endif //WINDOWS
 
-#ifdef OSX
+#if defined(OSX)
  #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
  //#include <OpenGL/glext.h>

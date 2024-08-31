@@ -1700,7 +1700,7 @@ void add_teleporters_from_list (const Uint8 *teleport_list)
 
 			//mark the teleporter as an unwalkable so that the pathfinder
 			//won't try to plot a path through it
-#ifdef MAP_EDITOR
+#if defined(MAP_EDITOR)
 #elif defined(MAP_EDITOR2)
 #else
 			pf_tile_map[teleport_y*tile_map_size_x*6+teleport_x].z = 0;

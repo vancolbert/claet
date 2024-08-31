@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
- #ifdef OSX
-  #include <sys/malloc.h>
- #elif BSD
+#if defined(OSX)
+ #include <sys/malloc.h>
+#elif defined(BSD)
  #include <stdlib.h>
- #else
-  #include <malloc.h>
+#else
+ #include <malloc.h>
 #endif
 #include <ctype.h>
 #include <stdlib.h>

@@ -1,12 +1,12 @@
 #include <string.h>
 #include <SDL_endian.h>
-#ifdef OSX
+#if defined(OSX)
  #include <sys/malloc.h>
-#elif BSD
+#elif defined(BSD)
  #include <stdlib.h>
-#else // OSX
+#else
  #include <malloc.h>
-#endif // OSX
+#endif
 #include "elc_io.h"
 #include "../errors.h"
 

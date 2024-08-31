@@ -54,7 +54,7 @@ Theoretically safe, unless someone has a HOME that has a really long path. Such 
  * Unless you have a real need for it (such as having to maintain multiple configdirs) it's better to just use
  * the default; this isn't really intended for just using a different name if you din't like "elc"
  */
-#ifdef CONFIGDIR
+#if defined(CONFIGDIR)
 const static char* cfgdirname = CONFIGDIR;
 #elif defined(OSX)
 #ifdef ENGLISH

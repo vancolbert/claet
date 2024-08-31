@@ -343,7 +343,7 @@ void add_teleporters_from_list (const Uint8 *teleport_list);
  * \retval int
  * \callgraph
  */
-#ifdef MAP_EDITOR
+#if defined(MAP_EDITOR)
 /*!
  * \brief Set the particle texture as the current texture
  *

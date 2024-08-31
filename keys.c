@@ -17,11 +17,11 @@
 
 // default definitions for keys
 Uint32 K_QUIT=ALT|'x';
-#ifdef WINDOWS
+#if defined(WINDOWS)
 // Windows SDL reports [Alt Gr] as [Ctrl], which hinders German users typing '@',
 // so don't use Ctrl-q as a symbol to exit
 Uint32 K_QUIT_ALT=ALT|'x';
-#elif OSX
+#elif defined(OSX)
 Uint32 K_QUIT_ALT=KMOD_LMETA|'q';
 #else
 Uint32 K_QUIT_ALT=CTRL|'q';
