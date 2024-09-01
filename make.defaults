@@ -23,6 +23,7 @@ FEATURES += NEW_NEW_CHAR_WINDOW             # Use the new character creation win
 FEATURES += NEW_TEXTURES                   # Enables the new texture loading and caching system (http://www.eternal-lands.com/forum/index.php?showtopic=54756)
 # new for 1.9.3 release
 FEATURES += FASTER_MAP_LOAD                 # Enables optimizations to speed up the process of switching between maps
+FEATURES += FASTER_STARTUP
 FEATURES += MIDDLE_MOUSE_PASTE              # Paste using the middle mouse button from the primary buffer on X systems
 #FEATURES += RELEASE_MODE                   # Sets the default log level to don't log debug messages
 #FEATURES += EMOTES                         # Support for additional animations parsed from local text with a seperate anim que
