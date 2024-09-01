@@ -1,4 +1,4 @@
-include make.conf
+include make.defaults
 HOST ?= i686-w64-mingw32
 SYSROOT ?= ../sys.$(HOST)
 EXE ?= le_$(HOST).exe
