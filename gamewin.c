@@ -34,6 +34,7 @@
 #include "init.h"
 #include "interface.h"
 #include "items.h"
+#include "item_lists.h"
 #include "lights.h"
 #include "manufacture.h"
 #include "map.h"
@@ -2376,6 +2377,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		item_dragged = -1;
 		storage_item_dragged = -1;
 		fr_quickitem_dragged = -1;
+		item_lists_cancel();
 #endif //FR_VERSION
 	}
 	else if(key == K_NEXT_CHAT_TAB)

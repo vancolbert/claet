@@ -93,6 +93,7 @@ namespace ItemLists
 			void del(size_t item_index);
 			void add(size_t over_item_number, int image_id, Uint16 id, int quantity);
 			bool is_valid_format(void) const { return format_error; }
+			void clear(void) { image_ids.clear(); quantities.clear(); item_ids.clear(); }
 		private:
 			std::string name;
 			std::vector<int> image_ids;
@@ -217,6 +218,7 @@ namespace ItemLists
 			int draw(window_info *win);
 #ifdef WITHDRAW_LIST
             void process_withdraw_list(int last_item);
+			void cancel_withdraw(void);
 #endif //WITHDRAW_LIST
 			void new_or_rename_list(bool is_new);
 			int mouseover(window_info *win, int mx, int my);
@@ -884,8 +886,10 @@ namespace ItemLists
 			Vars::quantity_input()->close();
 		}
 	}
-
-
+	void List_Window::cancel_withdraw(void) {
+		withdraw_list_item.clear();
+		storage_item_dragged = item_dragged = -1;
+	}
 	// Draw the item list window
 	//
 	int List_Window::draw(window_info *win)
@@ -1638,7 +1642,7 @@ extern "C"
 	{
 		ItemLists::Vars::win()->reset_pickup_fail_time();
 	}
-
+	void item_lists_cancel(void) { ItemLists::Vars::win()->cancel_withdraw(); }
 #ifdef WITHDRAW_LIST
     int min_time_between_withdraw;
 #endif //WITHDRAW_LIST
