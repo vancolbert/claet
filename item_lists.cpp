@@ -1016,6 +1016,8 @@ namespace ItemLists
         // Drawn the new list button (>) with highlight when mouse over
         if (mouse_over_get_button)
             glColor3f(0.99f,0.77f,0.55f);
+        else if (withdraw_list_item.get_num_items() && (cur_time & 255) < 128)
+            glColor3f(1.0f,1.0f,0.8f);
         else
             glColor3f(0.77f,0.57f,0.39f);
         draw_string_zoomed(add_button_x, add_button_y+17, (unsigned const char*)">", 1, 2.0);
