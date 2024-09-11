@@ -300,7 +300,7 @@ extern char datadir[256]; /*!< the default directory where we look for data file
 extern int use_clipboard; /*!< whether to use CLIPBOARD or PRIMARY for pasting */
 #endif
 
-extern int disconnected; /*!< indicates whether we are currently connected or not */
+extern volatile int disconnected; /*!< indicates whether we are currently connected or not */
 extern int exit_now;	/*!< a flag that indicates we should exit the programm immediately */
 extern int restart_required;    /*!< a flag that the exit should attempt to restart, not just exit */
 extern int allow_restart;   /*!< a flag that indicates if restarting after download is permitted */

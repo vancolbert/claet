@@ -109,7 +109,7 @@
 int divers_text = 0;
 int ini_file_size=0;
 
-int disconnected= 1;
+volatile int disconnected = 1;
 int auto_update= 1;
 #ifdef  CUSTOM_UPDATE
 int custom_update= 1;

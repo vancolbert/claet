@@ -84,7 +84,8 @@ int icon_in_spellbar= -1;
 int port= 2000;
 unsigned char server_address[60];
 TCPsocket my_socket= 0;
-SDLNet_SocketSet set= 0;
+static SDL_mutex *socket_set_mutex;
+static volatile SDLNet_SocketSet set;
 #ifdef FR_VERSION
 #define MAX_TCP_BUFFER  32768
 #else //FR_VERSION
@@ -226,6 +227,7 @@ static void invalidate_date(void)
 void create_tcp_out_mutex()
 {
 	tcp_out_data_mutex = SDL_CreateMutex();
+	socket_set_mutex = SDL_CreateMutex();
 }
 
 void cleanup_tcp()
@@ -512,31 +514,19 @@ void connect_to_server()
 
 	tcp_out_loc= 0; // clear the tcp output buffer
 	if(this_version_is_invalid) return;
-	if(set)
-		{
-			SDLNet_FreeSocketSet(set);
-			set= 0;
-		}
-	if(my_socket)
-		{
-			SDLNet_TCP_Close(my_socket);
-			my_socket= 0;
-		}
-	//clear the buddy list so we don't get multiple entries
+	SDL_LockMutex(socket_set_mutex);
+	if (set) {
+		SDLNet_FreeSocketSet(set);
+	}
+	set = SDLNet_AllocSocketSet(1);
+	if (my_socket) {
+		SDLNet_TCP_Close(my_socket);
+		my_socket = 0;
+	}
+	SDL_UnlockMutex(socket_set_mutex);
 	clear_buddy();
-
 	LOG_TO_CONSOLE(c_red1,connect_to_server_str);
-	draw_scene();	// update the screen
-	set= SDLNet_AllocSocketSet(1);
-	if(!set)
-        {
-            LOG_ERROR("SDLNet_AllocSocketSet: %s\n", SDLNet_GetError());
-            do_error_sound();
-			SDLNet_Quit();
-			SDL_Quit();
-			exit(4); //most of the time this is a major error, but do what you want.
-        }
-
+	draw_scene();
 	if(SDLNet_ResolveHost(&ip,(char*)server_address,port)==-1)
 		{
 			LOG_TO_CONSOLE(c_red2,failed_resolve);
@@ -2740,17 +2730,17 @@ int get_message_from_server(void *thread_args)
 
 	init_thread_log("server_message");
 
-	while(!*done)
-	{
-		// Sleep while disconnected
-		if(disconnected){
-			SDL_Delay(100);	// 10 times per second should be often enough
-			continue; //Continue to make the main loop check int done.
-		} else if(SDLNet_CheckSockets(set, 100) <= 0 || !SDLNet_SocketReady(my_socket)) {
-			//if no data, loop back and check again, the delay is in SDLNet_CheckSockets()
-			continue; //Continue to make the main loop check int done.
+	while (!*done) {
+		int ready = 0;
+		SDL_LockMutex(socket_set_mutex);
+		if (!disconnected && set && SDLNet_CheckSockets(set, 0) && my_socket && SDLNet_SocketReady(my_socket)) {
+			ready = 1;
 		}
-
+		SDL_UnlockMutex(socket_set_mutex);
+		if (!ready) {
+			SDL_Delay(50);
+			continue;
+		}
 		if ((received = SDLNet_TCP_Recv(my_socket, &tcp_in_data[in_data_used], sizeof (tcp_in_data) - in_data_used)) > 0) {
 			in_data_used += received;
 			process_data_from_server(queue);

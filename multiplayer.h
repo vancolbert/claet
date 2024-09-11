@@ -17,6 +17,7 @@ extern int port; /*!< the server port we use */
 extern unsigned char server_address[60]; /*!< the server address we use */
 
 extern TCPsocket my_socket; /*!< our TCP socket to communiate with the server */
+extern int previously_logged_in;
 
 /*! \name Version information
  * @{ */

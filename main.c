@@ -161,6 +161,7 @@ int start_rendering()
 	static int done = 0;
 	static void * network_thread_data[2] = { NULL, NULL };
 	static Uint32 last_frame_and_command_update = 0;
+	Uint32 last_server_message_time = SDL_GetTicks(), next_reconnect_time = 0;
 
 	SDL_Thread *network_thread;
 	queue_t *message_queue;
@@ -201,6 +202,7 @@ int start_rendering()
 					process_message_from_server(message->data, message->length);
 					free(message->data);
 					free(message);
+					last_server_message_time = cur_time;
 				}
 			}
 #ifdef	OLC
@@ -240,6 +242,19 @@ int start_rendering()
 				SDL_Delay(1);//give up timeslice for anyone else
 			}
 
+			if (previously_logged_in) {
+				if (disconnected) {
+					if (cur_time > next_reconnect_time) {
+						next_reconnect_time = cur_time + 15*1000 + 30*(cur_time & 1023);
+						connect_to_server();
+					}
+				} else {
+					if (cur_time > last_server_message_time + 2*60*1000) {
+						disconnected = 1;
+						disconnect_time = cur_time;
+					}
+				}
+			}
 #ifdef TIMER_CHECK
 			//Check the timers to make sure that they are all still alive...
 			check_timers();
