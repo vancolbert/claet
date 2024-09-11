@@ -71,7 +71,7 @@ Uint32 last_server_message_time;
 int lines_to_show=0;
 
 int show_timestamp = 0;
-
+int opt_dedup_msgs = 1;
 char not_from_the_end_console=0;
 
 int dark_channeltext = 0;
@@ -1135,6 +1135,51 @@ int put_string_in_buffer (text_message *buf, const Uint8 *str, int pos)
 
 	return nr_paste;
 }
+static inline int digit_count_u16(int v) {
+	return v < 10 ? 1 : v < 100 ? 2 : v < 1000 ? 3 : v < 10000 ? 4 : 5;
+}
+#define repsuf_fmt " (%d fois)"
+static inline int repsuf_len(int r) {
+	return sizeof(repsuf_fmt) - 3 + digit_count_u16(r + 1);
+}
+static int same_text(text_message *a, text_message *b, int o) {
+	int r = a->repeat_count;
+	char *pa = a->data + o, *pb = b->data + o;
+	char *ea = a->data + a->len - (r ? repsuf_len(r) : 0), *eb = b->data + b->len;
+	while (pa < ea && pb < eb) {
+		if (*pa == '\r') {
+			++pa;
+		}
+		if (*pa++ != *pb++) {
+			return 0;
+		}
+	}
+	return pa == ea && pb == eb;
+}
+static text_message *deduplicate(text_message *m) {
+	int o = show_timestamp ? 12 : 0;
+	text_message *p = m - 1;
+	for (int i = 0; i < 5 && p >= display_text_buffer; --p) {
+		if (p->deleted || !p->data || p->len <= o + 1 || p->repeat_count > 65535 || p->chan_idx == CHAT_COMBAT) {
+			continue;
+		}
+		if (same_text(p, m, o)) {
+			int r = p->repeat_count + 1, a = repsuf_len(r);
+			resize_text_message_data(m, m->len + a);
+			safe_snprintf(m->data + m->len, a + 1, repsuf_fmt, r + 1);
+			m->len += a;
+			m->repeat_count = r;
+			free_text_message_data(p);
+			memmove(p, p + 1, sizeof(*p)*(m - p));
+			init_text_message(m, 0);
+			--m;
+			--last_message;
+			break;
+		}
+		++i;
+	}
+	return m;
+}
 
 void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_to_add, int len)
 {
@@ -1336,8 +1381,6 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
 
 	msg->deleted = 0;
 	recolour_message(msg);
-	update_text_windows(msg);
-
 	// log the message
 #ifdef ENGLISH
 	write_to_log (channel, (unsigned char*)msg->data, msg->len);
@@ -1351,8 +1394,10 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
         log_conn((unsigned char*)msg->data, msg->len);
     }
 #endif //ENGLISH
-
-	return;
+	if (opt_dedup_msgs && msg->chan_idx != CHAT_COMBAT) {
+		msg = deduplicate(msg);
+	}
+	update_text_windows(msg);
 }
 
 void put_small_text_in_box (const Uint8 *text_to_add, int len, int pixels_limit, char *buffer)

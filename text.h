@@ -48,6 +48,7 @@ extern "C" {
 typedef struct
 {
 	Uint8 chan_idx;
+	Uint16 repeat_count;
 	Uint32 channel;
 	Uint16 len, size;
 	char *data;
@@ -76,7 +77,7 @@ extern Uint32 last_server_message_time; /*!< timestamp of the last server messag
 extern int lines_to_show; /*!< number of lines to show at once */
 
 extern int show_timestamp;
-
+extern int opt_dedup_msgs;
 extern int dark_channeltext;
 
 extern char not_from_the_end_console;
@@ -164,6 +165,7 @@ static __inline__ void free_text_message_data (text_message *msg)
 		free (msg->data);
 		msg->data = NULL;
 		msg->len = msg->size = 0;
+		msg->repeat_count = 0;
 	}
 }
 
@@ -210,6 +212,7 @@ static __inline__ void init_text_message (text_message *msg, Uint16 size)
 	msg->deleted = 0;
 	msg->max_line_width = 0.0f;
 	set_text_message_color (msg, -1.0f, -1.0f, -1.0f);
+	msg->repeat_count = 0;
 }
 
 /*!

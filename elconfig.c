@@ -2439,6 +2439,7 @@ static void init_ELC_vars(void)
 	add_var(OPT_BOOL,"show_timestamp","timestamp",&show_timestamp,change_var,0,"Horodatage des messages","Voir les heures sur les canaux de discussions",CHAT);
 	add_var(OPT_MULTI_H,"dark_channeltext","dark_channeltext",&dark_channeltext,change_dark_channeltext,0,"Couleur texte console","Affiche le texte dans une couleur noire sur les canaux pour un meilleur affichage sur les cartes claires (peut-être difficilement visible en mode consolle F1)",CHAT, "Normal", "Moyen", "Noir", NULL);
 #endif //ENGLISH
+	add_var(OPT_BOOL,"opt_dedup_msgs","dedup",&opt_dedup_msgs,change_var,1,"Fusionnement des messages répétés","Si un nouveau message est identique à un ancien, ce dernier est supprimé et le premier reçoit un suffixe indiquant le nombre de répétitions.",CHAT);
 	// CHAT TAB
 
 
