@@ -1878,65 +1878,6 @@ int command_roue (char * text, int len){
 #endif //FR_VERSION
 
 #ifdef FR_VERSION
-int command_go(char *text)
-{
-	char str[100];
-	char *s = (char *)str ;
-	int x, y;
-    const char *ct = " .,";
-    char **tab = NULL;
-    int i ;
-
-	safe_snprintf (str,sizeof(str), text);
-    s = getparams(s);
-
-    if (s != NULL && ct != NULL)
-    {
-        char *cs = NULL;
-        size_t size = 1;
-
-        for (i = 0; (cs = strtok (s, ct)); i++)
-        {
-            if (size <= i + 1)
-            {
-                void *tmp = NULL;
-                size <<= 1;
-                tmp = realloc (tab, sizeof (*tab) * size);
-                if (tmp != NULL)
-                {
-                    tab = tmp;
-                }
-                else
-                {
-                    fprintf (stderr, "Memoire insuffisante\n");
-                    free (tab);
-                    tab = NULL;
-                    exit (EXIT_FAILURE);
-                }
-            }
-            tab[i] = cs;
-            s = NULL;
-        }
-        if (i >= 2)
-        {
-            tab[i] = NULL;
-        }
-        else
-        {
-		    safe_snprintf (str, sizeof (str), "Il manque les coordonnées. La commande s'utilise de cette manière : &go x y", s);
-    		LOG_TO_CONSOLE (c_red1, str);
-            return 1;
-        }
-    }
-
-    x = atoi(tab[0]);
-    y = atoi(tab[1]);
-
-    pf_move_to_position(x, y) ;
-
-    return 1;
-}
-
 int command_gomarque(char *text)
 {
 	char str[100] = {0};
@@ -1974,6 +1915,20 @@ int command_gomarque(char *text)
     pf_move_to_position(x, y) ;
 
     return 1;
+}
+
+int command_go(char *t) {
+	char *p = getparams(t);
+	if (!*p) {
+		LOG_TO_CONSOLE(c_red1, "Syntaxe: &go X,Y   ou   &go MARQUE");
+		return 1;
+	}
+	int x, y;
+	if (2 == sscanf(p, "%d,%d", &x, &y)) {
+		pf_move_to_position(x, y);
+		return 1;
+	}
+	return command_gomarque(t);
 }
 
 int command_affiche_playlist(char *text)
