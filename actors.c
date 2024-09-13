@@ -796,7 +796,9 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 #endif //FR_VERSION
 
 		// couleur du nom
-		if (actor_id->kind_of_actor==NPC) {
+		if (actor_id->dead) {
+			glColor3f(0.4f,0.4f,0.4f);
+		} else if (actor_id->kind_of_actor==NPC) {
 			glColor3f(0.3f,0.8f,1.0f);
 		} else if (actor_id->kind_of_actor==HUMAN) {
 			glColor3f(1.0f,1.0f,1.0f);
