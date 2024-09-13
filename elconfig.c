@@ -2271,6 +2271,7 @@ static void init_ELC_vars(void)
 	add_var(OPT_BOOL,"achievements_ctrl_click", "achievementsctrlclick", &achievements_ctrl_click, change_var, 0, "Control click required to view achievements", "To view a players achievements, you click on them with the eye cursor.  With this option enabled, you must use Ctrl+click.", CONTROLS);
 #endif //ACHIEVEMENTS
 	add_var(OPT_INT,"mouse_limit","lmouse",&mouse_limit,change_int,15,"Mouse Limit","You can increase the mouse sensitivity and cursor changing by adjusting this number to lower numbers, but usually the FPS will drop as well!",CONTROLS,1,INT_MAX);
+	add_var(OPT_FLOAT,"mouse_wheel_scroll_sensitivity","mwsens",&mouse_wheel_scroll_sensitivity,change_float,3.0f,"Sensibilité molette", "Augmente ou diminue la sensibilité de la molette de souris quand on fait défiler dans les fenêtres.",CONTROLS,0.1f,10.0f,0.1f);
 #ifdef OSX
 	add_var(OPT_BOOL,"osx_right_mouse_cam","osxrightmousecam", &osx_right_mouse_cam, change_var,0,"Rotate Camera with right mouse button", "Allows to rotate the camera by pressing the right mouse button and dragging the cursor", CONTROLS);
 	add_var(OPT_BOOL,"emulate_3_button_mouse","emulate3buttonmouse", &emulate3buttonmouse, change_var,0,"Emulate a 3 Button Mouse", "If you have a 1 Button Mouse you can use <apple> click to emulate a rightclick. Needs client restart.", CONTROLS);

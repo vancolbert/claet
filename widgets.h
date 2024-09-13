@@ -758,6 +758,7 @@ int checkbox_set_checked(int window_id, Uint32 widget_id, int checked);
 
 /* Config option: disables double click protection. */
 extern int disable_double_click;
+extern float mouse_wheel_scroll_sensitivity;
 
 /*!
  * \ingroup	buttons
