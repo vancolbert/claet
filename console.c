@@ -1898,7 +1898,7 @@ int command_gomarque(char *text)
 
     for(i = 0 ; i < max_mark ; i++)
     {
-        if (strcmp(marks[i].text, s) == 0)
+        if (marks[i].x >= 0 && strcmp(marks[i].text, s) == 0)
         {
             x = marks[i].x ;
             y = marks[i].y ;
