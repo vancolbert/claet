@@ -5,7 +5,7 @@ J'ai fait quelques modifications mineures au but d'être compatible avec les com
 ### Les Branches
 - **main**: Code source d'origine minimalement changé.
 - **test**: Corrections plus compliquées et nouvelles fonctionnalités à évaluer.
-- ***cleanup**: Nettoyage agressif et inconciliable.
+- **cleanup**: Nettoyage agressif et inconciliable.
 ## Compilation sous Linux
 ```
 git clone https://github.com/vancolbert/claet
@@ -25,12 +25,12 @@ make install
 cd ..
 export PKG_CONFIG_PATH="$p/lib/pkgconfig"
 make -f Makefile.linux EXTRA_INCLUDES=`pkg-config cal3d --cflags`
-cp ./le.x86_64.linux.bin /fichier/de/LandesEternelles/claet-le.x86_64.linux.bin
+cp ./le.x86_64.linux.bin /répertoire/de/LandesEternelles/claet-le.x86_64.linux.bin
 ```
 Selon les commands ci-dessus, il faut configurer `LD_LIBRARY_PATH` avant de
 lancer l'exécutable:
 ```
-cd /fichier/de/LandesEternelles
+cd /répertoire/de/LandesEternelles
 export LD_LIBRARY_PATH="$p/lib"
 ./claet-le.x86_64.linux.bin
 ```
