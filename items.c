@@ -4,6 +4,7 @@
 #include <limits.h>
 #include "items.h"
 #include "asc.h"
+#include "calc.h"
 #include "cursors.h"
 #include "context_menu.h"
 #include "text.h"
@@ -1867,12 +1868,11 @@ int keypress_items_handler(window_info * win, int x, int y, Uint32 key, Uint32 k
 			quantities.selected=edit_quantity;
 			edit_quantity=-1;
 			return 1;
-		} else if(keysym>='0' && keysym<='9' && *len<5){
-			str[*len]=keysym;
-			(*len)++;
-			str[*len]=0;
-
-			*val=atoi(str);
+		} else if (isalnum(keysym) && *len < 9) {
+			str[(*len)++] = keysym;
+			str[*len] = 0;
+			int v = calc_exp(str);
+			*val = !calc_geterror() && v > 0 ? v : 0;
 			return 1;
 		}
 	}
