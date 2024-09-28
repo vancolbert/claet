@@ -1143,13 +1143,13 @@ static inline int repsuf_len(int r) {
 	return sizeof(repsuf_fmt) - 3 + digit_count_u16(r + 1);
 }
 static int same_text(text_message *a, text_message *b, int o) {
-	int r = a->repeat_count;
-	char *pa = a->data + o, *pb = b->data + o;
-	char *ea = a->data + a->len - (r ? repsuf_len(r) : 0), *eb = b->data + b->len;
-	while (pa < ea && pb < eb) {
-		if (*pa == '\r') {
-			++pa;
-		}
+	char c[1024], *pa = a->data + o, *ea = a->data + a->len, *pc = c, *ec = c + sizeof(c) - 1;
+	for (; pa < ea && pc < ec; *pc++ = *pa++) {
+		for (; *pa == '\r'; ++pa);
+	}
+	int r = a->repeat_count, rl = r ? repsuf_len(r) : 0;
+	char *pb = b->data + o, *eb = b->data + b->len;
+	for (pa = c, ea = pc - rl; pa < ea && pb < eb;) {
 		if (*pa++ != *pb++) {
 			return 0;
 		}
