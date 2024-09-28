@@ -2547,9 +2547,11 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		{
 			repeat_spell();
 		}
-	}
-	else
-	{
+	} else if (key == K_MIXONE) {
+		mix_handler(1, mix_empty_str);
+	} else if (key == K_MIXALL) {
+		mix_handler(255, mix_empty_str);
+	} else {
 		return 0; // nothing we can handle
 	}
 

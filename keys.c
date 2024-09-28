@@ -52,6 +52,8 @@ Uint32 K_LOOK=CTRL|'l';
 Uint32 K_USE=CTRL|'u';
 Uint32 K_OPTIONS=CTRL|'o';
 Uint32 K_REPEATSPELL=CTRL|'r';
+Uint32 K_MIXONE=SDLK_F9;
+Uint32 K_MIXALL=SDLK_F10;
 Uint32 K_SIGILS=CTRL|'s';
 Uint32 K_MANUFACTURE=CTRL|'m';
 Uint32 K_ITEMS=CTRL|'i';
@@ -192,6 +194,8 @@ static key_store_entry key_store[] =
 	{ "#K_USE", &K_USE },
 	{ "#K_OPTIONS", &K_OPTIONS },
 	{ "#K_REPEATSPELL", &K_REPEATSPELL },
+	{ "#K_MIXONE", &K_MIXONE },
+	{ "#K_MIXALL", &K_MIXALL },
 	{ "#K_SIGILS", &K_SIGILS },
 	{ "#K_MANUFACTURE", &K_MANUFACTURE },
 	{ "#K_ITEMS", &K_ITEMS },
