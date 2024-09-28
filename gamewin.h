@@ -46,6 +46,8 @@ extern int walk_after_spell;
 
 void draw_special_cursors();
 
+typedef struct Exphits { int show, combat, n[2]; Uint32 t; } Exphits;
+extern Exphits exphits;
 /*!
  * \ingroup events
  * \brief Converts a 32-bit key code to an unsigned character

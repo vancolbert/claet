@@ -122,6 +122,7 @@ int auto_disable_ranging_lock = 1;
 #ifdef WALK_AFTER_SPELL_FR
 int walk_after_spell=0;
 #endif
+Exphits exphits = {1};
 
 void draw_special_cursors()
 {
@@ -1512,11 +1513,28 @@ int display_game_handler (window_info *win)
 			}
 		}
 	}
+	actor *me = get_our_actor();
+	if (exphits.show && me) {
+		if (me->fighting && !exphits.combat) {
+			exphits.n[0] = exphits.n[1] = 0;
+		}
+		if ((exphits.combat = me->fighting)) {
+			exphits.t = cur_time;
+		}
+		if (cur_time - exphits.t < 5000) {
+			float s = name_zoom, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
+			int x = win->len_x - HUD_MARGIN_X - 8*sx, y = win->len_y - HUD_MARGIN_Y - 3*sy;
+			#define skn(w) (char *)attributes.w##_skill.shortname
+			char b[32], *n[2] = {skn(attack), skn(defense)};
+			for (int i = 0; i < 2; ++i, y += sy) {
+				safe_snprintf(b, sizeof(b), "%s: %2d", n[i], exphits.n[i]);
+				draw_string_scaled_shadowed(x, y, (Uint8 *)b, 1, sx, sy, 1, 1, 0.2f, 0, 0, 0);
+			}
+		}
+	}
 	if (show_fps)
 	{
 #ifdef	DEBUG
-		actor *me = get_our_actor ();
-
 		glColor3f (1.0f, 1.0f, 1.0f);
 		if(me){
  			safe_snprintf((char*)str,sizeof(str),"Busy: %i",me->busy);

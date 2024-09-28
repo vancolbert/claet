@@ -2254,6 +2254,7 @@ static void init_ELC_vars(void)
 #ifdef FR_VERSION
     add_var(OPT_BOOL,"info_combat_console", "icc", &info_combat_console, change_var, 0, "Info-combat console", "Activer les messages d'infos en combat, dans la console", CONTROLS);
 	add_var(OPT_BOOL,"info_combat_float_msg", "icfm", &info_combat_float_msg, change_var, 0, "Info-combat messages flottants", "Voir les messages flottants sur les informations au combat.", CONTROLS);
+	add_var(OPT_BOOL,"info_combat_xp_hit_counters", "exphits", &exphits.show, change_var, 1, "Info-combat compteurs d'expérience", "Montrer le nombre de coups qui donnent de l'expérience durant le combat.", CONTROLS);
 #endif	//FR_VERSION
 #ifdef SELECT_WITH_MOUSE_ON_BANNER
 	add_var(OPT_BOOL, "select_with_mouse_on_banner", "select_with_mouse_on_banner", &select_with_mouse_on_banner, change_var, 0, "Sélection au survol de la bannière", "Permet d'attaquer un monstre ou de lancer un dialogue avec un pnj en cliquant sur son nom ou sa barre de point de vie", CONTROLS);

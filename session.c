@@ -6,6 +6,7 @@
 #include "asc.h"
 #include "elwindows.h"
 #include "init.h"
+#include "gamewin.h"
 #include "global.h"
 #include "hud.h"
 #ifdef MISSILES
@@ -100,6 +101,9 @@ void set_last_skill_exp(size_t skill, int exp)
 		last_exp[skill] = exp;
 		if (exp > max_exp[skill])
 			max_exp[skill] = exp;
+		if (0 < exp && exp < 1000 && skill <= SI_DEF) {
+			++exphits.n[skill];
+		}
 		if ((skill != SI_ALL) && (exp >= exp_log_threshold) && (exp_log_threshold > 0))
 		{
 			char str[80];
