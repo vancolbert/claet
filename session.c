@@ -218,6 +218,8 @@ int display_session_handler(window_info *win)
 			elglColourN("global.mouseselected");
 		else if ((last_mouse_over_y >= y) && (last_mouse_over_y < y+16))
 			elglColourN("global.mousehighlight");
+		else if (i & 1)
+			elglColourN("global.row.odd");
 		else
 			glColor3f(1.0f, 1.0f, 1.0f);
 #ifdef FR_VERSION

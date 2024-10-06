@@ -930,6 +930,10 @@ int display_counters_handler(window_info *win)
 			elglColourN("global.mouseselected");
 		else if (mouse_over_this_entry)
 			elglColourN("global.mousehighlight");
+		else if (counters[i][j].n_fullsession)
+			elglColourN("global.row.nonzero");
+		else if (j & 1)
+			elglColourN("global.row.odd");
 		else
          glColor3f(1.0f, 1.0f, 1.0f);
 
