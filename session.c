@@ -188,7 +188,7 @@ int display_session_handler(window_info *win)
 	y += 32;
 	if(affixp == 0)
 	{
-		safe_snprintf(buffer, sizeof(buffer), "%-20s%-13s%-13s%-13s%-13s", "Compétences", "Total Exp", "Session Exp", "Max Exp", "Dernier Exp" );
+		safe_snprintf(buffer, sizeof(buffer), "%-13s%10s%9s%10s%9s%9s%9s", "Compétences", "Total", "Exp/min", "Session", "Exp/min", "Max", "Dernier" );
 		draw_string_small(x, y, (unsigned char*)buffer, 1);
 	} else {
 		safe_snprintf(buffer, sizeof(buffer), "%-14s%-12s%-16s%-12s%-16s", "Compétences   ", "       Total", "      Exp/Minute", "     Session", "      Exp/Minute" );
@@ -223,7 +223,7 @@ int display_session_handler(window_info *win)
 #ifdef FR_VERSION
 		if(affixp == 0)
 		{
-			safe_snprintf(buffer, sizeof(buffer), "%-20s%-7u%-6.1f%-7u%-6.1f%-13u%-13u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
+			safe_snprintf(buffer, sizeof(buffer), "%-13s%10u%9.1f%10u%9.1f%9u%9u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
 		} else {
 			if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000000) {
 				millions = (*(statsinfo[i].exp) - fullsession_exp[i]);
