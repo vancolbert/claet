@@ -1598,6 +1598,7 @@ void add_enhanced_actor_from_server (const char *in_data, int len)
 
     if (actor_id == yourself) {
         reset_camera_at_next_update = 1;
+        restore_mapcam();
     }
 	update_actor_buffs(actor_id, buffs);
 	UNLOCK_ACTORS_LISTS();  //unlock it

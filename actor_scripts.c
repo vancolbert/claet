@@ -2115,6 +2115,7 @@ void destroy_actor(int actor_id)
 void destroy_all_actors()
 {
 	int i=0;
+	stash_mapcam();
 	LOCK_ACTORS_LISTS();	//lock it to avoid timing issues
 	set_our_actor (NULL);
 	for(i=0;i<max_actors;i++) {

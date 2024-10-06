@@ -130,6 +130,8 @@ void CalculateFrustum();
  */
 int update_have_display(window_info *win);
 
+void stash_mapcam(void);
+void restore_mapcam(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif

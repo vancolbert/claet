@@ -631,3 +631,57 @@ int update_have_display(window_info * win)
 	have_display = (win->displayed || get_show_window(game_root_win) || get_show_window(newchar_root_win));
 	return 0;
 }
+typedef struct v2i { int x, y; } v2i;
+typedef struct Mapcam { v2i p; int map; Uint32 t; float r[4]; } Mapcam;
+static Mapcam mapcams[32];
+static int n_mapcams;
+#define countof(a) (sizeof(a)/sizeof(*a))
+#define for_mapcams(v) for (Mapcam *v = mapcams, *v##_e = v + n_mapcams; v < v##_e; ++v)
+static inline int distsq(v2i a, v2i b) {
+    int dx = a.x - b.x, dy = a.y - b.y;
+    return dx*dx + dy*dy;
+}
+static inline v2i get_our_pos(void) {
+    actor *a = get_our_actor();
+    return a ? (v2i){a->x_tile_pos, a->y_tile_pos} : (v2i){0, 0};
+}
+static inline Mapcam *find_mapcam(int map, v2i p) {
+    Mapcam *m = 0;
+    for_mapcams(i) {
+        if (i->map == map) {
+            int d = distsq(i->p, p);
+            if (d < 50) {
+                m = i;
+                break;
+            }
+        }
+    }
+    return m;
+}
+void stash_mapcam(void) {
+    Mapcam *m, c = {get_our_pos(), cur_map, cur_time, {rx, ry, rz, zoom_level}};
+    if (!(m = find_mapcam(c.map, c.p))) {
+        if (n_mapcams < countof(mapcams)) {
+            m = mapcams + n_mapcams++;
+        } else {
+            Uint32 oldest = cur_time;
+            for_mapcams(i) {
+                if (i->t < oldest) {
+                    oldest = i->t;
+                    m = i;
+                }
+            }
+        }
+    }
+    *m = c;
+}
+void restore_mapcam(void) {
+    Mapcam *m = find_mapcam(cur_map, get_our_pos());
+    if (m) {
+        rx = m->r[0];
+        ry = m->r[1];
+        rz = m->r[2];
+        zoom_level = m->r[3];
+        m->t = cur_time;
+    }
+}
