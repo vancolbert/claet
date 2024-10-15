@@ -10,6 +10,7 @@
 #include "cursors.h"
 #include "draw_scene.h"
 #include "errors.h"
+#include "gamewin.h"
 #include "global.h"
 #include "hud.h"
 #include "init.h"
@@ -514,6 +515,10 @@ void animate_actors()
 	UNLOCK_ACTORS_LISTS();
 
 	last_update = cur_time;
+	actor *a = get_our_actor();
+	if (a && a->fighting) {
+		exphits.t = cur_time;
+	}
 }
 
 void unqueue_cmd(int i){
@@ -2450,6 +2455,9 @@ void add_command_to_actor(int actor_id, unsigned char command)
 		switch(command) {
 		case enter_combat:
 			act->async_fighting= 1;
+			if (isme) {
+				memset(exphits.n, 0, sizeof(exphits.n));
+			}
 #ifdef MISSILES
 			if(ranging_lock && auto_disable_ranging_lock)
 			{
