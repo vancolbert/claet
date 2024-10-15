@@ -13,6 +13,7 @@
 
 #ifdef WINDOWS
  #include <windows.h>
+ #include <dbghelp.h>
  #undef WRITE_XML
  char   *win_command_line;
 #endif //WINDOWS
@@ -39,6 +40,7 @@
 #include "hud.h"
 #include "icon_window.h"
 #include "io/elfilewrapper.h"
+#include "io/elpathwrapper.h"
 #include "init.h"
 #include "item_lists.h"
 #include "interface.h"
@@ -566,11 +568,65 @@ static void freemakeargv(char **argv)
 	free(argv);
 }
 
+static void make_crash_log_path(char *p, int n) {
+	char t[64];
+	time_t now = time(0);
+	strftime(t, sizeof(t), "%Y%m%d%H%M%S", gmtime(&now));
+	safe_snprintf(p, n, "%scrash_%s.log", get_path_config_base(), t);
+}
+static int get_backtrace_via_stackwalk(void **a, int na, CONTEXT *cr) {
+	CONTEXT c = *cr;
+	c.ContextFlags = CONTEXT_ALL;
+	#define x_regs(x) x(PC, Eip) x(Stack, Esp) x(Frame, Ebp)
+	#define as_field(n, r) .Addr##n = {.Offset = c.r, .Mode = AddrModeFlat},
+	STACKFRAME64 sf = {x_regs(as_field)};
+	HANDLE pr = GetCurrentProcess(), th = GetCurrentThread();
+	if (!SymInitialize(pr, 0, TRUE)) {
+		return 0;
+	}
+	DWORD mt = IMAGE_FILE_MACHINE_I386;
+	int n = 0;
+	while (n < na && StackWalk64(mt, pr, th, &sf, &c, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0) && sf.AddrPC.Offset) {
+		a[n++] = (void *)(uintptr_t)sf.AddrPC.Offset;
+	}
+	return n;
+}
+static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTERS *ep) {
+	EXCEPTION_RECORD *er = ep->ExceptionRecord;
+	DWORD ec = er->ExceptionCode;
+	void *ea = er->ExceptionAddress;
+	fprintf(stderr, "Exception code 0x%x at address 0x%p\n", ec, ea);
+	char p[MAX_PATH];
+	make_crash_log_path(p, sizeof(p));
+	FILE *f = fopen(p, "w");
+	if (!f) {
+		fprintf(stderr, "Failed to open crash log '%s' for writing: %s\n", p, strerror(errno));
+		return EXCEPTION_EXECUTE_HANDLER;
+	}
+	fprintf(f, "vg %s\nec %x\nea %p\n", VER_GIT, ec, ea);
+	#define MAX_BT 256
+	void *a[MAX_BT];
+	int nb = CaptureStackBackTrace(0, MAX_BT, a, 0);
+	fprintf(f, "nb %d\n", nb);
+	for (int i = 0; i < nb; ++i) {
+		fprintf(f, "ba %p\n", a[i]);
+	}
+	int ns = get_backtrace_via_stackwalk(a, MAX_BT, ep->ContextRecord);
+	fprintf(f, "ns %d\n", ns);
+	for (int i = 0; i < ns; ++i) {
+		fprintf(f, "sa %p\n", a[i]);
+	}
+	fclose(f);
+	fprintf(stderr, "Crash log saved to %s\n", p);
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
 int APIENTRY WinMain (HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow)
 {
 	char **argv= NULL;
 	int argc;
 
+	SetUnhandledExceptionFilter(exception_handler);
 	win_command_line = GetCommandLine();
 	argc = makeargv(win_command_line, " \t\n", &argv);
 
