@@ -2573,6 +2573,8 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		drop_all_handler();
 	} else if (key == K_STOREALL) {
 		store_all_handler();
+	} else if (key == K_WITHDRAW_ITEMLIST) {
+		item_lists_withdraw();
 	} else {
 		return 0; // nothing we can handle
 	}

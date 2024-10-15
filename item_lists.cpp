@@ -219,6 +219,7 @@ namespace ItemLists
 #ifdef WITHDRAW_LIST
             void process_withdraw_list(int last_item);
 			void cancel_withdraw(void);
+			void setup_withdraw(void);
 #endif //WITHDRAW_LIST
 			void new_or_rename_list(bool is_new);
 			int mouseover(window_info *win, int mx, int my);
@@ -886,6 +887,17 @@ namespace ItemLists
 			Vars::quantity_input()->close();
 		}
 	}
+	void List_Window::setup_withdraw(void) {
+		if (Vars::lists()->valid_active_list()) {
+			do_click_sound();
+			const List &l = Vars::lists()->get_list();
+			if (!withdraw_list_item.get_num_items()) {
+				for (size_t i = 0; i < l.get_num_items(); ++i)  {
+					withdraw_list_item.add(i, l.get_image_id(i), l.get_item_id(i), l.get_quantity(i));
+				}
+			}
+		}
+	}
 	void List_Window::cancel_withdraw(void) {
 		withdraw_list_item.clear();
 		storage_item_dragged = item_dragged = -1;
@@ -1080,21 +1092,9 @@ namespace ItemLists
 		mouse_over_add_button = clicked = false;
 #else //WITHDRAW_LIST
         mouse_over_add_button = false;
-
-        if (clicked && mouse_over_get_button && Vars::lists()->valid_active_list())
-        {
-            do_click_sound();
-            if(Vars::lists()->get_list().get_num_items() > 0 && withdraw_list_item.get_num_items() <= 0)
-            {
-                //on copie la liste active dans une liste qui nous servira de buffer
-                for(size_t i=0; i<Vars::lists()->get_list().get_num_items(); i++)
-                {
-                    withdraw_list_item.add(i,Vars::lists()->get_list().get_image_id(i),Vars::lists()->get_list().get_item_id(i),Vars::lists()->get_list().get_quantity(i));
-                }
-
-            }
+        if (clicked && mouse_over_get_button) {
+            setup_withdraw();
         }
-
         if(withdraw_list_item.get_num_items() == 1)
             process_withdraw_list(1);
         else if(withdraw_list_item.get_num_items() > 0)
@@ -1643,6 +1643,7 @@ extern "C"
 		ItemLists::Vars::win()->reset_pickup_fail_time();
 	}
 	void item_lists_cancel(void) { ItemLists::Vars::win()->cancel_withdraw(); }
+	void item_lists_withdraw(void) { ItemLists::Vars::win()->setup_withdraw(); }
 #ifdef WITHDRAW_LIST
     int min_time_between_withdraw;
 #endif //WITHDRAW_LIST
