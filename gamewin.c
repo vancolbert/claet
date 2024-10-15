@@ -123,6 +123,7 @@ int auto_disable_ranging_lock = 1;
 int walk_after_spell=0;
 #endif
 Exphits exphits = {1};
+Flee flee;
 
 void draw_special_cursors()
 {
@@ -1523,6 +1524,16 @@ int display_game_handler (window_info *win)
 			draw_string_scaled_shadowed(x, y, (Uint8 *)b, 1, sx, sy, 1, 1, 0.2f, 0, 0, 0);
 		}
 	}
+	if (flee.on) {
+		float s = 2.0f * name_zoom, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
+		int x = (win->len_x - HUD_MARGIN_X)/2 - 3*sx, y = (win->len_y - HUD_MARGIN_Y)*3/4;
+		Uint8 *m = "FUITE!";
+		if ((cur_time & 511) < 256) {
+			draw_string_scaled_shadowed(x, y, m, 1, sx, sy, 0.9f, 0.4f, 0.4f, 1.0f, 0.9f, 0.0f);
+		} else {
+			draw_string_scaled_shadowed(x, y, m, 1, sx, sy, 0.8f, 0.2f, 0.2f, 0.2f, 0.1f, 0.1f);
+		}
+	}
 	if (show_fps)
 	{
 #ifdef	DEBUG
@@ -2651,6 +2662,8 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 	}
 	else if (key==K_ADVANCE)
 	{
+		actor *a = get_our_actor();
+		flee.on ^= a && a->fighting;
 		move_self_forward();
 	}
 	else if (key == K_ROTATELEFT)

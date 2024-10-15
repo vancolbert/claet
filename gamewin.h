@@ -48,6 +48,8 @@ void draw_special_cursors();
 
 typedef struct Exphits { int show, n[2]; Uint32 t; } Exphits;
 extern Exphits exphits;
+typedef struct Flee { int on; Uint32 t; } Flee;
+extern Flee flee;
 /*!
  * \ingroup events
  * \brief Converts a 32-bit key code to an unsigned character

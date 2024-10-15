@@ -518,6 +518,12 @@ void animate_actors()
 	actor *a = get_our_actor();
 	if (a && a->fighting) {
 		exphits.t = cur_time;
+	} else {
+		flee.on = 0;
+	}
+	if (flee.on && cur_time > flee.t) {
+		flee.t = cur_time + 300 + (cur_time & 127);
+		move_self_forward();
 	}
 }
 
