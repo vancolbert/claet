@@ -128,8 +128,6 @@ int wear_grid_size = 51;
 static void equip_item(int item_pos_to_equip, int destination_pos);
 #endif //FR_VERSION
 
-static void drop_all_handler();
-
 void set_shown_string(char colour_code, const char *the_text)
 {
 	if (strlen(the_text) == 0)
@@ -1908,7 +1906,7 @@ void get_all_handler()
 }
 #endif //ENGLISH
 
-static void drop_all_handler ()
+void drop_all_handler ()
 {
 	Uint8 str[6] = {0};
 	int i;
