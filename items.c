@@ -1462,28 +1462,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 
    	// Sto All button
 	else if(over_button(win, mx, my)==BUT_STORE && storage_win >= 0 && view_only_storage == 0 && get_show_window(storage_win) /*thanks alberich*/){
-#ifdef FR_VERSION
-		str[0]=TOUT_DEPOT;
-		my_tcp_send(my_socket, str, 1);
-#else //FR_VERSION
-#ifdef STORE_ALL
-		/*
-		* Future code to save server load by having one byte to represent the 36 slot inventory loop. Will need server support.
-		*/
-		str[0]=DEPOSITE_ITEM;
-		str[1]=STORE_ALL;
-		my_tcp_send(my_socket, str, 2);
-#else
-		for(pos=((items_stoall_nofirstrow)?6:0);pos<((items_stoall_nolastrow)?30:36);pos++){
-			if(item_list[pos].quantity>0){
-				str[0]=DEPOSITE_ITEM;
-				str[1]=item_list[pos].pos;
-				*((Uint32*)(str+2))=SDL_SwapLE32(item_list[pos].quantity);
-				my_tcp_send(my_socket, str, 6);
-			}
-		}
-#endif
-#endif //FR_VERSION
+		store_all_handler();
 	}
 
 	// Drop All button
@@ -1949,6 +1928,11 @@ void drop_all_handler ()
 #ifdef FR_VERSION
 	else set_shown_string(c_orange2, dc_warning_str);
 #endif //FR_VERSION
+}
+
+void store_all_handler() {
+	Uint8 b = TOUT_DEPOT;
+	my_tcp_send(my_socket, &b, 1);
 }
 
 #ifdef FR_VERSION

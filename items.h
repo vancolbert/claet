@@ -160,6 +160,7 @@ void gray_out(int x_start, int y_start, int gridsize);
 #ifndef ENGLISH
 void get_all_handler(); // appelée par le raccourci clavier 'OBTENIR'
 void drop_all_handler();
+void store_all_handler();
 #endif //ENGLISH
 
 /*!

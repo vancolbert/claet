@@ -52,6 +52,7 @@ extern Uint32 K_REPEATSPELL;    /*!< key used to repeat the last spell used */
 extern Uint32 K_MIXONE;
 extern Uint32 K_MIXALL;
 extern Uint32 K_DROPALL;
+extern Uint32 K_STOREALL;
 extern Uint32 K_SIGILS;         /*!< key used to toggle display of \ref spells_window */
 extern Uint32 K_MANUFACTURE;    /*!< key used to toggle display of \ref manufacture_window */
 extern Uint32 K_ITEMS;          /*!< key used to toggle display of \ref items_window */

@@ -2571,6 +2571,8 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		mix_handler(255, mix_empty_str);
 	} else if (key == K_DROPALL) {
 		drop_all_handler();
+	} else if (key == K_STOREALL) {
+		store_all_handler();
 	} else {
 		return 0; // nothing we can handle
 	}
