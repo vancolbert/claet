@@ -110,8 +110,13 @@
 		#include <AL/alc.h>
 	#endif //ENGLISH
 	#ifdef WINDOWS
-		#include <al.h>
-		#include <alc.h>
+		#if __MINGW32__
+			#include <AL/al.h>
+			#include <AL/alc.h>
+		#else
+			#include <al.h>
+			#include <alc.h>
+		#endif
 	#endif //WINDOWS
 	#ifdef LINUX
 		#include <AL/al.h>
