@@ -553,6 +553,26 @@ static void freemakeargv(char **argv)
 	free(argv);
 }
 
+#define MAX_THREADS 32
+#define MAX_BT 256
+static int thread_counter;
+typedef struct Fcall { void *addr; void *caller; } Fcall;
+typedef struct ThreadTrace { uint8_t n; Fcall a[MAX_BT]; } ThreadTrace;
+static ThreadTrace thread_traces[MAX_THREADS];
+static __thread int thread_id;
+void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *this_func, void *call_site) {
+	int i = thread_id;
+	if (!i) {
+		thread_id = i = __atomic_add_fetch(&thread_counter, 1, __ATOMIC_SEQ_CST);
+	}
+	ThreadTrace *t = thread_traces + i;
+	Fcall *f = t->a + t->n++;
+	f->addr = this_func;
+	f->caller = call_site;
+}
+void __attribute__((no_instrument_function)) __cyg_profile_func_exit(void *this_func, void *call_site) {
+	--thread_traces[thread_id].n;
+}
 static void make_crash_log_path(char *p, int n) {
 	char t[64];
 	time_t now = time(0);
@@ -588,8 +608,7 @@ static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTER
 		fprintf(stderr, "Failed to open crash log '%s' for writing: %s\n", p, strerror(errno));
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
-	fprintf(f, "vg %s\nec %x\nea %p\n", VER_GIT, ec, ea);
-	#define MAX_BT 256
+	fprintf(f, "vg %s\nec %x\nea %p\nfo %p\n", VER_GIT, ec, ea, __cyg_profile_func_enter);
 	void *a[MAX_BT];
 	int nb = CaptureStackBackTrace(0, MAX_BT, a, 0);
 	fprintf(f, "nb %d\n", nb);
@@ -600,6 +619,13 @@ static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTER
 	fprintf(f, "ns %d\n", ns);
 	for (int i = 0; i < ns; ++i) {
 		fprintf(f, "sa %p\n", a[i]);
+	}
+	for (int i = 0; i <= thread_counter; ++i) {
+		ThreadTrace *t = thread_traces + i;
+		fprintf(f, "ti %d\ntn %d\n", i, t->n);
+		for (Fcall *c = t->a, *ce = c + t->n; c < ce; ++c) {
+			fprintf(f, "ta %p\nca %p\n", c->addr, c->caller);
+		}
 	}
 	fclose(f);
 	fprintf(stderr, "Crash log saved to %s\n", p);
