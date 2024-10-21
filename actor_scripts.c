@@ -5273,8 +5273,14 @@ int read_actor_defs (const char *dir, const char *index)
 	int ok = 1;
 
 	safe_snprintf (fname, sizeof(fname), "%s/%s", dir, index);
-
-    doc = xmlReadFile (fname, NULL, XML_PARSE_NOENT);
+#if LIBXML_VERSION >= 21200
+	xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
+	xmlCtxtSetMaxAmplification(ctxt, 1000);
+	doc = xmlCtxtReadFile(ctxt, fname, NULL, XML_PARSE_NOENT);
+	xmlFreeParserCtxt(ctxt);
+#else
+	doc = xmlReadFile(fname, NULL, XML_PARSE_NOENT);
+#endif
 	if (doc == NULL) {
 		LOG_ERROR("Unable to read actor definition file %s", fname);
 		return 0;
