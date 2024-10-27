@@ -1545,7 +1545,7 @@ namespace ec
 		assert(pos.is_valid());
 #endif //TOO_MANY_SPELL_BUG_PATCH
 
-		const short offset = (short)long(&alpha); //Unique to the particle.
+		const short offset = (uintptr_t)&alpha; //Unique to the particle.
 
 		tmp = offset;
 
