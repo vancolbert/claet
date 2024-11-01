@@ -6,6 +6,7 @@ ver_git := $(shell git describe --always --tag)
 defs := $(FEATURES:%=-D%) -DELC -DWINDOWS -DWINVER=0x601 -D_7ZIP_ST -DLIBXML_STATIC -DAL_LIBTYPE_STATIC -DVER_GIT=\"$(ver_git)\"
 f := -O2 -g -pipe -fno-strict-aliasing -fno-omit-frame-pointer -finstrument-functions
 f += -mstackrealign -mwindows $(defs) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
+warn = -Wall -Werror -Wfatal-errors
 CFLAGS := $f $(warn) $(CFLAGS)
 CXXFLAGS := $f $(warn) $(CXXFLAGS)
 LDFLAGS := -static -static-libgcc -static-libstdc++ -Wl,-Map=link.map $(LDFLAGS)
