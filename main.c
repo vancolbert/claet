@@ -654,7 +654,7 @@ static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTER
 		Trace *t = thread_traces + i;
 		if (t->n) {
 			fp("th_index %d", i);
-			fp("th_n %d", i, t->n);
+			fp("th_n %d", t->n);
 			for (Callsite *c = t->a, *ce = c + t->n; c < ce; ++c) {
 				fp("th_addr %p", c->addr);
 				fp("th_from %p", c->from);
