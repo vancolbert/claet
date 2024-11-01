@@ -2536,7 +2536,7 @@ void affiche_livre(struct_livres *livre_actuel)
 	}
     else
     {
-		if ((point)windows_list.window[*fenetre].data != (point)livre_actuel)
+		if (windows_list.window[*fenetre].data != livre_actuel)
         {
 			safe_snprintf(windows_list.window[*fenetre].window_name, sizeof(windows_list.window[*fenetre].window_name), livre_actuel->titre);
 			windows_list.window[*fenetre].data = livre_actuel;
@@ -2582,7 +2582,7 @@ void display_book_window(book *b)
 		set_window_handler(*p, ELW_HANDLER_CLICK, &click_book_handler);
 		windows_list.window[*p].data=b;
 	} else {
-		if((point)windows_list.window[*p].data!=(point)b) {
+		if(windows_list.window[*p].data!=b) {
 			safe_snprintf(windows_list.window[*p].window_name, sizeof(windows_list.window[*p].window_name), "%s", b->title);
 			windows_list.window[*p].data=b;
 			if(!get_show_window(*p))
@@ -2644,14 +2644,14 @@ int ferme_livre(int num_livre)
     }
 	if(book_win!=-1)
     {
-		if((point)windows_list.window[book_win].data==(point)livre_actuel)
+		if(windows_list.window[book_win].data==livre_actuel)
         {
 			hide_window(book_win);
 		}
 	}
 	if(paper_win!=-1)
     {
-		if((point)windows_list.window[paper_win].data == (point)livre_actuel)
+		if(windows_list.window[paper_win].data == livre_actuel)
         {
 			hide_window(paper_win);
 		}
@@ -2671,12 +2671,12 @@ void close_book(int book_id)
 	if(!b)
 		return;
 	if(book_win!=-1) {
-		if((point)windows_list.window[book_win].data==(point)b) {
+		if(windows_list.window[book_win].data==b) {
 			hide_window(book_win);
 		}
 	}
 	if(paper_win!=-1) {
-		if((point)windows_list.window[paper_win].data == (point)b) {
+		if(windows_list.window[paper_win].data == b) {
 			hide_window(paper_win);
 		}
 	}
