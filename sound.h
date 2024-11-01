@@ -15,7 +15,10 @@
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
 #include <vorbis/vorbisfile.h>
+#pragma GCC diagnostic pop
 
 #ifdef __cplusplus
 extern "C" {
