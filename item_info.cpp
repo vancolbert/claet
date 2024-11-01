@@ -72,8 +72,8 @@ namespace Item_Info
 		emu = atoi(fields[2].c_str());
 		description = fields[3];
 		// thanks http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-		description.erase(description.begin(), std::find_if(description.begin(), description.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-		description.erase(std::find_if(description.rbegin(), description.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), description.end());
+		description.erase(description.begin(), std::find_if(description.begin(), description.end(), [](int c){return !isspace(c);}));
+		description.erase(std::find_if(description.rbegin(), description.rend(), [](int c){return !isspace(c);}).base(), description.end());
 		if (description.empty())
 			return;
 		valid = true;
