@@ -174,7 +174,7 @@ void update_text_windows (text_message * pmsg)
 }
 
 void open_chat_log(){
-	char starttime[200], sttime[200];
+	char sttime[256];
 	struct tm *l_time; time_t c_time;
 #ifdef ENGLISH
 
@@ -247,12 +247,11 @@ void open_chat_log(){
 #endif //ENGLISH
 
 #ifdef ENGLISH
-	strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime", l_time);
+	int n = strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime %Z", l_time);
 #else //ENGLISH
-	strftime(sttime, sizeof(sttime), "\n\nDébut du journal %Y-%m-%d %H:%M:%S (heure locale)", l_time);
+	int n = strftime(sttime, sizeof(sttime), "\n\nDébut du journal %Y-%m-%d %H:%M:%S (heure locale %Z)", l_time);
 #endif //ENGLISH
-	safe_snprintf(starttime, sizeof(starttime), "%s (%s)\n\n", sttime, tzname[l_time->tm_isdst>0]);
-	fwrite (starttime, strlen(starttime), 1, chat_log);
+	fwrite(sttime, n, 1, chat_log);
 }
 
 #ifndef ENGLISH
@@ -264,7 +263,7 @@ void close_chat_log() {
 #endif //ENGLISH
 
 void timestamp_chat_log(){
-	char starttime[200], sttime[200];
+	char s[256];
 	struct tm *l_time; time_t c_time;
 
 	if(log_chat == LOG_NONE) {
@@ -276,9 +275,8 @@ void timestamp_chat_log(){
 	} else {
 		time(&c_time);
 		l_time = localtime(&c_time);
-		strftime(sttime, sizeof(sttime), "Hourly time-stamp: log continued at %Y-%m-%d %H:%M:%S localtime", l_time);
-		safe_snprintf(starttime, sizeof(starttime), "%s (%s)\n", sttime, tzname[l_time->tm_isdst>0]);
-		fwrite (starttime, strlen(starttime), 1, chat_log);
+		int n = strftime(s, sizeof(s), "Hourly time-stamp: log continued at %Y-%m-%d %H:%M:%S localtime %Z", l_time);
+		fwrite(s, n, 1, chat_log);
 	}
 }
 
