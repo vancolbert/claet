@@ -556,79 +556,98 @@ static void freemakeargv(char **argv)
 #define MAX_THREADS 32
 #define MAX_BT 256
 static int thread_counter;
-typedef struct Fcall { void *addr; void *caller; } Fcall;
-typedef struct ThreadTrace { uint8_t n; Fcall a[MAX_BT]; } ThreadTrace;
-static ThreadTrace thread_traces[MAX_THREADS];
+typedef struct Callsite { void *addr, *from; } Callsite;
+typedef struct Trace { uint8_t n; Callsite a[MAX_BT]; } Trace;
+static Trace thread_traces[MAX_THREADS];
 static __thread int thread_id;
-void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *this_func, void *call_site) {
+void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *func_addr, void *ret_addr) {
 	int i = thread_id;
 	if (!i) {
 		thread_id = i = __atomic_add_fetch(&thread_counter, 1, __ATOMIC_SEQ_CST);
 	}
-	ThreadTrace *t = thread_traces + i;
-	Fcall *f = t->a + t->n++;
-	f->addr = this_func;
-	f->caller = call_site;
+	Trace *t = thread_traces + i;
+	Callsite *c = t->a + t->n++;
+	c->addr = func_addr;
+	c->from = ret_addr;
 }
-void __attribute__((no_instrument_function)) __cyg_profile_func_exit(void *this_func, void *call_site) {
+void __attribute__((no_instrument_function)) __cyg_profile_func_exit(void *func_addr, void *ret_addr) {
 	--thread_traces[thread_id].n;
 }
-static void make_crash_log_path(char *p, int n) {
-	char t[64];
-	time_t now = time(0);
-	strftime(t, sizeof(t), "%Y%m%d%H%M%S", gmtime(&now));
-	safe_snprintf(p, n, "%scrash_%s.log", get_path_config_base(), t);
+static void get_crashlog_path(char *o, int n) {
+	const char *d = get_path_config_base();
+	int l = safe_snprintf(o, n, "%scrashlog0.txt", d);
+	for (int i = 1; i < 10 && file_exists(o); ++i, ++o[l-5]);
 }
 static int get_backtrace_via_stackwalk(void **a, int na, CONTEXT *cr) {
 	CONTEXT c = *cr;
 	c.ContextFlags = CONTEXT_ALL;
-	#define x_regs(x) x(PC, Eip) x(Stack, Esp) x(Frame, Ebp)
-	#define as_field(n, r) .Addr##n = {.Offset = c.r, .Mode = AddrModeFlat},
-	STACKFRAME64 sf = {x_regs(as_field)};
-	HANDLE pr = GetCurrentProcess(), th = GetCurrentThread();
-	if (!SymInitialize(pr, 0, TRUE)) {
-		return 0;
-	}
+	#define x_regs(x) x(PC, Eip, Rip) x(Stack, Esp, Rsp) x(Frame, Ebp, Rbp)
+	#if __x86_64__
+	DWORD mt = IMAGE_FILE_MACHINE_AMD64;
+	#define as_init(n, e, r) .Addr##n = {.Offset = c.r, .Mode = AddrModeFlat},
+	#else
 	DWORD mt = IMAGE_FILE_MACHINE_I386;
+	#define as_init(n, e, r) .Addr##n = {.Offset = c.e, .Mode = AddrModeFlat},
+	#endif
+	STACKFRAME64 sf = {x_regs(as_init)};
+	HANDLE pr = GetCurrentProcess(), th = GetCurrentThread();
+	SymInitialize(pr, 0, TRUE);
 	int n = 0;
 	while (n < na && StackWalk64(mt, pr, th, &sf, &c, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0) && sf.AddrPC.Offset) {
 		a[n++] = (void *)(uintptr_t)sf.AddrPC.Offset;
 	}
+	SymCleanup(pr);
 	return n;
 }
 static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTERS *ep) {
 	EXCEPTION_RECORD *er = ep->ExceptionRecord;
 	DWORD ec = er->ExceptionCode;
 	void *ea = er->ExceptionAddress;
-	fprintf(stderr, "Exception code 0x%x at address 0x%p\n", ec, ea);
+	#define err(f, ...) fprintf(stderr, f "\n", ##__VA_ARGS__)
+	err("Exception code 0x%x at address 0x%p", ec, ea);
 	char p[MAX_PATH];
-	make_crash_log_path(p, sizeof(p));
-	FILE *f = fopen(p, "w");
-	if (!f) {
-		fprintf(stderr, "Failed to open crash log '%s' for writing: %s\n", p, strerror(errno));
+	get_crashlog_path(p, sizeof(p));
+	FILE *outf = fopen(p, "a");
+	if (!outf) {
+		err("Failed to open '%s' for writing: %s", p, strerror(errno));
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
-	fprintf(f, "vg %s\nec %x\nea %p\nfo %p\n", VER_GIT, ec, ea, __cyg_profile_func_enter);
+	#define fp(f, ...) fprintf(outf, f "\n", ##__VA_ARGS__)
+	char ts[64];
+	time_t now = time(0);
+	strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", gmtime(&now));
+	fp("timestamp %s", ts);
+	fp("ver_git %s", VER_GIT);
+	fp("exception_code %x", ec);
+	fp("exception_addr %p", ea);
+	fp("vma_init_stuff %p", init_stuff);
+	fp("vma_start_rendering %p", start_rendering);
+	fp("vma_draw_scene %p", draw_scene);
 	void *a[MAX_BT];
 	int nb = CaptureStackBackTrace(0, MAX_BT, a, 0);
-	fprintf(f, "nb %d\n", nb);
+	fp("bt_n %d", nb);
 	for (int i = 0; i < nb; ++i) {
-		fprintf(f, "ba %p\n", a[i]);
+		fp("bt_addr %p", a[i]);
 	}
 	int ns = get_backtrace_via_stackwalk(a, MAX_BT, ep->ContextRecord);
-	fprintf(f, "ns %d\n", ns);
+	fp("sw_n %d", ns);
 	for (int i = 0; i < ns; ++i) {
-		fprintf(f, "sa %p\n", a[i]);
+		fp("sw_addr %p", a[i]);
 	}
+	fp("th_count %d", thread_counter);
 	for (int i = 0; i <= thread_counter; ++i) {
-		ThreadTrace *t = thread_traces + i;
-		fprintf(f, "ti %d\ntn %d\n", i, t->n);
-		for (Fcall *c = t->a, *ce = c + t->n; c < ce; ++c) {
-			fprintf(f, "ta %p\nca %p\n", c->addr, c->caller);
+		Trace *t = thread_traces + i;
+		if (t->n) {
+			fp("th_index %d", i);
+			fp("th_n %d", i, t->n);
+			for (Callsite *c = t->a, *ce = c + t->n; c < ce; ++c) {
+				fp("th_addr %p", c->addr);
+				fp("th_from %p", c->from);
+			}
 		}
 	}
-	fclose(f);
-	fprintf(stderr, "Crash log saved to %s\n", p);
+	fclose(outf);
+	err("Crash log saved to %s", p);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
