@@ -1527,7 +1527,7 @@ int display_game_handler (window_info *win)
 	if (flee.on) {
 		float s = 2.0f * name_zoom, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
 		int x = (win->len_x - HUD_MARGIN_X)/2 - 3*sx, y = (win->len_y - HUD_MARGIN_Y)*3/4;
-		Uint8 *m = "FUITE!";
+		Uint8 *m = (Uint8 *)"FUITE!";
 		if ((cur_time & 511) < 256) {
 			draw_string_scaled_shadowed(x, y, m, 1, sx, sy, 0.9f, 0.4f, 0.4f, 1.0f, 0.9f, 0.0f);
 		} else {

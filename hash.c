@@ -146,7 +146,7 @@ hash_entry *hash_get_next(hash_table *table){
 
 //HASH AND COMPARE FNs
 unsigned long int hash_fn_int(void *key){
-	return (unsigned long int) key;
+	return (uintptr_t) key;
 }
 int cmp_fn_int(void *key1, void *key2){
 	return key1==key2;

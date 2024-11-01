@@ -619,7 +619,7 @@ static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTER
 	DWORD ec = er->ExceptionCode;
 	void *ea = er->ExceptionAddress;
 	#define err(f, ...) fprintf(stderr, f "\n", ##__VA_ARGS__)
-	err("Exception code 0x%x at address 0x%p", ec, ea);
+	err("Exception code 0x%lx at address 0x%p", ec, ea);
 	char p[MAX_PATH];
 	get_crashlog_path(p, sizeof(p));
 	FILE *outf = fopen(p, "a");
@@ -633,7 +633,7 @@ static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTER
 	strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", gmtime(&now));
 	fp("timestamp %s", ts);
 	fp("ver_git %s", VER_GIT);
-	fp("exception_code %x", ec);
+	fp("exception_code %lx", ec);
 	fp("exception_addr %p", ea);
 	fp("vma_init_stuff %p", init_stuff);
 	fp("vma_start_rendering %p", start_rendering);
