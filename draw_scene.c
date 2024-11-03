@@ -650,7 +650,7 @@ static inline Mapcam *find_mapcam(int map, v2i p) {
 	for_mapcams(i) {
 		if (i->map == map) {
 			int d = distsq(i->p, p);
-			if (d < 50) {
+			if (d < 10) {
 				m = i;
 				break;
 			}
