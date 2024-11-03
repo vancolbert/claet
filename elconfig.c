@@ -2522,7 +2522,7 @@ static void init_ELC_vars(void)
 #endif //FR_VERSION
 	for (i = 0; i < video_modes_count; i++)
 	{
-		static char str[100];
+		char str[100];
 		safe_snprintf(str, sizeof(str), "%dx%dx%d", video_modes[i].width, video_modes[i].height, video_modes[i].bpp);
 		if (video_modes[i].name)
 			free(video_modes[i].name);
