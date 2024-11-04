@@ -105,6 +105,7 @@ void display_dialogue();
  * \sa close_window
  */
 void close_dialogue();
+void repeat_last_dialogue_response(void);
 
 #ifdef __cplusplus
 } // extern "C"

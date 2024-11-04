@@ -469,9 +469,7 @@ static void save_response(const response *last_response)
 	}
 }
 
-
-static void send_response(window_info *win, const response *the_response)
-{
+static void send_response_data(const response *the_response) {
 	Uint8 str[16];
 	str[0]=RESPOND_TO_NPC;
 	*((Uint16 *)(str+1))=SDL_SwapLE16((short)the_response->to_actor);
@@ -481,9 +479,14 @@ static void send_response(window_info *win, const response *the_response)
 #else
 	*((Uint16 *)(str+3))=SDL_SwapLE16((short)the_response->response_id);
 	my_tcp_send(my_socket,str,5);
+#endif
+}
+
+static void send_response(window_info *win, const response *the_response)
+{
+	send_response_data(the_response);
 	if (autoclose_storage_dialogue && strcmp(the_response->text, open_storage_str) == 0)
  		hide_window(win->window_id);
-#endif
 	save_response(the_response);
 }
 
@@ -687,6 +690,12 @@ static int keypress_dialogue_handler (window_info *win, int mx, int my, Uint32 k
 		return 1;
 	}
 	return 0;
+}
+
+void repeat_last_dialogue_response(void) {
+	if (saved_response_init && get_show_window(dialogue_win)) {
+		send_response_data(saved_responses + saved_response_list_cur);
+	}
 }
 
 static int cm_dialogue_repeat_handler(window_info *win, int widget_id, int mx, int my, int option)
