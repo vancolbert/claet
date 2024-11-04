@@ -1859,28 +1859,29 @@ int keypress_items_handler(window_info * win, int x, int y, Uint32 key, Uint32 k
 
 #ifndef ENGLISH
 // Fonction indépendante aussi bien pour le bouton que le raccourci clavier
-void get_all_handler()
-{
-	int pos;
+void get_all_handler() {
 	actor *me = get_our_actor();
-	if (!me) return;//Wtf!?
-
-	for (pos=0; pos<NUM_BAGS; pos++)
-	{
-		if ((bag_list[pos].x==me->x_tile_pos) && (bag_list[pos].y==me->y_tile_pos))
-		{
-			if (! get_show_window(ground_items_win))
-			{
-				// if auto empty bags enable, set the open timer
-				if (items_auto_get_all)
-					ground_items_empty_next_bag = SDL_GetTicks();
-				else
-					ground_items_empty_next_bag = 0;
-				open_bag(bag_list[pos].obj_3d_id);
+	if (!me) {
+		return;
+	}
+	if (get_show_window(ground_items_win)) {
+		pick_up_all_items();
+		return;
+	}
+	bag *best = 0;
+	int d, bd = 9999999, x = me->x_tile_pos, y = me->y_tile_pos;
+	for (bag *b = bag_list, *be = b + NUM_BAGS; bd && b < be; ++b) {
+		if (b->obj_3d_id != -1) {
+			d = max2i(abs(b->x - x), abs(b->y - y));
+			if (d < bd) {
+				bd = d;
+				best = b;
 			}
-			else pick_up_all_items();
-			break;
 		}
+	}
+	if (best && bd < 6) {
+		ground_items_empty_next_bag = items_auto_get_all ? cur_time : 0;
+		open_bag(best->obj_3d_id);
 	}
 }
 #endif //ENGLISH
