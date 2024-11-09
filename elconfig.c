@@ -2640,6 +2640,7 @@ static void init_ELC_vars(void)
 	add_var(OPT_BOOL,"use_compiled_vertex_array","cva",&use_compiled_vertex_array,change_compiled_vertex_array,1,"Compiled Vertex Array","Some systems will not support the new compiled vertex array in EL. Disable this if some 3D objects do not display correctly.",TROUBLESHOOT);
 	add_var(OPT_BOOL,"use_draw_range_elements","dre",&use_draw_range_elements,change_var,1,"Draw Range Elements","Disable this if objects appear partially stretched.",TROUBLESHOOT);
 	add_var(OPT_BOOL,"use_point_particles","upp",&use_point_particles,change_point_particles,1,"Point Particles","Some systems will not support the new point based particles in EL. Disable this if your client complains about not having the point based particles extension.",TROUBLESHOOT);
+	add_var(OPT_BOOL,"use_loading_snapshot", "uls", &use_loading_snapshot, change_var, 1, "Capture d'écran lors du chargement", "Utiliser une capture d'écran en arrière-plan lors du chargement d'une carte. À désactiver s'il ne s'affiche qu'une image blanche.", TROUBLESHOOT);
 #ifndef	NEW_TEXTURES
 	add_var(OPT_BOOL,"transparency_resolution_fix","trf",&transparency_resolution_fix,change_var,0,"Transparency Resolution Fix","Use this if your video card or driver has problems with rendering highly blended effects, like teleportation.",TROUBLESHOOT);
 #endif	/* NEW_TEXTURES */

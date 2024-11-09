@@ -52,6 +52,7 @@ Uint32 map_flags=0;
 #ifdef FR_VERSION
 Uint8 carte_modif = 0;
 #endif //FR_VERSION
+int use_loading_snapshot = 1;
 
 hash_table *server_marks=NULL;
 
@@ -187,7 +188,7 @@ static void init_map_loading(const char *file_name)
 	cur_map = get_cur_map (file_name);
 #endif //FR_VERSION
 
-	create_loading_win(window_width, window_height, 1);
+	create_loading_win(window_width, window_height, use_loading_snapshot);
 	show_window(loading_win);
 }
 
