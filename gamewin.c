@@ -1080,18 +1080,11 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			if (use_item != -1 && current_cursor == CURSOR_USE_WITEM)
 			{
 				*((int *)(str+5)) = SDL_SwapLE32((int)item_list[use_item].pos);
-#ifdef ENGLISH
-				if (!shift_on)
-				{
-#endif //ENGLISH
-				use_item = -1;
-				action_mode = ACTION_WALK;
-			}
-#ifdef ENGLISH
-			}
-#endif //ENGLISH
-			else
-			{
+				if (!shift_on) {
+					use_item = -1;
+					action_mode = ACTION_WALK;
+				}
+			} else {
 				*((int *)(str+5)) = SDL_SwapLE32((int)-1);
 			}
 
