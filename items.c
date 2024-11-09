@@ -22,6 +22,7 @@
 #include "manufacture.h"
 #include "misc.h"
 #include "multiplayer.h"
+#include "pathfinder.h"
 #include "platform.h"
 #include "sound.h"
 #include "storage.h"
@@ -1882,6 +1883,7 @@ void get_all_handler() {
 	if (best && bd < 6) {
 		ground_items_empty_next_bag = items_auto_get_all ? cur_time : 0;
 		open_bag(best->obj_3d_id);
+		pf_destroy_path();
 	}
 }
 #endif //ENGLISH
