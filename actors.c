@@ -14,6 +14,7 @@
 #include "gl_init.h"
 #include "global.h"
 #include "interface.h"
+#include "io/elpathwrapper.h"
 #include "load_gl_extensions.h"
 #include "map.h"
 #ifdef MISSILES
@@ -104,6 +105,85 @@ int etat_sante(float percentage)
 }
 #endif //FR_VERSION
 
+typedef const char *cstr;
+#define countof(a) (sizeof(a)/sizeof(*a))
+enum boss_kinds { BK_NONE, BK_COMBAT, BK_MAGIC, BK_INVASION };
+typedef struct Bossname { char name[30]; Uint8 len, kind; } Bossname;
+static struct { Bossname t[64]; int n; } bntab;
+static const char bnfold[256] = "\0---------\n----------------------!\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~-----------------------------------------------------------------aaaaaaaceeeeiiiidnoooooxouuuuypbaaaaaaaceeeeiiiidnooooo-ouuuuypy";
+static void setbn(Bossname *b, cstr s) {
+	char *o = b->name, *e = o + sizeof(b->name) - 1;
+	for (; is_color((Uint8)*s); ++s);
+	for (; (*o++ = bnfold[(Uint8)*s++]) && o < e;);
+	b->len = o - b->name - 1;
+}
+static void add_boss_name(cstr s, int k) {
+	if (bntab.n < countof(bntab.t)) {
+		Bossname *b = bntab.t + bntab.n++;
+		setbn(b, s);
+		b->kind = k;
+	} else {
+		LOG_ERROR("too many boss names, can't add \"%s\"", s);
+	}
+}
+static int cmpbn(const void *p, const void *q) {
+	Bossname *a = (Bossname *)p, *b = (Bossname *)q;
+	int d = a->len - b->len;
+	return d ? d : strncmp(a->name, b->name, a->len);
+}
+static int get_boss_kind(cstr s) {
+	Bossname k, *r;
+	setbn(&k, s);
+	r = bsearch(&k, bntab.t, bntab.n, sizeof(k), cmpbn);
+	return r ? r->kind : 0;
+}
+static void read_boss_names(cstr fn, int kind) {
+	char fp[1024];
+	safe_snprintf(fp, sizeof(fp), "Encyclopedia/Competences/%s.xml", fn);
+	FILE *f = open_file_lang(fp, "rb");
+	if (!f) {
+		LOG_ERROR("open_file_lang failed on \"%s\"", fp);
+		return;
+	}
+	fseek(f, 0, SEEK_END);
+	int s = ftell(f);
+	rewind(f);
+	char *d = malloc(s + 64);
+	int n = fread(d, 1, s, f);
+	if (n == s) {
+		d[s] = 0;
+		char *p = strstr(d, "<Page name=\"Boss"), *e = p ? strstr(p, "</Page>") : 0;
+		for (char *q; p && (p = strstr(p, " : <")) && p < e; p = q + 4) {
+			for (q = p, *q = 0; p > d && *p != '>'; --p);
+			for (++p; p < q && *p == ' '; ++p);
+			add_boss_name(p, kind);
+		}
+	}
+	free(d);
+	fclose(f);
+}
+static void init_boss_names(void) {
+	read_boss_names("Combat", BK_COMBAT);
+	read_boss_names("Magie", BK_MAGIC);
+	cstr invasion_boss_names[] = {"Gros rat", "Veuve noire", "Colosse", "Chef Minier", "Troll des cavernes", "Orque des collines", "Vengeur", "Occulus", "Mirage", "Yéti des glaces", "Carnage", "Chérubin", "Gargantua", 0};
+	for (cstr *p = invasion_boss_names; *p; ++p) {
+		add_boss_name(*p, BK_INVASION);
+	}
+	qsort(bntab.t, bntab.n, sizeof(*bntab.t), cmpbn);
+}
+static void draw_frame_around(float x, float y, float w, float h, float z, float t, float *rgba) {
+	glDisable(GL_TEXTURE_2D);
+	glColor4fv(rgba);
+	glBegin(GL_QUADS);
+	#define drect(x0, y0, x1, y1) glVertex3f(x0, y0, z); glVertex3f(x1, y0, z); glVertex3f(x1, y1, z); glVertex3f(x0, y1, z);
+	drect(x - t, y - t, x + w + t, y);
+	drect(x - t, y + h, x + w + t, y + h + t);
+	drect(x - t, y, x, y + h);
+	drect(x + w, y, x + w + t, y + h);
+	glEnd();
+	glEnable(GL_TEXTURE_2D);
+}
+
 //Threading support for actors_lists
 void init_actors_lists()
 {
@@ -114,6 +194,7 @@ void init_actors_lists()
 	for (i=0; i < MAX_ACTORS; i++)
 		actors_list[i] = NULL;
 	UNLOCK_ACTORS_LISTS();	// release now that we are done
+	init_boss_names();
 }
 
 //return the ID (number in the actors_list[]) of the new allocated actor
@@ -850,6 +931,10 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 		glEnd();
 		glDisable(GL_BLEND);
 		glEnable(GL_TEXTURE_2D);
+	}
+	if (actor_id->boss && banner_width > 1.0f && banner_height > 1.0f) {
+		float c[][4] = {{},{.5,.2,1,1},{.4,.7,1,1},{1,.5,.2,1}}, t = clampi(4*name_zoom, 2, 16);
+		draw_frame_around(hx - 0.5f*banner_width, hy, banner_width, banner_height, hz, t, c[actor_id->boss]);
 	}
 
 	// -------------------------------------------------------------------- MISC
@@ -2352,6 +2437,7 @@ void add_actor_from_server (const char *in_data, int len)
 	{
 		actors_list[i]->calmodel=NULL;
 	}
+	actors_list[i]->boss = get_boss_kind(actors_list[i]->actor_name);
 	update_actor_buffs(actor_id, buffs);
 	UNLOCK_ACTORS_LISTS();	//unlock it
 #ifdef EXTRA_DEBUG

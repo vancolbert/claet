@@ -679,6 +679,7 @@ typedef struct
 	char stand_idle;	/*!< Sets the actor in an idle stand position*/
 	char sit_idle;		/*!< Sets the actor in an idle sit position*/
 	char dead;		/*!< Used when the actor is dead (render the dead position)*/
+	Uint8 boss;
 	int damage;		/*!< Sets the damage the actor has been given*/
 	int damage_ms;		/*!< Defines the remaining time in which the actor damage will be shown*/
 	int last_health_loss;	/*!< Defines the time of damage*/
