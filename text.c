@@ -247,9 +247,9 @@ void open_chat_log(){
 #endif //ENGLISH
 
 #ifdef ENGLISH
-	int n = strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime %Z", l_time);
+	int n = strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime %Z\n\n", l_time);
 #else //ENGLISH
-	int n = strftime(sttime, sizeof(sttime), "\n\nDébut du journal %Y-%m-%d %H:%M:%S (heure locale %Z)", l_time);
+	int n = strftime(sttime, sizeof(sttime), "\n\nDébut du journal %Y-%m-%d %H:%M:%S (heure locale %Z)\n\n", l_time);
 #endif //ENGLISH
 	fwrite(sttime, n, 1, chat_log);
 }
@@ -275,7 +275,7 @@ void timestamp_chat_log(){
 	} else {
 		time(&c_time);
 		l_time = localtime(&c_time);
-		int n = strftime(s, sizeof(s), "Hourly time-stamp: log continued at %Y-%m-%d %H:%M:%S localtime %Z", l_time);
+		int n = strftime(s, sizeof(s), "Hourly time-stamp: log continued at %Y-%m-%d %H:%M:%S localtime %Z\n", l_time);
 		fwrite(s, n, 1, chat_log);
 	}
 }
