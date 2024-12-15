@@ -640,7 +640,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<Text>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"Text")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"Text") && numpage >= 0){
 				_Text *T=(_Text*)malloc(sizeof(_Text));
 				_Text *t=&Page[numpage].T;
 				T->Next=NULL;
@@ -676,7 +676,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<Image>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"image")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"image") && numpage >= 0){
 				_Image *I=(_Image*)malloc(sizeof(_Image));
 				_Image *i=&Page[numpage].I;
 				xposupdate=1; yposupdate=1;
@@ -712,7 +712,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<sImage>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"simage")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"simage") && numpage >= 0){
 				_Image *I=(_Image*)malloc(sizeof(_Image));
 				_Image *i=&Page[numpage].I;
 				int picsperrow,xtile,ytile;
@@ -766,7 +766,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<ddsImage>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"ddsimage")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"ddsimage") && numpage >= 0){
 				_Image *I=(_Image*)malloc(sizeof(_Image));
 				_Image *i=&Page[numpage].I;
 				int picsperrow,xtile,ytile;
@@ -820,7 +820,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<link>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"link")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"link") && numpage >= 0){
 				_Text *T=(_Text*)malloc(sizeof(_Text));
 				_Text *t=&Page[numpage].T;
 				ParseLink(cur_node->properties);
@@ -840,7 +840,7 @@ void ReadCategoryXML(xmlNode * a_node)
 				save_raw_page_link(T->ref, T->text, numpage);
 			}
 			// See if this is the new maximum length.
-			if(Page[numpage].max_y < y)
+			if(numpage >= 0 && Page[numpage].max_y < y)
 			{
 				Page[numpage].max_y = y;
 			}
