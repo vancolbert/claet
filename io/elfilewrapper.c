@@ -876,15 +876,7 @@ int el_read_float(el_file_ptr file, float *f)
 {
 	if (file->current + sizeof(float) > file->end)
 		return 0;
-#ifdef EL_FORCE_ALIGNED_READ
-	{
-		float tmp;
-		memcpy(&tmp, file->current, sizeof(float));
-		*f = SwapLEFloat(tmp);
-	}
-#else
-	*f = SwapLEFloat(*((float*)file->current));
-#endif
+	*f = unpack_f32_le(file->current);
 	file->current += sizeof(float);
 	return 1;
 }
@@ -893,15 +885,7 @@ int el_read_int(el_file_ptr file, int *i)
 {
 	if (file->current + sizeof(int) > file->end)
 		return 0;
-#ifdef EL_FORCE_ALIGNED_READ
-	{
-		int tmp;
-		memcpy(&tmp, file->current, sizeof(int));
-		*i = SDL_SwapLE32(tmp);
-	}
-#else
-	*i = SDL_SwapLE32(*((int*)file->current));
-#endif
+	*i = unpack_u32_le(file->current);
 	file->current += sizeof(int);
 	return 1;
 }

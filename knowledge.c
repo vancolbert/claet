@@ -629,7 +629,7 @@ int click_knowledge_handler(window_info *win, int mx, int my, Uint32 flags)
 				for (i=0; i<nb_liste_courante; i++) liste_courante[i].click = 0;
 				liste_courante[idx].click = 1;
 				str[0] = GET_KNOWLEDGE_INFO;
-				*(Uint16 *)(str+1) = SDL_SwapLE16((short)liste_courante[idx].id);
+				pack_u16_le(str+1, liste_courante[idx].id);
 				my_tcp_send(my_socket, str, 3);
 			}
 		}
@@ -646,7 +646,7 @@ int click_knowledge_handler(window_info *win, int mx, int my, Uint32 flags)
 		if(idx < knowledge_count)
 			{
 				str[0] = GET_KNOWLEDGE_INFO;
-				*(Uint16 *)(str+1) = SDL_SwapLE16((short)idx);
+				pack_u16_le(str+1, idx);
 				my_tcp_send(my_socket,str,3);
 				// Check if we display the book image and label
 				knowledge_book_id = idx;

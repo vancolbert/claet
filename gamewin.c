@@ -757,7 +757,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 #endif //ENGLISH
 		str[0] = DROP_ITEM;
 		str[1] = item_list[item_dragged].pos;
-		*((Uint32 *) (str + 2)) = SDL_SwapLE32(item_quantity);
+		pack_u32_le(str + 2, item_quantity);
 		my_tcp_send(my_socket, str, 6);
 		return 1;
 	}
@@ -824,7 +824,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 					achievements_requested(mouse_x, mouse_y, flag_ctrl);
 #endif
 				str[0] = GET_PLAYER_INFO;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 				return 1;
 			}
@@ -837,7 +837,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 				LOG_TO_CONSOLE(c_green1, log);
 #endif
 				str[0] = LOOK_AT_MAP_OBJECT;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 				return 1;
 			}
@@ -877,7 +877,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 						add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
 
 						str[0] = TOUCH_PLAYER;
-						*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+						pack_u32_le(str+1, object_under_mouse);
 						my_tcp_send (my_socket, str, 5);
 					}
 				}
@@ -898,7 +898,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 #endif //FR_VERSION
 				return 1;
 			str[0] = TRADE_WITH;
-			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+			pack_u32_le(str+1, object_under_mouse);
 			my_tcp_send (my_socket, str, 5);
 			return 1;
 
@@ -927,10 +927,10 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 #ifdef FR_FAST_SPELL
 				if(selected_spell == -1) {
 #endif
-				  str[0] = ATTACK_SOMEONE;
-				  *((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
-				  my_tcp_send (my_socket, str, 5);
-				  return 1;
+					str[0] = ATTACK_SOMEONE;
+					pack_u32_le(str+1, object_under_mouse);
+					my_tcp_send (my_socket, str, 5);
+					return 1;
 
 #ifdef FR_FAST_SPELL
 				} else {
@@ -1021,7 +1021,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			{
 				int i;
 				str[0] = TOUCH_PLAYER;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 
 				// clear the previous dialogue entries, so we won't have a left over from some other NPC
@@ -1031,16 +1031,16 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			}
 
 			str[0] = USE_MAP_OBJECT;
-			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+			pack_u32_le(str+1, object_under_mouse);
 			if (use_item != -1 && current_cursor == CURSOR_USE_WITEM)
 			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)item_list[use_item].pos);
+				pack_u32_le(str+5, item_list[use_item].pos);
 				use_item = -1;
 				action_mode = ACTION_WALK;
 			}
 			else
 			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)-1);
+				pack_u32_le(str+5, -1);
 			}
 
 			my_tcp_send (my_socket, str, 9);
@@ -1066,7 +1066,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			{
 				int i;
 				str[0] = TOUCH_PLAYER;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 
 				// clear the previous dialogue entries, so we won't have a left over from some other NPC
@@ -1076,16 +1076,16 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			}
 
 			str[0] = USE_MAP_OBJECT;
-			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+			pack_u32_le(str+1, object_under_mouse);
 			if (use_item != -1 && current_cursor == CURSOR_USE_WITEM)
 			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)item_list[use_item].pos);
+				pack_u32_le(str+5, item_list[use_item].pos);
 				if (!shift_on) {
 					use_item = -1;
 					action_mode = ACTION_WALK;
 				}
 			} else {
-				*((int *)(str+5)) = SDL_SwapLE32((int)-1);
+				pack_u32_le(str+5, -1);
 			}
 
 			my_tcp_send (my_socket, str, 9);

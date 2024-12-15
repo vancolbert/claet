@@ -943,7 +943,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 	{
 		str[0] = DROP_ITEM;
 		str[1] = item_list[id_item].pos;
-		*((Uint32 *)(str+2)) = SDL_SwapLE32(fr_quickitem_list[id_quick].quantity);
+		pack_u32_le(str+2, fr_quickitem_list[id_quick].quantity);
 		my_tcp_send(my_socket, str, 4);
 #ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
@@ -957,7 +957,7 @@ int click_fr_quickitems_handler(window_info *win, int mx, int my, Uint32 flags)
 		if ((storage_win<0) || view_only_storage || !get_show_window(storage_win)) return 0;
 		str[0] = DEPOSITE_ITEM;
 		str[1] = item_list[id_item].pos;
-		*((Uint32 *)(str+2)) = SDL_SwapLE32(fr_quickitem_list[id_quick].quantity);
+		pack_u32_le(str+2, fr_quickitem_list[id_quick].quantity);
 		my_tcp_send(my_socket, str, 6);
 #ifdef NEW_SOUND
 		add_sound_object(get_index_for_sound_type_name("Drop Item"), 0, 0, 1);
