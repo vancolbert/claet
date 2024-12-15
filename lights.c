@@ -53,7 +53,7 @@ int	num_lights;	// the highest light number loaded
 light *lights_list[MAX_LIGHTS];
 unsigned char light_level=58;
 sun sun_pos[360];
-sun sun_show[181];
+sun sun_show[360];
 
 short game_minute = 0;
 short game_second = 0;
