@@ -1659,13 +1659,13 @@ void add_teleporters_from_list (const Uint8 *teleport_list)
 	int teleport_x,teleport_y,my_offset;
 	float x,y,z;
 
-	teleporters_no=SDL_SwapLE16(*((Uint16 *)(teleport_list)));
+	teleporters_no=unpack_u16_le(teleport_list);
 	LOCK_PARTICLES_LIST();	//lock it to avoid timing issues
 	for(i=0;i<teleporters_no;i++)
 		{
 			my_offset=i*5+2;
-			teleport_x=SDL_SwapLE16(*((Uint16 *)(teleport_list+my_offset)));
-			teleport_y=SDL_SwapLE16(*((Uint16 *)(teleport_list+my_offset+2)));
+			teleport_x=unpack_u16_le(teleport_list+my_offset);
+			teleport_y=unpack_u16_le(teleport_list+my_offset+2);
 
 			//later on, maybe we want to have different visual types
 			//now, get the Z position

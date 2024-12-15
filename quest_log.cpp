@@ -466,7 +466,7 @@ void Quest_Title_Request::request(void)
 	//safe_snprintf(buf, 80, "Sending WHAT_QUEST_IS_THIS_ID with id=%d", id);
 	//LOG_TO_CONSOLE(c_green2,buf);
 	str[0]=WHAT_QUEST_IS_THIS_ID;
-	*((Uint16 *)(str+1)) = SDL_SwapLE16((Uint16)id);
+	pack_u16_le(str+1, id);
 	my_tcp_send (my_socket, str, 3);
 	request_time = SDL_GetTicks();
 	requested = true;

@@ -128,7 +128,7 @@ static void popup_send_to_server( popup_t *popup );
 #define FETCH_U16( var ) \
 	do { \
 	DECREASE_SIZE(2); \
-	var = SDL_SwapLE16( *((Uint16*)payload) ); \
+	var = unpack_u16_le(payload); \
 	payload+=2; \
 	} while (0);
 
@@ -1148,7 +1148,7 @@ static void popup_send_to_server( popup_t *popup )
 	*bptr = POPUP_REPLY;
     bptr++;
 
-	*((Uint16*)bptr) = SDL_SwapLE16( popup->id );
+	pack_u16_le(bptr, popup->id);
     bptr+=2;
 
 	list_for_each_node( group_node, popup->grouped_options )

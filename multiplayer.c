@@ -273,8 +273,8 @@ void move_to (short int x, short int y, int try_pathfinder)
 	}
 
 	str[0]= MOVE_TO;
-	*((short *)(str+1))= SDL_SwapLE16 (x);
-	*((short *)(str+3))= SDL_SwapLE16 (y);
+	pack_u16_le(str+1, x);
+	pack_u16_le(str+3, y);
 	my_tcp_send(my_socket, str, 5);
 }
 
@@ -427,7 +427,7 @@ int my_tcp_send (TCPsocket my_socket, const Uint8 *str, int len)
 	{
 		// yes, buffer it for later processing
 		tcp_out_data[tcp_out_loc] = str[0];	//copy the protocol byte
-		*((short *)(tcp_out_data+tcp_out_loc+1)) = SDL_SwapLE16((Uint16)len);//the data length
+		pack_u16_le(tcp_out_data+tcp_out_loc+1, len);
 		// copy the rest of the data
 		memcpy(&tcp_out_data[tcp_out_loc+3], &str[1], len-1);
 		// adjust then buffer offset
@@ -443,7 +443,7 @@ int my_tcp_send (TCPsocket my_socket, const Uint8 *str, int len)
 	CHECK_AND_UNLOCK_MUTEX(tcp_out_data_mutex);
 
 	new_str[0] = str[0];	//copy the protocol byte
-	*((short *)(new_str+1)) = SDL_SwapLE16((Uint16)len);//the data length
+	pack_u16_le(new_str+1, len);
 	if (len + 4 > sizeof(new_str))
 		return 1;
 	// copy the rest of the data
@@ -475,8 +475,8 @@ void send_version_to_server(IPaddress *ip)
 	int	len;
 
 	str[0]= SEND_VERSION;
-	*((short *)(str+1))= SDL_SwapLE16((short)version_first_digit);
-	*((short *)(str+3))= SDL_SwapLE16((short)version_second_digit);
+	pack_u16_le(str + 1, version_first_digit);
+	pack_u16_le(str + 3, version_second_digit);
 	str[5]= client_version_major;
 	str[6]= client_version_minor;
 	str[7]= client_version_release;
@@ -778,7 +778,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 #endif
 				// allow for multiple packets in a row
 				while(data_length >= 6){
-					add_command_to_actor(SDL_SwapLE16(*((short *)(in_data+3))), in_data[5]);
+					add_command_to_actor(unpack_u16_le(in_data+3), in_data[5]);
 					in_data+= 3;
 					data_length-= 3;
 				}
@@ -792,7 +792,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 #endif
 				// allow for multiple packets in a row
 				while(data_length >= 7){
-					add_emote_to_actor(SDL_SwapLE16(*((short *)(in_data+3))),SDL_SwapLE16(*((short *)(in_data+5))));
+					add_emote_to_actor(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 					in_data+= 4;
 					data_length-= 4;
 				}
@@ -806,7 +806,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 #endif
 				// allow for multiple packets in a row
 				while(data_length >= 5){
-					destroy_actor(SDL_SwapLE16(*((short *)(in_data+3))));
+					destroy_actor(unpack_u16_le(in_data+3));
 					in_data+= 2;
 					data_length-= 2;
 				}
@@ -836,7 +836,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 					LOG_WARNING("CAUTION: Possibly forged NEW_MINUTE packet received.\n");
 					break;
 				}
-				real_game_minute= SDL_SwapLE16(*((short *)(in_data+3)));
+				real_game_minute= unpack_u16_le(in_data+3);
 				real_game_minute %= 360;
 				real_game_second = 0;
 #ifdef ENGLISH
@@ -931,7 +931,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				// allow for multiple stats in a row
 				while (data_length >= 8)
 				{
-					get_partial_stat (in_data[3], SDL_SwapLE32(*((Sint32 *)(in_data+4))));
+					get_partial_stat (in_data[3], unpack_u32_le(in_data+4));
 					in_data+= 5;
 					data_length-= 5;
 				}
@@ -947,7 +947,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged GET_KNOWLEDGE_LIST packet received.\n");
 				  break;
 				}
-				size = SDL_SwapLE16(*(Uint16 *)(in_data+1))-1;
+				size = unpack_u16_le(in_data+1)-1;
 				if (data_length <= size + 2)
 				{
 				  LOG_WARNING("CAUTION(2): Possibly forged GET_KNOWLEDGE_LIST packet received.\n");
@@ -964,7 +964,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged GET_NEW_KNOWLEDGE packet received.\n");
 				  break;
 				}
-				get_new_knowledge(SDL_SwapLE16(*(Uint16 *)(in_data+3)));
+				get_new_knowledge(unpack_u16_le(in_data+3));
 			}
 			break;
 
@@ -1260,7 +1260,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 					LOG_WARNING("CAUTION: Possibly forged GET_TELEPORTERS_LIST packet received.\n");
 					break;
 				}
-				teleporters_no = SDL_SwapLE16 (*((Uint16 *)(in_data + 3)));
+				teleporters_no = unpack_u16_le(in_data + 3);
 				if (data_length <= teleporters_no * 5 + 4)
 				{
 					LOG_WARNING("CAUTION(2): Possibly forged GET_TELEPORTERS_LIST packet received.\n");
@@ -1293,7 +1293,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged PLAY_MUSIC packet received.\n");
 				  break;
 				}
-				if(music_on)play_music(SDL_SwapLE16(*((short *)(in_data+3))));
+				if(music_on)play_music(unpack_u16_le(in_data+3));
 #endif //FR_VERSION
 #endif // NEW_SOUND
 			}
@@ -1310,7 +1310,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged PLAY_SOUND packet received.\n");
 				  break;
 				}
-				if (sound_on) add_server_sound(SDL_SwapLE16(*((short *)(in_data+3))), SDL_SwapLE16(*((short *)(in_data+5))), SDL_SwapLE16(*((short *)(in_data+7))), 1.0f);
+				if (sound_on) add_server_sound(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), unpack_u16_le(in_data+7), 1.0f);
 #endif // NEW_SOUND
 			}
 			break;
@@ -1326,7 +1326,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged TELEPORT_OUT packet received.\n");
 				  break;
 				}
-				add_particle_sys_at_tile("./particles/teleport_out.part", SDL_SwapLE16(*((short *)(in_data+3))), SDL_SwapLE16 (*((short *)(in_data+5))), 1);
+				add_particle_sys_at_tile("./particles/teleport_out.part", unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), 1);
 			}
 			break;
 
@@ -1341,7 +1341,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged TELEPORT_IN packet received.\n");
 				  break;
 				}
-				add_particle_sys_at_tile("./particles/teleport_in.part", SDL_SwapLE16(*((short *)(in_data+3))), SDL_SwapLE16(*((short *)(in_data+5))), 1);
+				add_particle_sys_at_tile("./particles/teleport_in.part", unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), 1);
 			}
 			break;
 		case LOG_IN_NOT_OK:
@@ -1402,7 +1402,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				close_chat_log();
 #endif //ENGLISH
 				LOCK_ACTORS_LISTS();
-				yourself= SDL_SwapLE16(*((short *)(in_data+3)));
+				yourself= unpack_u16_le(in_data+3);
 				set_our_actor (get_actor_ptr_from_id (yourself));
 				UNLOCK_ACTORS_LISTS();
 			}
@@ -1492,7 +1492,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged SYNC_CLOCK packet received.\n");
 				  break;
 				}
-				server_time_stamp= SDL_SwapLE32(*((int *)(in_data+3)));
+				server_time_stamp= unpack_u32_le(in_data+3);
 				client_time_stamp= SDL_GetTicks();
 				client_server_delta_time= server_time_stamp-client_time_stamp;
 			}
@@ -1506,7 +1506,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged SYNC_CLOCK packet received.\n");
 				  break;
 				}
-				safe_snprintf(str, sizeof(str), "%s: %i ms",server_latency, SDL_GetTicks()-SDL_SwapLE32(*((Uint32 *)(in_data+3))));
+				safe_snprintf(str, sizeof(str), "%s: %i ms",server_latency, SDL_GetTicks()-unpack_u32_le(in_data+3));
 				LOG_TO_CONSOLE(c_green1,str);
 			}
 			break;
@@ -1533,7 +1533,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
                     LOG_ERROR("CAUTION: Possibly forged GET NEW ROCHE packet received.\n");
                     break;
                 }
-                put_roche_on_ground(SDL_SwapLE16(*((Uint16 *)(in_data+3))), SDL_SwapLE16(*((Uint16 *)(in_data+5))), in_data[7]);
+				put_roche_on_ground(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), in_data[7]);
             }
             break;
         case GET_ROCHE_LIST:
@@ -1564,7 +1564,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged GET_NEW_BAG packet received.\n");
 				  break;
 				}
-				put_bag_on_ground(SDL_SwapLE16(*((Uint16 *)(in_data+3))), SDL_SwapLE16(*((Uint16 *)(in_data+5))), in_data[7]);
+				put_bag_on_ground(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), in_data[7]);
 			}
 			break;
 
@@ -1613,7 +1613,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged FIRE_PARTICLES packet received.\n");
 				  break;
 				}
-				add_fire_at_tile (SDL_SwapLE16(*(Uint16 *)(in_data+7)), SDL_SwapLE16(*((Uint16 *)(in_data+3))), SDL_SwapLE16(*((Uint16 *)(in_data+5))));
+				add_fire_at_tile (unpack_u16_le(in_data+7), unpack_u16_le(in_data+3), unpack_u16_le(in_data+5));
 			}
 			break;
 
@@ -1627,7 +1627,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged REMOVE_FIRE_AT packet received.\n");
 				  break;
 				}
-				remove_fire_at_tile (SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16 *)(in_data+5))));
+				remove_fire_at_tile (unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 			}
 			break;
 
@@ -1784,7 +1784,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				// and simply means that the response list should be cleared.
 				// Just take care not to try to use the data argument in
 				// build_response_entries ().
-				build_response_entries (in_data+3, SDL_SwapLE16 (*((Uint16 *)(in_data+1))));
+				build_response_entries (in_data+3, unpack_u16_le(in_data+1));
 			}
 			break;
 
@@ -1876,7 +1876,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 
 		case GET_TRADE_PARTNER_NAME:
 			{
-				get_trade_partner_name(&in_data[3],SDL_SwapLE16(*((Uint16 *)(in_data+1)))-1);
+				get_trade_partner_name(&in_data[3],unpack_u16_le(in_data+1)-1);
 			}
 			break;
 
@@ -1889,9 +1889,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 				if(data_length < 11){
-					get_sigils_we_have(SDL_SwapLE32(*((Uint32 *)(in_data+3))), 0);
+					get_sigils_we_have(unpack_u32_le(in_data+3), 0);
 				} else {
-					get_sigils_we_have(SDL_SwapLE32(*((Uint32 *)(in_data+3))), SDL_SwapLE32(*((Uint32 *)(in_data+7))));
+					get_sigils_we_have(unpack_u32_le(in_data+3), unpack_u32_le(in_data+7));
 				}
 			}
 			break;
@@ -1910,7 +1910,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 #ifdef ENGLISH
 				get_active_spell(in_data[3],in_data[4]);
 #else
-            get_active_spell(in_data[3], in_data[4], SDL_SwapLE16(*((Uint16 *)(in_data+5))));
+			get_active_spell(in_data[3], in_data[4], unpack_u16_le(in_data+5));
 #endif //ENGLISH
 			}
 			break;
@@ -1970,9 +1970,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 #ifdef FR_VERSION
-				get_actor_health(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))), SDL_SwapLE16(*((Uint16*)(in_data+7))));
+				get_actor_health(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5), unpack_u16_le(in_data+7));
 #else //FR_VERSION
-				get_actor_health(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
+				get_actor_health(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 #endif //FR_VERSION
 			}
 			break;
@@ -1989,7 +1989,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				// allow for multiple packets in a row
 				while (data_length >= 7)
 				{
-					get_actor_damage(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
+					get_actor_damage(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 					data_length -= 4;
 					in_data += 4;
 				}
@@ -2002,9 +2002,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 #ifdef FR_VERSION
-				get_actor_damage(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))), SDL_SwapLE16(*((Uint16*)(in_data+7))));
+				get_actor_damage(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5), unpack_u16_le(in_data+7));
 #else //FR_VERSION
-				get_actor_damage(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
+				get_actor_damage(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 #endif //FR_VERSION
 			}
 			break;
@@ -2021,7 +2021,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				// allow for multiple packets in a row
 				while (data_length >= 7)
 				{
-					get_actor_heal(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
+					get_actor_heal(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 					data_length -= 4;
 					in_data += 4;
 				}
@@ -2034,9 +2034,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 #ifdef FR_VERSION
-				get_actor_heal(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))), SDL_SwapLE16(*((Uint16*)(in_data+7))));
+				get_actor_heal(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5), unpack_u16_le(in_data+7));
 #else //FR_VERSION
-				get_actor_heal(SDL_SwapLE16(*((Uint16 *)(in_data+3))),SDL_SwapLE16(*((Uint16*)(in_data+5))));
+				get_actor_heal(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 #endif //FR_VERSION
 			}
 			break;
@@ -2051,7 +2051,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged ACTOR_UNWEAR_ITEM packet received.\n");
 				  break;
 				}
-				unwear_item_from_actor(SDL_SwapLE16(*((Uint16 *)(in_data+3))),in_data[5]);
+				unwear_item_from_actor(unpack_u16_le(in_data+3),in_data[5]);
 			}
 			break;
 
@@ -2065,7 +2065,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged ACTOR_WEAR_ITEM packet received.\n");
 				  break;
 				}
-				actor_wear_item(SDL_SwapLE16(*((Uint16 *)(in_data+3))),in_data[5],in_data[6]);
+				actor_wear_item(unpack_u16_le(in_data+3),in_data[5],in_data[6]);
  			}
  			break;
 
@@ -2079,7 +2079,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 				safe_strncpy2(buf, (char*)in_data + 5, sizeof(buf), data_length - 5);
 				add_displayed_text_to_actor(
-					get_actor_ptr_from_id( SDL_SwapLE16(*((Uint16 *)(in_data+3))) ), buf);
+					get_actor_ptr_from_id( unpack_u16_le(in_data+3) ), buf);
 			}
 			break;
 
@@ -2147,9 +2147,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 #ifdef FR_VERSION
-				ouvre_livre(SDL_SwapLE16(*((Uint16*)(in_data+3))));
+				ouvre_livre(unpack_u16_le(in_data+3));
 #else //FR_VERSION
-				open_book(SDL_SwapLE16(*((Uint16*)(in_data+3))));
+				open_book(unpack_u16_le(in_data+3));
 #endif //FR_VERSION
 			}
 			break;
@@ -2162,7 +2162,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
                     LOG_ERROR("Attention : possibilité d'avoir perdu un packet CHANGE_PAGE.\n");
                     break;
                 }
-                change_page(SDL_SwapLE16(*((Uint16*)(in_data+3))), SDL_SwapLE16(*(Sint16*)(in_data+5)), SDL_SwapLE16(*(Sint16*)(in_data+7)));
+				change_page(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), unpack_u16_le(in_data+7));
             }
 			break;
 
@@ -2173,7 +2173,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
                     LOG_ERROR("Attention : possibilité d'avoir perdu un packet MAX_NUTRI.\n");
 					break;
 				}
-				change_max_nutri(SDL_SwapLE16(*((Uint16*)(in_data+3))));
+				change_max_nutri(unpack_u16_le(in_data+3));
 			}
 #endif //FR_VERSION
 
@@ -2200,9 +2200,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 #ifdef FR_VERSION
-				ferme_livre(SDL_SwapLE16(*((Uint16*)(in_data+3))));
+				ferme_livre(unpack_u16_le(in_data+3));
 #else //FR_VERSION
-				close_book(SDL_SwapLE16(*((Uint16*)(in_data+3))));
+				close_book(unpack_u16_le(in_data+3));
 #endif //FR_VERSION
 			}
 			break;
@@ -2267,7 +2267,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			  LOG_WARNING("CAUTION: Possibly forged GET_ACTIVE_CHANNELS packet received.\n");
 			  break;
 			}
-			set_active_channels (in_data[3], (Uint32*)(in_data+4), (data_length-2)/4);
+			set_active_channels (in_data[3], in_data+4, data_length-2);
 			break;
 
 		case GET_3D_OBJ_LIST:
@@ -2289,7 +2289,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			  LOG_WARNING("CAUTION: Possibly forged REMOVE_3D_OBJ packet received.\n");
 			  break;
 			}
-			remove_3d_object_from_server (SDL_SwapLE16 (*((Uint16 *)(&in_data[3]))));
+			remove_3d_object_from_server (unpack_u16_le(&in_data[3]));
 			break;
 
 		// for use by 1.0.3 server and higher
@@ -2332,7 +2332,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			  LOG_WARNING("CAUTION: Possibly forged MAP_FLAGS packet received.\n");
 			  break;
 			}
-			map_flags=SDL_SwapLE32(*((Uint32 *)(in_data+3)));
+			map_flags=unpack_u32_le(in_data+3);
 			break;
 
 		case GET_ITEMS_COOLDOWN:
@@ -2383,7 +2383,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			}
 #ifdef BUFF_DEBUG
 			{
-				int actor_id = SDL_SwapLE16(*((short *)(in_data+3)));
+				int actor_id = unpack_u16_le(in_data+3);
 				actor *act = get_actor_ptr_from_id(actor_id);
 				if(act){
 					printf("SEND_BUFFS received for actor %s\n", act->actor_name);
@@ -2393,7 +2393,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 			}
 #endif // BUFF_DEBUG
-			update_actor_buffs(SDL_SwapLE16(*((short *)(in_data+3))), SDL_SwapLE32(*((Uint32 *)(in_data+5))));
+			update_actor_buffs(unpack_u16_le(in_data+3), unpack_u32_le(in_data+5));
 			break;
 
 		case SEND_SPECIAL_EFFECT:
@@ -2442,7 +2442,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 					LOG_WARNING("CAUTION: Possibly forged GET_NEW_MINE packet received.\n");
 					break;
 				}
-				put_mine_on_ground(SDL_SwapLE16(*((Uint16 *)(in_data+3))), SDL_SwapLE16(*((Uint16 *)(in_data+5))), in_data[8], in_data[7]);
+				put_mine_on_ground(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), in_data[8], in_data[7]);
 			}
 			break;
 
@@ -2481,43 +2481,43 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 		case MISSILE_AIM_A_AT_B:
 			if (data_length >= 7)
 			{
-				missiles_aim_at_b(SDL_SwapLE16(*((short *)(in_data+3))),SDL_SwapLE16(*((short *)(in_data+5))));
+				missiles_aim_at_b(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 			}
 			break;
 		case MISSILE_AIM_A_AT_XYZ:
 			if (data_length >= 17)
 			{
 				float target[3];
-				target[0] = SwapLEFloat(*((float*)(in_data+5)));
-				target[1] = SwapLEFloat(*((float*)(in_data+9)));
-				target[2] = SwapLEFloat(*((float*)(in_data+13)));
-				missiles_aim_at_xyz(SDL_SwapLE16(*((short *)(in_data+3))),target);
+				target[0] = unpack_f32_le(in_data+5)
+				target[1] = unpack_f32_le(in_data+9)
+				target[2] = unpack_f32_le(in_data+13)
+				missiles_aim_at_xyz(unpack_u16_le(in_data+3),target);
 			}
 			break;
 		case MISSILE_FIRE_A_TO_B:
 			if (data_length >= 7)
 			{
-				missiles_fire_a_to_b(SDL_SwapLE16(*((short *)(in_data+3))),SDL_SwapLE16(*((short *)(in_data+5))));
+				missiles_fire_a_to_b(unpack_u16_le(in_data+3),unpack_u16_le(in_data+5));
 			}
 			break;
 		case MISSILE_FIRE_A_TO_XYZ:
 			if (data_length >= 17)
 			{
 				float target[3];
-				target[0] = SwapLEFloat(*((float*)(in_data+5)));
-				target[1] = SwapLEFloat(*((float*)(in_data+9)));
-				target[2] = SwapLEFloat(*((float*)(in_data+13)));
-				missiles_fire_a_to_xyz(SDL_SwapLE16(*((short *)(in_data+3))),target);
+				target[0] = unpack_f32_le(in_data+5)
+				target[1] = unpack_f32_le(in_data+9)
+				target[2] = unpack_f32_le(in_data+13)
+				missiles_fire_a_to_xyz(unpack_u16_le(in_data+3),target);
 			}
 			break;
 		case MISSILE_FIRE_XYZ_TO_B:
 			if (data_length >= 17)
 			{
 				float source[3];
-				source[0] = SwapLEFloat(*((float*)(in_data+5)));
-				source[1] = SwapLEFloat(*((float*)(in_data+9)));
-				source[2] = SwapLEFloat(*((float*)(in_data+13)));
-				missiles_fire_xyz_to_b(source,SDL_SwapLE16(*((short *)(in_data+3))));
+				source[0] = unpack_f32_le(in_data+5)
+				source[1] = unpack_f32_le(in_data+9)
+				source[2] = unpack_f32_le(in_data+13)
+				missiles_fire_xyz_to_b(source,unpack_u16_le(in_data+3));
 			}
 			break;
 #endif //MISSILES
@@ -2536,9 +2536,9 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  break;
 				}
 			sm = calloc(1,sizeof(server_mark));//memory is set to zero
-			sm->x=SDL_SwapLE16(*((short *)(in_data+5)));
-			sm->y=SDL_SwapLE16(*((short *)(in_data+7)));
-			sm->id=SDL_SwapLE16(*((short *)(in_data+3)));
+			sm->x=unpack_u16_le(in_data+5);
+			sm->y=unpack_u16_le(in_data+7);
+			sm->id=unpack_u16_le(in_data+3);
 			for(i=9;i<data_length;i++){
 				if(in_data[i]==0) {fl=1; k=0; continue;}
 				if(!fl) sm->map_name[k++]=in_data[i]; //reading map name
@@ -2560,7 +2560,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged REMOVE_MAP_MARKER packet received.\n");
 				  break;
 				}
-			id=SDL_SwapLE16(*((short *)(in_data+3)));
+			id=unpack_u16_le(in_data+3);
 			hash_delete(server_marks,(NULL+id)); //remove marker if present
 			save_server_markings();
 			load_map_marks();//load again, so the new marker is removed correctly.
@@ -2574,7 +2574,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 					LOG_WARNING("CAUTION: Possibly forged NEXT_NPC_MESSAGE_IS_QUEST packet received.\n");
 					break;
 				}
-				set_next_quest_entry_id(SDL_SwapLE16(*((short *)(in_data+3))));
+				set_next_quest_entry_id(unpack_u16_le(in_data+3));
 				break;
 			}
 		case HERE_IS_QUEST_ID:
@@ -2594,7 +2594,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 					LOG_WARNING("CAUTION: Possibly forged QUEST_FINISHED packet received.\n");
 					break;
 				}
-				set_quest_finished(SDL_SwapLE16(*((short *)(in_data+3))));
+				set_quest_finished(unpack_u16_le(in_data+3));
 				break;
 			}
 #endif // NEW_QUESTLOG
@@ -2611,7 +2611,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				}
 				achievement_data = (Uint32 *)calloc(word_count, sizeof(Uint32));
 				for (i=0; i<word_count; ++i)
-					achievement_data[i] = SDL_SwapLE32(*((Uint32 *)(in_data+3+i*sizeof(Uint32))));
+					achievement_data[i] = unpack_u32_le(in_data+3+i*sizeof(Uint32));
 				achievements_data(achievement_data, word_count);
 				free(achievement_data);
 			}
@@ -2634,7 +2634,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				LOG_ERROR("CAUTION: Possibly forged COMBAT_INFO packet received.\n");
 				break;
 			}
-			combat_info_type(*(in_data+3), SDL_SwapLE16(*((Uint16 *)(in_data+4))), SDL_SwapLE16(*((Uint16*)(in_data+6))), SDL_SwapLE32(*((Sint32 *)(in_data+8))));
+			combat_info_type(*(in_data+3), unpack_u16_le(in_data+4), unpack_u16_le(in_data+6), unpack_u32_le(in_data+8));
 		break;
 #endif //FR_VERSION
 #ifdef FR_VERSION
@@ -2686,7 +2686,7 @@ static void process_data_from_server(queue_t *queue)
 		Uint16   size;
 
 		do { /* while (3 <= in_data_used) (enough data present for the length field) */
-			size = SDL_SwapLE16(*((short*)(pData+1)));
+			size = unpack_u16_le(pData+1);
 			size += 2; /* add length field size */
 
 			if (sizeof (tcp_in_data) - 3 >= size) { /* buffer big enough ? */

@@ -66,8 +66,8 @@ void add_roches_from_list (const Uint8 *data)
 
 	for(i=0;i<roches_no;i++) {
 		my_offset=i*5+1;
-		roche_x=SDL_SwapLE16(*((Uint16 *)(data+my_offset)));
-		roche_y=SDL_SwapLE16(*((Uint16 *)(data+my_offset+2)));
+		roche_x=unpack_u16_le(data+my_offset);
+		roche_y=unpack_u16_le(data+my_offset+2);
 		roche_id=*((Uint8 *)(data+my_offset+4));
 		if(roche_id >= NUM_ROCHES) {
 			continue;
