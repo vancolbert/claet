@@ -1934,8 +1934,21 @@ void drop_all_handler ()
 }
 
 void store_all_handler() {
-	Uint8 b = TOUT_DEPOT;
-	my_tcp_send(my_socket, &b, 1);
+	#define xkeep(x) x(nofirstrow, 3f) x(nolastrow, fc0000000) x(nofirstcol, 41041041) x(nolastcol, 820820820)
+	#define asor(n, h) (-items_stoall_##n & 0x##h) |
+	Uint64 k = xkeep(asor) 0, s = ~k, w = 1;
+	Uint8 d = TOUT_DEPOT, b[8] = {DEPOSITE_ITEM};
+	if (!k) {
+		my_tcp_send(my_socket, &d, 1);
+		return;
+	}
+	for (item *i = item_list, *e = i + ITEM_WEAR_START; i < e; ++i, w <<= 1) {
+		if (i->quantity > 0 && s & w) {
+			b[1] = i->pos;
+			*((Uint32 *)(b+2)) = SDL_SwapLE32(i->quantity);
+			my_tcp_send(my_socket, b, 6);
+		}
+	}
 }
 
 #ifdef FR_VERSION
@@ -2013,7 +2026,7 @@ int show_items_handler(window_info * win)
 
 	cm_remove_regions(items_win);
 #ifdef FR_VERSION
-//	cm_add_region(cm_stoall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[1], XLENBUT, YLENBUT);
+	cm_add_region(cm_stoall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[1], XLENBUT, YLENBUT);
 	cm_add_region(cm_getall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[0], XLENBUT, YLENBUT);
 	cm_add_region(cm_dropall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[2], XLENBUT, YLENBUT);
 	cm_add_region(cm_mix_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[4], XLENBUT, YLENBUT);
