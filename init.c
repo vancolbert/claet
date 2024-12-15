@@ -217,7 +217,7 @@ void load_knowledge_list()
 		return;
 	}
 	char format[64];
-	snprintf(format, sizeof(format), "%%hhd %%hd %%hhd %%hhd %%%zu[^\n]", sizeof(knowledge_list->name) - 1);
+	safe_snprintf(format, sizeof(format), "%%hhd %%hd %%hhd %%hhd %%%u[^\n]", sizeof(knowledge_list->name) - 1);
 	while (fgets(strLine, sizeof(strLine), f)) {
 		knowledge *k = knowledge_list + knowledge_count++;
 #ifdef ENGLISH

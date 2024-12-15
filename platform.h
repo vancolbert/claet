@@ -143,8 +143,10 @@
 
 #ifdef __GNUC__
 #define UNUSED(x) x __attribute__((unused))
+#define CHECK_PRINTF(n) __attribute__((format(printf, n, n+1)))
 #else
 #define UNUSED(x) x
+#define CHECK_PRINTF(n)
 #endif // __GNUC__
 
 #ifdef EL_BIG_ENDIAN

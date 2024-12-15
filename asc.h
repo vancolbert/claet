@@ -143,7 +143,7 @@ char* safe_strncpy2(char *dest, const char * source, const size_t dest_len, cons
  * \param	format A printf-style format string
  * \param	... arguments to be passed to snprintf
  */
-int safe_snprintf(char *dest, const size_t len, const char* format, ...);
+int safe_snprintf(char *dest, const size_t len, const char* format, ...) CHECK_PRINTF(3);
 
 /*!
  * \ingroup     misc_utils
