@@ -1091,7 +1091,7 @@ static int	display_manufacture_handler(window_info *win)
 	 */
 	if (recipes_shown)
 	{
-		if ((cur_recipe < SHOW_MAX_RECIPE) && (recipe_name[cur_recipe] != NULL))
+		if (cur_recipe >= 0 && cur_recipe < SHOW_MAX_RECIPE && recipe_name[cur_recipe] != NULL)
 		{
 			i = cur_recipe*33 - get_window_scroll_pos(recipe_win);
 			if (i>=0) show_help(recipe_name[cur_recipe], 33*6+30, win->len_y + i + (33-SMALL_FONT_Y_LEN)/2);
@@ -1930,7 +1930,7 @@ int mix_handler(Uint8 quantity, const char* empty_error_str)
 	for(i=MIX_SLOT_OFFSET;i<MIX_SLOT_OFFSET+NUM_MIX_SLOTS;i++){
 		if(manufacture_list[i].quantity > 0){
 			str[items_no*3+2]=manufacture_list[i].pos;
-			*((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(manufacture_list[i].quantity);
+			pack_u16_le(str+items_no*3+2+1, manufacture_list[i].quantity);
 			items_no++;
 		}
 	}
@@ -1940,7 +1940,7 @@ int mix_handler(Uint8 quantity, const char* empty_error_str)
 		if ((cur_valids[i-ITEM_WEAR_START]) && (manufacture_list[i].pos >= 0))
 		{
 			str[items_no*3+2] = manufacture_list[i].pos;
-			*((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(manufacture_list[i].quantity);
+			pack_u16_le(str+items_no*3+2+1, manufacture_list[i].quantity);
 			items_no++;
 		}
 		else
