@@ -265,7 +265,7 @@ int command_buff_duration(char *text, int len);
   extern int selected_spell_sent;
   extern int selected_spell_target;
 
-  void fast_spell_cast(void);
+  void fast_spell_cast(int actor_id);
   void fast_spell_teleport(void);
   void fast_spell_cible(int spell_id);
   void fast_spell_decible(void);

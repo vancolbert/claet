@@ -2365,6 +2365,8 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		{
 			go_ifk ();
 		}
+	} else if (key == K_SPELLSELF) {
+		fast_spell_cast(yourself);
 	}
 #ifdef ENGLISH
 	else if(key == K_RANGINGWIN)

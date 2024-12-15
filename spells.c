@@ -2576,9 +2576,9 @@ void process_network_spell (const char *data, int len)
 		case S_SELECT_TARGET://spell_result==3
 		  spell_result=3;
 #ifdef FR_FAST_SPELL
-		  if(selected_spell != -1 && selected_spell_sent) {
-		    fast_spell_cast();
-		  }
+			if (selected_spell != -1 && selected_spell_sent) {
+				fast_spell_cast(selected_spell_target);
+			}
 #endif
 		  action_mode=ACTION_WAND;
 
@@ -5626,22 +5626,17 @@ CHECK_GL_ERRORS();
    }
  }
 
- void fast_spell_cast(void) {
-   Uint8 str[10];
-
-   if (selected_spell_target >= 0)
-     {
-       actor *this_actor = get_actor_ptr_from_id(selected_spell_target);
-       if(this_actor != NULL)
-	 {
-	   add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
-
-	   str[0] = TOUCH_PLAYER;
-	   *((int *)(str+1)) = SDL_SwapLE32((int)selected_spell_target);
-	   my_tcp_send (my_socket, str, 5);
-	 }
-     }
- }
+void fast_spell_cast(int actor_id) {
+	if (actor_id >= 0) {
+		actor *a = get_actor_ptr_from_id(actor_id);
+		if (a) {
+			Uint8 b[8] = {TOUCH_PLAYER};
+			*((Uint32 *)(b+1)) = SDL_SwapLE32(actor_id);
+			my_tcp_send(my_socket, b, 5);
+			add_highlight(a->x_tile_pos, a->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
+		}
+	}
+}
 
  void fast_spell_teleport(void) {
    Uint8 str[10];
