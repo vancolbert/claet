@@ -764,9 +764,9 @@ int get_3d_objects_from_server (int nr_objs, const Uint8 *data, int len)
                         break;
 		}
 
-		obj_x = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
+		obj_x = unpack_u16_le(&data[offset]);
 		offset += 2;
-		obj_y = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
+		obj_y = unpack_u16_le(&data[offset]);
 		offset += 2;
 		if (obj_x > tile_map_size_x * 6 || obj_y > tile_map_size_y * 6)
 		{
@@ -777,13 +777,13 @@ int get_3d_objects_from_server (int nr_objs, const Uint8 *data, int len)
                 }
 		else
 		{
-			rx = SwapLEFloat (*((float *)(&data[offset])));
+			rx = unpack_f32_le(&data[offset]);
 			offset += 2;
-			ry = SwapLEFloat (*((float *)(&data[offset])));
+			ry = unpack_f32_le(&data[offset]);
 			offset += 2;
-			rz = SwapLEFloat (*((float *)(&data[offset])));
+			rz = unpack_f32_le(&data[offset]);
 			offset += 2;
-			id = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
+			id = unpack_u16_le(&data[offset]);
 			offset += 2;
 
 			x = 0.5f * obj_x + 0.25f;
