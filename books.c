@@ -1506,7 +1506,7 @@ void ouvre_livre(int num_livre)
 		char str[3];
 
 		str[0] = OUVRE_LIVRE;
-		*((Uint16*)(str+1)) = SDL_SwapLE16((Uint16)num_livre);
+		pack_u16_le(str+1, num_livre);
 
 		my_tcp_send(my_socket, (Uint8*)str, 3);
 	}
@@ -1531,10 +1531,10 @@ void lire_livre_local (const char *data, int len)
     LOG_TO_CONSOLE(c_red1, info_debug);
 #endif //R_DEBUG_LIVRES
 
-	livre_actuel = recupere_livre (SDL_SwapLE16 (*((Uint16*)(data+1))));
+	livre_actuel = recupere_livre (unpack_u16_le(data+1));
 	if (livre_actuel == NULL)
 	{
-		livre_actuel = lire_livre (nom_fichier, data[0], SDL_SwapLE16 (*((Uint16*)(data+1))));
+		livre_actuel = lire_livre (nom_fichier, data[0], unpack_u16_le(data+1));
 		if (livre_actuel == NULL)
 		{
 			char str[200];
@@ -1553,8 +1553,8 @@ void lire_livre_serveur (const char *donnees, int longueur_donnees)
     xmlNode *root = NULL;
 	struct_livres *livre_actuel = NULL;
     int type = donnees[0];
-    int num = SDL_SwapLE16 (*((Uint16*)(donnees+1)));
-    int longueur = SDL_SwapLE16 (*((Uint16*)(donnees+3)));
+    int num = unpack_u16_le(donnees+1);
+    int longueur = unpack_u16_le(donnees+3);
 
     doc = xmlParseMemory(donnees+5, longueur);
 
@@ -1633,8 +1633,8 @@ void open_book(int id)
 		char str[5];
 
 		str[0]=SEND_BOOK;
-		*((Uint16*)(str+1))=SDL_SwapLE16((Uint16)id);
-		*((Uint16*)(str+3))=SDL_SwapLE16(0);
+		pack_u16_le(str+1, id);
+		pack_u16_le(str+3, 0);
 
 		my_tcp_send(my_socket, (Uint8*)str, 5);
 	} else {
@@ -1649,10 +1649,10 @@ void read_local_book (const char *data, int len)
 
 	safe_snprintf (file_name, sizeof(file_name), "%.*s", len-3, data+3);
 
-	b = get_book (SDL_SwapLE16 (*((Uint16*)(data+1))));
+	b = get_book (unpack_u16_le(data+1));
 	if (b == NULL)
 	{
-		b = read_book (file_name, data[0], SDL_SwapLE16 (*((Uint16*)(data+1))));
+		b = read_book (file_name, data[0], unpack_u16_le(data+1));
 		if (b == NULL)
 		{
 			char str[200];
@@ -1673,7 +1673,7 @@ page * add_image_from_server(char *data, book *b, page *p)
 	int v_start, v_end;
 	char image_path[256];
 	char text[512];
-	int l=SDL_SwapLE16(*((Uint16*)(data)));
+	int l=unpack_u16_le(data);
 	_image *img;
 
 	if(l>254)l=254;
@@ -1682,7 +1682,7 @@ page * add_image_from_server(char *data, book *b, page *p)
 
 	data+=l+2;
 
-	l=SDL_SwapLE16(*((Uint16*)(data)));
+	l=unpack_u16_le(data);
 	if(l>510)
 		l=510;
 	memcpy(text, data+2, l);
@@ -1690,10 +1690,10 @@ page * add_image_from_server(char *data, book *b, page *p)
 
 	data+=l+2;
 
-	x=SDL_SwapLE16(*((Uint16*)(data)));
-	y=SDL_SwapLE16(*((Uint16*)(data+2)));
-	w=SDL_SwapLE16(*((Uint16*)(data+4)));
-	h=SDL_SwapLE16(*((Uint16*)(data+6)));
+	x=unpack_u16_le(data);
+	y=unpack_u16_le(data+2);
+	w=unpack_u16_le(data+4);
+	h=unpack_u16_le(data+6);
 
 	u_start=data[8];
 	u_end=data[9];
@@ -1711,7 +1711,7 @@ void read_server_book (const char *data, int len)
 	char buffer[8192];
 	book *b;
 	page *p;
-	int l = SDL_SwapLE16(*((Uint16*)(data+4)));
+	int l = unpack_u16_le(data+4);
 	int idx;
 
 	if ( l >= sizeof (buffer) ) // Safer
@@ -1719,9 +1719,9 @@ void read_server_book (const char *data, int len)
 	memcpy (buffer, data+6, l);
 	buffer[l] = '\0';
 
-	b = get_book (SDL_SwapLE16 (*((Uint16*)(data+1))));
+	b = get_book (unpack_u16_le(data+1));
 	if (b == NULL)
-		b = create_book (buffer, data[0], SDL_SwapLE16 (*((Uint16*)(data+1))));
+		b = create_book (buffer, data[0], unpack_u16_le(data+1));
 
 	b->server_pages = data[3];
 	b->have_server_pages++;
@@ -1731,7 +1731,7 @@ void read_server_book (const char *data, int len)
 	idx = l + 6;
 	while (idx <= len)
 	{
-		l = SDL_SwapLE16 (*((Uint16*)(&data[idx+1])));
+		l = unpack_u16_le(&data[idx+1]);
 		if ( l >= sizeof (buffer) ) // Safer.
 			l = sizeof (buffer) - 1;
 		memcpy (buffer, &data[idx+3], l);
@@ -2317,11 +2317,11 @@ int clique_fenetre_livre(window_info *win, int mx, int my, Uint32 flags)
 		// au serveur d'afficher la suite
 		if (livre_actuel->serveur)
 		{
-		    char str[16];
+			char str[16];
 			str[0]=CONTINUE_LIVRE;
-			*((Uint16*)(str+1)) = SDL_SwapLE16(livre_actuel->num);
-			*((Uint16*)(str+3)) = SDL_SwapLE16(nb_pages);
-			*((Uint16*)(str+5)) = SDL_SwapLE16(positif);
+			pack_u16_le(str+1, livre_actuel->num);
+			pack_u16_le(str+3, nb_pages);
+			pack_u16_le(str+5, positif);
 			my_tcp_send(my_socket, (Uint8*)str, 6);
 		}
 		else
@@ -2359,8 +2359,8 @@ int click_book_handler(window_info *win, int mx, int my, Uint32 flags)
 				int pages=b->have_server_pages;
 
 				str[0]=SEND_BOOK;
-				*((Uint16*)(str+1))=SDL_SwapLE16(id);
-				*((Uint16*)(str+3))=SDL_SwapLE16(pages);
+				pack_u16_le(str+1, id);
+				pack_u16_le(str+3, pages);
 				my_tcp_send(my_socket, (Uint8*)str, 5);
 
 				if(b->active_page+b->type<b->no_pages)
@@ -2385,17 +2385,6 @@ int click_book_handler(window_info *win, int mx, int my, Uint32 flags)
 			x=140;
 
 			if(mx>win->len_x/2-15 && mx < win->len_x/2+15) {
-//				char str[5];
-//				int id=b->id;
-
-//				// Lachesis: Please either fix this branching condition or remove it.
-//				if (10000 > id > 11000) {
-//					str[0]=SEND_BOOK;
-//					*((Uint16*)(str+1))=SDL_SwapLE16(id);
-//					*((Uint16*)(str+3))=SDL_SwapLE16(0xFFFF); // Swap not actually necessary.. But it's cleaner.
-//					my_tcp_send(my_socket, str, 5);
-//				}
-
 				hide_window(win->window_id);
 				book_opened=-1;
 			}
@@ -2421,17 +2410,6 @@ int click_book_handler(window_info *win, int mx, int my, Uint32 flags)
 			}
 
 			if(mx>win->len_x/2-15 && mx < win->len_x/2+15) {
-//				char str[5];
-//				int id=b->id;
-
-//				// Lachesis: Please either fix this branching condition or remove it.
-//				if (10000 > id > 11000) {
-//					str[0]=SEND_BOOK;
-//					*((Uint16*)(str+1))=SDL_SwapLE16(id);
-//					*((Uint16*)(str+3))=SDL_SwapLE16(0xFFFF);
-//					my_tcp_send(my_socket, str, 5);
-//				}
-
 				hide_window(win->window_id);
 				book_opened=-1;
 			}
