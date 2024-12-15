@@ -101,7 +101,7 @@ void build_response_entries (const Uint8 *data, int total_length)
 		// break if we don't have a length field
 		if (last_index + 3 > total_length)
 			break;
-		orig_len=len=SDL_SwapLE16(*((Uint16 *)(data+last_index)));
+		orig_len=len=unpack_u16_le(data+last_index);
 
 		// break if we don't have a complete response
 #ifdef ENGLISH
@@ -113,12 +113,12 @@ void build_response_entries (const Uint8 *data, int total_length)
 		dialogue_responces[i].in_use=1;
 		my_strncp(dialogue_responces[i].text,(char*)&data[last_index+2], len);
 #ifdef ENGLISH
-		dialogue_responces[i].response_id=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+len)));
-		dialogue_responces[i].to_actor=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+2+len)));
+		dialogue_responces[i].response_id=unpack_u16_le(data+last_index+2+len);
+		dialogue_responces[i].to_actor=unpack_u16_le(data+last_index+2+2+len);
 		last_index+=len+2+2+2;//why not len+6?
 #else //ENGLISH
-		dialogue_responces[i].response_id=SDL_SwapLE32(*((Uint32 *)(data+last_index+2+len)));
-		dialogue_responces[i].to_actor=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+4+len)));
+		dialogue_responces[i].response_id=unpack_u32_le(data+last_index+2+len);
+		dialogue_responces[i].to_actor=unpack_u16_le(data+last_index+2+4+len);
 		last_index+=len+2+2+4;
 #endif //ENGLISH
 		dialogue_responces[i].orig_x_len=orig_len*SMALL_FONT_X_LEN;
@@ -472,14 +472,9 @@ static void save_response(const response *last_response)
 static void send_response_data(const response *the_response) {
 	Uint8 str[16];
 	str[0]=RESPOND_TO_NPC;
-	*((Uint16 *)(str+1))=SDL_SwapLE16((short)the_response->to_actor);
-#ifdef FR_VERSION
-	*((Uint32 *)(str+3))=SDL_SwapLE32((Uint32)the_response->response_id);
+	pack_u16_le(str+1, the_response->to_actor);
+	pack_u32_le(str+3, the_response->response_id);
 	my_tcp_send(my_socket,str,7);
-#else
-	*((Uint16 *)(str+3))=SDL_SwapLE16((short)the_response->response_id);
-	my_tcp_send(my_socket,str,5);
-#endif
 }
 
 static void send_response(window_info *win, const response *the_response)
@@ -583,10 +578,10 @@ static int click_dialogue_handler(window_info *win, int mx, int my, Uint32 flags
 #ifndef ENGLISH
 		if ((port%2000) > 999)
 		{
-		    str[0]=RESPOND_TO_NPC;
-		    *((Uint16 *)(str+1))=SDL_SwapLE16((unsigned short)mon_acteur);
-		*((Uint32 *)(str+3))=SDL_SwapLE32((Uint32)INT_MAX); // Attention 16 bits avant changement du protocole
-		    my_tcp_send(my_socket,str,7);
+			str[0]=RESPOND_TO_NPC;
+			pack_u16_le(str+1, mon_acteur);
+			pack_u32_le(str+3, INT_MAX);
+			my_tcp_send(my_socket,str,7);
 		}
 		mon_acteur=-1;
 #endif

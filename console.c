@@ -972,7 +972,7 @@ int command_ping(char *text, int len)
 	Uint8 str[8];
 
 	str[0] = PING;
-	*((Uint32 *)(str+1)) = SDL_SwapLE32(SDL_GetTicks());
+	pack_u32_le(str+1, SDL_GetTicks());
 	my_tcp_send(my_socket, str, 5);
 	return 1;
 }
