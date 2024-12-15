@@ -2427,7 +2427,7 @@ void add_command_to_actor(int actor_id, unsigned char command)
 #ifdef MORE_ATTACHED_ACTORS
 			int j2=k2-1;
 #endif
-			while(act->que[j]>=turn_n&&act->que[j]<=turn_nw&&j>=0) j--; //skip rotations
+			while(j>=0&&act->que[j]>=turn_n&&act->que[j]<=turn_nw) j--; //skip rotations
 #ifdef MORE_ATTACHED_ACTORS
 			if (act->attached_actor >= 0)
 				while(actors_list[act->attached_actor]->que[j2]>=turn_n
