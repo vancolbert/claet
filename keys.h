@@ -16,9 +16,9 @@ extern "C" {
  * \name Key Modifiers
  */
 /*! @{ */
-#define SHIFT (1 << 31)   /*!< Shift modifier is pressed */
-#define CTRL (1 << 30)    /*!< Ctrl modifier is pressed */
-#define ALT (1 << 29)     /*!< Alt modifier is pressed */
+#define SHIFT (1u << 31)   /*!< Shift modifier is pressed */
+#define CTRL (1u << 30)    /*!< Ctrl modifier is pressed */
+#define ALT (1u << 29)     /*!< Alt modifier is pressed */
 /*! @} */
 
 /*!

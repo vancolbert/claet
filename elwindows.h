@@ -218,13 +218,13 @@ typedef	struct	{
 #define	ELW_CTRL		CTRL
 #define	ELW_ALT			ALT
 #define ELW_META		KMOD_LMETA
-#define ELW_RIGHT_MOUSE		(1<<28)
-#define ELW_MID_MOUSE		(1<<27)	// future expansion
-#define ELW_LEFT_MOUSE		(1<<26)
+#define ELW_RIGHT_MOUSE		(1u<<28)
+#define ELW_MID_MOUSE		(1u<<27)	// future expansion
+#define ELW_LEFT_MOUSE		(1u<<26)
 #define ELW_MOUSE_BUTTON	(ELW_RIGHT_MOUSE|ELW_MID_MOUSE|ELW_LEFT_MOUSE)
-#define ELW_DBL_CLICK		(1<<25)	// future expansion
-#define ELW_WHEEL_UP		(1<<24)
-#define ELW_WHEEL_DOWN		(1<<23)
+#define ELW_DBL_CLICK		(1u<<25)	// future expansion
+#define ELW_WHEEL_UP		(1u<<24)
+#define ELW_WHEEL_DOWN		(1u<<23)
 #define ELW_WHEEL               (ELW_WHEEL_UP|ELW_WHEEL_DOWN)
 #define ELW_MOUSE_BUTTON_WHEEL  (ELW_MOUSE_BUTTON|ELW_WHEEL)
 /*! @} */
