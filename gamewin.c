@@ -991,7 +991,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			else if (range_weapon_equipped && thing_under_the_mouse == UNDER_MOUSE_3D_OBJ)
 			{
 				str[0] = FIRE_MISSILE_AT_OBJECT;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send(my_socket, str, 5);
 			}
 #endif // MISSILES
@@ -1135,7 +1135,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
                 return 1;
 #endif //FR_VERSION
 			str[0] = HARVEST;
-			*((Uint16 *)(str+1)) = SDL_SwapLE16((Uint16)object_under_mouse);
+			pack_u16_le(str+1, object_under_mouse);
 			my_tcp_send (my_socket, str, 3);
 			return 1;
 			break;
