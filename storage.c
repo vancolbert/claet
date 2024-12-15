@@ -177,8 +177,8 @@ void withdraw_active_storage_item(int qte_item)
     if(active_storage_item != -1  && wanted_category == -1){
         Uint8 str[7];
         str[0] = WITHDRAW_ITEM;
-        *((Uint16*)(str+1)) = SDL_SwapLE16(active_storage_item);
-        *((Uint32*)(str+3)) = SDL_SwapLE32(qte_item);
+		pack_u16_le(str+1, active_storage_item);
+		pack_u32_le(str+3, qte_item);
         my_tcp_send(my_socket, str, 7);
         do_drop_item_sound();
 	}
@@ -320,7 +320,7 @@ void get_storage_items (const Uint8 *in_data, int len)
 	{
 		// It's just an update - make sure we're in the right category
 		idx = 2;
-		active_storage_item = SDL_SwapLE16(*((Uint16*)(&in_data[idx+6])));
+		active_storage_item = unpack_u16_le(&in_data[idx+6]);
 #ifndef ENGLISH
       //@tosh : on change éventuellement de catégorie, lorsque l'on met
       //un objet au dépôt.
@@ -329,12 +329,12 @@ void get_storage_items (const Uint8 *in_data, int len)
 #endif //ENGLISH
 		for (i = 0; i < STORAGE_ITEMS_SIZE; i++)
 		{
-			if ((storage_items[i].pos == SDL_SwapLE16(*((Uint16*)(&in_data[idx+6])))) && (storage_items[i].quantity > 0))
+			if ((storage_items[i].pos == unpack_u16_le(&in_data[idx+6])) && (storage_items[i].quantity > 0))
 			{
-				storage_items[i].image_id = SDL_SwapLE16(*((Uint16*)(&in_data[idx])));
-				storage_items[i].quantity = SDL_SwapLE32(*((Uint32*)(&in_data[idx+2])));
+				storage_items[i].image_id = unpack_u16_le(&in_data[idx]);
+				storage_items[i].quantity = unpack_u32_le(&in_data[idx+2]);
 				if (item_uid_enabled)
-					storage_items[i].id = SDL_SwapLE16(*((Uint16*)(&in_data[idx+8])));
+					storage_items[i].id = unpack_u16_le(&in_data[idx+8]);
 				else
 					storage_items[i].id = unset_item_uid;
 				update_item_filter();
@@ -347,12 +347,12 @@ void get_storage_items (const Uint8 *in_data, int len)
 			if (storage_items[i].quantity == 0)
 			{
 				if (item_uid_enabled)
-					storage_items[i].id = SDL_SwapLE16(*((Uint16*)(&in_data[idx+8])));
+					storage_items[i].id = unpack_u16_le(&in_data[idx+8]);
 				else
 					storage_items[i].id = unset_item_uid;
-				storage_items[i].pos = SDL_SwapLE16(*((Uint16*)(&in_data[idx+6])));
-				storage_items[i].image_id = SDL_SwapLE16(*((Uint16*)(&in_data[idx])));
-				storage_items[i].quantity = SDL_SwapLE32(*((Uint32*)(&in_data[idx+2])));
+				storage_items[i].pos = unpack_u16_le(&in_data[idx+6]);
+				storage_items[i].image_id = unpack_u16_le(&in_data[idx]);
+				storage_items[i].quantity = unpack_u32_le(&in_data[idx+2]);
 				no_storage++;
 				update_item_filter();
 				return;
@@ -375,11 +375,11 @@ void get_storage_items (const Uint8 *in_data, int len)
 	idx = 2;
 	for (i = 0; i < no_storage && i < STORAGE_ITEMS_SIZE; i++, idx += plen)
 	{
-		storage_items[i].image_id = SDL_SwapLE16(*((Uint16*)(&in_data[idx])));
-		storage_items[i].quantity = SDL_SwapLE32(*((Uint32*)(&in_data[idx+2])));
-		storage_items[i].pos = SDL_SwapLE16(*((Uint16*)(&in_data[idx+6])));
+		storage_items[i].image_id = unpack_u16_le(&in_data[idx]);
+		storage_items[i].quantity = unpack_u32_le(&in_data[idx+2]);
+		storage_items[i].pos = unpack_u16_le(&in_data[idx+6]);
 		if (item_uid_enabled)
-			storage_items[i].id = SDL_SwapLE16(*((Uint16*)(&in_data[idx+8])));
+			storage_items[i].id = unpack_u16_le(&in_data[idx+8]);
 		else
 			storage_items[i].id = unset_item_uid;
 	}
@@ -765,11 +765,11 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 
 					str[0]=DEPOSITE_ITEM;
 					str[1]=item_list[item_dragged].pos;
-					*((Uint32*)(str+2))=SDL_SwapLE32(temp_quantity);
+					pack_u32_le(str+2, temp_quantity);
 #else //FR_VERSION
 					str[0]=DEPOSITE_ITEM;
 					str[1]=item_list[item_dragged].pos;
-					*((Uint32*)(str+2))=SDL_SwapLE32(item_quantity);
+					pack_u32_le(str+2, item_quantity);
 #endif //FR_VERSION
 
 					my_tcp_send(my_socket, str, 6);
@@ -784,7 +784,7 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 						Uint8 str[3];
 
 						str[0]=LOOK_AT_STORAGE_ITEM;
-						*((Uint16*)(str+1))=SDL_SwapLE16(storage_items[cur_item_over].pos);
+						pack_u16_le(str+1, storage_items[cur_item_over].pos);
 
 						my_tcp_send(my_socket, str, 3);
 
@@ -849,8 +849,8 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 					if (dest_pos < 0) return 0;
 					// on met dans l'inventaire un seul exemplaire de l'objet
 					str[0] = WITHDRAW_ITEM;
-					*((Uint16*)(str+1)) = SDL_SwapLE16(storage_items[cur_item_over].pos);
-					*((Uint32*)(str+3)) = SDL_SwapLE32(1);
+					pack_u16_le(str+1, storage_items[cur_item_over].pos);
+					pack_u32_le(str+3, 1);
 					my_tcp_send(my_socket, str, 7);
 					// puis on tente d'équiper l'objet depuis l'inventaire
 					str[0] = MOVE_INVENTORY_ITEM;
@@ -864,8 +864,8 @@ int click_storage_handler(window_info * win, int mx, int my, Uint32 flags)
 				{
 					Uint8 str[7];
 					str[0] = WITHDRAW_ITEM;
-					*((Uint16*)(str+1)) = SDL_SwapLE16(storage_items[cur_item_over].pos);
-					*((Uint32*)(str+3)) = (flags & ELW_CTRL) ? 1 : SDL_SwapLE32(item_quantity);
+					pack_u16_le(str+1, storage_items[cur_item_over].pos);
+					pack_u32_le(str+3, flags & ELW_CTRL ? 1 : item_quantity);
 					my_tcp_send(my_socket, str, 7);
 					do_drop_item_sound();
 					if (storage_items[cur_item_over].quantity<=item_quantity) storage_item_dragged=-1;
@@ -1041,7 +1041,7 @@ void print_items(void)
 			Uint8 str[3];
 			print_quanities[number_to_print++] = storage_items[i].quantity;
 			str[0]=LOOK_AT_STORAGE_ITEM;
-			*((Uint16*)(str+1))=SDL_SwapLE16(storage_items[i].pos);
+			pack_u16_le(str+1, storage_items[i].pos);
 			my_tcp_send(my_socket, str, 3);
 		}
 	}
