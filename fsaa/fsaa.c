@@ -42,32 +42,9 @@ void init_fsaa_modes()
 
 	LOG_DEBUG("Supported fsaa modes: %s", str);
 }
-
-unsigned int get_fsaa_mode(const unsigned int index)
-{
-	unsigned int mask;
-
-	mask = 1 << index;
-
-	if ((fsaa_modes & mask) == mask)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+unsigned int get_fsaa_mode(const unsigned int i) {
+	return (1u << i & fsaa_modes) != 0;
 }
-
-char* get_fsaa_mode_str(const unsigned int index)
-{
-	if (index < get_fsaa_mode_count())
-	{
-		return fsaa_modes_strings[index];
-	}
-	else
-	{
-		return 0;
-	}
+char *get_fsaa_mode_str(const unsigned int i) {
+	return i < get_fsaa_mode_count() ? fsaa_modes_strings[i] : 0;
 }
-
