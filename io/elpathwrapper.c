@@ -319,6 +319,9 @@ FILE * open_file_data(const char* in_filename, const char* mode){
 }
 
 FILE * open_file_lang(const char* filename, const char* mode){
+	if (!filename) {
+		return NULL;
+	}
 	char locbuffer[MAX_PATH];
 	if(strlen("languages/") + strlen(lang) + strlen(filename) + 2 < MAX_PATH){
 		FILE *fp;
