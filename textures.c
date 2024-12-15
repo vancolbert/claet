@@ -1667,7 +1667,7 @@ Uint32 load_enhanced_actor(const enhanced_actor* actor, const char* name)
 {
 	enhanced_actor_images_t files;
 	char str[MAX_ACTOR_NAME];
-	Uint32 i, handle, hash, access_time;
+	Uint32 i, handle, hash, access_time = 0;
 
 	memset(str, 0, sizeof(str));
 
