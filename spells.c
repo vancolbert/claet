@@ -336,7 +336,7 @@ void check_then_do_buff_duration_request(void)
 		last_request_time = SDL_GetTicks();
 
 		str[0] = GET_BUFF_DURATION;
-		*((Uint16 *)(str+1)) = SDL_SwapLE16(last_requested_duration);
+		pack_u16_le(str+1, last_requested_duration);
 		my_tcp_send (my_socket, str, 3);
 	}
 }
@@ -1014,7 +1014,7 @@ void get_active_spell_list(const Uint8 *my_spell_list)
 		// le serveur FR envoit des données différentes
 		active_spells[i].spell = my_spell_list[i*3];
 		// récupération de la durée restante
-		active_spells[i].duration = SDL_SwapLE16(*((Uint16 *)(my_spell_list+i*3+1)));
+		active_spells[i].duration = unpack_u16_le(my_spell_list+i*3+1);
 		if (active_spells[i].spell < 0) active_spells[i].duration = 0;
 		// mémorisation de la date de fin du sort
 		active_spells[i].cast_time = cur_time + active_spells[i].duration * 1000;
@@ -1382,13 +1382,9 @@ void draw_current_spell(int x, int y, int sigils_too){
 
 		//draw reagents
 		x+= (sigils_too) ? (33*6+33):(33+16);
-#ifdef ENGLISH
-		for(i=0;spells_list[j].reagents_id[i]>0;i++) {
-#else //ENGLISH
         // Modification car sur les sorts avec 4 essences différentes
         // l'affichage pose soucis
-		for(i=0;spells_list[j].reagents_id[i]>0&&i<4;i++) {
-#endif //ENGLISH
+		for (i = 0; i < 4 && spells_list[j].reagents_id[i] > 0; ++i) {
 			draw_item(spells_list[j].reagents_id[i],x+33*i,y,33);
 			safe_snprintf((char *)str, sizeof(str), "%i",spells_list[j].reagents_qt[i]);
 			draw_string_small_shadowed(x+33*i, y+21, (unsigned char*)str, 1,1.0f,1.0f,1.0f, 0.0f, 0.0f, 0.0f);
@@ -2467,7 +2463,7 @@ int mouseover_necro_handler(window_info *win, int mx, int my)
 void get_sigils_we_have(Uint32 sigils_we_have, Uint32 sigils2)
 {
 	int i;
-	int po2=1;
+	Uint32 po2=1;
 
 	// the first 32 sigils
 	for(i=0;i<32;i++)
@@ -5115,8 +5111,8 @@ int invocation_depuis_sorts(Uint8 quantity)
 	    for(i = 0; i < total; i++)
 	    {
 		str[items_no*3+2] = objet_recette[i][2];
-		if(double_invoc && i == total -1) *((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(1);
-		else *((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(liste_items_necro[creature_en_cours][i + 1 + liste_items_necro[creature_en_cours][0]*2]);
+		if(double_invoc && i == total -1) pack_u16_le(str+items_no*3+2+1, 1);
+		else pack_u16_le(str+items_no*3+2+1, liste_items_necro[creature_en_cours][i + 1 + liste_items_necro[creature_en_cours][0]*2]);
 		items_no++;
 	    }
 	    str[1]=items_no;
@@ -5631,7 +5627,7 @@ void fast_spell_cast(int actor_id) {
 		actor *a = get_actor_ptr_from_id(actor_id);
 		if (a) {
 			Uint8 b[8] = {TOUCH_PLAYER};
-			*((Uint32 *)(b+1)) = SDL_SwapLE32(actor_id);
+			pack_u32_le(b+1, actor_id);
 			my_tcp_send(my_socket, b, 5);
 			add_highlight(a->x_tile_pos, a->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
 		}
@@ -5643,7 +5639,7 @@ void fast_spell_cast(int actor_id) {
 
    if(selected_spell_target >= 0) {
      str[0] = ATTACK_SOMEONE;
-     *((int *)(str+1)) = SDL_SwapLE32((int)selected_spell_target);
+	 pack_u32_le(str+1, selected_spell_target);
      my_tcp_send (my_socket, str, 5);
    }
  }
