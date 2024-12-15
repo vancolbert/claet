@@ -238,23 +238,19 @@ void set_channel_tabs (const Uint32 *chans)
 	}
 }
 
-void set_active_channels (Uint8 active, const Uint32 *channels, int nchan)
-{
+void set_active_channels(Uint8 active, const Uint8 *data, int len) {
 	Uint32 tmp[MAX_ACTIVE_CHANNELS];
-	int i;
-
-	for (i = 0; i < MAX_ACTIVE_CHANNELS; i++)
-    {
+	int i, nchan = len/4;
+	for (i = 0; i < MAX_ACTIVE_CHANNELS; i++) {
 		tmp[i] = active_channels[i];
     }
-
-	for (i = 0; i < nchan; i++)
-		active_channels[i] = SDL_SwapLE32(channels[i]);
-	for ( ; i < MAX_ACTIVE_CHANNELS; i++)
+	for (i = 0; i < nchan; i++) {
+		active_channels[i] = unpack_u32_le(data + i*4);
+	}
+	for (; i < MAX_ACTIVE_CHANNELS; i++) {
 		active_channels[i] = 0;
-
-	set_channel_tabs (tmp);
-
+	}
+	set_channel_tabs(tmp);
 	current_channel = active;
 }
 

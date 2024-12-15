@@ -52,21 +52,7 @@ widget_list *get_input_widget(void);*/
  * \callgraph
  */
 void input_widget_move_to_win(int window_id);
-
-/*!
- * \ingroup chat_window
- * \brief   Sets the channels that the player is currently subscribed to
- *
- *      Sets the channels that the player is currently subscribed to
- *
- * \param active The index of the currently active channel
- * \param channels The channel numbers
- * \param nchan The number of channels
- *
- * \callgraph
- */
-void set_active_channels (Uint8 active, const Uint32 *channels, int nchan);
-
+void set_active_channels(Uint8 active, const Uint8 *data, int len);
 /*!
  * \ingroup chat_window
  * \brief   give the channel number of channel \a idx
