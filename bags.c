@@ -220,8 +220,8 @@ void add_bags_from_list (const Uint8 *data)
 
 	for(i=0;i<bags_no;i++) {
 		my_offset=i*5+1;
-		bag_x=SDL_SwapLE16(*((Uint16 *)(data+my_offset)));
-		bag_y=SDL_SwapLE16(*((Uint16 *)(data+my_offset+2)));
+		bag_x=unpack_u16_le(data+my_offset);
+		bag_y=unpack_u16_le(data+my_offset+2);
 		bag_id=*((Uint8 *)(data+my_offset+4));
 		if(bag_id >= NUM_BAGS) {
 			continue;
@@ -361,8 +361,8 @@ void get_bag_item (const Uint8 *data)
 
 	if (pos >= ITEMS_PER_BAG) return;
 
-	ground_item_list[pos].image_id= SDL_SwapLE16(*((Uint16 *)(data)));
-	ground_item_list[pos].quantity= SDL_SwapLE32(*((Uint32 *)(data+2)));
+	ground_item_list[pos].image_id= unpack_u16_le(data);
+	ground_item_list[pos].quantity= unpack_u32_le(data+2);
 	ground_item_list[pos].id= unset_item_uid;
 	ground_item_list[pos].pos= pos;
 }
@@ -376,7 +376,7 @@ void pick_up_all_items(void)
 		if(ground_item_list[itempos].quantity){
 			str[0]=PICK_UP_ITEM;
 			str[1]=itempos;
-			*((Uint32 *)(str+2))=SDL_SwapLE32(ground_item_list[itempos].quantity);
+			pack_u32_le(str+2, ground_item_list[itempos].quantity);
 			my_tcp_send(my_socket,str,6);
 		}
 	}
@@ -403,8 +403,8 @@ void get_bags_items_list (const Uint8 *data)
 	for(i=0;i<items_no;i++) {
 		my_offset= i*7+1;
 		pos= data[my_offset+6];
-		ground_item_list[pos].image_id= SDL_SwapLE16(*((Uint16 *)(data+my_offset)));
-		ground_item_list[pos].quantity= SDL_SwapLE32(*((Uint32 *)(data+my_offset+2)));
+		ground_item_list[pos].image_id= unpack_u16_le(data+my_offset);
+		ground_item_list[pos].quantity= unpack_u32_le(data+my_offset+2);
 		ground_item_list[pos].id= unset_item_uid;
 		ground_item_list[pos].pos= pos;
 	}
@@ -602,7 +602,7 @@ int click_ground_items_handler(window_info *win, int mx, int my, Uint32 flags)
 		if (item_dragged != -1){
 			str[0] = DROP_ITEM;
 			str[1] = item_dragged;
-			*((Uint32 *) (str + 2)) = SDL_SwapLE32(item_quantity);
+			pack_u32_le(str + 2, item_quantity);
 			my_tcp_send(my_socket, str, 6);
 			do_drop_item_sound();
 		}
@@ -617,7 +617,7 @@ int click_ground_items_handler(window_info *win, int mx, int my, Uint32 flags)
 
 		str[0]= PICK_UP_ITEM;
 		str[1]= ground_item_list[pos].pos;
-		*((Uint32 *)(str+2))= SDL_SwapLE32(quantity);
+		pack_u32_le(str+2, quantity);
 		my_tcp_send(my_socket,str,6);
 		do_get_item_sound();
 	}
