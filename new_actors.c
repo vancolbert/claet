@@ -779,7 +779,7 @@ void ajout_titre (const char *donnees, int longueur)
     short acteur_id;
     int i;
 
-	acteur_id=SDL_SwapLE16(*((short *)(donnees)));
+	acteur_id=unpack_u16_le(donnees);
 
 	for (i = 0 ; i < max_actors ; i++)
 	{
@@ -804,28 +804,13 @@ void ajout_titre (const char *donnees, int longueur)
 
 void add_enhanced_actor_from_server (const char *in_data, int len)
 {
-	short actor_id;
-	Uint32 buffs;
-	short x_pos;
-	short y_pos;
-	short z_rot;
-	short max_health;
-	short cur_health;
-	Uint32 actor_type;
-	Uint8 skin;
-	Uint8 hair;
+	Uint16 actor_id, x_pos, y_pos, z_rot, max_health, cur_health;
+	Uint32 buffs, actor_type;
+	Uint8 skin, hair;
 #ifdef NEW_EYES
 	Uint8 eyes;
 #endif
-	Uint8 shirt;
-	Uint8 pants;
-	Uint8 boots;
-	Uint8 frame;
-	Uint8 cape;
-	Uint8 head;
-	Uint8 shield;
-	Uint8 weapon;
-	Uint8 helmet;
+	Uint8 shirt, pants, boots, frame, cape, head, shield, weapon, helmet;
 #ifdef NECK_ITEMS
 	Uint8 neck;
 #endif
@@ -862,12 +847,13 @@ void add_enhanced_actor_from_server (const char *in_data, int len)
 #ifdef EXTRA_DEBUG
 	ERR();
 #endif
-	actor_id=SDL_SwapLE16(*((short *)(in_data)));
-	buffs=(((SDL_SwapLE16(*((char*)(in_data+3)))>>3)&0x1F) | (SDL_SwapLE16(((*((char*)(in_data+5)))>>3)&0x1F)<<5));	// Strip the last 5 bits of the X and Y coords for the buffs
-	x_pos=SDL_SwapLE16(*((short *)(in_data+2))) & 0x7FF;
-	y_pos=SDL_SwapLE16(*((short *)(in_data+4))) & 0x7FF;
-	buffs |= (SDL_SwapLE16(*((short *)(in_data+6))) & 0xFF80) << 3; // we get the 9 MSB for the buffs and leave the 7 LSB for a further use
-	z_rot=SDL_SwapLE16(*((short *)(in_data+8)));
+	actor_id = unpack_u16_le(in_data);
+	x_pos = unpack_u16_le(in_data+2);
+	y_pos = unpack_u16_le(in_data+4);
+	buffs = x_pos>>11 | y_pos>>11<<5 | unpack_u16_le(in_data+6)<<10;
+	x_pos &= 0x7ff;
+	y_pos &= 0x7ff;
+	z_rot = unpack_u16_le(in_data+8);
 	actor_type=*(in_data+10);
 	skin=*(in_data+12);
 	hair=*(in_data+13);
@@ -893,25 +879,27 @@ void add_enhanced_actor_from_server (const char *in_data, int len)
 	}
 
 	frame=*(in_data+22);
-	max_health=SDL_SwapLE16(*((short *)(in_data+23)));
-	cur_health=SDL_SwapLE16(*((short *)(in_data+25)));
+	max_health=unpack_u16_le(in_data+23);
+	cur_health=unpack_u16_le(in_data+25);
 	kind_of_actor=*(in_data+27);
 #if defined CUSTOM_LOOK && defined UID
 	//experimental code, not supported by the server
-	uniq_id = SDL_SwapLE32(*((Uint32*)(in_data+28)));
-	if(len > 32+(int)strlen(in_data+32)+2){
-		scale=((float)SDL_SwapLE16(*((short *)(in_data+32+strlen(in_data+32)+1)))/((float)ACTOR_SCALE_BASE));
+	uniq_id = unpack_u32_le(in_data+28);
+	int n = strlen(in_data+32);
+	if(len > 32+n+2){
+		scale=((float)unpack_u16_le(in_data+32+n+1)/((float)ACTOR_SCALE_BASE));
 #ifdef ATTACHED_ACTORS
-		if(len > 32+(int)strlen(in_data+32)+3)
-			attachment_type = in_data[32+strlen(in_data+32)+3];
+		if(len > 32+n+3)
+			attachment_type = in_data[32+n+3];
 #endif // ATTACHED_ACTORS
 	}
 #else
-	if(len > 28+(int)strlen(in_data+28)+2){
-		scale=((float)SDL_SwapLE16(*((short *)(in_data+28+strlen(in_data+28)+1)))/((float)ACTOR_SCALE_BASE));
+	int n = strlen(in_data+28);
+	if(len > 28+n+2){
+		scale=((float)unpack_u16_le(in_data+28+n+1)/((float)ACTOR_SCALE_BASE));
 #ifdef ATTACHED_ACTORS
-		if(len > 28+(int)strlen(in_data+28)+3)
-			attachment_type = (unsigned char)in_data[28+strlen(in_data+28)+3];
+		if(len > 28+n+3)
+			attachment_type = (unsigned char)in_data[28+n+3];
 #ifdef FR_VERSION
 			// Le serveur ne gère pas les acteurs liés
 			attachment_type = -1;

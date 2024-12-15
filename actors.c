@@ -2177,20 +2177,10 @@ CHECK_GL_ERRORS();
 
 void add_actor_from_server (const char *in_data, int len)
 {
-	short actor_id;
-	Uint32 buffs = 0;
-	short x_pos;
-	short y_pos;
-	short z_rot;
-	short max_health;
-	short cur_health;
-#ifdef FR_VERSION
-	Uint8 actor_type;
-#else //FR_VERSION
-	short actor_type;
-#endif //FR_VERSION
-	Uint8 frame;
-	int i;
+	Uint16 actor_id, x_pos, y_pos, z_rot, max_health, cur_health;
+	Uint32 buffs;
+	Uint8 actor_type, frame;
+	int i, n;
 	int dead=0;
 	int kind_of_actor;
 
@@ -2203,30 +2193,26 @@ void add_actor_from_server (const char *in_data, int len)
 	int attachment_type = -1;
 #endif // ATTACHED_ACTORS
 
-	actor_id=SDL_SwapLE16(*((short *)(in_data)));
-#ifndef EL_BIG_ENDIAN
-	buffs=((*((char *)(in_data+3))>>3)&0x1F) | (((*((char*)(in_data+5))>>3)&0x1F)<<5);	// Strip the last 5 bits of the X and Y coords for the buffs
-	x_pos=*((short *)(in_data+2)) & 0x7FF;
-	y_pos=*((short *)(in_data+4)) & 0x7FF;
-#else
-	buffs=((SDL_SwapLE16(*((char*)(in_data+3)))>>3)&0x1F | (SDL_SwapLE16(((*((char*)(in_data+5)))>>3)&0x1F)<<5));	// Strip the last 5 bits of the X and Y coords for the buffs
-	x_pos=SDL_SwapLE16(*((short *)(in_data+2))) & 0x7FF;
-	y_pos=SDL_SwapLE16(*((short *)(in_data+4))) & 0x7FF;
-#endif //EL_BIG_ENDIAN
-	buffs |= (SDL_SwapLE16(*((short *)(in_data+6))) & 0xFF80) << 3; // we get the 9 MSB for the buffs and leave the 7 LSB for a further use
-	z_rot=SDL_SwapLE16(*((short *)(in_data+8)));
-	actor_type=*(in_data+10);
+	actor_id = unpack_u16_le(in_data);
+	x_pos = unpack_u16_le(in_data+2);
+	y_pos = unpack_u16_le(in_data+4);
+	buffs = x_pos>>11 | y_pos>>11<<5 | unpack_u16_le(in_data+6)<<10;
+	x_pos &= 0x7ff;
+	y_pos &= 0x7ff;
+	z_rot = unpack_u16_le(in_data+8);
+	actor_type = *(in_data+10);
 
 	frame=*(in_data+11);
-	max_health=SDL_SwapLE16(*((short *)(in_data+12)));
-	cur_health=SDL_SwapLE16(*((short *)(in_data+14)));
+	max_health=unpack_u16_le(in_data+12);
+	cur_health=unpack_u16_le(in_data+14);
 	kind_of_actor=*(in_data+16);
-	if(len > 17+(int)strlen(in_data+17)+2){
-		scale=((float)SDL_SwapLE16(*((short *)(in_data+17+strlen(in_data+17)+1)))/((float)ACTOR_SCALE_BASE));
+	n = strlen(in_data+17);
+	if(len > 17+n+2){
+		scale=((float)unpack_u16_le(in_data+17+n+1)/((float)ACTOR_SCALE_BASE));
 
 #ifdef ATTACHED_ACTORS
-		if(len > 17+(int)strlen(in_data+17)+3)
-			attachment_type = (unsigned char)in_data[17+strlen(in_data+17)+3];
+		if(len > 17+n+3)
+			attachment_type = (unsigned char)in_data[17+n+3];
 #endif // ATTACHED_ACTORS
 	}
 
@@ -2383,7 +2369,7 @@ void add_actor_from_server (const char *in_data, int len)
 	actors_list[i]->dead=dead;
 	actors_list[i]->stop_animation=1;//helps when the actor is dead...
 	actors_list[i]->kind_of_actor=kind_of_actor;
-	if(strlen(&in_data[17]) >= 30)
+	if(n >= 30)
 		{
 			LOG_ERROR("%s (%d): %s/%d\n", bad_actor_name_length, actors_list[i]->actor_type,&in_data[17], (int)strlen(&in_data[17]));
 		}
