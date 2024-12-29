@@ -204,7 +204,7 @@ void blend_sse2(const Uint8* alpha, const Uint32 size, const Uint8* source0,
 	LOG_DEBUG_VERBOSE("&alpha[0]: %p", &(alpha[0]));
 	LOG_DEBUG_VERBOSE("dest[0]: %d", dest[0]);
 	LOG_DEBUG_VERBOSE("&dest[0]: %p", &(dest[0]));
-	LOG_DEBUG_VERBOSE("size: %p", size);
+	LOG_DEBUG_VERBOSE("size: %u", size);
 
 	t11 = _mm_cmpeq_epi32(t11, t11);
 

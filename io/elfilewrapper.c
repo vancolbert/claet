@@ -290,7 +290,7 @@ void load_zip_archive(const char* file_name)
 
 	if (file_name == 0)
 	{
-		LOG_ERROR("Empty zip file name", file_name);
+		LOG_ERROR("Empty zip file name");
 
 		return;
 	}

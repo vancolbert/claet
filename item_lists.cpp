@@ -386,7 +386,7 @@ namespace ItemLists
 		// don't use a list with unequal or empty data sets
 		if ((quantities.size() != image_ids.size()) || (quantities.size() != item_ids.size()) || quantities.empty())
 		{
-			LOG_ERROR("%s: %s name=[%s] #id=%d #cnts=%d #uid=%d\n", __FILE__, item_list_format_error, name_line.c_str(), image_ids.size(), quantities.size(), item_ids.size() );
+			LOG_ERROR("%s: %s name=[%s] #id=%d #cnts=%d #uid=%d\n", __FILE__, item_list_format_error, name_line.c_str(), (int)image_ids.size(), (int)quantities.size(), (int)item_ids.size() );
 			format_error = true;
 			return false;
 		}
