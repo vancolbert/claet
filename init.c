@@ -528,7 +528,6 @@ void read_bin_cfg()
 	cm_manurecipe_addnolimit  = (cfg_mem.manurecipes_options >> 2) & 1;
 	cm_manurecipe_wheelaffect = (cfg_mem.manurecipes_options >> 3) & 1;
 #endif //FR_VERSION
-	disable_storage_filter = (cfg_mem.misc_bool_options >> 4) & 1;
 	set_options_user_menus(cfg_mem.user_menu_win_x, cfg_mem.user_menu_win_y, cfg_mem.user_menu_options);
 
 	floating_counter_flags = cfg_mem.floating_counter_flags;
@@ -916,7 +915,6 @@ void save_bin_cfg()
 	cfg_mem.manurecipes_options |= cm_manurecipe_addnolimit << 2;
 	cfg_mem.manurecipes_options |= cm_manurecipe_wheelaffect << 3;
 #endif //ENGLISH
-	cfg_mem.misc_bool_options |= disable_storage_filter << 4;
 
 	get_options_user_menus(&cfg_mem.user_menu_win_x, &cfg_mem.user_menu_win_y, &cfg_mem.user_menu_options);
 
