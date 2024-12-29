@@ -137,4 +137,4 @@ CXXWARN=-Wall
 
 CC ?= gcc
 CXX ?= g++
-LINK ?= $(CC)
+LINK ?= $(CXX)

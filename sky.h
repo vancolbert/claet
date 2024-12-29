@@ -3,6 +3,9 @@
 
 
 #include "lights.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern int skybox_show_sky;
 extern int skybox_show_clouds;
@@ -93,4 +96,7 @@ static __inline__ void skybox_blend_current_colors(float result[4], float orig_t
 	blend_colors(result, color1, color2, t, 4);
 }
 
+#ifdef __cplusplus
+}
+#endif
 #endif // __SKY_H__

@@ -45,6 +45,7 @@
 #include "lights.h"
 #include "loading_win.h"
 #include "loginwin.h"
+#include "main.h"
 #include "multiplayer.h"
 #include "manufacture.h"
 #include "astrology.h"
@@ -148,8 +149,6 @@ int video_mode_set=0;
 #ifdef OSX
 int emulate3buttonmouse=0;
 #endif
-
-void read_command_line(); //from main.c
 
 #ifndef FASTER_MAP_LOAD
 static void load_harvestable_list()

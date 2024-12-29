@@ -44,7 +44,7 @@ cobjs := 2d_objects.o 3d_objects.o \
 	io/e3d_io.o io/elc_io.o	io/map_io.o io/elpathwrapper.o io/xmlcallbacks.o \
 	io/half.o io/normal.o io/elfilewrapper.o io/unzip.o io/ioapi.o io/zip.o io/ziputil.o	\
 	keys.o knowledge.o langselwin.o lights.o list.o load_gl_extensions.o loginwin.o loading_win.o	\
-	main.o manufacture.o map.o mapwin.o memory.o	\
+	manufacture.o map.o mapwin.o memory.o	\
 	md5.o mines.o minimap.o misc.o missiles.o multiplayer.o	\
 	new_actors.o new_character.o notepad.o \
 	openingwin.o image.o roche.o \
@@ -63,7 +63,7 @@ cobjs := 2d_objects.o 3d_objects.o \
 cxxobjs := actor_init.o cal3d_wrapper.o context_menu.o optimizer.o sendvideoinfo.o	\
 	exceptions/extendedexception.o xml/xmlhelper.o quest_log.o\
 	hud_timer.o engine/logging.o elloggingwrapper.o item_info.o io/cal3d_io_wrapper.o \
-	user_menus.o select.o trade_log.o item_lists.o named_colours.o\
+	user_menus.o select.o trade_log.o item_lists.o main.o named_colours.o \
 	icon_window.o command_queue.o \
 	eye_candy_wrapper.o \
 	eye_candy/eye_candy.o eye_candy/math_cache.o eye_candy/effect_lamp.o \
@@ -84,7 +84,7 @@ objs := $(cobjs) $(cxxobjs)
 depdir := .deps
 depflags = -MT $@ -MMD -MP -MF $(depdir)/$@.d
 depfiles := $(objs:%=$(depdir)/%.d)
-$(EXE) : $(objs) $(libs) ; $(CC) $(LDFLAGS) $(objs) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
+$(EXE) : $(objs) $(libs) ; $(CXX) $(LDFLAGS) $(objs) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
 $(cobjs) : %.o : %.c | $(depdir) ; $(CC) $(CFLAGS) $(depflags) -c $< -o $@
 $(cxxobjs) : %.o : %.cpp ; $(CXX) $(CXXFLAGS) $(depflags) -c $< -o $@
 $(depdir) : ; mkdir -p $@ $(srcdirs:%=$(depdir)/%)

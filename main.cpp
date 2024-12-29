@@ -37,6 +37,7 @@
 #include "errors.h"
 #include "events.h"
 #include "gl_init.h"
+#include "hash.h"
 #include "hud.h"
 #include "icon_window.h"
 #include "io/elfilewrapper.h"
@@ -45,6 +46,7 @@
 #include "item_lists.h"
 #include "interface.h"
 #include "lights.h"
+#include "main.h"
 #include "manufacture.h"
 #include "map.h"
 #include "minimap.h"
@@ -129,7 +131,7 @@ void cleanup_mem(void)
 	/* 3d objects */
 	destroy_all_3d_objects();
 	/* caches */
-	cache_e3d->free_item = &destroy_e3d;
+	cache_e3d->free_item = [](void *p) { destroy_e3d((e3d_object *)p); };
 	cache_delete(cache_e3d);
 	cache_e3d = NULL;
 #ifdef NEW_TEXTURES
@@ -198,7 +200,7 @@ int start_rendering()
 			if(!queue_isempty(message_queue)) {
 				message_t *message;
 
-				while((message = queue_pop(message_queue)) != NULL)
+				while((message = (message_t *)queue_pop(message_queue)) != NULL)
 				{
 					process_message_from_server(message->data, message->length);
 					free(message->data);
@@ -229,7 +231,7 @@ int start_rendering()
 			weather_sound_control();
 #endif	//NEW_SOUND
 
-			if(!limit_fps || (cur_time-last_time && 1000/(cur_time-last_time) <= limit_fps))
+			if(limit_fps < 1 || (cur_time-last_time && 1000/(cur_time-last_time) <= (Uint32)limit_fps))
 			{
 				weather_update();
 
@@ -346,8 +348,7 @@ int start_rendering()
 	return(0);
 }
 
-void	read_command_line()
-{
+void read_command_line() {
 	int i=1;
 	if(gargc<2)return;
 	for(;i<gargc;i++)
@@ -374,22 +375,12 @@ void	read_command_line()
 /* We need an additional function as the command line should be read after the config, but this
  * variable is needed to load the correct config.
  */
-char * check_server_id_on_command_line()
-{
-	if (gargc < 2)
-		return "";
-
-	// FIXME!! This should parse for -options rather than blindly returning the last option!
-
-	return gargv[gargc - 1];
+cstr check_server_id_on_command_line() {
+	return gargc < 2 ? "" : gargv[gargc - 1];
 }
 
-void check_log_level_on_command_line()
-{
-	Uint32 i;
-
-	for (i = 1; i < gargc; i++)
-	{
+void check_log_level_on_command_line() {
+	for (int i = 1; i < gargc; ++i) {
 		if (strncmp(gargv[i], "--log_level=", 12) == 0)
 		{
 			if (strcmp(gargv[i], "--log_level=error") == 0)
@@ -510,7 +501,7 @@ int main(int argc, char **argv)
 
 #ifdef WINDOWS
 // splits a char* into a char ** based on the delimiters
-static int makeargv(char *s, char *delimiters, char ***argvp)
+static int makeargv(char *s, cstr delimiters, char ***argvp)
 {
 	int i, numtokens;
 	char *snew, *t;
@@ -520,7 +511,7 @@ static int makeargv(char *s, char *delimiters, char ***argvp)
 
 	*argvp = NULL;
 	snew = s + strspn(s, delimiters);
-	if ((t = malloc(strlen(snew) + 1)) == NULL)
+	if ((t = (char *)malloc(strlen(snew) + 1)) == NULL)
 		return -1;
 	strcpy(t, snew);	// It's fine that this isn't strncpy, since t is sizeof(snew) + 1.
 
@@ -528,7 +519,7 @@ static int makeargv(char *s, char *delimiters, char ***argvp)
 	if (strtok(t, delimiters) != NULL)
 		for (numtokens = 1; strtok(NULL, delimiters) != NULL; numtokens++);
 
-	if ((*argvp = malloc((numtokens + 1)*sizeof(char *))) == NULL){
+	if ((*argvp = (char **)malloc((numtokens + 1)*sizeof(char *))) == NULL){
 		free(t);
 		return -1;
 	}
@@ -560,6 +551,7 @@ typedef struct Callsite { void *addr, *from; } Callsite;
 typedef struct Trace { uint8_t n; Callsite a[MAX_BT]; } Trace;
 static Trace thread_traces[MAX_THREADS];
 static __thread int thread_id;
+extern "C" {
 void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *func_addr, void *ret_addr) {
 	int i = thread_id;
 	if (!i) {
@@ -573,6 +565,7 @@ void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *func
 void __attribute__((no_instrument_function)) __cyg_profile_func_exit(void *func_addr, void *ret_addr) {
 	--thread_traces[thread_id].n;
 }
+} // extern "C"
 static void get_crashlog_path(char *o, int n) {
 	const char *d = get_path_config_base();
 	int l = safe_snprintf(o, n, "%scrashlog0.txt", d);
@@ -581,7 +574,7 @@ static void get_crashlog_path(char *o, int n) {
 static int get_backtrace_via_stackwalk(void **a, int na, CONTEXT *cr) {
 	CONTEXT c = *cr;
 	c.ContextFlags = CONTEXT_ALL;
-	#define x_regs(x) x(PC, Eip, Rip) x(Stack, Esp, Rsp) x(Frame, Ebp, Rbp)
+	#define x_regs(x) x(PC, Eip, Rip) x(Frame, Ebp, Rbp) x(Stack, Esp, Rsp)
 	#if __x86_64__
 	DWORD mt = IMAGE_FILE_MACHINE_AMD64;
 	#define as_init(n, e, r) .Addr##n = {.Offset = c.r, .Mode = AddrModeFlat},

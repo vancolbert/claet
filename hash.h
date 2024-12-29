@@ -2,6 +2,9 @@
 #define __HASH__
 
 #include <SDL.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct _hash_entry{
 	void *key;
@@ -47,4 +50,7 @@ int cmp_fn_str(void *key1, void *key2);
 
 Uint32 mem_hash(const void* str, const Uint32 len);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

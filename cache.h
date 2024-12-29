@@ -42,7 +42,7 @@ typedef struct
 	Uint32	total_size;		/*!< total size currently allocated */
 	Uint32	time_limit;		/*!< limit on LRU time before forcing a scan */
 	Uint32	size_limit;		/*!< limit on size before forcing a scan */
-	void	(*free_item)();	/*!< routine to call to free an item */
+	void (*free_item)(void *);	/*!< routine to call to free an item */
 	Uint32	(*compact_item)();	/*!< routine to call to reduce memory usage without freeing */
 } cache_struct;
 
