@@ -71,13 +71,17 @@ endif
 ifndef LINK
 LINK=gcc
 endif
+V = 0
+VERBOSE = 0
+at_0 = @
+at := $(at_$(shell echo $$(($(V)+$(VERBOSE)))))
 
 all: $(EXE)
 
 # the compile targets
 $(EXE): $(OBJS)
 	@echo "  LINK $(EXE)"
-	@$(LINK) $(CFLAGS) -o $(EXE) $(OBJS) $(LDFLAGS)
+	$(at)$(LINK) $(CFLAGS) -o $(EXE) $(OBJS) $(LDFLAGS)
 
 #recompile on Makefile or conf change
 #.depend $(OBJS): Makefile.linux make.conf
@@ -86,14 +90,14 @@ DEPS_MAGIC := $(shell mkdir .deps .deps/io .deps/shader .deps/eye_candy .deps/ex
 
 $(COBJS): %.o: %.c Makefile.linux make.conf
 	@echo "  CC   $@"
-	@if $(CC) $(CFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
+	$(at)if $(CC) $(CFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
 		mv ".deps/$@.pp" ".deps/$@.P"; \
 	else rm -f ".deps/$@.pp"; exit 1; \
 	fi
 
 $(CXXOBJS): %.o: %.cpp Makefile.linux make.conf
 	@echo "  CXX  $@"
-	@if $(CXX) $(CXXFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
+	$(at)if $(CXX) $(CXXFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
 		mv ".deps/$@.pp" ".deps/$@.P"; \
 	else rm -f ".deps/$@.pp"; exit 1; \
 	fi
