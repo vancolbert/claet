@@ -1083,25 +1083,14 @@ void add_enhanced_actor_from_server (const char *in_data, int len)
 #if defined(CUSTOM_LOOK) || defined(NEW_TEXTURES)
 		my_tolower(onlyname);
 #endif //CUSTOM_LOOK
-
-		//perfect hashing of guildtag
- 		switch(strlen(guild))
- 		{
-		case 0:
-			guild_id = 0;
-			break;
-		case 1:
-			guild_id = guild[0];
-			break;
- 		case 2:
- 			guild_id = guild[0] + (guild[1] << 8);
- 			break;
- 		case 3:
- 			guild_id = guild[0] + (guild[1] << 8) + (guild[2] << 16);
- 			break;
- 		default:
- 			guild_id = guild[0] + (guild[1] << 8) + (guild[2] << 16) + (guild[3] << 24);
- 			break;
+		Uint8 *h = (Uint8 *)guild;
+		guild_id = 0;
+		switch (strlen(guild)) {
+		default: guild_id += (Uint32)h[3]<<24;
+		case 3: guild_id += (Uint32)h[2]<<16;
+		case 2: guild_id += (Uint32)h[1]<<8;
+		case 1: guild_id += h[0];
+		case 0: break;
 		}
 	}
 
