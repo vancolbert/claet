@@ -22,8 +22,8 @@ extern "C" {
 /*! @} */
 
 #define x_keys(x) \
-x(K_QUIT, 0, "Fermeture du jeu") \
-x(K_QUIT_ALT, 0, "Fermeture du jeu (alternatif)") \
+x(K_QUIT, CTRL|SHIFT|'q', "Fermeture du jeu") \
+x(K_QUIT_ALT, CTRL|SHIFT|'q', "Fermeture du jeu (alternatif)") \
 x(K_CAMERAUP, SDLK_UP, "Rotation caméra vers le haut") \
 x(K_CAMERADOWN, SDLK_DOWN, "Rotation caméra vers le bas") \
 x(K_ZOOMOUT, SDLK_PAGEDOWN, "Zoom arrière") \
@@ -88,7 +88,7 @@ x(K_COPY, CTRL|'c', "Copier texte au presse-papier") \
 x(K_PASTE, CTRL|'v', "Coller texte du presse-papier") \
 x(K_COPY_ALT, CTRL|SDLK_INSERT, "Copier texte (alternatif)") \
 x(K_PASTE_ALT, SHIFT|SDLK_INSERT, "Coller texte (alternatif)") \
-x(K_ECDEBUGWIN, 0, "Fenêtre debug eye candy") \
+x(K_ECDEBUGWIN, CTRL|SHIFT|'e', "Fenêtre debug eye candy") \
 x(K_INCUNABLES, CTRL|'g', "Fenêtre incunables") \
 x(K_OBTENIR, ALT|'r', "Ouvrir et ramasser un sac") \
 x(K_VOIR_MUSIQUE_CARTE, ALT|'z', "Voir les zones des musiques sur les cartes") \
@@ -134,7 +134,7 @@ x_keys(as_decl)
  *
  * \callgraph
  */
-void read_key_config();
+void read_key_config(void);
 
 
 /*!

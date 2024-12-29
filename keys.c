@@ -8,330 +8,230 @@
 #include "asc.h"
 #include "init.h"
 #include "misc.h"
-#ifdef FASTER_MAP_LOAD
 #include "io/elfilewrapper.h"
-#endif
-#ifndef ENGLISH
 #include "io/elpathwrapper.h"
-#endif //ENGLISH
-
 #define as_defn(k, s, d) Uint32 k = s;
 x_keys(as_defn)
-#undef as_defn
-
-typedef struct
-{
-	char name[25];
-	Uint32 *value;
-} key_store_entry;
-
-static key_store_entry key_store[] = {
-	#define as_entry(k, s, d) { #k, &k },
-	x_keys(as_entry)
-	#undef as_entry
+typedef struct Kentry { Uint32 *pval; cstr name; int len; } Kentry;
+static Kentry kentries[] = {
+	#define as_kentry(k, s, d) { &k, #k+2, sizeof(#k)-3 },
+	x_keys(as_kentry)
 };
-
-
-Uint32 get_key_value(const char* name)
-{
-	size_t num_keys = sizeof(key_store)/sizeof(key_store_entry);
-	size_t i;
-	if ((name == NULL) || strlen(name) == 0)
-	{
-		LOG_ERROR("%s() empty name\n", __FUNCTION__);
-		return 0;
-	}
-	for (i=0; i<num_keys; i++)
-	{
-		if (strcasecmp(name, key_store[i].name) == 0)
-			return *key_store[i].value;
-	}
-	return 0;
+static int cmpke(const void *p, const void *q) {
+	Kentry *a = (Kentry *)p, *b = (Kentry *)q;
+	int d = a->len - b->len;
+	return d ? d : strncasecmp(a->name, b->name, a->len);
 }
-
-static void add_key(Uint32 *key, Uint32 n)
-{
-	switch (n)
-	{
-		case 303:
-		case 304:
-			*key |= SHIFT;
-			break;
-		case 305:
-		case 306:
-			*key |= CTRL;
-			break;
-		case 307:
-		case 308:
-			*key |= ALT;
-			break;
-		default:
-			*key = (n & 0xFFFF) | (*key &0xFFFF0000);
-        }
+static inline Kentry *find_kentry(cstr n, int l) {
+	Kentry t = {0, n, l};
+	return bsearch(&t, kentries, countof(kentries), sizeof(t), cmpke);
 }
-
-static Uint32 CRC32(const char *data, int len)
-{
-	unsigned int result = 0;
-	int i, j;
-	unsigned char octet;
-
-	for (i = 0; i < len; i++)
-	{
-		octet = *(data++);
-		for (j = 0; j < 8; j++)
-		{
-			if ((octet >> 7) ^ (result >> 31))
-				result = (result << 1) ^ 0x04c11db7;
-			else
-				result = (result << 1);
-			octet <<= 1;
-		}
-	}
-
-	return ~result;
+Uint32 get_key_value(cstr name) {
+	Kentry *e = find_kentry(name, strlen(name));
+	return e ? *e->pval : 0;
 }
-
-static Uint16 get_key_code(const char *key)
-{
-	int len = strlen(key);
-
-	if (len==1)
-	{
-			return tolower(key[0]);
-	}
-	else
-	{
-		Uint32 crc = CRC32(key,len);
-		switch(crc){
-			case 0x414243d2: //UP
-				return 273;
-			case 0x8b9c5c32: //F1
-				return 282;
-			case 0x86df7aeb: //F2
-				return 283;
-			case 0x821e675c: //F3
-				return 284;
-			case 0x9c593759: //F4
-				return 285;
-			case 0x98982aee: //F5
-				return 286;
-			case 0x95db0c37: //F6
-				return 287;
-			case 0x911a1180: //F7
-				return 288;
-			case 0xa955ac3d: //F8
-				return 289;
-			case 0xad94b18a: //F9
-				return 290;
-			case 0xbbde3454: //F10
-				return 291;
-			case 0xbf1f29e3: //F11
-				return 292;
-			case 0xb25c0f3a: //F12
-				return 293;
-			case 0xb69d128d: //F13
-				return 294;
-			case 0xa8da4288: //F14
-				return 295;
-			case 0xac1b5f3f: //F15
-				return 296;
-			case 0xe5b332af: //BACKSPACE
-				return 8;
-			case 0x3d6742da: //TAB
-				return 9;
-			case 0xe4f512ce: //CLEAR
-				return 12;
-			case 0xe5c642f: //RETURN
-				return 13;
-			case 0x1a3dbcf4: //PAUSE
-				return 19;
-			case 0xb23e322f: //ESCAPE
-				return 27;
-			case 0xe0ea4208: //SPACE
-				return 32;
-			case 0x3f048816: //DELETE
-				return 127;
-			case 0x5dd541: //KP0
-				return 256;
-			case 0x49cc8f6: //KP1
-				return 257;
-			case 0x9dfee2f: //KP2
-				return 258;
-			case 0xd1ef398: //KP3
-				return 259;
-			case 0x1359a39d: //KP4
-				return 260;
-			case 0x1798be2a: //KP5
-				return 261;
-			case 0x1adb98f3: //KP6
-				return 262;
-			case 0x1e1a8544: //KP7
-				return 263;
-			case 0x265538f9: //KP8
-				return 264;
-			case 0x2294254e: //KP9
-				return 265;
-			case 0xc9681663: //KP_PERIOD
-				return 266;
-			case 0xf2032002: //KP_DIVIDE
-				return 267;
-			case 0xc69c9177: //KP_MULTIPLY
-				return 268;
-			case 0xe05a3b75: //KP_MINUS
-				return 269;
-			case 0x7a14ede0: //KP_PLUS
-				return 270;
-			case 0xb95fb1fa: //KP_ENTER
-				return 271;
-			case 0x997d27b6: //KP_EQUALS
-				return 272;
-			case 0x412c789a: //DOWN
-				return 274;
-			case 0xcfd43bcf: //RIGHT
-				return 275;
-			case 0x14618acf: //LEFT
-				return 276;
-			case 0xb448467c: //INSERT
-				return 277;
-			case 0xd59321ba: //HOME
-				return 278;
-			case 0x863456b7: //END
-				return 279;
-			case 0xd541afe1: //PAGEUP
-				return 280;
-			case 0x77a53c61: //PAGEDOWN
-				return 281;
-			case 0x8563dfd4: //NUMLOCK
-				return 300;
-			case 0x4b601de5: //CAPSLOCK
-				return 301;
-			case 0x7b642f: //SCROLLOCK
-				return 302;
-			case 0x6fa8765e: //RSHIFT
-				return 303;
-			case 0x5a59f8b9: //LSHIFT
-				return 304;
-			case 0xc535c663: //RCTRL
-				return 305;
-			case 0xb5e083f0: //LCTRL
-				return 306;
-			case 0xf7a834fb: //RALT
-				return 307;
-			case 0x39b9e58e: //LALT
-				return 308;
-			case 0x34796737: //RMETA
-				return 309;
-			case 0x44ac22a4: //LMETA
-				return 310;
-			case 0x8ec5890c: //LSUPER
-				return 311;
-			case 0xbb3407eb: //RSUPER
-				return 312;
-			case 0x2d5a7586: //MODE
-				return 313;
-			case 0x87140862: //COMPOSE
-				return 314;
-			case 0x512a6d4b: //HELP
-				return 315;
-			case 0xdc87c39e: //PRINT
-				return 316;
-			case 0xbdf2d984: //SYSREQ
-				return 317;
-			case 0xd318f49: //BREAK
-				return 318;
-			case 0x46854e9d: //MENU
-				return 319;
-			case 0x8758b6ec: //POWER
-				return 320;
-			case 0x1e43eaa9: //EURO
-				return 321;
-			case 0xdf6ba7e: //UNDO
-				return 322;
-			default:
-				return SDLK_UNKNOWN;
-		}
-	}
+#define x_kcodes(x) \
+x(UP,273) \
+x(F1,282) \
+x(F2,283) \
+x(F3,284) \
+x(F4,285) \
+x(F5,286) \
+x(F6,287) \
+x(F7,288) \
+x(F8,289) \
+x(F9,290) \
+x(F10,291) \
+x(F11,292) \
+x(F12,293) \
+x(F13,294) \
+x(F14,295) \
+x(F15,296) \
+x(BACKSPACE,8) \
+x(TAB,9) \
+x(CLEAR,12) \
+x(RETURN,13) \
+x(PAUSE,19) \
+x(ESCAPE,27) \
+x(SPACE,32) \
+x(DELETE,127) \
+x(KP0,256) \
+x(KP1,257) \
+x(KP2,258) \
+x(KP3,259) \
+x(KP4,260) \
+x(KP5,261) \
+x(KP6,262) \
+x(KP7,263) \
+x(KP8,264) \
+x(KP9,265) \
+x(KP_PERIOD,266) \
+x(KP_DIVIDE,267) \
+x(KP_MULTIPLY,268) \
+x(KP_MINUS,269) \
+x(KP_PLUS,270) \
+x(KP_ENTER,271) \
+x(KP_EQUALS,272) \
+x(DOWN,274) \
+x(RIGHT,275) \
+x(LEFT,276) \
+x(INSERT,277) \
+x(HOME,278) \
+x(END,279) \
+x(PAGEUP,280) \
+x(PAGEDOWN,281) \
+x(NUMLOCK,300) \
+x(CAPSLOCK,301) \
+x(SCROLLOCK,302) \
+x(RSHIFT,303) \
+x(LSHIFT,304) \
+x(RCTRL,305) \
+x(LCTRL,306) \
+x(RALT,307) \
+x(LALT,308) \
+x(RMETA,309) \
+x(LMETA,310) \
+x(LSUPER,311) \
+x(RSUPER,312) \
+x(MODE,313) \
+x(COMPOSE,314) \
+x(HELP,315) \
+x(PRINT,316) \
+x(SYSREQ,317) \
+x(BREAK,318) \
+x(MENU,319) \
+x(POWER,320) \
+x(EURO,321) \
+x(UNDO,322)
+typedef struct Kcode { cstr name; int len; int val; } Kcode;
+static Kcode kcodes[] = {
+	#define as_kcode(n,v) {#n, sizeof(#n)-1, v},
+	x_kcodes(as_kcode)
+};
+static cstr kctab[512];
+static int cmpkc(const void *p, const void *q) {
+	Kcode *a = (Kcode *)p, *b = (Kcode *)q;
+	int d = a->len - b->len;
+	return d ? d : strncasecmp(a->name, b->name, a->len);
 }
-
-static void parse_key_line(const char *line)
-{
-	char kstr[100], t1[100], t2[100], t3[100], t4[100];
-	Uint32 key = 0;
-	int nkey = sscanf(line, " #K_%99s = %99s %99s %99s %99s", kstr,
-		t1, t2, t3, t4);
-	size_t num_keys = sizeof(key_store)/sizeof(key_store_entry);
-	size_t i;
-
-	if (nkey <= 1)
+static int get_kcode(cstr s, int n) {
+	if (n == 1) {
+		return tolower(s[0]);
+	}
+	Kcode t = {s, n}, *r;
+	r = bsearch(&t, kcodes, countof(kcodes), sizeof(t), cmpkc);
+	return r ? r->val : SDLK_UNKNOWN;
+}
+static inline Uint32 update_key(Uint32 k, Uint32 v) {
+	if (v == 300 || v == 304) {
+		k |= SHIFT;
+	} else if (v == 305 || v == 306) {
+		k |= CTRL;
+	} else if (v == 307 || v == 308) {
+		k |= ALT;
+	} else {
+		k = (v & 0xffff) | (k & 0xffff0000);
+	}
+	return k;
+}
+typedef struct Parser { cstr path, line, c; int ln; } Parser;
+static inline int cspace(char c) { return c == ' ' || c == '\t'; }
+static inline int cword(char c) { return c && c != ' ' && c != '\t' && c != '\r' && c != '\n'; }
+static inline void skip_whitespace(Parser *p) {
+	for (; cspace(*p->c); ++p->c);
+}
+static inline int consume(Parser *p, cstr w) {
+	for (; *p->c && *w && *p->c == *w; ++p->c, ++w);
+	return !*w;
+}
+static inline cstr get_word(Parser *p, int *out_len) {
+	cstr r = p->c;
+	for (; cword(*p->c); ++p->c);
+	*out_len = p->c - r;
+	return *out_len ? r : 0;
+}
+static inline int more(Parser *p) { return *p->c && *p->c != '\r' && *p->c != '\n'; }
+static inline void next_line(Parser *p, cstr line) {
+	p->c = p->line = line;
+	++p->ln;
+}
+#define warn(f, ...) LOG_ERROR("%s line %d: " f, p->path, p->ln, ##__VA_ARGS__)
+static void parse_key(Parser *p) {
+	skip_whitespace(p);
+	if (!consume(p,  "#K_")) {
 		return;
-
-	add_key(&key, get_key_code(t1));
-	if (nkey > 2 && t2[0] != '#')
-	{
-		add_key(&key, get_key_code(t2));
-		if (nkey > 3 && t3[0] != '#')
-		{
-			add_key(&key, get_key_code(t3));
-			if (nkey > 4 && t4[0] != '#')
-			{
-				add_key(&key, get_key_code(t4));
-			}
+	}
+	int c, knl, wl;
+	cstr kn = get_word(p, &knl), w;
+	skip_whitespace(p);
+	if (!consume(p, "=")) {
+		warn("expecting '='");
+		return;
+	}
+	Uint32 k = 0;
+	while (more(p)) {
+		skip_whitespace(p);
+		if ((w = get_word(p, &wl))) {
+			c = get_kcode(w, wl);
+			k = update_key(k, c);
 		}
 	}
-
-	for (i=0; i<num_keys; i++)
-		if (strcasecmp(kstr, &key_store[i].name[3]) == 0) // skip "#K_"
-		{
-			*key_store[i].value = key;
-			break;
+	if (k) {
+		Kentry *e = find_kentry(kn, knl);
+		if (e) {
+			*e->pval = k;
+		} else {
+			warn("unrecognized key name \"%.*s\"", knl, kn);
 		}
+	} else {
+		warn("invalid syntax \"%s\"", p->line);
+	}
 }
-
-// load the dynamic definitions for keys
-void read_key_config()
-{
-	char line[512];
-	el_file_ptr f;
-	size_t num_keys = sizeof(key_store)/sizeof(key_store_entry);
-	Uint32 last_key_value = SDLK_LAST;
-	size_t i;
-
-#ifdef FR_VERSION
+static void init_keydata(void) {
+	qsort(kentries, countof(kentries), sizeof(*kentries), cmpke);
+	qsort(kcodes, countof(kcodes), sizeof(*kcodes), cmpkc);
+	#define as_kctab(n, c) kctab[c] = #n;
+	x_kcodes(as_kctab)
+}
+void read_key_config(void) {
+	init_keydata();
+	cstr path = "key.ini";
 #ifdef LINUX
-	f = el_open_custom("key_linux.ini");
-#else //LINUX
-	f = el_open_custom("key.ini");
-#endif //LINUX
-#else //FR_VERSION
-	f = el_open_custom("key.ini");
-#endif //FR_VERSION
-	if (f)
-	{
-		while (el_fgets(line, sizeof(line), f))
-		{
-			parse_key_line(line);
+	path = "key_linux.ini";
+#endif
+	el_file_ptr f = el_open_custom(path);
+	if (f) {
+		char l[512];
+		Parser _p = {path}, *p = &_p;
+		while (el_fgets(l, sizeof(l), f)) {
+			next_line(p, l);
+			parse_key(p);
 		}
 		el_close(f);
+	} else {
+		LOG_ERROR("el_open_custom failed for key config path \"%s\"", path);
 	}
-
-	// look for unassigned keys and assign one up from SDLK_LAST
-	for (i=0; i<num_keys; i++)
-		if (*key_store[i].value == 0)
-			*key_store[i].value = ++last_key_value;
+	Uint32 v = SDLK_LAST;
+	#define as_init(k, s, d) if (!k) k = ++v;
+	x_keys(as_init)
 }
-
-// Returns (in the buffer provided) a string describing the specified keydef.
-const char *get_key_string(Uint32 keydef, char *buf, size_t buflen)
-{
-	char base = keydef & 0xFF;
-	char *mod = "";
-	if (keydef & CTRL)
-		mod = "ctrl-";
-	else if (keydef & ALT)
-		mod = "alt-";
-	else if (keydef & SHIFT)
-		mod = "shift-";
-	safe_snprintf(buf, buflen, "%s%c", mod, base);
+cstr get_key_string(Uint32 k, char *buf, size_t buflen) {
+	Uint32 b = k & ~(CTRL | ALT | SHIFT);
+	cstr c = k & CTRL ? "ctrl-" : "";
+	cstr a = k & ALT ? "alt-" : "";
+	cstr s = k & SHIFT ? "shift-" : "";
+	cstr d = b < countof(kctab) ? kctab[b] : 0;
+	char t[16] = {0};
+	if (!d) {
+		if (32 < b && b < 127) {
+			t[0] = 'A' <= b && b <= 'Z' ? b | 32 : b;
+		} else if (!b || b > SDLK_LAST) {
+			safe_snprintf(t, sizeof(t), "(aucun)");
+		} else {
+			safe_snprintf(t, sizeof(t), "\\x%04x", b);
+		}
+		d = t;
+	}
+	safe_snprintf(buf, buflen, "%s%s%s%s", c, a, s, d);
 	return buf;
 }
