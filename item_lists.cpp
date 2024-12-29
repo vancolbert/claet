@@ -885,6 +885,7 @@ namespace ItemLists
 			make_active_visable();
 			close_ipu(&ipu_item_list_name);
 			Vars::quantity_input()->close();
+			cancel_withdraw();
 		}
 	}
 	void List_Window::setup_withdraw(void) {
