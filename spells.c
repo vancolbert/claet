@@ -3163,211 +3163,26 @@ default:
 #endif //ENGLISH
 }
 
-
-void move_spell_on_quickbar (int pos, int direction)
-{
-	int i=pos;
-	mqbdata * mqb_temp;
-#ifdef FR_VERSION
-#ifndef FR_MORE_MQB
-    if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-	switch (direction) {
-		case 0 : // up
-		    if (pos == 1) return;
-			mqb_temp = mqb_data[i-1];
-			mqb_data[i-1] = mqb_data[i];
-			mqb_data[i] = mqb_temp;
-			break;
-		case 1 : // down
-			if (pos == QUICKSPELLS_MAXSIZE) return;
-			mqb_temp = mqb_data[i+1];
-			mqb_data[i+1] = mqb_data[i];
-			mqb_data[i] = mqb_temp;
-			break;
-		case 2 : // first
-		    if (pos == 1) return;
-			mqb_temp = mqb_data[pos];
-			for (i=pos; i>1; i--) mqb_data[i] = mqb_data[i-1];
-			mqb_data[1] = mqb_temp;
-			break;
-		case 3 : // last
-			if (pos == quickspells_nb) return;
-			mqb_temp = mqb_data[pos];
-			for (i=pos; i<quickspells_nb; i++) mqb_data[i] = mqb_data[i+1];
-			mqb_data[quickspells_nb] = mqb_temp;
-			break;
-	}
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data[i-1];
-				mqb_data[i-1] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data[i+1];
-				mqb_data[i+1] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data[pos];
-				for (i=pos; i>1; i--) mqb_data[i] = mqb_data[i-1];
-				mqb_data[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data[i] = mqb_data[i+1];
-				mqb_data[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 1:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data2[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data2[i-1];
-				mqb_data2[i-1] = mqb_data2[i];
-				mqb_data2[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data2[i+1];
-				mqb_data2[i+1] = mqb_data2[i];
-				mqb_data2[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data2[pos];
-				for (i=pos; i>1; i--) mqb_data2[i] = mqb_data2[i-1];
-				mqb_data2[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data2[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data2[i] = mqb_data2[i+1];
-				mqb_data2[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 2:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data3[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data3[i-1];
-				mqb_data3[i-1] = mqb_data3[i];
-				mqb_data3[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data3[i+1];
-				mqb_data3[i+1] = mqb_data3[i];
-				mqb_data3[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data3[pos];
-				for (i=pos; i>1; i--) mqb_data3[i] = mqb_data3[i-1];
-				mqb_data3[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data3[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data3[i] = mqb_data3[i+1];
-				mqb_data3[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 3:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data4[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data4[i-1];
-				mqb_data4[i-1] = mqb_data4[i];
-				mqb_data4[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data4[i+1];
-				mqb_data4[i+1] = mqb_data4[i];
-				mqb_data4[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data4[pos];
-				for (i=pos; i>1; i--) mqb_data4[i] = mqb_data4[i-1];
-				mqb_data4[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data4[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data4[i] = mqb_data4[i+1];
-				mqb_data4[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 4:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data5[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data5[i-1];
-				mqb_data5[i-1] = mqb_data5[i];
-				mqb_data5[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data5[i+1];
-				mqb_data5[i+1] = mqb_data5[i];
-				mqb_data5[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data5[pos];
-				for (i=pos; i>1; i--) mqb_data5[i] = mqb_data5[i-1];
-				mqb_data5[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data5[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data5[i] = mqb_data5[i+1];
-				mqb_data5[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	
-	default:
-		break;
-	}
-#endif //FR_MORE_MQB
-	save_quickspells();
-#else //FR_VERSION
-	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) return;
-	if ((pos ==1 && direction==0)||(pos==num_quickbar_slots && direction==1)) return;
-	if (direction==0){
-		mqb_temp=mqb_data[i-1];
-		mqb_data[i-1]=mqb_data[i]; //move it up
-		mqb_data[i]=mqb_temp; //move it up
+void move_spell_on_quickbar(int pos, int where) {
+	mqbdata **l[] = {mqb_data, mqb_data2, mqb_data3, mqb_data4, mqb_data5}, **m = l[quickspell_mqb_selected], *t;
+	int i = pos, last = 1;
+	for (; last <= QUICKSPELLS_MAXSIZE && m[last]; ++last);
+	if (i > 0 && i <= --last && (t = m[i])) {
+		enum { w_up, w_down, w_first, w_last };
+		if (where == w_up && i > 1) {
+			m[i--] = m[pos - 1];
+		} else if (where == w_down && i < last) {
+			m[i++] = m[pos + 1];
+		} else if (where == w_first && i > 1) {
+			memmove(m + 2, m + 1, sizeof(*m)*(i - 1));
+			i = 1;
+		} else if (where == w_last && i < last) {
+			memmove(m + i, m + i + 1, sizeof(*m)*(last - i));
+			i = last;
+		}
+		m[i] = t;
 		save_quickspells();
 	}
-	else if(direction==1){
-		if(mqb_data[pos+1] == NULL) return;
-		mqb_temp=mqb_data[i+1];
-		mqb_data[i+1]=mqb_data[i]; //move it down
-		mqb_data[i]=mqb_temp; //move it down
-		save_quickspells();
-	}
-#endif //FR_VERSION
 }
 
 static mqbdata* build_quickspell_data(const Uint32 spell_id)
