@@ -2,19 +2,19 @@ include make.defaults
 HOST ?= i686-w64-mingw32
 SYSROOT ?= ../sys.$(HOST)
 EXE ?= le_$(HOST).exe
-trace ?= 0
 ver_git := $(shell git describe --always --tag)
 defs := $(FEATURES:%=-D%) -DELC -DWINDOWS -DWINVER=0x601 -D_7ZIP_ST -DLIBXML_STATIC -DAL_LIBTYPE_STATIC -DVER_GIT=\"$(ver_git)\"
-f := -O2 -g -pipe -march=i686 -mtune=generic -mwindows -mstackrealign -fno-strict-aliasing -fno-omit-frame-pointer
+f := -O2 -g -pipe -march=i686 -mtune=generic -mwindows -mstackrealign -fexceptions -fno-strict-aliasing -fno-omit-frame-pointer
+trace ?= 0
 ifeq ($(trace), 1)
 	f += -finstrument-functions
 	EXE := trace-$(EXE)
 endif
 f += $(defs) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
 warn = -Wall -Werror -Wfatal-errors
-CFLAGS := $(warn) $f $(CFLAGS)
-CXXFLAGS := $(warn) $f $(CXXFLAGS)
-LDFLAGS := -static -static-libgcc -static-libstdc++ -Wl,-Map=$(EXE)-link.map $(LDFLAGS)
+CFLAGS := $f $(warn) $(CFLAGS)
+CXXFLAGS := $f $(warn) $(CXXFLAGS)
+LDFLAGS := -mwindows -static -static-libgcc -static-libstdc++ -Wl,-Map=$(EXE)-link.map $(LDFLAGS)
 extlibdir := $(SYSROOT)/lib
 extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis libogg libxml2 libcal3d libpng libjpeg libiconv libz
 winlibdir := $(SYSROOT)/$(HOST)/lib

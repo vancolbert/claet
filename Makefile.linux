@@ -28,10 +28,10 @@ endif
 # Si on veut utiliser gprof décommenter la ligne suivante
 #OPTIONS += -pg
 
-CFLAGS=$(PLATFORM) $(CWARN) -O0 -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-_CFLAGS=$(PLATFORM) -O2 -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-CXXFLAGS=$(PLATFORM) $(CXXWARN) -O0 -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
-_CXXFLAGS=$(PLATFORM) -O3 -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) -fno-strict-aliasing $(EXTRA_INCLUDES)
+CFLAGS=$(PLATFORM) $(CWARN) -O0 -fexceptions -fno-strict-aliasing -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
+_CFLAGS=$(PLATFORM) -O2 -fexceptions -fno-strict-aliasing -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
+CXXFLAGS=$(PLATFORM) $(CXXWARN) -O0 -fexceptions -fno-strict-aliasing -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
+_CXXFLAGS=$(PLATFORM) -O3 -fexceptions -fno-strict-aliasing -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
 
 PNG_SCREENSHOT_LIBS = $(shell pkg-config libpng --libs)
 LDFLAGS=$(shell sdl-config --libs) \

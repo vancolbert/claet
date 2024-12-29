@@ -4,11 +4,11 @@ SYSROOT ?= ../sys.$(HOST)
 EXE ?= le_$(HOST).exe
 ver_git := $(shell git describe --always --tag)
 defs := $(FEATURES:%=-D%) -DELC -DWINDOWS -DWINVER=0x601 -D_7ZIP_ST -DLIBXML_STATIC -DAL_LIBTYPE_STATIC -DVER_GIT=\"$(ver_git)\"
-f := -O2 -g -pipe -fno-strict-aliasing -fno-omit-frame-pointer
-f += -mstackrealign -mwindows $(defs) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
+f := -O2 -g -pipe -march=i686 -mtune=generic -mwindows -mstackrealign -fexceptions -fno-strict-aliasing -fno-omit-frame-pointer
+f += $(defs) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
 CFLAGS := $f $(warn) $(CFLAGS)
 CXXFLAGS := $f $(warn) $(CXXFLAGS)
-LDFLAGS := -static -static-libgcc -static-libstdc++ $(LDFLAGS)
+LDFLAGS := -mwindows -static -static-libgcc -static-libstdc++ $(LDFLAGS)
 extlibdir := $(SYSROOT)/lib
 extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis libogg libxml2 libcal3d libpng libjpeg libiconv libz
 winlibdir := $(SYSROOT)/$(HOST)/lib
