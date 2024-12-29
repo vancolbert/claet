@@ -119,7 +119,7 @@ FEATURES += FR_MORE_MQB                 #@PANELLE - Le joueur peut avoir plusieu
 
 PLATFORM=-march=i686
 XDIR=-L/usr/X11R6/lib
-CWARN=-Wall -Wdeclaration-after-statement
+CWARN=-Wall
 # -Wno-pointer-sign -Wno-sign-compare -Werror
 CXXWARN=-Wall
 # -Wno-sign-compare -Werror
