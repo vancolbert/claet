@@ -12,6 +12,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+typedef const char *cstr;
+#define countof(a) (sizeof(a)/sizeof(*a))
 
 #define BUTTONRADIUS 15
 
