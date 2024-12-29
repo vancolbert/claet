@@ -33,9 +33,9 @@ void init_fsaa_modes()
 
 	LOG_DEBUG("Supported fsaa modes: %s", str);
 }
-unsigned int get_fsaa_mode(const unsigned int i) {
+int get_fsaa_mode(int i) {
 	return (1u << i & fsaa_modes) != 0;
 }
-char *get_fsaa_mode_str(const unsigned int i) {
+cstr get_fsaa_mode_str(int i) {
 	return i < get_fsaa_mode_count() ? fsaa_modes_strings[i] : 0;
 }

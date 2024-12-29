@@ -9,13 +9,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "../misc.h"
 
 extern unsigned int fsaa; /*!< flag that inidicates what level of fsaa to use */
 
 void init_fsaa_modes();
 int get_fsaa_mode_count();
 int get_fsaa_mode(int i);
-char *get_fsaa_mode_str(int i);
+cstr get_fsaa_mode_str(int i);
 
 #ifdef __cplusplus
 } // extern "C"
