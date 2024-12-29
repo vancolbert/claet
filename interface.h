@@ -83,8 +83,8 @@ extern int im_other_player_show_banner_on_damage;  /*!< indicates whether  other
 extern char username_box_selected; /*!< true, if the cursor is currently in the username input field */
 extern char password_box_selected; /*!< true, if the cursor is currently in the password input field */
 
-extern char username_str[20]; /*!< the username of the actor */
-extern char password_str[20]; /*!< the password of the actor */
+extern char username[20]; /*!< the username of the actor */
+extern char password[20]; /*!< the password of the actor */
 extern char display_password_str[20]; /*!< a string that will be displayed when entering a password */
 
 extern int cons_text;
@@ -143,9 +143,9 @@ extern GLuint legend_text;
 extern struct draw_map *continent_maps; /*!< global array of maps for the continents */
 
 extern GLuint inspect_map_text;
-extern int show_continent_map_boundaries;
+extern int continent_map_boundaries;
 
-extern float mapmark_zoom; /*!< scaling factor for the mapmark text */
+extern float mapmark_text_size; /*!< scaling factor for the mapmark text */
 
 /*!
  * \ingroup loadsave
@@ -238,21 +238,21 @@ void draw_console_pic(int which_texture);
 
 /*!
  * \ingroup interfaces
- * \brief   Adds the char \a ch to the \ref username_str.
+ * \brief   Adds the char \a ch to the \ref username.
  *
- *      Adds the char \a ch to the \ref username_str. If \a ch is either of delete or backspace key, the last char in \ref username_str will get deleted.
+ *      Adds the char \a ch to the \ref username. If \a ch is either of delete or backspace key, the last char in \ref username will get deleted.
  *
- * \param ch    the char to add to \ref username_str
+ * \param ch    the char to add to \ref username
  */
 void add_char_to_username(unsigned char ch);
 
 /*!
  * \ingroup interface
- * \brief   Adds the char \a ch to the \ref password_str.
+ * \brief   Adds the char \a ch to the \ref password.
  *
- *      Adds the char \a ch to the \ref password_str. If \a ch is either of delete or backspace key, the last char in \ref password_str will get deleted.
+ *      Adds the char \a ch to the \ref password. If \a ch is either of delete or backspace key, the last char in \ref password will get deleted.
  *
- * \param ch    the char to add to \ref password_str
+ * \param ch    the char to add to \ref password
  */
 void add_char_to_password(unsigned char ch);
 

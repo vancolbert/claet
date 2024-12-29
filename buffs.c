@@ -220,8 +220,8 @@ void draw_buffs(int actor_id, float x, float y,float z)
 			num_buffs++;
 		}
 		// move icons up by actor name and actor health bar
-		y = y + 1.0f/ALT_INGAME_FONT_X_LEN*SMALL_INGAME_FONT_Y_LEN*name_zoom*12.0*view_names // displayed_font_y_size from font.c
-		      + ALT_INGAME_FONT_Y_LEN*12.0*name_zoom*1.0f/ALT_INGAME_FONT_X_LEN; // healthbar_y_len from actors.c
+		y = y + 1.0f/ALT_INGAME_FONT_X_LEN*SMALL_INGAME_FONT_Y_LEN*name_text_size*12.0*view_names // displayed_font_y_size from font.c
+			  + ALT_INGAME_FONT_Y_LEN*12.0*name_text_size*1.0f/ALT_INGAME_FONT_X_LEN; // healthbar_y_len from actors.c
 		for (i = 0; i < num_buffs; i++)
 		{
 			cur_tex = texture_ids[i];

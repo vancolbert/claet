@@ -23,7 +23,7 @@
 #endif //FR_VERSION
 
 
-theme liste_themes[LISTE_THEMES_MAX]; // liste des thèmes trouvés (updates + datadir)
+theme liste_themes[LISTE_THEMES_MAX]; // liste des thèmes trouvés (updates + data_dir)
 int liste_themes_nb = 0;              // nombre d'éléments dans la liste des thèmes
 char titre_theme[20] = "officiel";    // titre du thème à utiliser par défaut
 
@@ -697,7 +697,7 @@ int chargement_liste_themes(char * dossier_themes)
 }
 
 
-// Initialise la liste des thèmes disponibles depuis les dossiers updates, datadir puis local
+// Initialise la liste des thèmes disponibles depuis les dossiers updates, data_dir puis local
 void init_liste_themes()
 {
 	char dossier_themes[256];
@@ -714,10 +714,10 @@ void init_liste_themes()
 	chargement_liste_themes(dossier_themes);
 
 	// on récupère ensuite les thèmes disponible dans le dossier de données du jeu
-	safe_snprintf(dossier_themes, sizeof(dossier_themes), "%s/themes/", datadir);
+	safe_snprintf(dossier_themes, sizeof(dossier_themes), "%s/themes/", data_dir);
 	chargement_liste_themes(dossier_themes);
 
-	// éventuellement on regarde dans un dossier de thèmes à partir du dossier courant (normalement datadir aussi)
+	// éventuellement on regarde dans un dossier de thèmes à partir du dossier courant (normalement data_dir aussi)
 	safe_snprintf(dossier_themes, sizeof(dossier_themes), "%s/themes/", ".");
 	chargement_liste_themes(dossier_themes);
 }
@@ -760,7 +760,7 @@ int command_change_theme(char *text)
 		if (strcmp(text, liste_themes[i].titre) == 0)
 		{
 			safe_snprintf(titre_theme, sizeof(titre_theme), "%s", text);
-			set_var_unsaved("titre_theme", OPT_STRING_INI); // forcer la sauvegarde dans le fichier ini
+			set_var_unsaved("titre_theme", VNK_INI); // forcer la sauvegarde dans le fichier ini
 
 			init_theme(titre_theme);
 			LOG_TO_CONSOLE(c_green1, "Le thème actif a été modifié et appliqué.");

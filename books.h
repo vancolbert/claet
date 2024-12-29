@@ -18,7 +18,7 @@ extern int paper_win;
 
 
 #ifdef FR_VERSION
-extern float book_zoom; /*!< zoom factor for book text */
+extern float book_text_size; /*!< zoom factor for book text */
 extern int book_reload;
 #endif //FR_VERSION
 

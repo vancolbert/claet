@@ -100,9 +100,9 @@ float fps_average = 100.0;
 int include_use_cursor_on_animals = 0;
 int logo_click_to_url = 1;
 #ifdef ENGLISH
-char LOGO_URL_LINK[128] = "http://www.eternal-lands.com";
+char logo_link[128] = "http://www.eternal-lands.com";
 #else //ENGLISH
-char LOGO_URL_LINK[128] = "http://www.landes-eternelles.com";
+char logo_link[128] = "http://www.landes-eternelles.com";
 float chat_alpha_background = 0.5;
 #endif //ENGLISH
 int have_mouse = 0;
@@ -359,7 +359,7 @@ void toggle_have_mouse()
 		if (sdl_cursors)
 #endif // NEW_CURSOR
 			SDL_ShowCursor(0);
-		if (fol_cam) toggle_follow_cam(&fol_cam);
+		if (follow_cam) toggle_follow_cam(&follow_cam);
 #ifdef ENGLISH
 		LOG_TO_CONSOLE (c_red1, "Grab mode: press alt+g again to enter Normal mode.");
 #else //ENGLISH
@@ -388,7 +388,7 @@ void toggle_first_person()
 			rz=me->z_rot;
 		rx=-90;
 		first_person = 1;
-		fol_cam = 0;
+		follow_cam = 0;
 	} else {
 		first_person = 0;
 		if (rx < -90) {rx = -90;}
@@ -596,7 +596,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 	if (mx > win->len_x - 64 && my < 54 ) // 10 pixels dead space to try to prevent accidental misclicks
 	{
 		if (logo_click_to_url)
-			open_web_link(LOGO_URL_LINK);
+			open_web_link(logo_link);
 		return 1;
 	}
 
@@ -1332,7 +1332,7 @@ int display_game_handler (window_info *win)
             glPopMatrix();
         }
 
-		if (use_fog)
+		if (render_fog)
 			weather_render_fog();
 
 		// only draw scene lights if inside or it is night
@@ -1368,7 +1368,7 @@ int display_game_handler (window_info *win)
 		if (!dungeon && shadows_on && (is_day || lightning_falling))
 		{
 			glNormal3f(0.0f,0.0f,1.0f);
-			if (use_fog && any_reflection) blend_reflection_fog();
+			if (render_fog && any_reflection) blend_reflection_fog();
 			draw_sun_shadowed_scene (any_reflection);
 		}
 		else
@@ -1508,7 +1508,7 @@ int display_game_handler (window_info *win)
 		}
 	}
 	if (exphits.show && cur_time - exphits.t < 5000) {
-		float s = name_zoom, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
+		float s = name_text_size, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
 		int x = win->len_x - HUD_MARGIN_X - 8*sx, y = win->len_y - HUD_MARGIN_Y - 3*sy;
 		#define skn(w) (char *)attributes.w##_skill.shortname
 		char b[32], *n[2] = {skn(attack), skn(defense)};
@@ -1518,7 +1518,7 @@ int display_game_handler (window_info *win)
 		}
 	}
 	if (flee.on) {
-		float s = 2.0f * name_zoom, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
+		float s = 2.0f * name_text_size, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
 		int x = (win->len_x - HUD_MARGIN_X)/2 - 3*sx, y = (win->len_y - HUD_MARGIN_Y)*3/4;
 		Uint8 *m = (Uint8 *)"FUITE!";
 		if ((cur_time & 511) < 256) {
@@ -1585,12 +1585,12 @@ int display_game_handler (window_info *win)
 
 	CHECK_GL_ERRORS ();
 	/* Draw the chat text */
-	if (use_windowed_chat != 2)
+	if (windowed_chat != 2)
 	{
 		int msg, offset, filter;
 #ifndef ENGLISH
         int ytext = 20;
-        if (use_windowed_chat ==1)
+		if (windowed_chat ==1)
         {
             if (nb_ligne_tabs == 1)
             {
@@ -1602,12 +1602,12 @@ int display_game_handler (window_info *win)
             }
         }
 #endif //ENGLISH
-		filter = use_windowed_chat == 1 ? current_filter : FILTER_ALL;
+		filter = windowed_chat == 1 ? current_filter : FILTER_ALL;
 		if (find_last_lines_time (&msg, &offset, filter, console_text_width))
 		{
 			set_font(chat_font);	// switch to the chat font
 #ifdef ENGLISH
-			draw_messages (10, use_windowed_chat == 1 ? 25 : 20, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
+			draw_messages (10, windowed_chat == 1 ? 25 : 20, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_text_size), chat_text_size, NULL);
 #else //ENGLISH
 			// Ajout d'un fond semi-transparent derrière les lignes d'historique
 			if (chat_alpha_background > 0)
@@ -1619,13 +1619,13 @@ int display_game_handler (window_info *win)
 				glBegin(GL_QUADS);
 					glVertex3i(10,                      ytext, 0);
 					glVertex3i(10 + console_text_width, ytext, 0);
-					glVertex3i(10 + console_text_width, ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_zoom, 0);
-					glVertex3i(10,                      ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_zoom, 0);
+					glVertex3i(10 + console_text_width, ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_text_size, 0);
+					glVertex3i(10,                      ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_text_size, 0);
 				glEnd();
 				glDisable(GL_BLEND);
 				glEnable(GL_TEXTURE_2D);
 			}
-			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
+			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_text_size), chat_text_size, NULL);
 #endif //ENGLISH
 			set_font (0);	// switch to fixed
 		}
@@ -2249,7 +2249,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 #ifdef FR_VERSION
     else if (key == K_FENETRE_MUSIQUE)
     {
-        if (music_on == 1)
+		if (enable_music == 1)
         {
             view_window (&fenetre_musique, 0);
         }
@@ -2401,7 +2401,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		int next_tab;
 		widget_list *widget;
 		tab_collection *collection;
-		switch(use_windowed_chat)
+		switch(windowed_chat)
 		{
 			case 1: //Tabs
 #ifndef ENGLISH
@@ -2474,7 +2474,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		int next_tab;
 		widget_list *widget;
 		tab_collection *collection;
-		switch(use_windowed_chat)
+		switch(windowed_chat)
 		{
 			case 1: //Tab
 #ifndef ENGLISH
@@ -2668,7 +2668,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed = (first_person?-1:1)*normal_camera_rotation_speed / 800.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 800;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2680,7 +2680,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed /= 4.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 200;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2691,7 +2691,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed = (first_person?1:-1)*normal_camera_rotation_speed / 800.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 800;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2703,7 +2703,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed /= 4.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 200;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2799,7 +2799,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 	}
 	else if (key == K_EXTEND_CAM)
 	{
-		toggle_ext_cam(&ext_cam);
+		toggle_ext_cam(&extended_cam);
 	}
 #ifdef PAWN
 	else if (keysym == SDLK_F8)
@@ -2819,12 +2819,6 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		actor *me = get_actor_ptr_from_id (yourself);
 		ec_create_campfire(me->x_pos + 0.25f, me->y_pos + 0.25f, get_tile_height(me->x_tile_pos, me->y_tile_pos), 0.0, 1.0, (poor_man ? 6 : 10), 0.7);
 	}
-#ifdef FR_FENETRE_OPTIONS
-    else if (keysym == SDLK_F12)
-    {
-		view_window (&fenetre_options, 0);
-    }
-#endif //FR_FENETRE_OPTIONS
 #ifdef DEBUG
 	else if (keysym == SDLK_F10)
 	{
@@ -2928,7 +2922,7 @@ void do_keypress(Uint32 key)
 int show_game_handler (window_info *win) {
 	init_hud_interface (HUD_INTERFACE_GAME);
 	show_hud_windows();
-	if (use_windowed_chat == 1)
+	if (windowed_chat == 1)
 			display_tab_bar();
 	return 1;
 }
@@ -2956,9 +2950,9 @@ void create_game_root_window (int width, int height)
 			else
 				set_text_message_color (&input_text_line, 1.0f, 1.0f, 1.0f);
 #ifdef FR_VERSION
-			id = text_field_add_extended(game_root_win, 42, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
+			id = text_field_add_extended(game_root_win, 42, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
 #else //FR_VERSION
-			id = text_field_add_extended(game_root_win, 42, NULL, 0, height-INPUT_HEIGHT-hud_y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_zoom, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
+			id = text_field_add_extended(game_root_win, 42, NULL, 0, height-INPUT_HEIGHT-hud_y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_text_size, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
 #endif //FR_VERSION
 			input_widget = widget_find(game_root_win, id);
 			input_widget->OnResize = input_field_resize;

@@ -582,7 +582,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 
 	if (actor_id->damage_ms) {
 		unsigned char str[60];
-		if (floatingmessages_enabled) {
+		if (use_floating_messages) {
 			float font_scale2 = font_scale * powf(1.0f+((float)abs(actor_id->damage)/2.0f)/1000.0f, 4.0);
 			float a = (float)(cur_time - actor_id->last_health_loss);
 			float aa = a*a / 4000000.0f;
@@ -613,12 +613,12 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 			}
 #ifdef DISPLAY_MANAPOINT
             if((view_mp || view_mana_bar) && !actor_id->dead && actor_id->kind_of_actor!=NPC && me->actor_id==actor_id->actor_id){
-                draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_zoom)))*0.5f, a_bounce+hy+14+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
+				draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_text_size)))*0.5f, a_bounce+hy+14+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
             }else{
-                draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_zoom)))*0.5f, a_bounce+hy+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
+				draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_text_size)))*0.5f, a_bounce+hy+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
             }
 #else //DISPLAY_MANAPOINT
-			draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_zoom)))*0.5f, a_bounce+hy+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
+			draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_text_size)))*0.5f, a_bounce+hy+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
 #endif //DISPLAY_MANAPOINT
 			glDisable(GL_BLEND);
 		}
@@ -644,14 +644,14 @@ void draw_actor_banner(actor * actor_id, float offset_z)
         double largeur_mana=0;
         double largeur_mana_bar=0;
         double largeur_total_mana=0;
-        double hauteur_mana = ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * font_scale;
+		double hauteur_mana = ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
         float percentage_mana=0;
 
 		// calcul la largeur de la barre equivalente a "000/000" (necessaire pour positionner l'etat)
 		if (view_mana_bar)
 		{
             sprintf((char*)mana_point, "%03u/%03u", 0, 0);
-			largeur_mana_bar = (float)get_string_width(mana_point) * ALT_INGAME_FONT_X_LEN * name_zoom * font_scale;
+			largeur_mana_bar = (float)get_string_width(mana_point) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
 			largeur_total_mana = largeur_mana_bar;
 			if((float)your_info.ethereal_points.base != 0)
                 percentage_mana = (float)your_info.ethereal_points.cur / (float)your_info.ethereal_points.base;
@@ -663,7 +663,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
             if(me && me->actor_id==actor_id->actor_id){
                 sprintf((char*)mana_point,"%u/%u", your_info.ethereal_points.cur, your_info.ethereal_points.base);
                 // calcul la largeur des pdv/etat de sante puis la largeur totale (barre incluse)
-                largeur_mana = (float)get_string_width(mana_point) * ALT_INGAME_FONT_X_LEN * name_zoom * font_scale;
+				largeur_mana = (float)get_string_width(mana_point) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
                 largeur_total_mana+= (view_mana_bar) ? 5.0f + largeur_mana : largeur_mana;
 
                 glColor4f(0.5f,0.5f,1.0f,1.0f);
@@ -721,7 +721,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 	{
 		unsigned char hp[200];
 		double largeur_sante=0, largeur_barre=0, largeur_total=0;
-		double hauteur_sante = ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * font_scale;
+		double hauteur_sante = ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
 		float percentage;
 
 		// calcul du pourcentage de vie (utile pour couleur et si besoin determination de l'état)
@@ -743,7 +743,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 		if (view_health_bar)
 		{
 			sprintf((char*)hp, "%03u/%03u", 0, 0);
-			largeur_barre = (float)get_string_width(hp) * ALT_INGAME_FONT_X_LEN * name_zoom * font_scale;
+			largeur_barre = (float)get_string_width(hp) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
 			largeur_total = largeur_barre;
 		}
 
@@ -759,7 +759,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 			}
 
 			// calcul la largeur des pdv/etat de sante puis la largeur totale (barre incluse)
-			largeur_sante = (float)get_string_width(hp) * ALT_INGAME_FONT_X_LEN * name_zoom * font_scale;
+			largeur_sante = (float)get_string_width(hp) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
 			largeur_total+= (view_health_bar) ? 5.0f + largeur_sante : largeur_sante;
 
 			set_health_color(percentage, 1.0f, 1.0f);
@@ -865,11 +865,11 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 		// affichage du titre
 		if ((actor_id->titre[0] != 0) && (actor_id->titre[0] != 48))
 		{
-			float font_scale = titre_zoom / name_zoom;
+			float font_scale = taille_titre_texte / name_text_size;
 			set_font(police_titre);
 			glColor3f(couleur_titre.rouge, couleur_titre.vert, couleur_titre.bleu);
-			largeur_nom = (float)get_string_width((unsigned char*)actor_id->titre) * font_size_x * titre_zoom;
-			hauteur_nom = font_size_y * titre_zoom * 12;
+			largeur_nom = (float)get_string_width((unsigned char*)actor_id->titre) * font_size_x * taille_titre_texte;
+			hauteur_nom = font_size_y * taille_titre_texte * 12;
 			draw_ortho_ingame_string(hx-(largeur_nom/2.0f), hy+banner_height, hz, (unsigned char*)actor_id->titre, 1, font_size_x*font_scale, font_size_y*font_scale);
 			if (largeur_nom > banner_width) banner_width = largeur_nom;
 			banner_height+= hauteur_nom;
@@ -893,8 +893,8 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 
 		// affichage du nom
 		set_font(name_font);
-		largeur_nom = (float)get_string_width((unsigned char*)actor_id->actor_name) * font_size_x * name_zoom;
-		hauteur_nom = font_size_y * name_zoom * 12;
+		largeur_nom = (float)get_string_width((unsigned char*)actor_id->actor_name) * font_size_x * name_text_size;
+		hauteur_nom = font_size_y * name_text_size * 12;
 #ifdef FR_AFFICHE_NOM
 		safe_snprintf((char*)name, sizeof(name), "%s", actor_id->nom_acteur_affiche);
 #else //FR_AFFICHE_NOM
@@ -913,8 +913,8 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 
 #ifdef DISPLAY_MANAPOINT
     if((view_mp || view_mana_bar) && me && me->actor_id==actor_id->actor_id){
-        hy-=ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * font_scale;
-        banner_height+=ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * font_scale;
+		hy-=ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
+		banner_height+=ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
     }
 #endif //DISPLAY_MANAPOINT
 	if (use_alpha_banner && banner_width > 0)
@@ -933,7 +933,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 		glEnable(GL_TEXTURE_2D);
 	}
 	if (actor_id->boss && banner_width > 1.0f && banner_height > 1.0f) {
-		float c[][4] = {{},{.5,.2,1,1},{.4,.7,1,1},{1,.5,.2,1}}, t = clampi(4*name_zoom, 2, 16);
+		float c[][4] = {{},{.5,.2,1,1},{.4,.7,1,1},{1,.5,.2,1}}, t = clampi(4*name_text_size, 2, 16);
 		draw_frame_around(hx - 0.5f*banner_width, hy, banner_width, banner_height, hz, t, c[actor_id->boss]);
 	}
 
@@ -949,7 +949,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 		draw_actor_overtext(actor_id);
 	}
 
-	if (floatingmessages_enabled)
+	if (use_floating_messages)
 	{
 		drawactor_floatingmessages(actor_id->actor_id, offset_z+0.1f);
 	}
@@ -981,8 +981,8 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 
 #ifdef DISPLAY_MANAPOINT
     if((view_mp || view_mana_bar) && me && me->actor_id==actor_id->actor_id){
-        hy+=ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * font_scale;
-        banner_height-=ALT_INGAME_FONT_Y_LEN * 12.0 * name_zoom * font_scale;
+		hy+=ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
+		banner_height-=ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
     }
 #endif //DISPLAY_MANAPOINT
 
@@ -998,7 +998,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 	double healthbar_x=0.0f;
 	double healthbar_y=0.0f;
 	double healthbar_z=offset_z+0.1;
-	double health_str_x_len=ALT_INGAME_FONT_X_LEN*12.0*name_zoom*3*font_scale;
+	double health_str_x_len=ALT_INGAME_FONT_X_LEN*12.0*name_text_size*3*font_scale;
 	double healthbar_x_len_converted=0;
 	double healthbar_x_len_loss=0;
 	double healthbar_x_loss_fade=1.0f;
@@ -1010,7 +1010,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 
 	//some general values valid for whole banner
 	double bar_x_len = 0;
-	double bar_y_len=ALT_INGAME_FONT_Y_LEN*12.0*name_zoom*font_scale;
+	double bar_y_len=ALT_INGAME_FONT_Y_LEN*12.0*name_text_size*font_scale;
 	float banner_width = 0.0f;
 	int num_lines;
 
@@ -1085,7 +1085,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 
 	glDepthFunc(GL_ALWAYS);
 	if(actor_id->damage_ms){
-		if(floatingmessages_enabled){
+		if(use_floating_messages){
 			float a=(float)(cur_time-actor_id->last_health_loss)/2000.0f;
 			if(actor_id->damage>0){
 				sprintf((char*)str,"%i",actor_id->damage);
@@ -1116,14 +1116,14 @@ void draw_actor_banner(actor * actor_id, float offset_z)
              * an exit condition at the beginning of the function */
 			if ((first_person)&&(actor_id->actor_id==yourself)){
 				float x,y;
-				x = window_width/2.0 -(((float)get_string_width(str) * (font_scale*0.17*name_zoom)))*0.5f;
+				x = window_width/2.0 -(((float)get_string_width(str) * (font_scale*0.17*name_text_size)))*0.5f;
 				y = a_bounce + window_height/2.0-40.0;
 				draw_ortho_ingame_string(x, y, 0, str, 1, font_scale*.14, font_scale*.21);
 			}
 			else
 			{
 				float font_scale2 = font_scale*powf(1.0f+((float)abs(actor_id->damage)/2.0f)/1000.0f, 4.0);
-				draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_zoom)))*0.5f, a_bounce+hy+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
+				draw_ortho_ingame_string(hx-(((float)get_string_width(str) * (font_scale2*0.17*name_text_size)))*0.5f, a_bounce+hy+10.0f, 0, str, 1, font_scale2*.14, font_scale2*.21);
 			}			glDisable(GL_BLEND);
 		}
 		else
@@ -1179,7 +1179,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 					glColor3f(1.0f,1.0f,0.0f);
 				}
 				safe_snprintf ((char*)temp, sizeof (temp), "%s", actor_id->actor_name);
-				banner_width = ((float)get_string_width((unsigned char*)actor_id->actor_name)*(font_size_x*name_zoom))/2.0;
+				banner_width = ((float)get_string_width((unsigned char*)actor_id->actor_name)*(font_size_x*name_text_size))/2.0;
 				draw_ortho_ingame_string(hx-banner_width, hy+bar_y_len/2.0f, hz, temp, 1, font_size_x, font_size_y);
 			}
 			if (view_buffs)
@@ -1194,11 +1194,11 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 				// make the heath bar the same length as the the health text so they are balanced
 				// use the same length health bar, even if not displaying the health text
 				sprintf((char*)hp,"%u/%u", actor_id->cur_health, actor_id->max_health);
-				health_str_x_len = (float)get_string_width(hp)*(ALT_INGAME_FONT_X_LEN*name_zoom*font_scale);
+				health_str_x_len = (float)get_string_width(hp)*(ALT_INGAME_FONT_X_LEN*name_text_size*font_scale);
 				//do the same with mana if we want to display it
 				if (display_ether || display_ether_bar) {
 					sprintf((char*)mana,"%u/%u", your_info.ethereal_points.cur, your_info.ethereal_points.base);
-					ether_str_x_len=(float)get_string_width(mana)*(ALT_INGAME_FONT_X_LEN*name_zoom*font_scale);
+					ether_str_x_len=(float)get_string_width(mana)*(ALT_INGAME_FONT_X_LEN*name_text_size*font_scale);
 				}
 				//set bar length to longer one (mana or health) - not really clean solution
 				if (ether_str_x_len > health_str_x_len) {
@@ -1392,7 +1392,7 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 		draw_actor_overtext( actor_id );
 	}
 
-	if(floatingmessages_enabled)drawactor_floatingmessages(actor_id->actor_id, healthbar_z);
+	if(use_floating_messages)drawactor_floatingmessages(actor_id->actor_id, healthbar_z);
 
 	/* set cm_mouse_over_banner true if the mouse is over your banner, or a box where it might be */
 	if (actor_id->actor_id == yourself)
@@ -1527,8 +1527,8 @@ void draw_actor_overtext( actor* actor_ptr )
 	w = (float)get_string_width((unsigned char*)(ligne3)); if (w > maxwidth) maxwidth = w;
 
 	margin = zoom_level * 0.04f;
-	textwidth = (maxwidth * SMALL_INGAME_FONT_X_LEN * chat_zoom * zoom_level / 3.0f) / 12.0f;
-	textheight = zoom_level * chat_zoom * 0.05f + margin;
+	textwidth = (maxwidth * SMALL_INGAME_FONT_X_LEN * chat_text_size * zoom_level / 3.0f) / 12.0f;
+	textheight = zoom_level * chat_text_size * 0.05f + margin;
 	z = (actor_ptr->sitting) ? 0.6f : 1.4f; // close if he's sitting
 	h = margin + textheight * (nb_ligne_bulle+1);
 	w = margin + textwidth + margin;
@@ -1543,7 +1543,7 @@ void draw_actor_overtext( actor* actor_ptr )
 	y_top = y_bottom + h;
 	y_actor = z + 0.2f;
 #else //FR_VERSION
-	textwidth = ((float)get_string_width((unsigned char*)(actor_ptr->current_displayed_text))*(SMALL_INGAME_FONT_X_LEN*zoom_level*name_zoom/3.0))/12.0;
+	textwidth = ((float)get_string_width((unsigned char*)(actor_ptr->current_displayed_text))*(SMALL_INGAME_FONT_X_LEN*zoom_level*name_text_size/3.0))/12.0;
 	textheight = (0.06f*zoom_level/3.0)*4;
 	margin = 0.02f*zoom_level;
 	z = 1.2f;// distance over the player

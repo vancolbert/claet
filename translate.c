@@ -1045,8 +1045,7 @@ void * add_xml_group(int type, int no, ...)
 	}
 }
 
-void add_xml_distringid(group_id_di * group, char * xml_id, dichar * var, char * str, char * desc)
-{
+void add_xml_distringid(group_id_di *group, cstr xml_id, dichar *var, cstr str, cstr desc) {
 	group->distrings=(distring_item**)realloc(group->distrings,(group->no+1)*sizeof(distring_item*));
 	group->distrings[group->no]=(distring_item*)calloc(1,sizeof(distring_item));
 	safe_snprintf (group->distrings[group->no]->xml_id, sizeof (group->distrings[group->no]->xml_id), "%s", xml_id);
@@ -1080,7 +1079,7 @@ void add_xml_identifier(group_id * group, char * xml_id, char * var, char * def,
 	group->no++;
 }
 #ifdef ELC
-void add_options_distringid(char * xml_id, dichar * var, char * str, char * desc)
+void add_options_distringid(cstr xml_id, dichar *var, cstr str, cstr desc)
 {
 	add_xml_distringid(options_str, xml_id, var, str, desc);
 }
@@ -2197,7 +2196,7 @@ struct xml_struct load_strings(char * file)
 {
 	char file_name[120];
 	struct xml_struct tmp={NULL,NULL};
-	safe_snprintf(file_name, sizeof(file_name), "languages/%s/strings/%s",lang,file);
+	safe_snprintf(file_name, sizeof(file_name), "languages/%s/strings/%s",language,file);
 	tmp=load_strings_file(file_name);
 	if(tmp.file==NULL||tmp.root==NULL){
 		safe_snprintf(file_name, sizeof(file_name), "languages/en/strings/%s",file);

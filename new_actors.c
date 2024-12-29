@@ -1586,7 +1586,7 @@ void add_enhanced_actor_from_server (const char *in_data, int len)
 #ifdef FR_VERSION
 	if (actor_id == yourself)
 	{
-	        if (strcasecmp(onlyname, username_str) != 0)
+			if (strcasecmp(onlyname, username) != 0)
 		{
 			nom_change = 1;
 		}

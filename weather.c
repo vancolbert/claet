@@ -22,7 +22,7 @@
 #endif
 #include "sky.h"
 
-int use_fog = 1;
+int render_fog = 1;
 int show_weather = 1;
 
 int wind_speed_srv = 0;	//strength of wind, as set by server. 100 is about the max
@@ -721,7 +721,7 @@ void weather_sound_control()
 	if (cur_time < last_sound_update + 200) return;
 	else last_sound_update = cur_time;
 
-	if (!sound_on)
+	if (!enable_sound)
 	{
 		rain_sound = 0;
 	}
@@ -755,7 +755,7 @@ void weather_sound_control()
 		float dist = sqrtf(dx*dx + dy*dy);
 		if (cur_time >= thunders[i].time + dist/SOUND_SPEED)
 		{
-			if (sound_on)
+			if (enable_sound)
 			{
 				int snd_thunder = 0;
 

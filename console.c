@@ -90,7 +90,7 @@ list_node_t *command_buffer_offset = NULL;
 /* The input line before we started moving around in the buffer. */
 char first_input[256] = {0};
 
-int time_warn_h, time_warn_s, time_warn_d;
+int time_warning_hour, time_warning_sun, time_warning_day;
 
 void add_line_to_history(const char *line, int len)
 {
@@ -765,7 +765,7 @@ int command_cls(char *text, int len)
 #ifdef FR_VERSION
 int command_muet(void)
 {
-   disable_sound(&no_sound);
+   stop_all_sound(&disable_sound);
    return 1;
 }
 #endif //FR_VERSION
@@ -2179,24 +2179,24 @@ void new_minute_console(void){
 	if(!(real_game_minute%60)){
 		timestamp_chat_log();
 	}
-	if(time_warn_h >= 0 && (time_warn_h+real_game_minute)%60 == 0){
+	if(time_warning_hour >= 0 && (time_warning_hour+real_game_minute)%60 == 0){
 		char str[75];
-		safe_snprintf(str, sizeof(str), time_warn_hour_str, time_warn_h);
+		safe_snprintf(str, sizeof(str), time_warn_hour_str, time_warning_hour);
 		LOG_TO_CONSOLE(c_purple1, str);
 	}
-	if(time_warn_s >= 0 && (time_warn_s+real_game_minute)%180 == 30){
+	if(time_warning_sun >= 0 && (time_warning_sun+real_game_minute)%180 == 30){
 		char str[100];
-		if (time_warn_s+real_game_minute == 30) { // sunrise
-			safe_snprintf(str, sizeof(str), time_warn_sunrise_str, time_warn_s);
+		if (time_warning_sun+real_game_minute == 30) { // sunrise
+			safe_snprintf(str, sizeof(str), time_warn_sunrise_str, time_warning_sun);
 		}
 		else { // sunset
-			safe_snprintf(str, sizeof(str), time_warn_sunset_str, time_warn_s);
+			safe_snprintf(str, sizeof(str), time_warn_sunset_str, time_warning_sun);
 		}
 		LOG_TO_CONSOLE(c_purple1, str);
 	}
-	if(time_warn_d >= 0 && (time_warn_d+real_game_minute)%360 == 0){
+	if(time_warning_day >= 0 && (time_warning_day+real_game_minute)%360 == 0){
 		char str[75];
-		safe_snprintf(str, sizeof(str), time_warn_day_str, time_warn_d);
+		safe_snprintf(str, sizeof(str), time_warn_day_str, time_warning_day);
 		LOG_TO_CONSOLE(c_purple1, str);
 	}
 }

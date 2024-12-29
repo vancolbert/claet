@@ -3273,7 +3273,7 @@ void load_quickspells ()
 	quickspells_loaded = 1;
 
 	//open the data file
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username);
 	my_tolower(fname);
 
 	/* sliently ignore non existing file */
@@ -3383,15 +3383,15 @@ void load_quickspells ()
 	quickspells_loaded = 1;
 
 	//open the data file
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username);
 	my_tolower(fname);
-	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat",username_str,2);
+	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat",username,2);
 	my_tolower(fname2);
-	safe_snprintf(fname3, sizeof(fname3), "spells_%s%d.dat",username_str,3);
+	safe_snprintf(fname3, sizeof(fname3), "spells_%s%d.dat",username,3);
 	my_tolower(fname3);
-	safe_snprintf(fname4, sizeof(fname4), "spells_%s%d.dat",username_str,4);
+	safe_snprintf(fname4, sizeof(fname4), "spells_%s%d.dat",username,4);
 	my_tolower(fname4);
-	safe_snprintf(fname5, sizeof(fname5), "spells_%s%d.dat",username_str,5);
+	safe_snprintf(fname5, sizeof(fname5), "spells_%s%d.dat",username,5);
 	my_tolower(fname5);
 
 	/* First MQB*/
@@ -3780,7 +3780,7 @@ void save_quickspells()
 		return;
 
 	//write to the data file, to ensure data integrity, we will write all the information
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username);
 	my_tolower(fname);
 	fp=open_file_config(fname,"wb");
 	if(fp == NULL){
@@ -3850,19 +3850,19 @@ void save_quickspells()
 		return;
 
 	//write to the data file, to ensure data integrity, we will write all the information
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username);
 	my_tolower(fname);
 	fp=open_file_config(fname,"wb");
-	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat",username_str,2);
+	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat",username,2);
 	my_tolower(fname2);
 	fp2=open_file_config(fname2,"wb");
-	safe_snprintf(fname3, sizeof(fname3), "spells_%s%d.dat",username_str,3);
+	safe_snprintf(fname3, sizeof(fname3), "spells_%s%d.dat",username,3);
 	my_tolower(fname3);
 	fp3=open_file_config(fname3,"wb");
-	safe_snprintf(fname4, sizeof(fname4), "spells_%s%d.dat",username_str,4);
+	safe_snprintf(fname4, sizeof(fname4), "spells_%s%d.dat",username,4);
 	my_tolower(fname4);
 	fp4=open_file_config(fname4,"wb");
-	safe_snprintf(fname5, sizeof(fname5), "spells_%s%d.dat",username_str,5);
+	safe_snprintf(fname5, sizeof(fname5), "spells_%s%d.dat",username,5);
 	my_tolower(fname5);
 	fp5=open_file_config(fname5,"wb");
 	if(fp == NULL){

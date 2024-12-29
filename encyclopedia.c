@@ -864,7 +864,7 @@ void ReadIndexXML(xmlNode * a_node)
 				num_category++;
 
 				//we load the category now
-				safe_snprintf(tmp,sizeof(tmp),"languages/%s/Encyclopedia/%s.xml",lang,cur_node->children->content);
+				safe_snprintf(tmp,sizeof(tmp),"languages/%s/Encyclopedia/%s.xml",language,cur_node->children->content);
 				doc=xmlReadFile(tmp, NULL, 0);
 				if (doc==NULL)
 					{
@@ -934,7 +934,7 @@ void ReloadEncyclopedia ()
 	 if(tab_help_win>0)
 		hide_window(tab_help_win);
      FreeXML();
-	 snprintf(temp, sizeof(temp), "languages/%s/Encyclopedia/index.xml",lang);
+	 snprintf(temp, sizeof(temp), "languages/%s/Encyclopedia/index.xml",language);
 	 ReadXML(temp);
 }
 #endif //ENGLISH

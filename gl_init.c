@@ -41,8 +41,8 @@ int desktop_height;
 int bpp=0;
 int have_stencil=1;
 int video_mode;
-int video_user_width;
-int video_user_height;
+int video_width;
+int video_height;
 int disable_window_adjustment;
 int full_screen;
 
@@ -53,7 +53,7 @@ int use_mipmaps = 0;
 int use_draw_range_elements = 1;
 float anisotropic_filter = 1.0f;
 int disable_gamma_adjust = 0;
-float gamma_var = 1.00f;
+float video_gamma = 1.00f;
 float perspective = 0.15f;
 float near_plane = 0.1f; // don't cut off anything
 float far_plane = 100.0;   // LOD helper. Cull distant objects. Lower value == higher framerates.
@@ -72,7 +72,7 @@ void APIENTRY Emul_glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GL
 
 void setup_video_mode(int fs, int mode)
 {
-	/* Video mode 0 is user defined size (via video_user_width and video_user_height)
+	/* Video mode 0 is user defined size (via video_width and video_height)
 	 * Video mode 1 and above are defined in the video_modes array where mode 1 is at position 0
 	 * Therefore we heve to adjust the index by one
 	 */
@@ -89,8 +89,8 @@ void setup_video_mode(int fs, int mode)
 	{
 		if (mode == 0)
 		{
-			window_width = video_user_width;
-			window_height = video_user_height;
+			window_width = video_width;
+			window_height = video_height;
 			bpp = 0;
 		} else {
 			window_width = video_modes[index].width;
@@ -105,8 +105,8 @@ void setup_video_mode(int fs, int mode)
 
 		if (mode == 0)
 		{
-			new_width = video_user_width;
-			new_height = video_user_height;
+			new_width = video_width;
+			new_height = video_height;
 		}
 		else if (!disable_window_adjustment)
 		{
@@ -1200,7 +1200,7 @@ void toggle_full_screen()
 {
 #ifdef WINDOWS
 	full_screen=!full_screen;
-	set_var_unsaved("full_screen", INI_FILE_VAR);
+	set_var_unsaved("full_screen", VNK_INI);
 	LOG_TO_CONSOLE(c_green2, video_restart_str);
 #else
 	reload_tab_map = 1;
@@ -1208,7 +1208,7 @@ void toggle_full_screen()
 	switch_video(video_mode, full_screen);
 	build_video_mode_array();
 	if (!disable_gamma_adjust)
-	SDL_SetGamma(gamma_var, gamma_var, gamma_var);
+	SDL_SetGamma(video_gamma, video_gamma, video_gamma);
 	SDL_SetModState(KMOD_NONE); // force ALL keys up
 #endif
 }

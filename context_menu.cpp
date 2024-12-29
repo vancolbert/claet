@@ -734,7 +734,7 @@ namespace cm
 		{
 			// if we have a config control name, use the vars change function, otherwise just toggle
 			if (menu_lines[selection].config_name)
-				toggle_OPT_BOOL_by_name(menu_lines[selection].config_name);
+				toggle_bool_var(menu_lines[selection].config_name);
 			else
 				*menu_lines[selection].control_var = !*menu_lines[selection].control_var;
 			if (!handler)

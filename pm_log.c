@@ -14,7 +14,7 @@
 int afk=0;
 int last_action_time=0;
 int afk_time=DEFAULT_AFK_MINUTES*60000;
-int afk_time_conf=DEFAULT_AFK_MINUTES; //For elconfig window
+int auto_afk_time=DEFAULT_AFK_MINUTES; //For elconfig window
 char afk_message[MAX_TEXT_MESSAGE_LENGTH]={0};
 char afk_title[101];
 int afk_local = 0;
@@ -219,12 +219,12 @@ void add_message_to_pm_log (char *message, int len, Uint8 channel)
 int my_namecmp(char *check)
 {
 	int i=0;
-	char username[32];
-	safe_strncpy(username, username_str, sizeof(username));
-	my_tolower(username);
+	char un[32];
+	safe_strncpy(un, username, sizeof(un));
+	my_tolower(un);
 
-	for(;i<20 && username[i] && check[i]==username[i];i++);
-	if(check[i]==username[i]||((check[i]==' '||!isalpha((unsigned char)check[i])) && !username[i])) return 0;
+	for(;i<20 && un[i] && check[i]==un[i];i++);
+	if(check[i]==un[i]||((check[i]==' '||!isalpha((unsigned char)check[i])) && !un[i])) return 0;
 	return 1;
 }
 

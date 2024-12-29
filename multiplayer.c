@@ -604,7 +604,7 @@ void send_login_info()
 	int i,j,len;
 	unsigned char str[40];
 
-	len= strlen(username_str);
+	len= strlen(username);
 	//check for the username length
 	if (len < 3)
 	{
@@ -615,12 +615,12 @@ void send_login_info()
 	//join the username and password, and send them to the server
 	str[0]= LOG_IN;
 
-	if(caps_filter && my_isupper(username_str, len)) my_tolower(username_str);
-	for(i=0; i<len; i++) str[i+1]= username_str[i];
+	if(caps_filter && my_isupper(username, len)) my_tolower(username);
+	for(i=0; i<len; i++) str[i+1]= username[i];
 	str[i+1]= ' ';
 	i++;
-	len= strlen(password_str);
-	for(j=0; j<len; j++) str[i+j+1]= password_str[j];
+	len= strlen(password);
+	for(j=0; j<len; j++) str[i+j+1]= password[j];
 	str[i+j+1]= 0;
 
 	len = strlen((char*)str);
@@ -714,7 +714,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				// if from the server popup channel
 				if (in_data[3] == server_pop_chan)
 					{
-					if (use_server_pop_win)
+					if (serverpopup)
 							display_server_popup_win((char*)text_buf);
 						else
 							put_text_in_buffer (in_data[3], text_buf, len);
@@ -871,16 +871,16 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				show_window (game_root_win);
 
 #ifdef ENGLISH
-				safe_snprintf(str,sizeof(str),"(%s on %s) %s",username_str,get_server_name(),win_principal);
+				safe_snprintf(str,sizeof(str),"(%s on %s) %s",username,get_server_name(),win_principal);
 				SDL_WM_SetCaption(str, "eternallands" );
 #else //ENGLISH
-				safe_snprintf(str,sizeof(str),"(%s sur %s) %s",username_str,get_server_name(),win_principal);
+				safe_snprintf(str,sizeof(str),"(%s sur %s) %s",username,get_server_name(),win_principal);
 				SDL_WM_SetCaption(str, "Landes Eternelles" );
 #endif //ENGLISH
 
 #if defined NEW_SOUND
 				// Try to turn on the music as it isn't needed up until now
-				if (music_on)
+				if (enable_music)
 					turn_music_on();
 #endif // NEW_SOUND
 
@@ -1283,7 +1283,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
                     break;
                 }
 
-                if (music_on && auto_serveur_musique)
+				if (enable_music && auto_serveur_musique)
                 {
                     modif_playlist((int)in_data[3]);
                 }
@@ -1293,7 +1293,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged PLAY_MUSIC packet received.\n");
 				  break;
 				}
-				if(music_on)play_music(unpack_u16_le(in_data+3));
+				if(enable_music)play_music(unpack_u16_le(in_data+3));
 #endif //FR_VERSION
 #endif // NEW_SOUND
 			}
@@ -1310,7 +1310,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION: Possibly forged PLAY_SOUND packet received.\n");
 				  break;
 				}
-				if (sound_on) add_server_sound(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), unpack_u16_le(in_data+7), 1.0f);
+				if (enable_sound) add_server_sound(unpack_u16_le(in_data+3), unpack_u16_le(in_data+5), unpack_u16_le(in_data+7), 1.0f);
 #endif // NEW_SOUND
 			}
 			break;

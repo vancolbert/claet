@@ -246,7 +246,7 @@ static int	display_dialogue_handler(window_info *win)
 				glColor3f(1.0f,1.0f,0.0f);
 			if(mouse_x<win->pos_x || mouse_x>win->pos_x+win->len_x || mouse_y<win->pos_y || mouse_y>win->pos_y+win->len_y)
 				show_keypress_letters=0;
-			if(use_keypress_dialogue_boxes && show_keypress_letters)
+			if(use_keypress_dialog_boxes && show_keypress_letters)
 			{
 				if(i>=0 && i<=8) // 1-9
 					safe_snprintf((char*)str,sizeof(str),"%c] %s",49+i,(unsigned char*)dialogue_responces[i].text);
@@ -350,7 +350,7 @@ static int mouseover_dialogue_handler(window_info *win, int mx, int my)
 	int i;
 
 	show_keypress_letters=0;
-	if(use_keypress_dialogue_boxes)
+	if(use_keypress_dialog_boxes)
 	{
 	 	if(use_full_dialogue_window || ((mx>=0 && mx<=64) && (my>=0 && my<=64)))
 	 	{
@@ -613,7 +613,7 @@ static int keypress_dialogue_handler (window_info *win, int mx, int my, Uint32 k
 		return 1;
 	}
 
-	if(!use_keypress_dialogue_boxes)
+	if(!use_keypress_dialog_boxes)
 	{
 		return 0;
 	}
@@ -754,7 +754,7 @@ void display_dialogue()
 
 		cm_add(windows_list.window[dialogue_win].cm_id, cm_dialog_menu_str, NULL);
 		cm_add(windows_list.window[dialogue_win].cm_id, cm_dialog_options_str, NULL);
-		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+1, &use_keypress_dialogue_boxes, "use_keypress_dialog_boxes");
+		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+1, &use_keypress_dialog_boxes, "use_keypress_dialog_boxes");
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+2, &use_full_dialogue_window, "use_full_dialogue_window");
 #ifndef FR_VERSION
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+3, &autoclose_storage_dialogue, NULL);

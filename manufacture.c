@@ -212,7 +212,7 @@ static void save_recipe_names(void)
 	if (!recipe_names_changed)
 		return;
 
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username);
 	my_tolower(fname);
 	fp = open_file_config(fname,"w");
 	if(fp == NULL)
@@ -266,7 +266,7 @@ static void load_recipe_names(void)
 
 	recipe_names_changed = 0;
 
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username);
 	my_tolower(fname);
 
 	/* sliently ignore non existing file */
@@ -520,7 +520,7 @@ void load_recipes (){
 #endif //ENGLISH
 
 #ifdef ENGLISH
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username);
 	my_tolower(fname);
 
 	/* get file length, if a valid length adjust the number of recipe slots if required */
@@ -559,7 +559,7 @@ void load_recipes (){
 		return;
 	}
 #else //ENGLISH
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username);
 	my_tolower(fname);
 #endif //ENGLISH
 
@@ -629,7 +629,7 @@ void save_recipes(){
 
 	save_recipe_names();
 
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username);
 	my_tolower(fname);
 #ifndef ENGLISH
 	// si le fichier n'a pas été lu, alors il ne faut pas l'écraser !

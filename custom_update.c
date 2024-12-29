@@ -273,7 +273,7 @@ void init_custom_update()
 
 	memset(update_thread_data, 0, sizeof(update_thread_data));
 
-	update_thread_data[0].dir = datadir;
+	update_thread_data[0].dir = data_dir;
 	update_thread_data[1].dir = get_path_config_base();
 
 	if ((str = (char *)calloc(sizeof(char), str_size)) == NULL)

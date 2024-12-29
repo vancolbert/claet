@@ -78,7 +78,7 @@ typedef struct
 
 extern chat_channel channels[MAX_CHAT_TABS]; /*!< Infos about a chat window tabs  */
 
-extern int use_windowed_chat; /*!< flag indicating whether we use the channel selection bar, the chat window, or neither */
+extern int windowed_chat; /*!< flag indicating whether we use the channel selection bar, the chat window, or neither */
 extern int highlight_tab_on_nick; /*!< flag indicating whether we want to highligh chat tab on nick or not  */
 
 extern int chat_win; /*!< handler for the chat window */

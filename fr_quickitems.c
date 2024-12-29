@@ -1075,7 +1075,7 @@ void load_fr_quickitems()
 
 	memset(fr_quickitem_list, 0, sizeof(fr_quickitem_list));
 
-	safe_snprintf(nom_fichier, sizeof(nom_fichier), "barre_inventaire_%s.dat", username_str);
+	safe_snprintf(nom_fichier, sizeof(nom_fichier), "barre_inventaire_%s.dat", username);
 	my_tolower(nom_fichier);
 	fichier = open_file_config(nom_fichier, "rb");
 	if (fichier == NULL)
@@ -1106,7 +1106,7 @@ void save_fr_quickitems()
 
 	if (!quickbar_loaded) return;
 
-	safe_snprintf(nom_fichier, sizeof(nom_fichier), "barre_inventaire_%s.dat", username_str);
+	safe_snprintf(nom_fichier, sizeof(nom_fichier), "barre_inventaire_%s.dat", username);
 	my_tolower(nom_fichier);
 	fichier = open_file_config(nom_fichier, "wb");
 	if (fichier == NULL)

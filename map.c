@@ -635,7 +635,7 @@ void load_server_markings(){
 	init_server_markers();
 
 	//open server markings file
-	safe_snprintf(fname, sizeof(fname), "servermarks_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "servermarks_%s.dat",username);
 	my_tolower(fname);
 
 	/* sliently ignore non existing file */
@@ -671,7 +671,7 @@ void save_server_markings(){
 	if(!server_marks) return;
 
 	//open server markings file
-	safe_snprintf(fname, sizeof(fname), "servermarks_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "servermarks_%s.dat",username);
 	my_tolower(fname);
 	fp = open_file_config(fname,"w");
 	if(fp == NULL){
@@ -835,7 +835,7 @@ void remove_3d_object_from_server (int id)
 #define MAX(a,b) ( ((a)>(b)) ? (a):(b) )
 #define ABS(a) ( ((a)<0)?(-(a)):(a)  )
 #define DST(xa,ya,xb,yb) ( MAX(ABS(xa-xb),ABS(ya-yb))  )
-int marks_3d=1;
+int map_3d_markers=1;
 float mark_z_rot=0;
 
 void animate_map_markers(){
@@ -875,7 +875,7 @@ void display_map_marks(){
 		y=marks[i].y/2.0;
 		x += (TILESIZE_X / 2);
 		y += (TILESIZE_Y / 2);
-		if(DST(ax,ay,x,y)>MARK_DIST||marks[i].x<0||!marks_3d) continue;
+		if(DST(ax,ay,x,y)>MARK_DIST||marks[i].x<0||!map_3d_markers) continue;
 		z = get_tile_height(marks[i].x, marks[i].y);
 		for(j=z-fr/5,ff=1;j<z+2;j+=0.1,ff=(2-(j-z))/2) {
 			if(marks[i].server_side) glColor4f(0.0f, 0.0f, 1.0f, 0.9f-(j-z)/3);
@@ -941,14 +941,14 @@ void display_map_markers() {
 		y=marks[i].y/2.0;
 		x += (TILESIZE_X / 2);
 		y += (TILESIZE_Y / 2);
-		if(DST(ax,ay,x,y)>MARK_DIST||marks[i].x<0||!marks_3d) continue;
+		if(DST(ax,ay,x,y)>MARK_DIST||marks[i].x<0||!map_3d_markers) continue;
 		z = get_tile_height(marks[i].x, marks[i].y)+2.3;
 		gluProject(x, y, z, model, proj, view, &hx, &hy, &hz);
 		//shorten text
 		memcpy(tmpb,marks[i].text+MARK_CLIP_POS,4);
 		marks[i].text[MARK_CLIP_POS]=marks[i].text[MARK_CLIP_POS+1]=marks[i].text[MARK_CLIP_POS+2]='.';
 		marks[i].text[MARK_CLIP_POS+3]=0;
-		banner_width = ((float)get_string_width((unsigned char*)marks[i].text)*(font_size_x*name_zoom))/2.0;
+		banner_width = ((float)get_string_width((unsigned char*)marks[i].text)*(font_size_x*name_text_size))/2.0;
 		draw_ortho_ingame_string(hx-banner_width, hy, hz, (unsigned char*)marks[i].text, 4, font_size_x, font_size_y);
 		//restore text
 		memcpy(marks[i].text+MARK_CLIP_POS,tmpb,4);

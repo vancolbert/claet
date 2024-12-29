@@ -69,9 +69,9 @@ FILE * open_file_config(const char* filename, const char* mode);
 FILE * open_file_config_no_local(const char* filename, const char* mode);
 
 /**
- * @brief fopen()s a file in the directory datadir
+ * @brief fopen()s a file in the directory data_dir
  *
- * Attempts to open the given filename in datadir
+ * Attempts to open the given filename in data_dir
  * @param filename The name of the file to open
  * @param mode The file mode to use to open the file (read/write, binary/text, etc)
  * @return Returns a FILE* to the opened file on success, or a NULL on failure
@@ -79,13 +79,13 @@ FILE * open_file_config_no_local(const char* filename, const char* mode);
 FILE * open_file_data(const char* filename, const char* mode);
 
 /**
- * @brief fopen()s a file in the directory: datadir/languages/lang
+ * @brief fopen()s a file in the directory: data_dir/languages/language
  *
- * Attempts to open the given filename in datadir/languages/lang
+ * Attempts to open the given filename in data_dir/languages/language
  * @param base_path The name of the directory to attempt to open the file in
  * @param filename The name of the file to open
  * @param mode The file mode to use to open the file (read/write, binary/text, etc)
- * @return Returns a FILE* to the opened file on success, either in 'lang' or in 'en' (as a failover), or a NULL on failure
+ * @return Returns a FILE* to the opened file on success, either in 'language' or in 'en' (as a failover), or a NULL on failure
  */
 FILE * open_file_lang(const char* filename, const char* mode);
 
@@ -110,9 +110,9 @@ int mkdir_tree(const char *path, int relative_only);
 int mkdir_config(const char *path);
 
 /**
- * @brief rename()s a file from configdir to datadir
+ * @brief rename()s a file from configdir to data_dir
  *
- * Attempts to move a file in configdir into datadir
+ * Attempts to move a file in configdir into data_dir
  * @param from_file The name of the file to move
  * @param to_file The name of the file to create
  * @return Returns the result of the internal rename() call
@@ -134,8 +134,8 @@ int file_temp_check(const char * filename, const unsigned char * md5);
 /**
  * @brief Check if file update is needed
  *
- * Checks the MD5 checksum of files in datadir and configdir/updates/(ver)/ or configdir/custom/
- * depending on the flag custom. If the version in datadir is correct, attempts to remove the file
+ * Checks the MD5 checksum of files in data_dir and configdir/updates/(ver)/ or configdir/custom/
+ * depending on the flag custom. If the version in data_dir is correct, attempts to remove the file
  * in configdir. If neither is correct, returns 1 to indicate an update is required.
  *
  * @param filename	The name of the file to check for updates
@@ -146,9 +146,9 @@ int file_temp_check(const char * filename, const unsigned char * md5);
 int file_update_check(char * filename, const unsigned char * md5, int custom);
 
 /**
- * @brief Check for valid datadir
+ * @brief Check for valid data_dir
  *
- * Checks if we can stat() datadir. If not, failover to current directory.
+ * Checks if we can stat() data_dir. If not, failover to current directory.
  */
 void file_check_datadir(void);
 

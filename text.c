@@ -85,7 +85,7 @@ void clear_today_is_special_day(void) { is_special_day = 0; };
 
 int log_chat = LOG_SERVER;
 
-float	chat_zoom=1.0;
+float	chat_text_size=1.0;
 FILE	*chat_log=NULL;
 FILE	*srv_log=NULL;
 
@@ -154,12 +154,12 @@ void cleanup_text_buffers(void)
 void update_text_windows (text_message * pmsg)
 {
 	if (console_root_win >= 0) update_console_win (pmsg);
-	switch (use_windowed_chat) {
+	switch (windowed_chat) {
 		case 0:
 #ifdef FR_VERSION
-			rewrap_message(pmsg, chat_zoom, chat_font, get_console_text_width(), NULL);
+			rewrap_message(pmsg, chat_text_size, chat_font, get_console_text_width(), NULL);
 #else //FR_VERSION
-			rewrap_message(pmsg, chat_zoom, get_console_text_width(), NULL);
+			rewrap_message(pmsg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
 			lines_to_show += pmsg->wrap_lines;
 			if (lines_to_show > 10) lines_to_show = 10;
@@ -219,13 +219,13 @@ void open_chat_log(){
 	time(&c_time);
 	l_time = localtime(&c_time);
 
-//	safe_snprintf(chat_log_file, sizeof(chat_log_file), "chat_log_%s.txt", username_str);
+//	safe_snprintf(chat_log_file, sizeof(chat_log_file), "chat_log_%s.txt", username);
 	mkdir_config("logs");
-	safe_snprintf(chat_log_file, sizeof(chat_log_file), "logs/chat_log_%s_%04d%02d.txt", username_str, l_time->tm_year +1900, l_time->tm_mon +1);
+	safe_snprintf(chat_log_file, sizeof(chat_log_file), "logs/chat_log_%s_%04d%02d.txt", username, l_time->tm_year +1900, l_time->tm_mon +1);
 	chat_log = open_file_config (chat_log_file, "a");
 
 	if (chat_log == NULL) { // si jamais le dossier log pose problème, on réessaie sans
-		safe_snprintf(chat_log_file, sizeof(chat_log_file), "chat_log_%s_%04d%02d.txt", username_str, l_time->tm_year +1900, l_time->tm_mon +1);
+		safe_snprintf(chat_log_file, sizeof(chat_log_file), "chat_log_%s_%04d%02d.txt", username, l_time->tm_year +1900, l_time->tm_mon +1);
 		chat_log = open_file_config (chat_log_file, "a");
 	}
 
@@ -360,7 +360,7 @@ void send_input_text_line (char *line, int line_len)
 	int len;
 	Uint8 ch;
 
-	switch(use_windowed_chat)
+	switch(windowed_chat)
 	{
 		case 1:
 #ifndef ENGLISH
@@ -798,8 +798,8 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 		}
 #endif //FR_VERSION
 	} else if (channel == CHAT_LOCAL) {
-		if (now_harvesting() && my_strncompare(text_to_add+1, username_str, strlen(username_str))) {
-			char *ptr = text_to_add+1+strlen(username_str);
+		if (now_harvesting() && my_strncompare(text_to_add+1, username, strlen(username))) {
+			char *ptr = text_to_add+1+strlen(username);
 #ifdef ENGLISH
 			if (my_strncompare(ptr, " found a ", 9)) {
 #else // ENGLISH
@@ -1383,7 +1383,7 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
 #ifdef ENGLISH
 	write_to_log (channel, (unsigned char*)msg->data, msg->len);
 #else //ENGLISH
-    if (strlen(username_str)>0)
+	if (strlen(username)>0)
     {
 	    write_to_log (channel, (unsigned char*)msg->data, msg->len);
     }
@@ -1511,12 +1511,12 @@ int find_last_lines_time (int *msg, int *offset, Uint8 filter, int width)
 	}
 	if (lines_to_show <= 0) return 0;
 
-	return find_line_nr (get_total_nr_lines(), get_total_nr_lines() - lines_to_show, filter, msg, offset, chat_zoom, width);
+	return find_line_nr (get_total_nr_lines(), get_total_nr_lines() - lines_to_show, filter, msg, offset, chat_text_size, width);
 }
 
 int find_last_console_lines (int lines_no)
 {
-	return find_line_nr (total_nr_lines, total_nr_lines - lines_no, FILTER_ALL, &console_msg_nr, &console_msg_offset, chat_zoom, console_text_width);
+	return find_line_nr (total_nr_lines, total_nr_lines - lines_no, FILTER_ALL, &console_msg_nr, &console_msg_offset, chat_text_size, console_text_width);
 }
 
 
@@ -1618,7 +1618,7 @@ void clear_display_text_buffer ()
 	not_from_the_end_console = 1;
 
 	clear_console();
-	if(use_windowed_chat == 2){
+	if(windowed_chat == 2){
 		clear_chat_wins();
 	}
 }

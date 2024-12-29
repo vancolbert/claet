@@ -2,7 +2,7 @@
 	Provide item description and emu lookup from a data file.
 
 	Using the file from http://el.other-life.com/downloads/item_info.txt
-	The file should be stored in the datadir or updates directory and is
+	The file should be stored in the data_dir or updates directory and is
 	read when first needed.
 
 	Functions provide descriptions and emu for items based on their image
@@ -229,7 +229,7 @@ namespace Item_Info
 		in.open(fname.c_str());
 		if (!in)
 		{
-			fname = std::string(datadir) + std::string("item_info.txt");
+			fname = std::string(data_dir) + std::string("item_info.txt");
 			in.clear();
 			in.open(fname.c_str());
 			if (!in)

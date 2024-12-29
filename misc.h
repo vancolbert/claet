@@ -356,7 +356,7 @@ static __inline__ float clampf(float x, float l, float u)
 
 void init_reflection_portals(int size);
 
-extern Uint32 use_new_selection;
+extern int use_new_selection;
 
 #ifdef __cplusplus
 } // extern "C"

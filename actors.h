@@ -34,9 +34,9 @@ extern "C" {
 extern int yourself; 	/*!< This variable holds the actor_id (as the server sees it, not the position in the actors_list) of your character.*/
 extern int you_sit; 	/*!< Specifies if you are currently sitting down.*/
 extern int sit_lock; 	/*!< The sit_lock variable holds you in a sitting position.*/
-extern float name_zoom; /*!< The name_zoom defines how large the text used for drawing the names should be*/
+extern float name_text_size; /*!< The name_text_size defines how large the text used for drawing the names should be*/
 #ifdef FR_VERSION
-extern float titre_zoom; /*< Taille pour le texte des titres */
+extern float taille_titre_texte; /*< Taille pour le texte des titres */
 #endif //FR_VERSION
 extern int use_alpha_banner;	/*!< Use_alpha_banner defines if an alpha background is drawn behind the name/health banner.*/
 

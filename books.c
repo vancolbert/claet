@@ -62,7 +62,7 @@
 #ifdef FR_VERSION
 #define PAGE_MARGE_X 0.125 // marge latérale (droite ou gauche) en pourcentage de la largeur d'une page
 #define PAGE_MARGE_Y 0.125 // marge verticale (haut ou bas) pourcentage de la hauteur d'une page
-float book_zoom = 1.0f;
+float book_text_size = 1.0f;
 int book_reload = 0;
 #else  //FR_VERSION
 #define PAGE_MARGE_X 0.0625 // marge latérale (droite ou gauche) en pourcentage de la largeur d'une page
@@ -260,7 +260,7 @@ struct_livres *cree_livre (int type, int num, int serveur)
 
 	// calcul l'espace pour le contenu en fonction de la taille de la fenêtre et des marges
 	livre_actuel->max_largeur = page_largeur - 2*PAGE_MARGE_X*page_largeur;
-	livre_actuel->max_lignes = (page_hauteur - 2*PAGE_MARGE_Y*page_hauteur) / (int)(DEFAULT_FONT_Y_LEN * book_zoom);
+	livre_actuel->max_lignes = (page_hauteur - 2*PAGE_MARGE_Y*page_hauteur) / (int)(DEFAULT_FONT_Y_LEN * book_text_size);
 
 	// un switch selon le type n'est plus nécessaire ici, ce test est laissé par sécurité
 	if (type != 2)
@@ -851,7 +851,7 @@ void ajout_texte_xml (struct_livres * livre_actuel, char * noeud, int align, cou
 		// dialogues toujours alignés à gauche
 		else if (type == 1) align = 1;
 		set_font(police_livre);
-		lignes_de_texte = formatage_lignes((char *)noeud, livre_actuel->max_largeur, book_zoom, align);
+		lignes_de_texte = formatage_lignes((char *)noeud, livre_actuel->max_largeur, book_text_size, align);
 		set_font(0);
 #ifdef FR_DEBUG_LIVRES
 		LOG_ERROR("Flag FR_LIVRES : recuperation du texte\n");
@@ -1299,7 +1299,7 @@ struct_livres * lire_livre(char * fichier, int type, int num)
     char info_debug[200];
 #endif //R_DEBUG_LIVRES
 
-	safe_snprintf (chemin, sizeof(chemin), "languages/%s/%s", lang, fichier);
+	safe_snprintf (chemin, sizeof(chemin), "languages/%s/%s", language, fichier);
 
 #ifdef FR_DEBUG_LIVRES
     safe_snprintf (info_debug, sizeof(info_debug), "Chemin du livre local : %s", chemin);
@@ -1351,7 +1351,7 @@ book * read_book(char * file, int type, int id)
 	book *b=NULL;
 	char path[1024];
 
-	safe_snprintf(path, sizeof(path), "languages/%s/%s", lang, file);
+	safe_snprintf(path, sizeof(path), "languages/%s/%s", language, file);
 
 	if ((doc = xmlReadFile(path, NULL, 0)) == NULL) {
 		safe_snprintf(path, sizeof(path), "languages/en/%s", file);
@@ -1445,7 +1445,7 @@ void read_knowledge_book_index()
 void init_livres()
 {
 	// évite un reload inutile alors qu'aucun livre n'est encore chargé
-	// (à cause de l'initialisation au préalable de book_zoom dans elconfig.c)
+	// (à cause de l'initialisation au préalable de book_text_size dans elconfig.c)
 	book_reload = 0;
 #ifdef	NEW_TEXTURES
 	texture_livre_1_page  = load_texture_cached ("textures/paper1.dds", tt_image);
@@ -1831,7 +1831,7 @@ void afficher_page(struct_livres * livre_actuel, struct_pages * page_actuelle)
 		LOG_ERROR("Flag FR_LIVRES : on affiche le texte (ligne %d) : %s\n", numero_ligne, ligne_texte[0]);
 #endif //FR_DEBUG_LIVRES
 		glColor3f(couleur_texte->rouge, couleur_texte->vert, couleur_texte->bleu);
-		draw_string_zoomed(0, numero_ligne * (int)(DEFAULT_FONT_Y_LEN * book_zoom), (unsigned char*)ligne_texte[0], 0, book_zoom);
+		draw_string_zoomed(0, numero_ligne * (int)(DEFAULT_FONT_Y_LEN * book_text_size), (unsigned char*)ligne_texte[0], 0, book_text_size);
 		numero_ligne++;
 	}
 

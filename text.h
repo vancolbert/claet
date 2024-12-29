@@ -67,7 +67,7 @@ extern text_message display_text_buffer[DISPLAY_TEXT_BUFFER_SIZE];
 extern int last_message;
 extern Uint8 current_filter;
 
-extern float chat_zoom; /*!< zoom factor for chat text */
+extern float chat_text_size; /*!< zoom factor for chat text */
 
 extern text_message input_text_line; /*!< user input text */
 

@@ -355,7 +355,7 @@ void read_command_line() {
 		{
 			if(gargv[i][0]=='-')
 				{
-					if(gargv[i][1]=='-')check_var(gargv[i]+2,COMMAND_LINE_LONG_VAR);
+					if(gargv[i][1]=='-')check_var(gargv[i]+2,VNK_CMD_LONG);
 					else
 						{
 							char str[200];
@@ -366,7 +366,7 @@ void read_command_line() {
 							} else {	//eg -u name
 								safe_snprintf(str,sizeof(str),"%s %s",gargv[i],gargv[i+1]);
 							}
-							check_var(str+1,COMMAND_LINE_SHORT_VAR);
+							check_var(str+1,VNK_CMD_SHORT);
 						}
 				}
 		}

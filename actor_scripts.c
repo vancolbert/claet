@@ -2710,7 +2710,7 @@ void get_actor_damage(int actor_id, int damage)
 	if(!act){
 		//if we got here, it means we don't have this actor, so get it from the server...
 	} else {
-		if(floatingmessages_enabled){
+		if(use_floating_messages){
 			act->last_health_loss=cur_time;
 		}
 
@@ -2781,7 +2781,7 @@ void get_actor_heal(int actor_id, int quantity)
 		if (actor_id == yourself)
 			set_last_heal(quantity);
 
-		if(floatingmessages_enabled){
+		if(use_floating_messages){
 			act->damage=-quantity;
 			act->damage_ms=2000;
 			act->last_health_loss=cur_time;
@@ -2819,7 +2819,7 @@ void get_actor_health(int actor_id, int quantity)
 	if(!act){
 		//if we got here, it means we don't have this actor, so get it from the server...
 	} else {
-//		if(floatingmessages_enabled){
+//		if(use_floating_messages){
 			//act->damage=-quantity;
 			//act->damage_ms=2000;
 			//act->last_health_loss=cur_time;

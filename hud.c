@@ -283,7 +283,7 @@ void init_hud_interface (hud_interface type)
 		ready_for_user_menus = 1;
 		if (enable_user_menus)
 			display_user_menus();
-		if ((minimap_win < 0) && open_minimap_on_start)
+		if ((minimap_win < 0) && minimap_lancement)
 			view_window (&minimap_win, 0);
 	}
 
@@ -601,12 +601,6 @@ void view_window(int * window, int id)
 #ifdef EMOTES
 			else if(window==&emotes_win) display_emotes_menu();
 #endif
-#ifdef FR_FENETRE_OPTIONS
-			else if (window == &fenetre_options)
-            {
-                affiche_fenetre_options();
-            }
-#endif //FR_FENETRE_OPTIONS
 			else if(window==&elconfig_win) display_elconfig_win();
 			else if(window==&buddy_win) display_buddy();
 			else if(window==&trade_win) display_trade_menu();
@@ -1486,8 +1480,8 @@ static int context_hud_handler(window_info *win, int widget_id, int mx, int my, 
 		case CMH_RANGSTATS: view_window(&range_win, 0); break;
 #endif //ENGLISH
 #ifdef NEW_SOUND
-		case CMH_SOUND: toggle_sounds(&sound_on); set_var_unsaved("enable_sound", INI_FILE_VAR); break;
-		case CMH_MUSIC: toggle_music(&music_on); set_var_unsaved("enable_music", INI_FILE_VAR); break;
+		case CMH_SOUND: toggle_sounds(&enable_sound); set_var_unsaved("enable_sound", VNK_INI); break;
+		case CMH_MUSIC: toggle_music(&enable_music); set_var_unsaved("enable_music", VNK_INI); break;
 #endif // NEW_SOUND
 		case CMH_LOCATION:
 			copy_next_LOCATE_ME = 1;
@@ -1514,8 +1508,8 @@ static int context_quickbar_handler(window_info *win, int widget_id, int mx, int
 static void context_hud_pre_show_handler(window_info *win, int widget_id, int mx, int my, window_info *cm_win)
 {
 #ifdef NEW_SOUND
-	cm_sound_enabled = sound_on;
-	cm_music_enabled = music_on;
+	cm_sound_enabled = enable_sound;
+	cm_music_enabled = enable_music;
 #endif // NEW_SOUND
 	cm_minimap_shown = get_show_window(minimap_win);
 #ifdef ENGLISH
@@ -1913,7 +1907,7 @@ CHECK_GL_ERRORS();
 			else
    			    draw_string_small_shadowed(x+gx_adjust, y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 
-			if((thestat!=NUM_WATCH_STAT-2) && floatingmessages_enabled &&
+			if((thestat!=NUM_WATCH_STAT-2) && use_floating_messages &&
 				(skill_modifier = statsinfo[thestat].skillattr->cur -
 				 	statsinfo[thestat].skillattr->base) != 0){
 				safe_snprintf(str,sizeof(str),"%+i",skill_modifier);

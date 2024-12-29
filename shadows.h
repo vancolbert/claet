@@ -20,7 +20,7 @@ extern int is_day; /*!< this flag shows whether it's day or night */
 extern int use_shadow_mapping; /*!< flag whether to use shadow mapping or not */
 extern GLuint depth_map_id;
 extern GLenum depth_texture_target;
-extern int shadow_map_size; /*!< max. size of the shadow maps in byte */
+extern int smsize; /*!< max. size of the shadow maps in byte */
 
 /*!
  * \ingroup shadows

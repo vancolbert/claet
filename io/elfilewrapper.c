@@ -539,7 +539,7 @@ static Uint32 file_exists_path(const char* file_name, const char* extra_path)
 		CHECK_AND_UNLOCK_MUTEX(zip_files[i].mutex);
 	}
 
-	if (do_file_exists(file_name, datadir, sizeof(str), str) == 1)
+	if (do_file_exists(file_name, data_dir, sizeof(str), str) == 1)
 		{
 			return 1;
 		}
@@ -788,7 +788,7 @@ static el_file_ptr file_open(const char* file_name, const char* extra_path)
 		CHECK_AND_UNLOCK_MUTEX(zip_files[i].mutex);
 	}
 
-	if (do_file_exists(file_name, datadir, sizeof(str), str) == 1)
+	if (do_file_exists(file_name, data_dir, sizeof(str), str) == 1)
 	{
 		return xz_gz_file_open(str);
 	}

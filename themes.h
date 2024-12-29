@@ -9,12 +9,12 @@ extern "C" {
 typedef struct
 {
 	char titre[20];    // titre = valeur de l'option = nom du fichier xml sans le suffixe
-	char fichier[256]; // chemin complet vers le fichier xml du thème (updates ou datadir)
+	char fichier[256]; // chemin complet vers le fichier xml du thème (updates ou data_dir)
 	char detail[200];  // description du thème (fournie dans le fichier xml du thème)
 } theme;
 
 #define LISTE_THEMES_MAX 20                   // nombre maximum de thèmes dans la liste
-extern theme liste_themes[LISTE_THEMES_MAX];  // liste des thèmes trouvés (updates + datadir)
+extern theme liste_themes[LISTE_THEMES_MAX];  // liste des thèmes trouvés (updates + data_dir)
 extern int liste_themes_nb;                   // nombre d'éléments dans la liste des thèmes
 extern char titre_theme[20];                  // titre du thème à utiliser
 

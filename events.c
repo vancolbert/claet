@@ -425,7 +425,7 @@ int HandleEvent (SDL_Event *event)
 				// the following variables have to be removed!
 				camera_rotation_duration = 0;
 				camera_tilt_duration = 0;
-				if (fol_cam && !fol_cam_behind)
+				if (follow_cam && !fol_cam_behind)
 				{
 					hold_camera += camera_kludge - last_kludge;
 					last_kludge = camera_kludge;

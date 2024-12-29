@@ -76,7 +76,7 @@ typedef struct {
 
 floating_message floating_messages[MAX_NUMBER_OF_FLOATING_MESSAGES];
 
-int floatingmessages_enabled = 1;
+int use_floating_messages = 1;
 
 void floatingmessages_add_level(int actor_id, int level, const unsigned char * skillname);
 void floatingmessages_compare_stat(int actor_id, int value, int new_value, const unsigned char *skillname);
@@ -1802,7 +1802,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
         cut=message->active_time/4000.0f;
         f = ((float)(message->active_time-(cur_time-message->first_time)))/message->active_time;
         glColor4f(message->color[0], message->color[1], message->color[2], f > cut ? 1.0f : (f / cut));
-		width = (float)get_string_width((unsigned char*)message->message) * INGAME_FONT_X_LEN * name_zoom * 8.0;
+		width = (float)get_string_width((unsigned char*)message->message) * INGAME_FONT_X_LEN * name_text_size * 8.0;
 
         //Figure out where the point just above the actor's head is in the viewport
         glGetDoublev(GL_MODELVIEW_MATRIX, model);
@@ -1816,7 +1816,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
         else
         {
 			gluProject(0.0, 0.0, healthbar_z * get_actor_scale(your_actor), model, proj, view, &x, &y, &z);
-			y += 50*name_zoom; // size of the actor name/bar
+			y += 50*name_text_size; // size of the actor name/bar
         }
 
 

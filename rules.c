@@ -153,7 +153,7 @@ int read_rules()
 	char file_name[120];
 	xmlDoc * doc;
 	xmlNode * root;
-	safe_snprintf(file_name, sizeof(file_name), "languages/%s/rules.xml",lang);
+	safe_snprintf(file_name, sizeof(file_name), "languages/%s/rules.xml",language);
 
 	if ((doc = xmlReadFile(file_name, NULL, 0)) == NULL) {
 		if((doc=xmlReadFile("languages/en/rules.xml",NULL,0))==NULL){

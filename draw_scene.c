@@ -45,9 +45,9 @@ float ry=0;
 float rz=45;
 float terrain_scale=2.0f;
 float zoom_level=3.0f;
-float name_zoom=1.0f;
+float name_text_size=1.0f;
 #ifdef FR_VERSION
-float titre_zoom = 1.0f;
+float taille_titre_texte = 1.0f;
 #endif //FR_VERSION
 #define MAX(a,b) ( ((a)>(b)) ? (a):(b))
 //First Person Camera mode state
@@ -89,15 +89,15 @@ float camera_distance = 2.5f;
 int reset_camera_at_next_update = 1;
 
 //Follow camera state stuff
-int fol_cam = 1;	       // follow camera state (on/off)
+int follow_cam = 1;	       // follow camera state (on/off)
 int fol_cam_behind = 0;    // keep the camera behind the char
 float camera_kludge = 0.0; // the direction player is facing
 float last_kludge = 0.0;   // how far the camera deviated from camera_kludge
-float fol_strn = 0.1;      // follow camera response strength
-float fol_con = 7.0;       // follow camera constant speed
-float fol_lin = 1.0;       // follow camera linear deceleration
-float fol_quad = 1.0;      // follow camera quadratic deceleration
-int ext_cam = 1;	       // extended camera state (on/off)
+float follow_strength = 0.1;      // follow camera response strength
+float const_speed = 7.0;       // follow camera constant speed
+float lin_speed = 1.0;       // follow camera linear deceleration
+float quad_speed = 1.0;      // follow camera quadratic deceleration
+int extended_cam = 1;	       // extended camera state (on/off)
 int ext_cam_auto_zoom = 0; // auto zooming state for extended camera (on/off)
 float min_tilt_angle = 30.0; // minimum tilt angle for the extended camera
 float max_tilt_angle = 90.0; // maximum tilt angle for the extended camera
@@ -252,10 +252,10 @@ void move_camera ()
     /* Schmurk: I've commented this out because I don't see why the position of
      * the camera should be different from the head position in ext cam and fpv */
 /* 	if (first_person){ */
-/* 		z = (ext_cam?-1.7f:-2.1f) + height_map[me->y_tile_pos*tile_map_size_x*6+me->x_tile_pos]*0.2f + head_pos[2]; */
-/* 	} else if (ext_cam){ */
+/* 		z = (extended_cam?-1.7f:-2.1f) + height_map[me->y_tile_pos*tile_map_size_x*6+me->x_tile_pos]*0.2f + head_pos[2]; */
+/* 	} else if (extended_cam){ */
 /* 		z = -1.6f + height_map[me->y_tile_pos*tile_map_size_x*6+me->x_tile_pos]*0.2f + head_pos[2]; */
-	if (first_person || ext_cam) {
+	if (first_person || extended_cam) {
         // the camera position corresponds to the head position
 		z = get_tile_height(me->x_tile_pos, me->y_tile_pos);
 		// z += (head_pos[2]+0.1)*get_actor_scale(me);
@@ -271,7 +271,7 @@ void move_camera ()
 		z = get_tile_height(me->x_tile_pos, me->y_tile_pos) + sitting;
 	}
 
-	if(first_person||ext_cam){
+	if(first_person||extended_cam){
 		follow_speed = 150.0f;
 	} else {
 		follow_speed = 300.0f;
@@ -321,7 +321,7 @@ void clamp_camera(void)
 				camera_tilt_duration=0;
 				camera_tilt_speed = 0.0;
 			}
-		} else if(ext_cam){
+		} else if(extended_cam){
 			if(rx < -max_tilt_angle){
 				rx = -max_tilt_angle;
 				camera_tilt_duration=0;
@@ -385,7 +385,7 @@ void update_camera()
 
 	//printf("kludge: %f, hold: %f, rx: %f, rz %f, zoom: %f\n",camera_kludge, hold_camera,rx,rz,zoom_level);
 
-	if (fol_cam && !fol_cam_behind)
+	if (follow_cam && !fol_cam_behind)
 		rz = hold_camera;
 	if (me)
 		camera_kludge = -me->z_rot;
@@ -489,7 +489,7 @@ void update_camera()
 
 	clamp_camera();
 
-	if (ext_cam && !first_person && me &&
+	if (extended_cam && !first_person && me &&
 		rx <= -min_tilt_angle && rx >= -max_tilt_angle)
 	{
 		float rot_x[9], rot_z[9], rot[9], dir[3];
@@ -562,7 +562,7 @@ void update_camera()
 
 
 	hold_camera = rz;
-	if (fol_cam) {
+	if (follow_cam) {
 		static int fol_cam_stop = 0;
 
 		if ((SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(2)) || camera_rotation_speed != 0)
@@ -579,14 +579,14 @@ void update_camera()
 			if      (adjust >=  180) adjust -= 360.0;
 			else if (adjust <= -180) adjust += 360.0;
 
-			if (fabs(adjust) < fol_strn) {
+			if (fabs(adjust) < follow_strength) {
 				last_kludge=camera_kludge;
 			}
 			else {
-				last_kludge += fol_strn*(
-					adjust*(fol_quad*fol_strn + fol_lin)+
-					fol_con*(adjust>0?1:-1))/
-					(fol_quad+fol_lin+fol_con+.000001f);//cheap no/0
+				last_kludge += follow_strength*(
+					adjust*(quad_speed*follow_strength + lin_speed)+
+					const_speed*(adjust>0?1:-1))/
+					(quad_speed+lin_speed+const_speed+.000001f);//cheap no/0
 			}
 		}
 		if (fol_cam_behind)

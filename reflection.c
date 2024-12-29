@@ -852,11 +852,11 @@ void draw_lake_tiles()
 	{
 		if (!dungeon && shadows_on && (is_day || lightning_falling))
 		{
-			cur_shader = get_shader(st_water, sst_shadow_receiver, use_fog, water_shader_quality - 1);
+			cur_shader = get_shader(st_water, sst_shadow_receiver, render_fog, water_shader_quality - 1);
 		}
 		else
 		{
-			cur_shader = get_shader(st_water, sst_no_shadow_receiver, use_fog, water_shader_quality - 1);
+			cur_shader = get_shader(st_water, sst_no_shadow_receiver, render_fog, water_shader_quality - 1);
 		}
 		ELglUseProgramObjectARB(cur_shader);
 		CHECK_GL_ERRORS();
@@ -931,11 +931,11 @@ void draw_lake_tiles()
 
 		if (!dungeon && shadows_on && (is_day || lightning_falling))
 		{
-			cur_shader = get_shader(st_reflectiv_water, sst_shadow_receiver, use_fog, water_shader_quality - 1);
+			cur_shader = get_shader(st_reflectiv_water, sst_shadow_receiver, render_fog, water_shader_quality - 1);
 		}
 		else
 		{
-			cur_shader = get_shader(st_reflectiv_water, sst_no_shadow_receiver, use_fog, water_shader_quality - 1);
+			cur_shader = get_shader(st_reflectiv_water, sst_no_shadow_receiver, render_fog, water_shader_quality - 1);
 		}
 		ELglUseProgramObjectARB(cur_shader);
 		CHECK_GL_ERRORS();

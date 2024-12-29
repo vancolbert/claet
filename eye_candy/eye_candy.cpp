@@ -2465,7 +2465,7 @@ namespace ec
 		/* Fog hurts blending with 5 color blending
 		 * (red, green, blue, alpha and burn)
 		 */
-		if (use_fog)
+		if (render_fog)
 		{
 			glDisable(GL_FOG);
 		}
@@ -2511,7 +2511,7 @@ namespace ec
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 #ifndef MAP_EDITOR
-		if (use_fog)
+		if (render_fog)
 		{
 			glEnable(GL_FOG);
 		}

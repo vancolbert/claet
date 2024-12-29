@@ -40,7 +40,7 @@ int use_shadow_mapping=1;
 
 //TODO: Would like to use TEXTURE_RECTANGLE for cards that support it, but for some reason it doesn't work??
 GLenum depth_texture_target=GL_TEXTURE_2D;
-int shadow_map_size;
+int smsize;
 GLuint depth_map_id = 0;
 /* Good values:
 #define depth_map_scale 15.0
@@ -72,7 +72,7 @@ void make_shadow_framebuffer()
 
 void change_shadow_framebuffer_size()
 {
-	change_depth_framebuffer_size(shadow_map_size, shadow_map_size, &shadow_fbo, &depth_map_id);
+	change_depth_framebuffer_size(smsize, smsize, &shadow_fbo, &depth_map_id);
 }
 
 void calc_light_frustum(float light_xrot)
@@ -146,7 +146,7 @@ void calc_shadow_matrix()
 			glRotatef(zrot,0.0f,0.0f,1.0f);
 			glGetDoublev(GL_MODELVIEW_MATRIX,light_view_mat);
 			glLoadIdentity();
-			if(depth_texture_target!=GL_TEXTURE_2D)glScalef(shadow_map_size,shadow_map_size,0);
+			if(depth_texture_target!=GL_TEXTURE_2D)glScalef(smsize,smsize,0);
 			glTranslatef(0.5,0.5,0.5);   // This...
 			glScalef(0.5,0.5,0.5);       // ...and this == S
 			glMultMatrixd(light_proj_mat);     // Plight
@@ -435,7 +435,7 @@ void render_light_view()
 					glBindTexture(depth_texture_target,depth_map_id);
 					CHECK_GL_ERRORS();
 					glTexImage2D(depth_texture_target,0,internalformat,
-						     shadow_map_size,shadow_map_size,
+							 smsize,smsize,
 						     0,GL_DEPTH_COMPONENT,GL_FLOAT,NULL);
 					glTexParameteri(depth_texture_target,GL_TEXTURE_COMPARE_MODE_ARB,
 							GL_COMPARE_R_TO_TEXTURE_ARB);
@@ -465,16 +465,16 @@ void render_light_view()
 
 			glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-			glViewport(0,0,shadow_map_size,shadow_map_size);
+			glViewport(0,0,smsize,smsize);
 			CHECK_GL_ERRORS();
 
 			glEnable(GL_SCISSOR_TEST);
-			glScissor(1, 1, shadow_map_size-2, shadow_map_size-2);
+			glScissor(1, 1, smsize-2, smsize-2);
 
 			glDisable(GL_LIGHTING);
 			glEnable(GL_DEPTH_TEST);
 #ifndef MAP_EDITOR2
-			if (use_fog) glDisable(GL_FOG);
+			if (render_fog) glDisable(GL_FOG);
 #endif
 			glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 			CHECK_GL_ERRORS();
@@ -494,7 +494,7 @@ void render_light_view()
 			if (!use_frame_buffer)
 			{
 				glBindTexture(depth_texture_target, depth_map_id);
-				glCopyTexSubImage2D(depth_texture_target, 0, 0, 0, 0, 0, shadow_map_size, shadow_map_size);
+				glCopyTexSubImage2D(depth_texture_target, 0, 0, 0, 0, 0, smsize, smsize);
 				glClear(GL_DEPTH_BUFFER_BIT);
 			}
 
@@ -635,7 +635,7 @@ void draw_sun_shadowed_scene(int any_reflection)
 			detail_unit=GL_TEXTURE2_ARB;
 
 #ifndef MAP_EDITOR2
-			if (use_fog) glDisable(GL_FOG);
+			if (render_fog) glDisable(GL_FOG);
 #endif
 			ELglActiveTextureARB(shadow_unit);
 			glEnable(depth_texture_target);
@@ -653,7 +653,7 @@ void draw_sun_shadowed_scene(int any_reflection)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			CHECK_GL_ERRORS();
 #ifndef MAP_EDITOR2
-			if (use_fog) glEnable(GL_FOG);
+			if (render_fog) glEnable(GL_FOG);
 #endif
 			glNormal3f(0.0f,0.0f,1.0f);
 			if(any_reflection)draw_lake_tiles();
@@ -676,7 +676,7 @@ void draw_sun_shadowed_scene(int any_reflection)
 			display_blended_objects();
 
 #ifndef MAP_EDITOR2
-			if (use_fog) glDisable(GL_FOG);
+			if (render_fog) glDisable(GL_FOG);
 #endif
 
 			ELglActiveTextureARB(shadow_unit);
@@ -749,7 +749,7 @@ void draw_sun_shadowed_scene(int any_reflection)
 			glDisable(GL_DEPTH_TEST);
 
 #ifndef MAP_EDITOR2
-			if (use_fog) glEnable(GL_FOG);
+			if (render_fog) glEnable(GL_FOG);
 #endif
 
 			glEnable(GL_BLEND);

@@ -297,9 +297,9 @@ void Quest_List::load(void)
 	quests.insert( std::make_pair( Quest::UNSET_ID, showall) );
 	max_title = showall.get_title().size();
 
-	std::string username = std::string(username_str);
-	std::transform(username.begin(), username.end(), username.begin(), tolower);
-	list_filename = std::string(get_path_config()) + "quest_" + username + ".list";
+	std::string un = std::string(username);
+	std::transform(un.begin(), un.end(), un.begin(), tolower);
+	list_filename = std::string(get_path_config()) + "quest_" + un + ".list";
 	recalc_num_shown();
 
 	std::ifstream in(list_filename.c_str());
@@ -1801,9 +1801,9 @@ extern "C" void load_questlog()
 		return;
 	}
 
-	std::string username = std::string(username_str);
-	std::transform(username.begin(), username.end(), username.begin(), tolower);
-	filename = std::string(get_path_config()) + "quest_" + username + ".log";
+	std::string un = std::string(username);
+	std::transform(un.begin(), un.end(), un.begin(), tolower);
+	filename = std::string(get_path_config()) + "quest_" + un + ".log";
 
 	std::ifstream in(filename.c_str(), std::ios_base::in | std::ios_base::binary);
 	std::ofstream out;

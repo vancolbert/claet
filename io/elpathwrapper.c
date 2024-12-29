@@ -49,7 +49,7 @@ Theoretically safe, unless someone has a HOME that has a really long path. Such 
  *
  * Note that you should not have a leading or trailing slash.
  * If ELC is able to get your home directory; it, including a trailing slash, is put in front of CONFIGDIR.
- * If not, there is no slash in front, so the failover is to use a dir in datadir (the current working directory).
+ * If not, there is no slash in front, so the failover is to use a dir in data_dir (the current working directory).
  *
  * Unless you have a real need for it (such as having to maintain multiple configdirs) it's better to just use
  * the default; this isn't really intended for just using a different name if you din't like "elc"
@@ -277,8 +277,8 @@ FILE * open_file_data_updates(char* filename, const char* mode, int custom){
 
 FILE * open_file_data_datadir(const char* filename, const char* mode) {
 	char locbuffer[MAX_PATH];
-	if (strlen(datadir) + strlen(filename) + 2 < MAX_PATH) {
-		safe_snprintf(locbuffer, sizeof(locbuffer), "%s/%s", datadir, filename);
+	if (strlen(data_dir) + strlen(filename) + 2 < MAX_PATH) {
+		safe_snprintf(locbuffer, sizeof(locbuffer), "%s/%s", data_dir, filename);
 		if (!strcmp(mode, "r") || !strcmp(mode, "rb")) {
 			return fopen(locbuffer, mode);					// Don't try to create all the directories if we are only trying to read the file!
 		} else {
@@ -323,9 +323,9 @@ FILE * open_file_lang(const char* filename, const char* mode){
 		return NULL;
 	}
 	char locbuffer[MAX_PATH];
-	if(strlen("languages/") + strlen(lang) + strlen(filename) + 2 < MAX_PATH){
+	if(strlen("languages/") + strlen(language) + strlen(filename) + 2 < MAX_PATH){
 		FILE *fp;
-		safe_snprintf(locbuffer, sizeof(locbuffer), "languages/%s/%s", lang, filename);
+		safe_snprintf(locbuffer, sizeof(locbuffer), "languages/%s/%s", language, filename);
 		if((fp = open_file_data(locbuffer, mode)) != NULL){
 			//Found in the set language dir? Goodie!
 			return fp;
@@ -635,25 +635,25 @@ void file_check_datadir(void)
 {
 	struct stat fstat;
 #ifdef WINDOWS
-	if (datadir[strlen(datadir)-1] == '/' || datadir[strlen(datadir)-1] == '\\')		// stat() fails with a trailing slash under Windows. :-S
-		datadir[strlen(datadir)-1] = '\0';
+	if (data_dir[strlen(data_dir)-1] == '/' || data_dir[strlen(data_dir)-1] == '\\')		// stat() fails with a trailing slash under Windows. :-S
+		data_dir[strlen(data_dir)-1] = '\0';
 #endif // WINDOWS
-	if (stat(datadir, &fstat) != 0)
+	if (stat(data_dir, &fstat) != 0)
 	{
 		char pwd[MAX_PATH];
 		if (getcwd(pwd, MAX_PATH) == NULL)
 			pwd[0] = '\0';
 #ifdef ENGLISH
-		LOG_WARNING("Didn't find your data_dir, using the current directory instead. Please correct this in your el.ini . Given data_dir was: \"%s\". Using \"%s\".\n", datadir, pwd);
+		LOG_WARNING("Didn't find your data_dir, using the current directory instead. Please correct this in your el.ini . Given data_dir was: \"%s\". Using \"%s\".\n", data_dir, pwd);
 #else //ENGLISH
-		LOG_WARNING("Attention : impossible de trouver ton \"data_dir\", utilisation du répertoire actuel.. Vérifies le \"data_dir\" dans le fichier le.ini. \"data_dir\" actuel : \"%s\"\n", datadir);
+		LOG_WARNING("Attention : impossible de trouver ton \"data_dir\", utilisation du répertoire actuel.. Vérifies le \"data_dir\" dans le fichier le.ini. \"data_dir\" actuel : \"%s\"\n", data_dir);
 #endif //ENGLISH
-		strcpy(datadir, "./");
+		strcpy(data_dir, "./");
 	}
 #ifdef WINDOWS
 	else
 	{
-		datadir[strlen(datadir)] = '/';			// Replace the trailing slash
+		data_dir[strlen(data_dir)] = '/';			// Replace the trailing slash
 	}
 #endif // WINDOWS
 }

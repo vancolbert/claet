@@ -269,7 +269,7 @@ Achievements_System::Achievements_System(void)
 	char const *error_prefix = "Reading xml: ";
 
 	std::ostringstream langpath;
-	langpath << "languages/" << lang << "/achievements.xml";
+	langpath << "languages/" << language << "/achievements.xml";
 	if ((doc = xmlReadFile(langpath.str().c_str(), NULL, 0)) == NULL)
 	{
 		const char *path = "languages/en/achievements.xml";

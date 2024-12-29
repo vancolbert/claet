@@ -140,7 +140,7 @@ namespace Trade_Log
 		if (their_stuff)
 			delete their_stuff;
 
-		std::string you = std::string(username_str);
+		std::string you = std::string(username);
 		your_stuff = new List(you.c_str(), yours, max_items);
 		their_stuff = new List(name, others, max_items);
 
@@ -190,9 +190,9 @@ namespace Trade_Log
 		{
 			if (filename.empty())
 			{
-				std::string username = std::string(username_str);
-				std::transform(username.begin(), username.end(), username.begin(), tolower);
-				filename = std::string(get_path_config()) + "trade_" + username + ".log";
+				std::string un = std::string(username);
+				std::transform(un.begin(), un.end(), un.begin(), tolower);
+				filename = std::string(get_path_config()) + "trade_" + un + ".log";
 			}
 			std::ofstream out(filename.c_str(), std::ios_base::out | std::ios_base::binary | std::ios_base::app);
 			if (!out)
