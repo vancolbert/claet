@@ -13,9 +13,9 @@ extern "C" {
 extern unsigned int fsaa; /*!< flag that inidicates what level of fsaa to use */
 
 void init_fsaa_modes();
-unsigned int get_fsaa_mode_count();
-unsigned int get_fsaa_mode(const unsigned int index);
-char* get_fsaa_mode_str(const unsigned int index);
+int get_fsaa_mode_count();
+int get_fsaa_mode(int i);
+char *get_fsaa_mode_str(int i);
 
 #ifdef __cplusplus
 } // extern "C"
