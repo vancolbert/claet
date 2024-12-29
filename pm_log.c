@@ -18,6 +18,7 @@ int afk_time_conf=DEFAULT_AFK_MINUTES; //For elconfig window
 char afk_message[MAX_TEXT_MESSAGE_LENGTH]={0};
 char afk_title[101];
 int afk_local = 0;
+static Uint32 afk_when;
 
 struct pm_struct pm_log;
 
@@ -56,6 +57,7 @@ void go_afk()
 		}
 	afk++;
 	save_url_count();
+	afk_when = cur_time;
 }
 
 void go_ifk()
@@ -76,7 +78,7 @@ void check_afk_state(void)
 				go_afk();
 			}
 		}
-		else if(afk)
+		else if(afk && cur_time - afk_when > 10000)
 		{
 			go_ifk();
 		}
