@@ -264,7 +264,10 @@ namespace ec
 					break;
 				}
 			}
-			pos += ((TargetMagicEffect2*)effect)->shift;
+			TargetMagicEffect2 *t = dynamic_cast<TargetMagicEffect2 *>(effect);
+			if (t) {
+				pos += t->shift;
+			}
 		}
 
 		//  std::cout << "B) " << this << ": " << velocity << ", " << pos << std::endl;
