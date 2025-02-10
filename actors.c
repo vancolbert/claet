@@ -164,6 +164,7 @@ static void read_boss_names(cstr fn, int kind) {
 }
 static void init_boss_names(void) {
 	read_boss_names("Combat", BK_COMBAT);
+	add_boss_name("Renard du désert", BK_COMBAT);
 	read_boss_names("Magie", BK_MAGIC);
 	cstr invasion_boss_names[] = {"Gros rat", "Veuve noire", "Colosse", "Chef Minier", "Troll des cavernes", "Orque des collines", "Vengeur", "Occulus", "Mirage", "Yéti des glaces", "Carnage", "Chérubin", "Gargantua", 0};
 	for (cstr *p = invasion_boss_names; *p; ++p) {
