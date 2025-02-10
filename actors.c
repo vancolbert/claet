@@ -638,80 +638,48 @@ void draw_actor_banner(actor * actor_id, float offset_z)
 	set_font(0); // back to fixed pitch
 
 #ifdef DISPLAY_MANAPOINT
-	if ((view_mp || view_mana_bar) && me &&!actor_id->dead && me->actor_id==actor_id->actor_id)
-	{
-        unsigned char mana_point[200];
-        double largeur_mana=0;
-        double largeur_mana_bar=0;
-        double largeur_total_mana=0;
-		double hauteur_mana = ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
-        float percentage_mana=0;
-
-		// calcul la largeur de la barre equivalente a "000/000" (necessaire pour positionner l'etat)
-		if (view_mana_bar)
-		{
-            sprintf((char*)mana_point, "%03u/%03u", 0, 0);
-			largeur_mana_bar = (float)get_string_width(mana_point) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
+	if ((view_mp || view_mana_bar) && me && me->actor_id == actor_id->actor_id && !actor_id->dead) {
+		char mps[64] = "000/000";
+		float largeur_mana = 0, largeur_mana_bar = 0, largeur_total_mana = 0, hauteur_mana = ALT_INGAME_FONT_Y_LEN * 12.0 * name_text_size * font_scale;
+		int epc = max2i(0, your_info.ethereal_points.cur), epb = max2i(0, your_info.ethereal_points.base);
+		float percentage_mana = min2f(110.f, epb > 0 ? (float)epc / epb : 0);
+		if (view_mana_bar) {
+			largeur_mana_bar = get_string_width((Uint8 *)mps) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
 			largeur_total_mana = largeur_mana_bar;
-			if((float)your_info.ethereal_points.base != 0)
-                percentage_mana = (float)your_info.ethereal_points.cur / (float)your_info.ethereal_points.base;
-
 		}
-        //affichage des points de mana
-        if (view_mp)
-        {
-            if(me && me->actor_id==actor_id->actor_id){
-                sprintf((char*)mana_point,"%u/%u", your_info.ethereal_points.cur, your_info.ethereal_points.base);
-                // calcul la largeur des pdv/etat de sante puis la largeur totale (barre incluse)
-				largeur_mana = (float)get_string_width(mana_point) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
-                largeur_total_mana+= (view_mana_bar) ? 5.0f + largeur_mana : largeur_mana;
-
-                glColor4f(0.5f,0.5f,1.0f,1.0f);
-                draw_ortho_ingame_string(hx+(largeur_total_mana/2.0f)-largeur_mana, hy, hz, mana_point, 1, ALT_INGAME_FONT_X_LEN*font_scale, ALT_INGAME_FONT_Y_LEN*font_scale);
-            }
-        }
-
-        if (view_mana_bar)
-        {
-            if(me && me->actor_id==actor_id->actor_id)
-            {
-                double manabar_conv = 0;
-                double hauteur_barre_mana = hauteur_mana*0.7f; // la barre ne remplit pas toute la hauteur
-                double starty = hy + hauteur_mana*0.2f;   // du coup on ne la place pas au ras du sol
-                double startx = hx - largeur_total_mana*0.5f;
-
-                if (percentage_mana > 110.0f){
-                    percentage_mana = 110.0f;
-                }
-
-                glDisable(GL_TEXTURE_2D);
-                //Mana bar
-                manabar_conv = largeur_mana_bar * percentage_mana;
-                glBegin(GL_QUADS);
-                    glColor4f(0.1f,0.1f,1.0f,1.0f);
-                    glVertex3d(startx,                starty,               hz);
-                    glVertex3d(startx+manabar_conv,   starty,               hz);
-                    glColor4f(0.4f,0.4f,1.0f,1.0f);
-                    glVertex3d(startx+manabar_conv,   starty+hauteur_barre_mana, hz);
-                    glVertex3d(startx,                starty+hauteur_barre_mana, hz);
-                glEnd();
-
-                //Mana frame
-                glDepthFunc(GL_LEQUAL);
-                glBegin(GL_LINE_LOOP);
-                    glColor3f(0.0f, 0.0f, 0.0f);
-                    glVertex3f(startx,                  starty,               hz);
-                    glVertex3f(startx+largeur_mana_bar, starty,               hz);
-                    glVertex3f(startx+largeur_mana_bar, starty+hauteur_barre_mana, hz);
-                    glVertex3f(startx,                  starty+hauteur_barre_mana, hz);
-                glEnd();
-
-                glEnable(GL_TEXTURE_2D);
-            }
-        }
-        if (largeur_total_mana > banner_width) banner_width = largeur_total_mana;
-
-        hy+=hauteur_mana;
+		if (view_mp) {
+			safe_snprintf(mps, sizeof(mps), "%d/%d", epc, epb);
+			largeur_mana = get_string_width((Uint8 *)mps) * ALT_INGAME_FONT_X_LEN * name_text_size * font_scale;
+			largeur_total_mana += view_mana_bar ? 5.0f + largeur_mana : largeur_mana;
+			glColor4f(0.5f, 0.5f, 1.0f, 1.0f);
+			draw_ortho_ingame_string(hx + 0.5f*largeur_total_mana - largeur_mana, hy, hz, (Uint8 *)mps, 1, ALT_INGAME_FONT_X_LEN * font_scale, ALT_INGAME_FONT_Y_LEN * font_scale);
+		}
+		if (view_mana_bar) {
+			float manabar_conv = largeur_mana_bar * percentage_mana, hauteur_barre_mana = 0.7f*hauteur_mana;
+			float startx = hx - 0.5f*largeur_total_mana, starty = hy + 0.2f*hauteur_mana;
+			glDisable(GL_TEXTURE_2D);
+			//Mana bar
+			glBegin(GL_QUADS);
+				glColor4f(0.1f,0.1f,1.0f,1.0f);
+				glVertex3d(startx,                starty,               hz);
+				glVertex3d(startx+manabar_conv,   starty,               hz);
+				glColor4f(0.4f,0.4f,1.0f,1.0f);
+				glVertex3d(startx+manabar_conv,   starty+hauteur_barre_mana, hz);
+				glVertex3d(startx,                starty+hauteur_barre_mana, hz);
+			glEnd();
+			//Mana frame
+			glDepthFunc(GL_LEQUAL);
+			glBegin(GL_LINE_LOOP);
+				glColor3f(0.0f, 0.0f, 0.0f);
+				glVertex3f(startx,                  starty,               hz);
+				glVertex3f(startx+largeur_mana_bar, starty,               hz);
+				glVertex3f(startx+largeur_mana_bar, starty+hauteur_barre_mana, hz);
+				glVertex3f(startx,                  starty+hauteur_barre_mana, hz);
+			glEnd();
+			glEnable(GL_TEXTURE_2D);
+		}
+		banner_width = max2i(banner_width, largeur_total_mana);
+		hy += hauteur_mana;
 	}
 #endif //DISPLAY_MANAPOINT
 
