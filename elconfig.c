@@ -1663,7 +1663,7 @@ static void init_ELC_vars(void) {
 	cvar_int(dark_channeltext,"dctext",change_dark_channeltext,0,0,2,"Couleur texte console","Affiche le texte dans une couleur noire sur les canaux pour un meilleur affichage sur les cartes claires (peut-être difficilement visible en mode consolle F1)",CHAT);
 		cvset_labels("Normal", "Moyen", "Noir");
 		cvset_flags(CVF_HORIZ);
-	cvar_bool(opt_dedup_msgs,"dedup",change_var,1,"Fusionnement des messages identiques","Les messages identiques ne sont pas affichés, mais reçoivent un suffixe indiquant le nombre de répétitions.",CHAT);
+	cvar_int(dedup_lookback,"dedup",change_int,10,0,100,"Fusionnement des messages similaires","Nombre de messages passés à tester pour la similarité. Zéro désactive. Messages similaires ne sont pas affichés; ils reçoivent un suffixe de répétitions.",CHAT);
 	// CHAT TAB
 
 	// FONT TAB

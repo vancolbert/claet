@@ -71,7 +71,7 @@ Uint32 last_server_message_time;
 int lines_to_show=0;
 
 int show_timestamp = 0;
-int opt_dedup_msgs = 1;
+int dedup_lookback = 10;
 char not_from_the_end_console=0;
 
 int dark_channeltext = 0;
@@ -103,6 +103,8 @@ void alloc_text_message_data (text_message *msg, int size)
 	msg->data = size > 0 ? calloc (size, 1) : NULL;
 	msg->size = size;
 	msg->len = 0;
+	msg->tmdirty = 1;
+	msg->ddntxt = 0;
 }
 
 void resize_text_message_data (text_message *msg, int len)
@@ -114,7 +116,8 @@ void resize_text_message_data (text_message *msg, int len)
 			nsize += nsize;
 		msg->data = realloc (msg->data, nsize);
 		msg->size = nsize;
-        }
+	}
+	msg->tmdirty = 1;
 }
 
 void set_text_message_data (text_message *msg, const char* data)
@@ -127,7 +130,8 @@ void set_text_message_data (text_message *msg, const char* data)
 	{
 		safe_strncpy (msg->data, data, msg->size);
 		msg->len = strlen (msg->data);
-        }
+	}
+	msg->tmdirty = 1;
 }
 
 void init_text_buffers ()
@@ -1133,6 +1137,9 @@ int put_string_in_buffer (text_message *buf, const Uint8 *str, int pos)
 
 	return nr_paste;
 }
+enum { ddc_stop, ddc_skip, ddc_pass, ddc_squash };
+static const Uint8 _ddctab[256] = { [0]=ddc_stop, [1 ... 255]=ddc_pass, ['\r']=ddc_skip, ['\n']=ddc_skip, ['0' ... '9']=ddc_squash };
+#define ddcls(v) _ddctab[(Uint8)(v)]
 static inline int digit_count_u16(int v) {
 	return v < 10 ? 1 : v < 100 ? 2 : v < 1000 ? 3 : v < 10000 ? 4 : 5;
 }
@@ -1140,28 +1147,44 @@ static inline int digit_count_u16(int v) {
 static inline int repsuf_len(int r) {
 	return sizeof(repsuf_fmt) - 3 + digit_count_u16(r + 1);
 }
-static int same_text(text_message *a, text_message *b, int o) {
-	char c[1024], *pa = a->data + o, *ea = a->data + a->len, *pc = c, *ec = c + sizeof(c) - 1;
-	for (; pa < ea && pc < ec; *pc++ = *pa++) {
-		for (; *pa == '\r'; ++pa);
+#define ctsprefix_len() (show_timestamp ? 12 : 1)
+static inline Ddntxt *get_ddntxt(text_message *m) {
+	if (!m->tmdirty && m->ddntxt) {
+		return m->ddntxt;
 	}
-	int r = a->repeat_count, rl = r ? repsuf_len(r) : 0;
-	char *pb = b->data + o, *eb = b->data + b->len;
-	for (pa = c, ea = pc - rl; pa < ea && pb < eb;) {
-		if (*pa++ != *pb++) {
-			return 0;
+	Ddntxt *d = m->ddntxt ?: (m->ddntxt = malloc(sizeof(*d)));
+	int x = ctsprefix_len();
+	char *p = m->data + x, *pe = p + m->len - x, *o = d->s, *oe = o + sizeof(d->s) - 1;
+	for (; p < pe && o < oe;) {
+		switch (ddcls(*p)) {
+		case ddc_stop: p = pe; break;
+		case ddc_skip: ++p; break;
+		case ddc_pass: *o++ = *p++; break;
+		case ddc_squash:
+			for (++p; p < pe && ddcls(*p) == ddc_squash; ++p);
+			*o++ = '0';
 		}
 	}
-	return pa == ea && pb == eb;
+	*o = 0;
+	d->n = o - d->s - (m->repeat_count ? repsuf_len(1) : 0);
+	m->tmdirty = 0;
+	return d;
 }
-static text_message *deduplicate(text_message *m) {
-	int o = show_timestamp ? 12 : 0;
+static inline int match_for_dedup(text_message *m, text_message *p) {
+	Ddntxt *a = get_ddntxt(m), *b = get_ddntxt(p);
+	return a->n == b->n && !memcmp(a->s, b->s, a->n);
+}
+static inline int can_dedup(text_message *m) {
+	int x = ctsprefix_len();
+	return !m->deleted && m->chan_idx != CHAT_COMBAT && m->data && m->len > x && m->data[x] != ' ' && m->repeat_count < 65535;
+}
+static inline text_message *deduplicate(text_message *m) {
 	text_message *p = m - 1;
-	for (int i = 0; i < 5 && p >= display_text_buffer; --p) {
-		if (p->deleted || !p->data || p->len <= o + 1 || p->repeat_count > 65535 || p->chan_idx == CHAT_COMBAT) {
+	for (int i = 0; i < dedup_lookback && p >= display_text_buffer; --p) {
+		if (!can_dedup(p)) {
 			continue;
 		}
-		if (same_text(p, m, o)) {
+		if (match_for_dedup(m, p)) {
 			int r = p->repeat_count + 1, a = repsuf_len(r);
 			resize_text_message_data(m, m->len + a);
 			safe_snprintf(m->data + m->len, a + 1, repsuf_fmt, r + 1);
@@ -1392,7 +1415,7 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
         log_conn((unsigned char*)msg->data, msg->len);
     }
 #endif //ENGLISH
-	if (opt_dedup_msgs && msg->chan_idx != CHAT_COMBAT) {
+	if (can_dedup(msg)) {
 		msg = deduplicate(msg);
 	}
 	update_text_windows(msg);

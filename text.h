@@ -45,13 +45,15 @@ extern "C" {
 #define LOG_SERVER				2
 #define LOG_SERVER_SEPERATE		3
 
+typedef struct Ddntxt { int n; char s[240]; } Ddntxt;
 typedef struct
 {
-	Uint8 chan_idx;
+	Uint8 chan_idx, tmdirty;
 	Uint16 repeat_count;
 	Uint32 channel;
 	Uint16 len, size;
 	char *data;
+	Ddntxt *ddntxt;
 	Uint16 wrap_width;
 	float wrap_zoom;
 #ifdef FR_VERSION
@@ -77,7 +79,7 @@ extern Uint32 last_server_message_time; /*!< timestamp of the last server messag
 extern int lines_to_show; /*!< number of lines to show at once */
 
 extern int show_timestamp;
-extern int opt_dedup_msgs;
+extern int dedup_lookback;
 extern int dark_channeltext;
 
 extern char not_from_the_end_console;
@@ -135,6 +137,7 @@ static __inline__ void clear_text_message_data (text_message *msg)
 	msg->len = 0;
 	if (msg->size > 0)
 		msg->data[0] = '\0';
+	msg->tmdirty = 1;
 }
 
 /*!
@@ -167,6 +170,11 @@ static __inline__ void free_text_message_data (text_message *msg)
 		msg->len = msg->size = 0;
 		msg->repeat_count = 0;
 	}
+	if (msg->ddntxt) {
+		free(msg->ddntxt);
+		msg->ddntxt = 0;
+	}
+	msg->tmdirty = 1;
 }
 
 /*!
@@ -201,6 +209,7 @@ static __inline__ void set_text_message_color (text_message *msg, float r, float
 static __inline__ void init_text_message (text_message *msg, Uint16 size)
 {
 	msg->chan_idx = CHAT_NONE;
+	msg->tmdirty = 1;
 	msg->channel = 0;
 	alloc_text_message_data (msg, size);
 	msg->wrap_width = 0;
