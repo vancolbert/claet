@@ -43,6 +43,7 @@
 #include "sound.h"
 #include "spells.h"
 #include "tabs.h"
+#include "textures.h"
 #include "translate.h"
 #include "url.h"
 #include "command_queue.h"
@@ -1841,6 +1842,11 @@ int commande_rechargement_almanakh()
 }
 #endif //ENGLISH
 
+static int reload_skins(char *t, int l) {
+	unload_actor_texture_cache();
+	return 1;
+}
+
 #ifdef FR_VERSION
 int command_salut (char * text, int len)
 {
@@ -2135,6 +2141,7 @@ add_command("horse", &horse_cmd);
 	add_command("md5sum", &command_ckdata);
 #endif //ENGLISH
 	add_command(cmd_reload_icons, &reload_icon_window);
+	add_command("reload_skins", &reload_skins);
 	add_command(cmd_open_url, &command_open_url);
 	add_command(cmd_show_spell, &command_show_spell);
 	add_command(cmd_cast_spell, &command_cast_spell);
