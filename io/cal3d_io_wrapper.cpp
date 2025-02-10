@@ -2,6 +2,7 @@
 #include "cal3d_io_wrapper.h"
 #include "../elc_private.h"
 #include "../errors.h"
+#include "../misc.h"
 #include <cal3d/global.h>
 #include <cal3d/cal3d.h>
 #include "cal3d/coretrack.h"
