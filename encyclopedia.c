@@ -1063,22 +1063,26 @@ static void save_confirmed_page_link(const char *link, const char *title, size_t
 	//printf("[%s] [%s] %lu [%s]\n", title, link, (unsigned long)from_page_index, Page[from_page_index].Name);
 }
 
-
-/*	Free encyclopedia navigation memory before exit.
-*/
-static void encycl_nav_free(void)
-{
-	size_t i;
-	for (i=0; i<num_gen_titles; i++)
-		free(gen_titles[i]);
-	free(gen_titles);
-	free(page_links);
-	if (last_search != NULL)
+static void encycl_nav_free(void) {
+	if (gen_titles) {
+		for (int i = 0; i < num_gen_titles; ++i) {
+			free(gen_titles[i]);
+		}
+		free(gen_titles);
+		gen_titles = 0;
+	}
+	if (page_links) {
+		free(page_links);
+		page_links = 0;
+	}
+	if (last_search) {
 		free(last_search);
-	last_search = NULL;
-	if (raw_page_links != NULL)
+		last_search = 0;
+	}
+	if (raw_page_links) {
 		free(raw_page_links);
-	raw_page_links = NULL;
+		raw_page_links = 0;
+	}
 	max_gen_titles = num_gen_titles = max_page_links = num_page_links = 0;
 }
 
