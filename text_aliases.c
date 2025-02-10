@@ -467,7 +467,9 @@ static int handle_text_alias (int index, char *text, int len)
 	}
 	else
 		memset(previously_expanded, 0, sizeof(int)*100);
-
+	if (!we_are_nested && !numeric_aliases[index]) {
+		return -1;
+	}
 	previously_expanded[index] = we_are_nested = 1;
 
 	if (NULL != numeric_aliases[index])
