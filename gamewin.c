@@ -923,69 +923,14 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 					if(this_actor != NULL)
 						add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_ATTACK_TARGET);
 				}
-
-#ifdef FR_FAST_SPELL
-				if(selected_spell == -1) {
-#endif
+				if (selected_spell == -1) {
 					str[0] = ATTACK_SOMEONE;
 					pack_u32_le(str+1, object_under_mouse);
 					my_tcp_send (my_socket, str, 5);
 					return 1;
-
-#ifdef FR_FAST_SPELL
 				} else {
-#ifndef FR_MORE_MQB
-				  if(mqb_data[selected_spell]->spell_id != -1) {
-				    send_spell(mqb_data[selected_spell]->spell_str, mqb_data[selected_spell]->spell_str[1]+2);
-				    selected_spell_sent = 1;
-				    selected_spell_target = object_under_mouse;
-				  }
+					send_mqb_spell(object_under_mouse);
 				}
-#else //FR_MORE_MQB
-					switch (quickspell_mqb_selected)
-					{
-					case 0:
-						if(mqb_data[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data[selected_spell]->spell_str, mqb_data[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 1:
-						if(mqb_data2[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data2[selected_spell]->spell_str, mqb_data2[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 2:
-						if(mqb_data3[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data3[selected_spell]->spell_str, mqb_data3[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 3:
-						if(mqb_data4[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data4[selected_spell]->spell_str, mqb_data4[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 4:
-						if(mqb_data5[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data5[selected_spell]->spell_str, mqb_data5[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					
-					default:
-						break;
-					}
-				}
-#endif //FR_MORE_MQB
-#endif
 			}
 #ifdef MISSILES
 			else if (range_weapon_equipped && thing_under_the_mouse == UNDER_MOUSE_3D_OBJ)
