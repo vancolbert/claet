@@ -150,17 +150,17 @@ int display_session_handler(window_info *win)
 	char buffer[128];
 	float oa_exp;
 
-	char correcwarning[30];
-	char provi[17];
+	char correcwarning[32];
+	char provi[32];
 	char *finxpm = NULL;
-	char totxp[13];
-	char mtotxp[17];
-	char sessxp[13];
-	char msessxp[17];
-	char compe[15];
-	char lignecomplete[72];
-	char chmilliers[4];
-	char chcentaines[4];
+	char totxp[128];
+	char mtotxp[128];
+	char sessxp[128];
+	char msessxp[128];
+	char compe[32];
+	char lignecomplete[256];
+	char chmilliers[16];
+	char chcentaines[16];
 	int millions, milliers, nbmillions, nbmilliers, centaines;
 	float xpm;
 	int esp;

@@ -1329,12 +1329,12 @@ int	display_stats_bar_handler(window_info *win)
     //Ajout stats sur le HUD
     if(show_attr_boosted)
     {
-        unsigned char force_str[10];
-        unsigned char agilite_str[10];
-        unsigned char intel_str[10];
-        unsigned char volonte_str[10];
-        unsigned char instinct_str[10];
-        unsigned char aura_str[10];
+        unsigned char force_str[16];
+        unsigned char agilite_str[16];
+        unsigned char intel_str[16];
+        unsigned char volonte_str[16];
+        unsigned char instinct_str[16];
+        unsigned char aura_str[16];
         float r_stat = 1.0f;
         float g_stat = 1.0f;
         float b_stat = 1.0f;

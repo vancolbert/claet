@@ -38,7 +38,7 @@
 typedef struct {
 	size_t alloc_size; /**< Current allocated size of buffer */
 	size_t current_size; /**< Current size used in buffer */
-	unsigned char data[0]; /**< Data placeholder */
+	unsigned char data[]; /**< Data placeholder */
 } dbuffer_t;
 
 /**
