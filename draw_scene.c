@@ -634,7 +634,7 @@ int update_have_display(window_info * win)
 typedef struct v2i { int x, y; } v2i;
 typedef struct Mapcam { v2i p; int map; Uint32 t; float r[4]; } Mapcam;
 static Mapcam mapcams[32];
-static int n_mapcams;
+static int n_mapcams, is_local_teleport;
 #define countof(a) (sizeof(a)/sizeof(*a))
 #define for_mapcams(v) for (Mapcam *v = mapcams, *v##_e = v + n_mapcams; v < v##_e; ++v)
 static inline int distsq(v2i a, v2i b) {
@@ -659,6 +659,10 @@ static inline Mapcam *find_mapcam(int map, v2i p) {
 	return m;
 }
 void stash_mapcam(void) {
+	if (spell_result == 2) {
+		is_local_teleport = 1;
+		return;
+	}
 	Mapcam *m, c = {get_our_pos(), cur_map, cur_time, {rx, ry, rz, zoom_level}};
 	if (!(m = find_mapcam(c.map, c.p))) {
 		if (n_mapcams < countof(mapcams)) {
@@ -676,6 +680,10 @@ void stash_mapcam(void) {
 	*m = c;
 }
 void restore_mapcam(void) {
+	if (is_local_teleport) {
+		is_local_teleport = 0;
+		return;
+	}
 	Mapcam *m = find_mapcam(cur_map, get_our_pos());
 	if (m) {
 		rx = m->r[0];
