@@ -953,6 +953,7 @@ static int keypress_storage_handler(window_info *win, int mx, int my, Uint32 key
 	{
 		filter_item_text[0] = '\0';
 		filter_item_text_size = 0;
+		item_lists_cancel();
 		return 1;
 	}
 	item_info_help_if_needed();

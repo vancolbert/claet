@@ -889,6 +889,7 @@ namespace ItemLists
 		}
 	}
 	void List_Window::setup_withdraw(void) {
+		storage_item_dragged = item_dragged = -1;
 		if (Vars::lists()->valid_active_list()) {
 			do_click_sound();
 			const List &l = Vars::lists()->get_list();
@@ -901,7 +902,9 @@ namespace ItemLists
 	}
 	void List_Window::cancel_withdraw(void) {
 		withdraw_list_item.clear();
-		storage_item_dragged = item_dragged = -1;
+		storage_item_dragged = -1;
+		item_dragged = -1;
+		storage_moove_cat_called = 0;
 	}
 	// Draw the item list window
 	//
@@ -1437,6 +1440,7 @@ CHECK_GL_ERRORS();
 		{
 			filter[0] = '\0';
 			last_key_time = 0;
+			item_lists_cancel();
 			return 1;
 		}
 		if (string_input(filter, sizeof(filter), the_key) || (the_key == SDLK_RETURN))

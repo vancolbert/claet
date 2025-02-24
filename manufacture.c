@@ -1259,6 +1259,7 @@ static int keypress_recipe_handler(window_info *win, int mx, int my, Uint32 key,
 	if (keychar == SDLK_ESCAPE)
 	{
 		clear_recipe_filter();
+		item_lists_cancel();
 		return 1;
 	}
 	if (string_input(recipe_name_filter, sizeof(recipe_name_filter), keychar) || (keychar == SDLK_RETURN))

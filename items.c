@@ -1854,7 +1854,9 @@ int keypress_items_handler(window_info * win, int x, int y, Uint32 key, Uint32 k
 			return 1;
 		}
 	}
-
+	if (key == SDLK_ESCAPE) {
+		item_lists_cancel();
+	}
 	return 0;
 }
 
