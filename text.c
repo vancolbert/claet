@@ -70,6 +70,7 @@ char last_pm_from[32];
 Uint32 last_server_message_time;
 int lines_to_show;
 int max_lines_to_show = 10;
+float scroll_off_secs = 3.0f;
 
 int show_timestamp = 0;
 int dedup_lookback = 10;
@@ -1522,20 +1523,12 @@ void put_small_colored_text_in_box (Uint8 color, const Uint8 *text_to_add, int l
 	}
 }
 
-
-// find the last lines, according to the current time
-int find_last_lines_time (int *msg, int *offset, Uint8 filter, int width)
-{
-	// adjust the lines_no according to the time elapsed since the last message
-	if ( (cur_time - last_server_message_time) / 1000 > 3)
-	{
-		if (lines_to_show > 0)
-			lines_to_show--;
+int find_last_lines_time(int *msg, int *offset, Uint8 filter, int width) {
+	if (scroll_off_secs > 0.0f && cur_time > last_server_message_time + 1000*scroll_off_secs) {
+		lines_to_show = clampi(lines_to_show - 1, 0, max_lines_to_show);
 		last_server_message_time = cur_time;
 	}
-	if (lines_to_show <= 0) return 0;
-
-	return find_line_nr (get_total_nr_lines(), get_total_nr_lines() - lines_to_show, filter, msg, offset, chat_text_size, width);
+	return lines_to_show < 1 ? 0 : find_line_nr(get_total_nr_lines(), get_total_nr_lines() - lines_to_show, filter, msg, offset, chat_text_size, width);
 }
 
 int find_last_console_lines (int lines_no)

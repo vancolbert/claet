@@ -1666,6 +1666,7 @@ static void init_ELC_vars(void) {
 	cvar_bool(caps_filter,"caps",change_var,1,"Caps Filter","Toggle the caps filter",CHAT);
 	cvar_bool(show_timestamp,"ts",change_var,0,"Horodatage des messages","Voir les heures sur les canaux de discussions",CHAT);
 	cvar_int(max_lines_to_show,"mls",change_lines_to_show,10,0,100,"Lines de l'historique en vue 3D","Nombre maximal de lines de l'historique à afficher en haut de la vue 3D.",CHAT);
+	cvar_float(scroll_off_secs,"sos",change_float,3,0,3600,0.1,"Défilement automatique des messages","Secondes entre le défilement automatique des messages de l'historique affichés en haut de la vue 3D. Si zéro, les messages restent toujours visibles.",CHAT);
 	cvar_int(dark_channeltext,"dctext",change_dark_channeltext,0,0,2,"Couleur texte console","Affiche le texte dans une couleur noire sur les canaux pour un meilleur affichage sur les cartes claires (peut-être difficilement visible en mode consolle F1)",CHAT);
 		cvset_labels("Normal", "Moyen", "Noir");
 		cvset_flags(CVF_HORIZ);
