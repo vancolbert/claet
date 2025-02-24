@@ -3,7 +3,7 @@
 -include make.conf
 
 # basic compiling and linking - rarely changed
-OPTIONS = -DLINUX -DELC $(foreach FEATURE, $(FEATURES), -D$(FEATURE)) -D_7ZIP_ST
+OPTIONS = -DLINUX -DELC $(foreach FEATURE, $(FEATURES), -D$(FEATURE)) -D_7ZIP_ST -DBASE_FILENAME=\"$(notdir $<)\" -I.
 
 # ajout des options nécessaires selon l'architecture (spécifiée par ARCH= ou détection auto de l'OS)
 SUBARCH := $(shell uname -m | sed -e s/i.86/x86/)
@@ -38,7 +38,6 @@ LDFLAGS=$(shell sdl-config --libs) \
 	$(shell pkg-config libxml-2.0 --libs) \
 	$(shell pkg-config SDL_net --libs) \
 	$(shell pkg-config SDL_image --libs) \
-	$(shell pkg-config cal3d --libs) \
 	$(shell pkg-config gl --libs) \
 	$(shell pkg-config glu --libs) \
 	$(shell pkg-config openal --libs) \
@@ -52,9 +51,9 @@ LDFLAGS=$(shell sdl-config --libs) \
 _LDFLAGS=$(XDIR) -lGL -lpthread -lstdc++ -lm -ldl
 
 LIBD=../libs
-STATICLIBS=$(LIBD)/libSDL_net.a $(LIBD)/libSDL.a $(LIBD)/libSDL_image.a $(LIBD)/libopenal.a $(LIBD)/libvorbisfile.a $(LIBD)/libvorbis.a $(LIBD)/libogg.a $(LIBD)/libxml2.a $(LIBD)/libcal3d.a $(LIBD)/libpng.a $(LIBD)/libasound.a $(LIBD)/libGLU.a $(LIBD)/libz.a $(EXTRA_STATICLIBS) -lX11
+STATICLIBS=$(LIBD)/libSDL_net.a $(LIBD)/libSDL.a $(LIBD)/libSDL_image.a $(LIBD)/libopenal.a $(LIBD)/libvorbisfile.a $(LIBD)/libvorbis.a $(LIBD)/libogg.a $(LIBD)/libxml2.a $(LIBD)/libpng.a $(LIBD)/libasound.a $(LIBD)/libGLU.a $(LIBD)/libz.a $(EXTRA_STATICLIBS) -lX11
 include objs.mk
-HEADER_DIRS = . books eye_candy io pawn fsaa engine xz
+HEADER_DIRS = . books eye_candy io pawn fsaa engine xz cal3d
 
 
 DEP_FILES=$(foreach OBJ, $(COBJS), .deps/$(OBJ).P) $(foreach OBJ, $(CXXOBJS), .deps/$(OBJ).P)
@@ -86,7 +85,7 @@ $(EXE): $(OBJS)
 #recompile on Makefile or conf change
 #.depend $(OBJS): Makefile.linux make.conf
 
-DEPS_MAGIC := $(shell mkdir .deps .deps/io .deps/shader .deps/eye_candy .deps/exceptions .deps/xz .deps/xml .deps/fsaa .deps/engine > /dev/null 2>&1 || :)
+DEPS_MAGIC := $(shell mkdir .deps .deps/io .deps/shader .deps/eye_candy .deps/exceptions .deps/xz .deps/xml .deps/fsaa .deps/engine .deps/cal3d > /dev/null 2>&1 || :)
 
 $(COBJS): %.o: %.c Makefile.linux make.conf
 	@echo "  CC   $@"

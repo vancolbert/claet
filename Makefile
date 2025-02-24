@@ -10,24 +10,24 @@ ifeq ($(trace), 1)
 	f += -finstrument-functions
 	EXE := trace-$(EXE)
 endif
-f += $(defs) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
+f += $(defs) -I. $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
 warn = -Wall -Werror -Wfatal-errors
 CFLAGS := $f $(warn) $(CFLAGS)
 CXXFLAGS := $f $(warn) $(CXXFLAGS)
 LDFLAGS := -mwindows -static -static-libgcc -static-libstdc++ -Wl,-Map=$(EXE)-link.map $(LDFLAGS)
 extlibdir := $(SYSROOT)/lib
-extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis libogg libxml2 libcal3d libpng libjpeg libiconv libz
+extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis libogg libxml2 libpng libjpeg libiconv libz
 winlibdir := $(SYSROOT)/$(HOST)/lib
 winlibs := libdbghelp libopengl32 libglu32 libdxguid libgdi32 libwinmm libmincore libole32 libstdc++
 libs := $(extlibs:%=$(extlibdir)/%.a) $(winlibs:%=$(winlibdir)/%.a)
-srcdirs := io shader eye_candy exceptions xz xml fsaa engine
+srcdirs := io shader eye_candy exceptions xz xml fsaa engine cal3d
 include objs.mk
 depdir := .deps
 depflags = -MT $@ -MMD -MP -MF $(depdir)/$@.d
 depfiles := $(OBJS:%=$(depdir)/%.d)
-$(EXE) : $(OBJS) $(libs) ; $(CXX) $(LDFLAGS) $(OBJS) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
-$(COBJS) : %.o : %.c | $(depdir) ; $(CC) $(CFLAGS) $(depflags) -c $< -o $@
-$(CXXOBJS) : %.o : %.cpp ; $(CXX) $(CXXFLAGS) $(depflags) -c $< -o $@
+$(EXE) : $(depdir) $(OBJS) $(libs) ; $(CXX) $(LDFLAGS) $(OBJS) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
+$(COBJS) : %.o : %.c ; $(CC) $(CFLAGS) $(depflags) -c $< -o $@
+$(CXXOBJS) : %.o : %.cpp ; $(CXX) $(CXXFLAGS) -DBASE_FILENAME=\"$(notdir $<)\" $(depflags) -c $< -o $@
 $(depdir) : ; mkdir -p $@ $(srcdirs:%=$(depdir)/%)
 $(depfiles) :
 clean : ; $(RM) $(OBJS) $(EXE) $(depfiles)
