@@ -1996,7 +1996,7 @@ int tab_bar_button_click (widget_list *w, int mx, int my, Uint32 flags, int lign
 		}
 	}
 
-	lines_to_show = 10;
+	lines_to_show = max_lines_to_show;
 
 	return 1;
 }
@@ -2073,7 +2073,7 @@ int tab_bar_button_click (widget_list *w, int mx, int my, Uint32 flags)
 			switch_to_tab(itab);
 			do_click_sound();
 		}
-		lines_to_show = 10;
+		lines_to_show = max_lines_to_show;
 	}
 	return 1;
 }
@@ -2891,7 +2891,7 @@ void update_tab_bar (text_message * msg)
 #else //FR_VERSION
 		lines_to_show += rewrap_message(msg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
-		if (lines_to_show >= 10) lines_to_show = 10;
+		lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 	}
 
 #ifndef ENGLISH
@@ -2916,7 +2916,7 @@ void update_tab_bar (text_message * msg)
 #else //FR_VERSION
 				lines_to_show += rewrap_message(msg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
-				if (lines_to_show >= 10) lines_to_show = 10;
+				lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 			}
 			return;
 		}
@@ -2934,7 +2934,7 @@ void update_tab_bar (text_message * msg)
 #else //FR_VERSION
 				lines_to_show += rewrap_message(msg, chat_text_size, console_text_width, NULL);
 #endif //FR_VERSION
-				if (lines_to_show >= 10) lines_to_show = 10;
+				lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 			}
 			return;
 		}

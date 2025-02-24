@@ -907,6 +907,11 @@ void set_buff_icon_size(int *pointer, int value)
 	view_buffs = (value < 5) ?0: 1;
 }
 
+static void change_lines_to_show(int *p, int v) {
+	*p = v;
+	lines_to_show = max_lines_to_show;
+}
+
 void change_dark_channeltext(int *dct, int value)
 {
 	*dct = value;
@@ -1660,6 +1665,7 @@ static void init_ELC_vars(void) {
 	cvar_bool(use_global_filters,"gfil", change_global_filters, 1, "Global Filter", "Toggle the use of global text filters.", CHAT);
 	cvar_bool(caps_filter,"caps",change_var,1,"Caps Filter","Toggle the caps filter",CHAT);
 	cvar_bool(show_timestamp,"ts",change_var,0,"Horodatage des messages","Voir les heures sur les canaux de discussions",CHAT);
+	cvar_int(max_lines_to_show,"mls",change_lines_to_show,10,0,100,"Lines de l'historique en vue 3D","Nombre maximal de lines de l'historique à afficher en haut de la vue 3D.",CHAT);
 	cvar_int(dark_channeltext,"dctext",change_dark_channeltext,0,0,2,"Couleur texte console","Affiche le texte dans une couleur noire sur les canaux pour un meilleur affichage sur les cartes claires (peut-être difficilement visible en mode consolle F1)",CHAT);
 		cvset_labels("Normal", "Moyen", "Noir");
 		cvset_flags(CVF_HORIZ);

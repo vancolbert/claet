@@ -68,7 +68,8 @@ text_message input_text_line;
 char last_pm_from[32];
 
 Uint32 last_server_message_time;
-int lines_to_show=0;
+int lines_to_show;
+int max_lines_to_show = 10;
 
 int show_timestamp = 0;
 int dedup_lookback = 10;
@@ -166,7 +167,7 @@ void update_text_windows (text_message * pmsg)
 			rewrap_message(pmsg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
 			lines_to_show += pmsg->wrap_lines;
-			if (lines_to_show > 10) lines_to_show = 10;
+			lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 			break;
 		case 1:
 			update_tab_bar (pmsg);
