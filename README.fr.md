@@ -1,4 +1,4 @@
-# claet [<img src="https://github.com/vancolbert/trucsle/raw/main/flag-gb.svg" height="20" align="right"><img src="https://github.com/vancolbert/trucsle/raw/main/lang-en.svg" align="right">](README.md)
+# claet [<img src="https://github.com/vancolbert/trucsle/raw/main/flag-gb.svg" width="32" height="20" align="right"><img src="https://github.com/vancolbert/trucsle/raw/main/lang-en.svg" align="right">](README.md)
 Copie du [code source du client](http://jeu.landes-eternelles.com/~ale/downloads.html)
 pour le jeu de rôle en ligne [Landes Eternelles](http://www.landes-eternelles.com/).
 J'ai fait quelques modifications mineures au but d'être compatible avec les compilateurs et bibliothèques récents.

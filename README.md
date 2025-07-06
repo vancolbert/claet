@@ -1,4 +1,4 @@
-# claet [<img src="https://github.com/vancolbert/trucsle/raw/main/flag-fr.svg" height="20" align="right"><img src="https://github.com/vancolbert/trucsle/raw/main/lang-fr.svg" align="right">](README.fr.md)
+# claet [<img src="https://github.com/vancolbert/trucsle/raw/main/flag-fr.svg" width="32" height="20" align="right"><img src="https://github.com/vancolbert/trucsle/raw/main/lang-fr.svg" align="right">](README.fr.md)
 Github mirror of the game client [source code](http://jeu.landes-eternelles.com/~ale/downloads.html)
 for the French online roleplaying game [Landes Eternelles](http://www.landes-eternelles.com/).
 I have made minor changes for recent compilers and libraries.
