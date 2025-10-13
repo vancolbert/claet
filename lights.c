@@ -155,8 +155,7 @@ void draw_lights()
 		vec4[2] = lights_list[l]->b;
 		vec4[3] = 1.0f;
 		glLightfv(GL_LIGHT0+j, GL_DIFFUSE, vec4);
-		if (j >= 4) break;
-		else j++;
+		if (++j > 3) break;
 	}
 
 #ifdef OPENGL_TRACE

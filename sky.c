@@ -1585,8 +1585,9 @@ void cloudy_sky()
 		glDisable(GL_LIGHT2);
 	case 1:
 		glDisable(GL_LIGHT1);
-	default:
+	case 0:
 		glDisable(GL_LIGHT0);
+	default:
 		break;
 	}
 
@@ -1935,8 +1936,9 @@ void cloudy_sky()
 			glEnable(GL_LIGHT2);
 		case 1:
 			glEnable(GL_LIGHT1);
-		default:
+		case 0:
 			glEnable(GL_LIGHT0);
+		default:
 			break;
 		}
 	}
