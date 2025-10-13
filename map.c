@@ -778,11 +778,11 @@ int get_3d_objects_from_server (int nr_objs, const Uint8 *data, int len)
 		else
 		{
 			rx = unpack_f32_le(&data[offset]);
-			offset += 2;
+			offset += 4;
 			ry = unpack_f32_le(&data[offset]);
-			offset += 2;
+			offset += 4;
 			rz = unpack_f32_le(&data[offset]);
-			offset += 2;
+			offset += 4;
 			id = unpack_u16_le(&data[offset]);
 			offset += 2;
 
