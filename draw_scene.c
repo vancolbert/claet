@@ -635,6 +635,7 @@ typedef struct v2i { int x, y; } v2i;
 typedef struct Mapcam { v2i p; int map; Uint32 t; float r[4]; } Mapcam;
 static Mapcam mapcams[32];
 static int n_mapcams, is_local_teleport;
+int use_mapcam = 1;
 #define countof(a) (sizeof(a)/sizeof(*a))
 #define for_mapcams(v) for (Mapcam *v = mapcams, *v##_e = v + n_mapcams; v < v##_e; ++v)
 static inline int distsq(v2i a, v2i b) {
@@ -684,6 +685,7 @@ void restore_mapcam(void) {
 		is_local_teleport = 0;
 		return;
 	}
+	if (!use_mapcam) return;
 	Mapcam *m = find_mapcam(cur_map, get_our_pos());
 	if (m) {
 		rx = m->r[0];

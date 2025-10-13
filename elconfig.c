@@ -1815,6 +1815,7 @@ static void init_ELC_vars(void) {
 	cvar_bool(fol_cam_behind,"fcb", toggle_follow_cam_behind,0,"Keep the camera behind the char", "Causes the camera to stay behind you while walking (works only in follow camera mode)", CAMERA);
 	cvar_bool(extended_cam,"extcam", toggle_ext_cam,0,"Extended Camera", "Camera range of motion extended and adjusted to allow overhead and first person style camera.", CAMERA);
 	cvar_bool(ext_cam_auto_zoom,"autozoom", change_var,0,"Auto zoom", "Allows the camera to zoom automatically when getting close to the ground (works only in extended camera mode and with a max tilt angle over 90.0).", CAMERA);
+	cvar_bool(use_mapcam,"mapcam",change_var,1,"Caméra restaurée par carte", "Sauvegarde et restaure la rotation et distance de la caméra dès que l'on change de carte.", CAMERA);
 	cvar_float(normal_camera_rotation_speed,"nrot",change_float,15,1.0,FLT_MAX,0.5,"Camera Rotation Speed","Set the speed the camera rotates",CAMERA);
 	cvar_float(fine_camera_rotation_speed,"frot",change_float,1,1.0,FLT_MAX,0.5,"Fine Rotation Speed","Set the fine camera rotation speed (when holding shift+arrow key)",CAMERA);
 	cvar_float(normal_camera_deceleration,"ncd",change_float,normal_camera_deceleration,0.01,1.0,0.01,"Camera Rotation Deceleration","Set the camera rotation deceleration",CAMERA);
