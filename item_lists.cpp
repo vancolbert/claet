@@ -1007,6 +1007,17 @@ namespace ItemLists
 			rendergrid(1, 1, x_start-1, y_start-1, get_grid_size()+2, get_grid_size()+2);
 		}
 
+		if (Vars::lists()->valid_active_list() && (cur_time < 10000 + last_time_storage_change || mouse_over_get_button)) {
+			const List &l = Vars::lists()->get_list();
+			float c[][3] = {{1.0f, 0.3f, 0.3f}, {0.8f, 0.8f, 0.2f}, {0.2f, 0.8f, 0.2f}, {0.1f, 1.0f, 1.0f}};
+			for (int i = 0, n = min2i(l.get_num_items(), 6*num_grid_rows), s = get_grid_size(); i < n; ++i) {
+				int x = i % 6 * s + 1, y = i / 6 * s, u = l.get_item_id(i), q = l.get_quantity(i), h = 0;
+				for (item *it = item_list, *ie = it + ITEM_WEAR_START; it < ie; h += it->id == u && it->quantity > 0 ? it->quantity : 0, ++it);
+				glColor3fv(c[(h > 0) + (h >= q) + (h > q)]);
+				#define draw_outline(x, y, w, h, t) do { glBegin(GL_TRIANGLE_STRIP); glVertex2i(x,y); glVertex2i(x+t,y+t); glVertex2i(x+w,y); glVertex2i(x+w-t,y+t); glVertex2i(x+w,y+h); glVertex2i(x+w-t,y+h-t); glVertex2i(x,y+h); glVertex2i(x+t,y+h-t); glVertex2i(x,y); glVertex2i(x+t,y+t); glEnd(); } while(0)
+				draw_outline(x, y, s, s, 3);
+			}
+		}
 		glEnable(GL_TEXTURE_2D);
 
 		// draw the quantities over everything else so they always show
