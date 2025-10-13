@@ -838,16 +838,11 @@ void remove_3d_object_from_server (int id)
 int map_3d_markers=1;
 float mark_z_rot=0;
 
-void animate_map_markers(){
-
-	int dt;
-	static int last_rot=0;
-
-	dt=cur_time-last_rot;
-	last_rot+=dt;
-	mark_z_rot+=0.1*dt;
-	if(mark_z_rot>360) mark_z_rot-=360;
-
+void animate_map_markers(void) {
+	static Uint32 last_time;
+	mark_z_rot += 0.1f * (cur_time - last_time);
+	last_time = cur_time;
+	if (mark_z_rot >= 360.0f) mark_z_rot = fmodf(mark_z_rot, 360.0f);
 }
 
 void display_map_marks(){
