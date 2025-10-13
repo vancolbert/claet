@@ -75,41 +75,9 @@ void load_map_tiles();
 int get_tile_type(int x, int y);
 #endif // NEW_SOUND
 
-/*!
- * \ingroup 	tile
- * \brief 	Returns the height at the given position.
- *
- *      	Returns the height at the given position \a x and \a y.
- *
- * \param x						X coordinate
- * \param y						Y coordinate
- * \callgraph
- */
-float get_tile_height(const float x, const float y);
-
-/*!
- * \ingroup 	tile
- * \brief 	Returns if the given position is walkable
- *
- *      	Returns if the given position is walkable at \a x and \a y.
- *
- * \param x						X coordinate
- * \param y						Y coordinate
- * \callgraph
- */
-int get_tile_walkable(const int x, const int y);
-
-/*!
- * \ingroup 	tile
- * \brief 	Returns if the given position is valid
- *
- *      	Returns if the given position is valid at \a x and \a y.
- *
- * \param x						X coordinate
- * \param y						Y coordinate
- * \callgraph
- */
-int get_tile_valid(const int x, const int y);
+static inline int get_tile_valid(int x, int y) { return 0 <= x && x < 6*tile_map_size_x && 0 <= y && y < 6*tile_map_size_y; }
+static inline int get_tile_walkable(int x, int y) { return get_tile_valid(x, y) ? height_map[y*6*tile_map_size_x + x] : 0; }
+float get_tile_height(float x, float y);
 
 #ifdef __cplusplus
 } // extern "C"
