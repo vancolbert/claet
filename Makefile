@@ -2,30 +2,43 @@ include make.defaults
 HOST ?= i686-w64-mingw32
 SYSROOT ?= ../sys.$(HOST)
 EXE ?= le_$(HOST).exe
-ver_git := $(shell git describe --always --tag)
-defs := $(FEATURES:%=-D%) -DELC -DWINDOWS -DWINVER=0x601 -D_7ZIP_ST -DLIBXML_STATIC -DAL_LIBTYPE_STATIC -DVER_GIT=\"$(ver_git)\"
-f := -O2 -g -pipe -march=i686 -mtune=generic -mwindows -mstackrealign -fexceptions -fno-strict-aliasing -fno-omit-frame-pointer
+static ?= 0
 trace ?= 0
+arch := $(subst _,-,$(firstword $(subst -, ,$(HOST))))
+ver_git := $(shell git describe --always --tag)
+defs := $(FEATURES:%=-D%) -DELC -DWINDOWS -DWINVER=0x501 -D_7ZIP_ST -DVER_GIT=\"$(ver_git)\"
+ifeq ($(static), 1)
+	defs += -DLIBXML_STATIC -DAL_LIBTYPE_STATIC
+	EXE := static-$(EXE)
+endif
+f := -O2 -g -pipe -march=$(arch) -mtune=generic -mwindows -mstackrealign -fexceptions -fno-strict-aliasing -fno-omit-frame-pointer
 ifeq ($(trace), 1)
 	f += -finstrument-functions
 	EXE := trace-$(EXE)
 endif
-f += $(defs) -I. $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
-warn = -Wall -Werror -Wfatal-errors
-CFLAGS := $f $(warn) $(CFLAGS)
+f += $(defs) $(CPPFLAGS) -I. $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
+warn := -Wall -Werror -Wfatal-errors
+CFLAGS := $f $(warn) -std=gnu17 $(CFLAGS)
 CXXFLAGS := $f $(warn) $(CXXFLAGS)
-LDFLAGS := -mwindows -static -static-libgcc -static-libstdc++ -Wl,-Map=$(EXE)-link.map $(LDFLAGS)
-extlibdir := $(SYSROOT)/lib
-extlibs = libSDL libSDL_net libSDL_image libOpenAL32 libvorbisfile libvorbis libogg libxml2 libpng libjpeg libiconv libz
+winlibs := dbghelp opengl32 glu32 dxguid uuid avrt gdi32 winmm mincore ole32 stdc++
 winlibdir := $(SYSROOT)/$(HOST)/lib
-winlibs := libdbghelp libopengl32 libglu32 libdxguid libgdi32 libwinmm libmincore libole32 libstdc++
-libs := $(extlibs:%=$(extlibdir)/%.a) $(winlibs:%=$(winlibdir)/%.a)
+LDFLAGS := -mwindows -Wl,-Map=$(EXE)-link.map $(LDFLAGS)
+ifeq ($(static), 1)
+	LDFLAGS := -static -static-libgcc -static-libstdc++ $(LDFLAGS)
+	extlibdir := $(SYSROOT)/lib
+	extlibs := SDL SDL_net SDL_image OpenAL32 vorbisfile vorbis ogg xml2 png jpeg iconv z
+	libs := $(extlibs:%=$(extlibdir)/lib%.a) $(winlibs:%=$(winlibdir)/lib%.a)
+else
+	extlibdir := $(SYSROOT)/bin
+	extlibs := SDL SDL_net SDL_image OpenAL32 libvorbisfile-3 libvorbis-0 libogg-0 libxml2-2 libpng16-16 libjpeg-62 libiconv-2 zlib1
+	libs := -L$(extlibdir) $(extlibs:%=-l%) -L$(winlibdir) $(winlibs:%=-l%)
+endif
 srcdirs := io shader eye_candy exceptions xz xml fsaa engine cal3d
 include objs.mk
 depdir := .deps
 depflags = -MT $@ -MMD -MP -MF $(depdir)/$@.d
 depfiles := $(OBJS:%=$(depdir)/%.d)
-$(EXE) : $(depdir) $(OBJS) $(libs) ; $(CXX) $(LDFLAGS) $(OBJS) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
+$(EXE) : $(depdir) $(OBJS) ; $(CXX) $(LDFLAGS) $(OBJS) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
 $(COBJS) : %.o : %.c ; $(CC) $(CFLAGS) $(depflags) -c $< -o $@
 $(CXXOBJS) : %.o : %.cpp ; $(CXX) $(CXXFLAGS) -DBASE_FILENAME=\"$(notdir $<)\" $(depflags) -c $< -o $@
 $(depdir) : ; mkdir -p $@ $(srcdirs:%=$(depdir)/%)
