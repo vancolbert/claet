@@ -193,7 +193,7 @@ static void langsel_destroy_wins(void)
 
 static int langsel_save_handler(widget_list *widget, int mx, int my, Uint32 flags)
 {
-	char *selected_lang = lang;
+	char *selected_lang = language;
 
 	/* don't use scroll wheel - leave for scroll bar */
 	if ((flags & ELW_MOUSE_BUTTON) == 0)
@@ -205,7 +205,7 @@ static int langsel_save_handler(widget_list *widget, int mx, int my, Uint32 flag
 		selected_lang = langsel_chosen_node->code;
 
 	/* if the chosen language the that used during initialisation, no client restart is required */
-	if (strcmp(selected_lang, lang) == 0)
+	if (strcmp(selected_lang, language) == 0)
 	{
 		/* go to the console->login screen */
 		if (has_accepted)

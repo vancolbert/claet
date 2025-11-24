@@ -9,14 +9,13 @@ short current_cluster = 0;
 
 void set_clusters (const char* data)
 {
-	const short* cdata = (const short*) data;
 	int nx = tile_map_size_x * 6;
 	int ny = tile_map_size_y * 6;
 	int idx;
 
 	clusters = calloc (nx * ny, sizeof (short));
 	for (idx = 0; idx < nx*ny; idx++)
-		clusters[idx] = SDL_SwapLE16 (cdata[idx]);	
+		clusters[idx] = unpack_u16_le(data + idx*2);
 }
 
 #ifdef MAP_EDITOR

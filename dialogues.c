@@ -101,7 +101,7 @@ void build_response_entries (const Uint8 *data, int total_length)
 		// break if we don't have a length field
 		if (last_index + 3 > total_length)
 			break;
-		orig_len=len=SDL_SwapLE16(*((Uint16 *)(data+last_index)));
+		orig_len=len=unpack_u16_le(data+last_index);
 
 		// break if we don't have a complete response
 #ifdef ENGLISH
@@ -113,12 +113,12 @@ void build_response_entries (const Uint8 *data, int total_length)
 		dialogue_responces[i].in_use=1;
 		my_strncp(dialogue_responces[i].text,(char*)&data[last_index+2], len);
 #ifdef ENGLISH
-		dialogue_responces[i].response_id=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+len)));
-		dialogue_responces[i].to_actor=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+2+len)));
+		dialogue_responces[i].response_id=unpack_u16_le(data+last_index+2+len);
+		dialogue_responces[i].to_actor=unpack_u16_le(data+last_index+2+2+len);
 		last_index+=len+2+2+2;//why not len+6?
 #else //ENGLISH
-		dialogue_responces[i].response_id=SDL_SwapLE32(*((Uint32 *)(data+last_index+2+len)));
-		dialogue_responces[i].to_actor=SDL_SwapLE16(*((Uint16 *)(data+last_index+2+4+len)));
+		dialogue_responces[i].response_id=unpack_u32_le(data+last_index+2+len);
+		dialogue_responces[i].to_actor=unpack_u16_le(data+last_index+2+4+len);
 		last_index+=len+2+2+4;
 #endif //ENGLISH
 		dialogue_responces[i].orig_x_len=orig_len*SMALL_FONT_X_LEN;
@@ -246,7 +246,7 @@ static int	display_dialogue_handler(window_info *win)
 				glColor3f(1.0f,1.0f,0.0f);
 			if(mouse_x<win->pos_x || mouse_x>win->pos_x+win->len_x || mouse_y<win->pos_y || mouse_y>win->pos_y+win->len_y)
 				show_keypress_letters=0;
-			if(use_keypress_dialogue_boxes && show_keypress_letters)
+			if(use_keypress_dialog_boxes && show_keypress_letters)
 			{
 				if(i>=0 && i<=8) // 1-9
 					safe_snprintf((char*)str,sizeof(str),"%c] %s",49+i,(unsigned char*)dialogue_responces[i].text);
@@ -350,7 +350,7 @@ static int mouseover_dialogue_handler(window_info *win, int mx, int my)
 	int i;
 
 	show_keypress_letters=0;
-	if(use_keypress_dialogue_boxes)
+	if(use_keypress_dialog_boxes)
 	{
 	 	if(use_full_dialogue_window || ((mx>=0 && mx<=64) && (my>=0 && my<=64)))
 	 	{
@@ -469,21 +469,19 @@ static void save_response(const response *last_response)
 	}
 }
 
+static void send_response_data(const response *the_response) {
+	Uint8 str[16];
+	str[0]=RESPOND_TO_NPC;
+	pack_u16_le(str+1, the_response->to_actor);
+	pack_u32_le(str+3, the_response->response_id);
+	my_tcp_send(my_socket,str,7);
+}
 
 static void send_response(window_info *win, const response *the_response)
 {
-	Uint8 str[16];
-	str[0]=RESPOND_TO_NPC;
-	*((Uint16 *)(str+1))=SDL_SwapLE16((short)the_response->to_actor);
-#ifdef FR_VERSION
-	*((Uint32 *)(str+3))=SDL_SwapLE32((Uint32)the_response->response_id);
-	my_tcp_send(my_socket,str,7);
-#else
-	*((Uint16 *)(str+3))=SDL_SwapLE16((short)the_response->response_id);
-	my_tcp_send(my_socket,str,5);
+	send_response_data(the_response);
 	if (autoclose_storage_dialogue && strcmp(the_response->text, open_storage_str) == 0)
  		hide_window(win->window_id);
-#endif
 	save_response(the_response);
 }
 
@@ -580,10 +578,10 @@ static int click_dialogue_handler(window_info *win, int mx, int my, Uint32 flags
 #ifndef ENGLISH
 		if ((port%2000) > 999)
 		{
-		    str[0]=RESPOND_TO_NPC;
-		    *((Uint16 *)(str+1))=SDL_SwapLE16((unsigned short)mon_acteur);
-		*((Uint32 *)(str+3))=SDL_SwapLE32((Uint32)INT_MAX); // Attention 16 bits avant changement du protocole
-		    my_tcp_send(my_socket,str,7);
+			str[0]=RESPOND_TO_NPC;
+			pack_u16_le(str+1, mon_acteur);
+			pack_u32_le(str+3, INT_MAX);
+			my_tcp_send(my_socket,str,7);
 		}
 		mon_acteur=-1;
 #endif
@@ -615,7 +613,7 @@ static int keypress_dialogue_handler (window_info *win, int mx, int my, Uint32 k
 		return 1;
 	}
 
-	if(!use_keypress_dialogue_boxes)
+	if(!use_keypress_dialog_boxes)
 	{
 		return 0;
 	}
@@ -689,6 +687,12 @@ static int keypress_dialogue_handler (window_info *win, int mx, int my, Uint32 k
 	return 0;
 }
 
+void repeat_last_dialogue_response(void) {
+	if (saved_response_init && get_show_window(dialogue_win)) {
+		send_response_data(saved_responses + saved_response_list_cur);
+	}
+}
+
 static int cm_dialogue_repeat_handler(window_info *win, int widget_id, int mx, int my, int option)
 {
 	if (saved_response_init && (option < MAX_SAVED_RESPONSES))
@@ -750,7 +754,7 @@ void display_dialogue()
 
 		cm_add(windows_list.window[dialogue_win].cm_id, cm_dialog_menu_str, NULL);
 		cm_add(windows_list.window[dialogue_win].cm_id, cm_dialog_options_str, NULL);
-		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+1, &use_keypress_dialogue_boxes, "use_keypress_dialog_boxes");
+		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+1, &use_keypress_dialog_boxes, "use_keypress_dialog_boxes");
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+2, &use_full_dialogue_window, "use_full_dialogue_window");
 #ifndef FR_VERSION
 		cm_bool_line(windows_list.window[dialogue_win].cm_id, ELW_CM_MENU_LEN+3, &autoclose_storage_dialogue, NULL);

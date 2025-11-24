@@ -610,7 +610,7 @@ void add_fire_at_tile (int kind, Uint16 x_tile, Uint16 y_tile)
 			break;
 	}
 #ifdef NEW_SOUND
-	if (sound_on && snd >= 0)
+	if (enable_sound && snd >= 0)
 	{
 		add_particle_sound(snd, x_tile, y_tile);
 	}
@@ -718,7 +718,7 @@ int add_map_particle_sys(const char *file_name, float x_pos, float y_pos, float 
 {
 	int snd;
 
-	if (!no_sound)
+	if (!disable_sound)
 	{
 		snd = get_sound_index_for_particle_file_name(file_name);
 		if (snd >= 0)
@@ -734,7 +734,7 @@ int add_particle_sys (const char *file_name, float x_pos, float y_pos, float z_p
 {
 	int snd;
 
-	if (!no_sound)
+	if (!disable_sound)
 	{
 		snd = get_sound_index_for_particle_file_name(file_name);
 		if (snd >= 0)
@@ -1659,13 +1659,13 @@ void add_teleporters_from_list (const Uint8 *teleport_list)
 	int teleport_x,teleport_y,my_offset;
 	float x,y,z;
 
-	teleporters_no=SDL_SwapLE16(*((Uint16 *)(teleport_list)));
+	teleporters_no=unpack_u16_le(teleport_list);
 	LOCK_PARTICLES_LIST();	//lock it to avoid timing issues
 	for(i=0;i<teleporters_no;i++)
 		{
 			my_offset=i*5+2;
-			teleport_x=SDL_SwapLE16(*((Uint16 *)(teleport_list+my_offset)));
-			teleport_y=SDL_SwapLE16(*((Uint16 *)(teleport_list+my_offset+2)));
+			teleport_x=unpack_u16_le(teleport_list+my_offset);
+			teleport_y=unpack_u16_le(teleport_list+my_offset+2);
 
 			//later on, maybe we want to have different visual types
 			//now, get the Z position

@@ -585,7 +585,7 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 			{
 				if (!use_eye_candy)
 				{
-				 	var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
+					var_a = unpack_u16_le(&data[offset]);
 					add_sfx(sfx,var_a,1);
 					break;
 				}
@@ -615,7 +615,7 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 		case	SPECIAL_EFFECT_MAGIC_IMMUNITY_REMOVAL_GOES_BOOM:
 #endif // MINES
 			{
-			 	var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
+				var_a = unpack_u16_le(&data[offset]);
 			}
 			break;
 		case	SPECIAL_EFFECT_SUMMON_RABBIT:
@@ -655,9 +655,9 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 		case	SPECIAL_EFFECT_SUMMON_SPIDER:
 		case	SPECIAL_EFFECT_SUMMON_TIGER:
 			{
-			 	var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
-			 	x = (float)SDL_SwapLE16 (*((Uint16 *)(&data[offset+1])));
-			 	y = (float)SDL_SwapLE16 (*((Uint16 *)(&data[offset+2])));
+				var_a = unpack_u16_le(&data[offset]);
+				x = (float)unpack_u16_le(&data[offset+1]);
+				y = (float)unpack_u16_le(&data[offset+2]);
 			}
 			break;
 		//player to player, var_a is caster, var_b is recipient/target
@@ -666,8 +666,8 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 		case	SPECIAL_EFFECT_HARM:
 		case	SPECIAL_EFFECT_MANA_DRAIN:
 			{
-				var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
-				var_b = SDL_SwapLE16 (*((Uint16 *)(&data[offset+1])));
+				var_a = unpack_u16_le(&data[offset]);
+				var_b = unpack_u16_le(&data[offset+1]);
 				need_target = 1;
 				if (use_eye_candy)
 				{
@@ -680,8 +680,8 @@ void parse_special_effect(special_effect_enum sfx, const Uint16 *data)
 		case	SPECIAL_EFFECT_INVASION_BEAMING:
 		case	SPECIAL_EFFECT_TELEPORT_TO_RANGE:
 			{
-				var_a = SDL_SwapLE16 (*((Uint16 *)(&data[offset])));
-				var_b = SDL_SwapLE16 (*((Uint16 *)(&data[offset+1])));
+				var_a = unpack_u16_le(&data[offset]);
+				var_b = unpack_u16_le(&data[offset+1]);
 				need_target = 1;
 #ifdef DEBUG
 				safe_snprintf ((char*)str, sizeof (str), "effect %d,  x pos=%d, y pos=%d",sfx,var_a,var_b);

@@ -218,7 +218,7 @@ static char create_char_error_str[520] = {0};
 #ifndef NEW_NEW_CHAR_WINDOW
 static int textboxy = 9*SMALL_FONT_Y_LEN; /* 8 lines of text + top/bottom space */
 #else
-int old_use_windowed_chat;
+int old_windowed_chat;
 #endif
 int display_time=0;
 
@@ -560,7 +560,7 @@ int display_newchar_handler (window_info *win)
 			CHECK_GL_ERRORS ();
 		}
 
-		if (use_fog)
+		if (render_fog)
 			weather_render_fog();
 		if (any_reflection > 1) {
 			draw_sky_background ();
@@ -611,16 +611,16 @@ int display_newchar_handler (window_info *win)
 		int msg, offset;
 		if ( find_last_lines_time (&msg, &offset, current_filter, console_text_width) ){
 			set_font(chat_font);    // switch to the chat font
-			draw_messages (10, 40, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, msg, offset, -1, win->len_x - hud_x - 20, win->len_y, chat_zoom, NULL);
+			draw_messages (10, 40, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, msg, offset, -1, win->len_x - hud_x - 20, win->len_y, chat_text_size, NULL);
 			set_font (0);   // switch to fixed
 		}
 #else
 		int msg, offset, ytext, filter;
-		ytext = use_windowed_chat == 1 ? 25 : 20;
-		filter = use_windowed_chat == 1 ? current_filter : FILTER_ALL;
+		ytext = windowed_chat == 1 ? 25 : 20;
+		filter = windowed_chat == 1 ? current_filter : FILTER_ALL;
 		if ( find_last_lines_time (&msg, &offset, current_filter, console_text_width) ){
 			set_font(chat_font);    // switch to the chat font
-			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, win->len_x - hud_x - 20, win->len_y, chat_zoom, NULL);
+			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, win->len_x - hud_x - 20, win->len_y, chat_text_size, NULL);
 			set_font (0);   // switch to fixed
 		}
 #endif
@@ -719,7 +719,7 @@ int keypress_newchar_handler (window_info *win, int mx, int my, Uint32 key, Uint
 		camera_rotation_speed = normal_camera_rotation_speed / 800.0;
 		camera_rotation_duration = 800;
         camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -729,7 +729,7 @@ int keypress_newchar_handler (window_info *win, int mx, int my, Uint32 key, Uint
 		camera_rotation_duration = 200;
 		camera_rotation_speed /= 4.0;
         camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -738,7 +738,7 @@ int keypress_newchar_handler (window_info *win, int mx, int my, Uint32 key, Uint
 		camera_rotation_speed = -normal_camera_rotation_speed / 800.0;
 		camera_rotation_duration = 800;
         camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -748,7 +748,7 @@ int keypress_newchar_handler (window_info *win, int mx, int my, Uint32 key, Uint
 		camera_rotation_duration = 200;
 		camera_rotation_speed /= 4.0;
         camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -848,8 +848,8 @@ void create_newchar_root_window (void)
 #endif
 	}
 #ifdef NEW_NEW_CHAR_WINDOW
-	old_use_windowed_chat = use_windowed_chat;
-	use_windowed_chat = 0;
+	old_windowed_chat = windowed_chat;
+	windowed_chat = 0;
 #endif
 }
 
@@ -961,8 +961,8 @@ void create_character(void)
 
 void login_from_new_char(void)
 {
-	safe_snprintf(username_str, sizeof(username_str), "%s", inputs[0].str);
-	safe_snprintf(password_str, sizeof(password_str), "%s", inputs[1].str);
+	safe_snprintf(username, sizeof(username), "%s", inputs[0].str);
+	safe_snprintf(password, sizeof(password), "%s", inputs[1].str);
 
 	// now destroy reference to ourself, otherwise we'll mess up the ID's
 	destroy_all_actors();
@@ -973,8 +973,8 @@ void login_from_new_char(void)
 	if (elconfig_win >= 0) hide_window (elconfig_win);
 
 #ifdef NEW_NEW_CHAR_WINDOW
-	//restore use_windowed_chat
-	use_windowed_chat = old_use_windowed_chat;
+	//restore windowed_chat
+	windowed_chat = old_windowed_chat;
 	hide_window(newchar_hud_win);
 #endif
 
@@ -1763,7 +1763,7 @@ int click_back_handler(widget_list *w, int mx, int my, Uint32 flags)
 	{
 		destroy_all_actors();
 		our_actor.our_model = NULL;
-		use_windowed_chat = old_use_windowed_chat; //Restore use_windowed_chat
+		windowed_chat = old_windowed_chat; //Restore windowed_chat
 		hide_window(newchar_hud_win);
 		hide_window(newchar_root_win);
 		show_window(login_root_win);

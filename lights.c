@@ -53,7 +53,7 @@ int	num_lights;	// the highest light number loaded
 light *lights_list[MAX_LIGHTS];
 unsigned char light_level=58;
 sun sun_pos[360];
-sun sun_show[181];
+sun sun_show[360];
 
 short game_minute = 0;
 short game_second = 0;
@@ -155,8 +155,7 @@ void draw_lights()
 		vec4[2] = lights_list[l]->b;
 		vec4[3] = 1.0f;
 		glLightfv(GL_LIGHT0+j, GL_DIFFUSE, vec4);
-		if (j >= 4) break;
-		else j++;
+		if (++j > 3) break;
 	}
 
 #ifdef OPENGL_TRACE

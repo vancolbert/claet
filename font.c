@@ -555,20 +555,20 @@ void draw_ortho_ingame_scaled(float x, float y, float z, const unsigned char * o
 	glDisable(GL_BLEND);
 }
 
-// Affichage avec mise à échelle (sur name_zoom + zoom_level sur SMALL) + nb lignes max
+// Affichage avec mise à échelle (sur name_text_size + zoom_level sur SMALL) + nb lignes max
 void draw_ortho_ingame_string_small(float x, float y, float z, const unsigned char * our_string, int max_lines)
 {
-	float displayed_font_x_size = SMALL_INGAME_FONT_X_LEN * zoom_level * name_zoom / 3.0f;
-	float displayed_font_y_size = SMALL_INGAME_FONT_Y_LEN * zoom_level * name_zoom / 3.0f;
+	float displayed_font_x_size = SMALL_INGAME_FONT_X_LEN * zoom_level * name_text_size / 3.0f;
+	float displayed_font_y_size = SMALL_INGAME_FONT_Y_LEN * zoom_level * name_text_size / 3.0f;
 	draw_ortho_ingame_scaled(x, y, z, our_string, max_lines, displayed_font_x_size, displayed_font_y_size);
 }
 
-// Affichage avec mise à échelle (sur name_zoom) + nb lignes max
+// Affichage avec mise à échelle (sur name_text_size) + nb lignes max
 void draw_ortho_ingame_string(float x, float y, float z, const unsigned char * our_string,
 						int max_lines, float font_x_scale, float font_y_scale)
 {
-	float displayed_font_x_size = font_x_scale * name_zoom * 12.0f;
-	float displayed_font_y_size = font_y_scale * name_zoom * 12.0f;
+	float displayed_font_x_size = font_x_scale * name_text_size * 12.0f;
+	float displayed_font_y_size = font_y_scale * name_text_size * 12.0f;
 	draw_ortho_ingame_scaled(x, y, z, our_string, max_lines, displayed_font_x_size, displayed_font_y_size);
 }
 
@@ -588,8 +588,8 @@ void draw_ingame_string(float x, float y, const unsigned char * our_string,
 						int max_lines, float font_x_scale, float font_y_scale)
 {
 #ifdef SKY_FPV_OPTIONAL
-	float displayed_font_x_size = font_x_scale * chat_zoom * 12.0f * font_scale;
-	float displayed_font_y_size = font_y_scale * chat_zoom * 12.0f * font_scale;
+	float displayed_font_x_size = font_x_scale * chat_text_size * 12.0f * font_scale;
+	float displayed_font_y_size = font_y_scale * chat_text_size * 12.0f * font_scale;
 
 	double model[16], proj[16], hx,hy,hz;
 	int view[4];
@@ -612,8 +612,8 @@ void draw_ingame_string(float x, float y, const unsigned char * our_string,
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 #else //SKY_FPV_OPTIONAL
-	float displayed_font_x_size = font_x_scale * zoom_level * chat_zoom / 3.0f;
-	float displayed_font_y_size = font_y_scale * zoom_level * chat_zoom / 3.0f;
+	float displayed_font_x_size = font_x_scale * zoom_level * chat_text_size / 3.0f;
+	float displayed_font_y_size = font_y_scale * zoom_level * chat_text_size / 3.0f;
 
 	unsigned char cur_char;
 	float cur_x, cur_y;
@@ -2356,18 +2356,18 @@ void draw_ortho_ingame_string(float x, float y,float z, const unsigned char * ou
 	/*
 	if(big)
 		{
-			displayed_font_x_size=0.17*zoom_level*name_zoom/3.0;
-			displayed_font_y_size=0.25*zoom_level*name_zoom/3.0;
+			displayed_font_x_size=0.17*zoom_level*name_text_size/3.0;
+			displayed_font_y_size=0.25*zoom_level*name_text_size/3.0;
 		}
 	else
 		{
-			displayed_font_x_size=SMALL_INGAME_FONT_X_LEN*zoom_level*name_zoom/3.0;
-			displayed_font_y_size=SMALL_INGAME_FONT_Y_LEN*zoom_level*name_zoom/3.0;
+			displayed_font_x_size=SMALL_INGAME_FONT_X_LEN*zoom_level*name_text_size/3.0;
+			displayed_font_y_size=SMALL_INGAME_FONT_Y_LEN*zoom_level*name_text_size/3.0;
 		}
 	*/
 #endif // not SKY_FPV_OPTIONAL
-	displayed_font_x_size=font_x_scale*name_zoom*12.0;
-	displayed_font_y_size=font_y_scale*name_zoom*12.0;
+	displayed_font_x_size=font_x_scale*name_text_size*12.0;
+	displayed_font_y_size=font_y_scale*name_text_size*12.0;
 
 	glEnable(GL_ALPHA_TEST);//enable alpha filtering, so we have some alpha key
 	glAlphaFunc(GL_GREATER,0.1f);
@@ -2532,8 +2532,8 @@ void draw_ingame_string(float x, float y,const unsigned char * our_string,
 	double model[16], proj[16],hx,hy,hz;
 	int view[4];
 
-	displayed_font_x_size=font_x_scale*name_zoom*12.0*font_scale;
-	displayed_font_y_size=font_y_scale*name_zoom*12.0*font_scale;
+	displayed_font_x_size=font_x_scale*name_text_size*12.0*font_scale;
+	displayed_font_y_size=font_y_scale*name_text_size*12.0*font_scale;
 
 	glGetDoublev(GL_MODELVIEW_MATRIX, model);
 	glGetDoublev(GL_PROJECTION_MATRIX, proj);
@@ -2548,8 +2548,8 @@ void draw_ingame_string(float x, float y,const unsigned char * our_string,
 #endif // SKY_FPV_OPTIONAL
 
 #ifndef SKY_FPV_OPTIONAL
-	displayed_font_x_size=font_x_scale*zoom_level*name_zoom/3.0;
-	displayed_font_y_size=font_y_scale*zoom_level*name_zoom/3.0;
+	displayed_font_x_size=font_x_scale*zoom_level*name_text_size/3.0;
+	displayed_font_y_size=font_y_scale*zoom_level*name_text_size/3.0;
 #endif // not SKY_FPV_OPTIONAL
 
 	glEnable(GL_ALPHA_TEST);//enable alpha filtering, so we have some alpha key
@@ -2886,11 +2886,11 @@ int load_font_textures ()
 	add_multi_option("chat_font", "Type 1");
 	add_multi_option("name_font", "Type 1");
 	// Find what font's exist and load them
-	glob_pattern = malloc(strlen(datadir)+sizeof(texture_dir)+10+1); //+10 = font*.bmp*
+	glob_pattern = malloc(strlen(data_dir)+sizeof(texture_dir)+10+1); //+10 = font*.bmp*
 #ifdef	NEW_TEXTURES
-	sprintf(glob_pattern, "%s%sfont*.dds", datadir, texture_dir);
+	sprintf(glob_pattern, "%s%sfont*.dds", data_dir, texture_dir);
 #else	/* NEW_TEXTURES */
-	sprintf(glob_pattern, "%s%sfont*.bmp*", datadir, texture_dir);
+	sprintf(glob_pattern, "%s%sfont*.bmp*", data_dir, texture_dir);
 #endif	/* NEW_TEXTURES */
 #ifdef WINDOWS
 	if( (hFile = _findfirst( glob_pattern, &c_file )) == -1L ){
@@ -2912,7 +2912,7 @@ int load_font_textures ()
 	while (j < glob_res.gl_pathc && i < FONTS_ARRAY_SIZE) {
 		int	len;
 
-		safe_strncpy(file, glob_res.gl_pathv[j]+sizeof(texture_dir)-1+strlen(datadir), sizeof(file));
+		safe_strncpy(file, glob_res.gl_pathv[j]+sizeof(texture_dir)-1+strlen(data_dir), sizeof(file));
 #endif //WINDOWS
 		len= strlen(file);
 #ifdef	NEW_TEXTURES

@@ -6,6 +6,7 @@
 #include "asc.h"
 #include "elwindows.h"
 #include "init.h"
+#include "gamewin.h"
 #include "global.h"
 #include "hud.h"
 #ifdef MISSILES
@@ -100,6 +101,9 @@ void set_last_skill_exp(size_t skill, int exp)
 		last_exp[skill] = exp;
 		if (exp > max_exp[skill])
 			max_exp[skill] = exp;
+		if (0 < exp && exp < 1000 && skill <= SI_DEF) {
+			++exphits.n[skill];
+		}
 		if ((skill != SI_ALL) && (exp >= exp_log_threshold) && (exp_log_threshold > 0))
 		{
 			char str[80];
@@ -146,17 +150,17 @@ int display_session_handler(window_info *win)
 	char buffer[128];
 	float oa_exp;
 
-	char correcwarning[30];
-	char provi[17];
+	char correcwarning[32];
+	char provi[32];
 	char *finxpm = NULL;
-	char totxp[13];
-	char mtotxp[17];
-	char sessxp[13];
-	char msessxp[17];
-	char compe[15];
-	char lignecomplete[72];
-	char chmilliers[4];
-	char chcentaines[4];
+	char totxp[128];
+	char mtotxp[128];
+	char sessxp[128];
+	char msessxp[128];
+	char compe[32];
+	char lignecomplete[256];
+	char chmilliers[16];
+	char chcentaines[16];
 	int millions, milliers, nbmillions, nbmilliers, centaines;
 	float xpm;
 	int esp;
@@ -184,7 +188,7 @@ int display_session_handler(window_info *win)
 	y += 32;
 	if(affixp == 0)
 	{
-		safe_snprintf(buffer, sizeof(buffer), "%-20s%-13s%-13s%-13s%-13s", "Compétences", "Total Exp", "Session Exp", "Max Exp", "Dernier Exp" );
+		safe_snprintf(buffer, sizeof(buffer), "%-13s%10s%9s%10s%9s%9s%9s", "Compétences", "Total", "Exp/min", "Session", "Exp/min", "Max", "Dernier" );
 		draw_string_small(x, y, (unsigned char*)buffer, 1);
 	} else {
 		safe_snprintf(buffer, sizeof(buffer), "%-14s%-12s%-16s%-12s%-16s", "Compétences   ", "       Total", "      Exp/Minute", "     Session", "      Exp/Minute" );
@@ -214,12 +218,14 @@ int display_session_handler(window_info *win)
 			elglColourN("global.mouseselected");
 		else if ((last_mouse_over_y >= y) && (last_mouse_over_y < y+16))
 			elglColourN("global.mousehighlight");
+		else if (i & 1)
+			elglColourN("global.row.odd");
 		else
 			glColor3f(1.0f, 1.0f, 1.0f);
 #ifdef FR_VERSION
 		if(affixp == 0)
 		{
-			safe_snprintf(buffer, sizeof(buffer), "%-20s%-7u%-6.1f%-7u%-6.1f%-13u%-13u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
+			safe_snprintf(buffer, sizeof(buffer), "%-13s%10u%9.1f%10u%9.1f%9u%9u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
 		} else {
 			if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000000) {
 				millions = (*(statsinfo[i].exp) - fullsession_exp[i]);

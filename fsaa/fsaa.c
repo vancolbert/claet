@@ -15,26 +15,17 @@ char* fsaa_modes_strings[32] =
 
 unsigned int get_fsaa_modes();
 
-unsigned int get_fsaa_mode_count()
-{
+int get_fsaa_mode_count() {
 	return 32;
 }
 
 void init_fsaa_modes()
 {
-	char str[1024];
-	Uint32 i;
-
+	char str[1024] = {0};
 	fsaa_modes = get_fsaa_modes();
-
-	memset(str, 0, sizeof(str));
-
 	strcpy(str, get_fsaa_mode_str(0));
-
-	for (i = 1; i < get_fsaa_mode_count(); i++)
-	{
-		if (get_fsaa_mode(i) == 1)
-		{
+	for (int i = 1; i < get_fsaa_mode_count(); ++i) {
+		if (get_fsaa_mode(i) == 1) {
 			strcat(str, ", ");
 			strcat(str, get_fsaa_mode_str(i));
 		}
@@ -42,32 +33,9 @@ void init_fsaa_modes()
 
 	LOG_DEBUG("Supported fsaa modes: %s", str);
 }
-
-unsigned int get_fsaa_mode(const unsigned int index)
-{
-	unsigned int mask;
-
-	mask = 1 << index;
-
-	if ((fsaa_modes & mask) == mask)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+int get_fsaa_mode(int i) {
+	return (1u << i & fsaa_modes) != 0;
 }
-
-char* get_fsaa_mode_str(const unsigned int index)
-{
-	if (index < get_fsaa_mode_count())
-	{
-		return fsaa_modes_strings[index];
-	}
-	else
-	{
-		return 0;
-	}
+cstr get_fsaa_mode_str(int i) {
+	return i < get_fsaa_mode_count() ? fsaa_modes_strings[i] : 0;
 }
-

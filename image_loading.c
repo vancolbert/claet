@@ -190,9 +190,9 @@ static Uint32 load_image_SDL(el_file_ptr file, image_t* image)
 {
 	SDL_Surface *image_surface;
 	SDL_RWops *buffer;
-	Uint8* data;
+	Uint8* data, r, g, b, a;
 	int image_width, image_height, idx;
-	int pixel, temp, r, g, b, a;
+	Uint32 pixel, temp;
 	int bpp, i, j, index, x_padding;
 
 	if (file == 0)

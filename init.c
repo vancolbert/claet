@@ -45,6 +45,7 @@
 #include "lights.h"
 #include "loading_win.h"
 #include "loginwin.h"
+#include "main.h"
 #include "multiplayer.h"
 #include "manufacture.h"
 #include "astrology.h"
@@ -110,7 +111,7 @@ int divers_text = 0;
 int ini_file_size=0;
 
 int disconnected= 1;
-int auto_update= 1;
+int autoupdate= 1;
 #ifdef  CUSTOM_UPDATE
 int custom_update= 1;
 int custom_clothing= 1;
@@ -135,21 +136,19 @@ int item_window_on_drop=1;
 int buddy_log_notice=1;
 char configdir[256]="./";
 #ifdef DATA_DIR
-char datadir[256]=DATA_DIR;
+char data_dir[256]=DATA_DIR;
 #else
-char datadir[256]="./";
+char data_dir[256]="./";
 #endif //DATA_DIR
 
-char lang[10] = "en";
+char language[10] = "fr";
 static int no_lang_in_config = 0;
 
 int video_mode_set=0;
 
 #ifdef OSX
-int emulate3buttonmouse=0;
+int emulate_3_button_mouse=0;
 #endif
-
-void read_command_line(); //from main.c
 
 #ifndef FASTER_MAP_LOAD
 static void load_harvestable_list()
@@ -207,85 +206,25 @@ static void load_entrable_list()
 void load_knowledge_list()
 {
 	FILE *f = NULL;
-	int i=0;
 	char strLine[255];
-#ifndef ENGLISH
-    char * espace1Ligne;
-    char * espace2Ligne;
-    char * espace3Ligne;
-    char * espace4Ligne;
-    char strLineType[10];
-    char strLineId[10];
-    char strLineStorage[10];
-    char strLineAffiche[10];
-#else //ENGLISH
-	char *out;
-#endif //ENGLISH
-
 	memset(knowledge_list, 0, sizeof(knowledge_list));
-	i= 0;
-	knowledge_count= 0;
+	knowledge_count = 0;
 	// try the language specific knowledge list
 	f=open_file_lang("knowledge.lst", "rb");
 	if(f == NULL){
 		LOG_ERROR("%s: %s \"knowledge.lst\": %s\n", reg_error_str, cant_open_file, strerror(errno));
 		return;
 	}
-	while(1)
-		{
-			if(!fgets(strLine, sizeof(strLine), f)) {
-				break;
-			}
+	char format[64];
+	safe_snprintf(format, sizeof(format), "%%hhd %%hd %%hhd %%hhd %%%d[^\n]", (int)sizeof(knowledge_list->name) - 1);
+	while (fgets(strLine, sizeof(strLine), f)) {
+		knowledge *k = knowledge_list + knowledge_count++;
 #ifdef ENGLISH
-			out = knowledge_list[i].name;
-			my_xmlStrncopy(&out, strLine, sizeof(knowledge_list[i].name)-1);
+		my_xmlStrncopy(&k->name, strLine, sizeof(k->name) - 1);
 #else //ENGLISH
-            // On recherche dans chaque les lignes les espaces qui delimitent les champs
-            espace1Ligne = strchr(strLine,' ');
-            if (espace1Ligne != NULL)
-            {
-                espace2Ligne = strchr(espace1Ligne+1,' ');
-                if (espace2Ligne != NULL)
-                {
-                    espace3Ligne = strchr(espace2Ligne+1,' ');
-                    if (espace3Ligne != NULL)
-                    {
-                        espace4Ligne = strchr(espace3Ligne+1,' ');
-                     }
-                     else
-                     {
-                        break;
-                     }
-                }
-                else
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break;
-            }
-            // On recupere le type de la connaissance
-			safe_strncpy(strLineType, strLine, strlen(strLine) - strlen(espace1Ligne) + 1);
-            knowledge_list[i].type = atoi (strLineType);
-            // On recupere l'id du livre
-			safe_strncpy(strLineId, espace1Ligne + 1, strlen(espace1Ligne) - strlen(espace2Ligne));
-            knowledge_list[i].id = atoi (strLineId);
-            // On recupere le flag sur le depot
-			safe_strncpy(strLineStorage, espace2Ligne + 1, strlen(espace2Ligne) - strlen(espace3Ligne));
-            knowledge_list[i].is_stored = atoi (strLineStorage);
-            // On recupere le fait d'afficher ou non la connaissance
-			safe_strncpy(strLineAffiche, espace3Ligne + 1, strlen(espace3Ligne) - strlen(espace4Ligne));
-            knowledge_list[i].affiche = atoi (strLineAffiche);
-            // On recupere le nom de la connaissance
-			strncpy(knowledge_list[i].name, espace4Ligne +1 , strlen(espace4Ligne) - 2);
+		sscanf(strLine, format, &k->type, &k->id, &k->is_stored, &k->affiche, &k->name);
 #endif //ENGLISH
-			i++;
-		}
-	// memorize the count
-	knowledge_count= i;
-	// close the file
+	}
 	fclose(f);
 #ifndef ENGLISH
 	// On initialise la liste des categories
@@ -313,34 +252,34 @@ void read_config()
 	}
 
 	/* if language is not set, default to "en" but use the language selection window */
-	if (strlen(lang) == 0)
+	if (strlen(language) == 0)
 	{
 #ifdef ENGLISH
 		no_lang_in_config = 1;
-		safe_strncpy(lang, "en", sizeof(lang));
+		safe_strncpy(language, "en", sizeof(language));
 #else //ENGLISH
 		no_lang_in_config = 0;
-		safe_strncpy(lang, "fr", sizeof(lang));
+		safe_strncpy(language, "fr", sizeof(language));
 #endif //ENGLISH
-		LOG_INFO("No language set so defaulting to [%s] and using language selection window", lang );
+		LOG_INFO("No language set so defaulting to [%s] and using language selection window", language );
 	}
 
 #ifndef WINDOWS
-	if (chdir(datadir) != 0)
+	if (chdir(data_dir) != 0)
 	{
-		LOG_ERROR("%s() chdir(\"%s\") failed: %s\n", __FUNCTION__, datadir, strerror(errno));
+		LOG_ERROR("%s() chdir(\"%s\") failed: %s\n", __FUNCTION__, data_dir, strerror(errno));
 	}
 #endif //!WINDOWS
 
-	if(password_str[0])//We have a password
+	if(password[0])//We have a password
 	{
 		size_t k;
 
-		for (k=0; k < strlen (password_str); k++)
+		for (k=0; k < strlen (password); k++)
 			display_password_str[k] = '*';
 		display_password_str[k] = 0;
 	}
-	else if (username_str[0]) //We have a username but not a password...
+	else if (username[0]) //We have a username but not a password...
 	{
 		username_box_selected = 0;
 		password_box_selected = 1;
@@ -553,7 +492,7 @@ void read_bin_cfg()
 	items_dropall_nofirstrow = (cfg_mem.misc_bool_options >> 10) & 1;
 	items_auto_get_all = (cfg_mem.misc_bool_options >> 11) & 1;
 	dialogue_copy_excludes_newlines = (cfg_mem.misc_bool_options >> 12) & 1;
-	open_minimap_on_start = (cfg_mem.misc_bool_options >> 13) & 1;
+	minimap_lancement = (cfg_mem.misc_bool_options >> 13) & 1;
 	sort_storage_categories = (cfg_mem.misc_bool_options >> 14) & 1;
 #ifdef ENGLISH
 	disable_manuwin_keypress = (cfg_mem.misc_bool_options >> 15) & 1;
@@ -588,7 +527,6 @@ void read_bin_cfg()
 	cm_manurecipe_addnolimit  = (cfg_mem.manurecipes_options >> 2) & 1;
 	cm_manurecipe_wheelaffect = (cfg_mem.manurecipes_options >> 3) & 1;
 #endif //FR_VERSION
-	disable_storage_filter = (cfg_mem.misc_bool_options >> 4) & 1;
 	set_options_user_menus(cfg_mem.user_menu_win_x, cfg_mem.user_menu_win_y, cfg_mem.user_menu_options);
 
 	floating_counter_flags = cfg_mem.floating_counter_flags;
@@ -933,7 +871,7 @@ void save_bin_cfg()
 	cfg_mem.misc_bool_options |= items_dropall_nofirstrow << 10;
 	cfg_mem.misc_bool_options |= items_auto_get_all << 11;
 	cfg_mem.misc_bool_options |= dialogue_copy_excludes_newlines << 12;
-	cfg_mem.misc_bool_options |= open_minimap_on_start << 13;
+	cfg_mem.misc_bool_options |= minimap_lancement << 13;
 	cfg_mem.misc_bool_options |= sort_storage_categories << 14;
 #ifdef ENGLISH
 	cfg_mem.misc_bool_options |= disable_manuwin_keypress << 15;
@@ -976,7 +914,6 @@ void save_bin_cfg()
 	cfg_mem.manurecipes_options |= cm_manurecipe_addnolimit << 2;
 	cfg_mem.manurecipes_options |= cm_manurecipe_wheelaffect << 3;
 #endif //ENGLISH
-	cfg_mem.misc_bool_options |= disable_storage_filter << 4;
 
 	get_options_user_menus(&cfg_mem.user_menu_win_x, &cfg_mem.user_menu_win_y, &cfg_mem.user_menu_options);
 
@@ -1029,9 +966,9 @@ void init_stuff()
 	create_tcp_out_mutex();
 #endif
 
-	if (chdir(datadir) != 0)
+	if (chdir(data_dir) != 0)
 	{
-		LOG_ERROR("%s() chdir(\"%s\") failed: %s\n", __FUNCTION__, datadir, strerror(errno));
+		LOG_ERROR("%s() chdir(\"%s\") failed: %s\n", __FUNCTION__, data_dir, strerror(errno));
 	}
 
 	init_crc_tables();
@@ -1056,11 +993,11 @@ void init_stuff()
 	// all options loaded
 	options_loaded();
 
-	// Check if our datadir is valid and if not failover to ./
+	// Check if our data_dir is valid and if not failover to ./
 	file_check_datadir();
 
 	// Here you can add zip files, like
-	// add_zip_archive(datadir + "data.zip");
+	// add_zip_archive(data_dir + "data.zip");
 	xml_register_el_input_callbacks();
 
 #ifdef WRITE_XML
@@ -1113,7 +1050,7 @@ void init_stuff()
 #endif //ENGLISH
 #ifdef OSX
 	// don't emulate a 3 button mouse except you still have a 1 button mouse, ALT+leftclick doesn't work with the emulation
-	if (!emulate3buttonmouse) SDL_putenv("SDL_HAS3BUTTONMOUSE=1");
+	if (!emulate_3_button_mouse) SDL_putenv("SDL_HAS3BUTTONMOUSE=1");
 #endif
 
 #ifndef ENGLISH
@@ -1367,7 +1304,7 @@ void init_stuff()
 	 	exit(1);
 	}
 	update_loading_win(load_encyc_str, 5);
-	safe_snprintf(file_name, sizeof(file_name), "languages/%s/Encyclopedia/index.xml", lang);
+	safe_snprintf(file_name, sizeof(file_name), "languages/%s/Encyclopedia/index.xml", language);
 #ifdef ENGLISH
 	if (!el_file_exists(file_name))
 		safe_snprintf(file_name, sizeof(file_name), "languages/%s/Encyclopedia/index.xml", "en");
@@ -1380,7 +1317,7 @@ void init_stuff()
 	olc_finish_init();
 #endif	//OLC
 
-	if(auto_update){
+	if(autoupdate){
 		init_update();
 	}
 
@@ -1415,12 +1352,12 @@ void init_stuff()
 
 	update_loading_win(init_display_str, 5);
 	if (!disable_gamma_adjust)
-	SDL_SetGamma(gamma_var, gamma_var, gamma_var);
+	SDL_SetGamma(video_gamma, video_gamma, video_gamma);
 
 	draw_scene_timer= SDL_AddTimer (1000/(18*4), my_timer, NULL);
 	misc_timer= SDL_AddTimer (500, check_misc, NULL);
 
-	safe_snprintf(config_location, sizeof(config_location), datadir_location_str, datadir);
+	safe_snprintf(config_location, sizeof(config_location), datadir_location_str, data_dir);
 	LOG_TO_CONSOLE(c_green4, config_location);
 	cfgdir = get_path_config();
 	if (cfgdir != NULL) {
@@ -1432,7 +1369,7 @@ void init_stuff()
 	update_loading_win(prep_op_win_str, 7);
 	create_opening_root_window (window_width, window_height);
 	// initialize the chat window
-	if (use_windowed_chat == 2) {
+	if (windowed_chat == 2) {
 		display_chat ();
 	}
 
@@ -1448,7 +1385,7 @@ void init_stuff()
 		turn_sound_on();
 	else
 	{
-		sound_on = 0;
+		enable_sound = 0;
 		turn_sound_off();
 	}
 #endif // NEW_SOUND
@@ -1480,4 +1417,13 @@ void init_stuff()
 	popup_init();
 
 	LOG_DEBUG("Init done!");
+	LOG_TO_CONSOLE(c_yellow2, "ATTENTION: Ceci est une version du programme non officielle, fournie pour tester.");
+	LOG_TO_CONSOLE(c_red2, "");
+	LOG_TO_CONSOLE(c_red2, "   ***   Il n'y a aucune garantie de stabilité ou exactitude.   ***");
+	LOG_TO_CONSOLE(c_red2, "");
+	LOG_TO_CONSOLE(c_yellow2, "En cas de problème ou si vous avez des questions, faites signaler sur le forum ou github:");
+	LOG_TO_CONSOLE(c_grey1, "");
+	LOG_TO_CONSOLE(c_grey1, "   https://www.landes-eternelles.com/phpBB/viewtopic.php?f=104&t=37323");
+	LOG_TO_CONSOLE(c_grey1, "   https://github.com/vancolbert/claet");
+	LOG_TO_CONSOLE(c_grey1, "");
 }

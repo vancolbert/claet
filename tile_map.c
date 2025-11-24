@@ -464,24 +464,7 @@ int get_tile_type(int x, int y)
 }
 #endif // NEW_SOUND
 
-int get_tile_walkable(const int x, const int y)
-{
-	if (!get_tile_valid(x, y))
-	{
-		return 0;
-	}
-
-	return (height_map[x * tile_map_size_y * 6 + y] & 0x3F) != 0;
-}
-
-int get_tile_valid(const int x, const int y)
-{
-	return (x >= 0) && (x < (tile_map_size_x * 6)) &&
-		(y >= 0) && (y < (tile_map_size_y * 6));
-}
-
-float get_tile_height(const float x, const float y)
-{
+float get_tile_height(float x, float y) {
 	float z;
 	int pos_x, pos_y, i, j, tmp, count;
 

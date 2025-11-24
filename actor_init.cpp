@@ -1,8 +1,8 @@
 #include <limits>
+#include <map>
+#include "cal3d/cal3d.h"
 #include "actor_init.h"
 #include "load_gl_extensions.h"
-#include <cal3d/cal3d.h>
-#include <map>
 #include "bbox_tree.h"
 #include "io/elfilewrapper.h"
 #include "gl_init.h"

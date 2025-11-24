@@ -4,6 +4,7 @@
 #include <limits.h>
 #include "items.h"
 #include "asc.h"
+#include "calc.h"
 #include "cursors.h"
 #include "context_menu.h"
 #include "text.h"
@@ -21,6 +22,7 @@
 #include "manufacture.h"
 #include "misc.h"
 #include "multiplayer.h"
+#include "pathfinder.h"
 #include "platform.h"
 #include "sound.h"
 #include "storage.h"
@@ -126,8 +128,6 @@ int wear_grid_size = 51;
 
 static void equip_item(int item_pos_to_equip, int destination_pos);
 #endif //FR_VERSION
-
-static void drop_all_handler();
 
 void set_shown_string(char colour_code, const char *the_text)
 {
@@ -387,12 +387,12 @@ void get_your_items (const Uint8 *data)
 	for(i=0;i<total_items;i++){
 		pos=data[i*len+1+6];
 		// try not to wipe out cooldown information if no real change
-		if(item_list[pos].image_id != SDL_SwapLE16(*((Uint16 *)(data+i*len+1))) ){
+		if (item_list[pos].image_id != unpack_u16_le(data+i*len+1)) {
 			item_list[pos].cooldown_time = 0;
 			item_list[pos].cooldown_rate = 1;
 		}
-		item_list[pos].image_id=SDL_SwapLE16(*((Uint16 *)(data+i*len+1)));
-		item_list[pos].quantity=SDL_SwapLE32(*((Uint32 *)(data+i*len+1+2)));
+		item_list[pos].image_id=unpack_u16_le(data+i*len+1);
+		item_list[pos].quantity=unpack_u32_le(data+i*len+1+2);
 		item_list[pos].pos=pos;
 #ifdef NEW_SOUND
 		item_list[pos].action = ITEM_NO_ACTION;
@@ -400,7 +400,7 @@ void get_your_items (const Uint8 *data)
 #endif // NEW_SOUND
 		flags=data[i*len+1+7];
 		if (item_uid_enabled)
-			item_list[pos].id=SDL_SwapLE16(*((Uint16 *)(data+i*len+1+8)));
+			item_list[pos].id=unpack_u16_le(data+i*len+1+8);
 		else
 			item_list[pos].id=unset_item_uid;
 		item_list[pos].is_resource=((flags&ITEM_RESOURCE)>0);
@@ -496,14 +496,14 @@ void get_new_inventory_item (const Uint8 *data)
 	Uint16 id;
 
 	if (item_uid_enabled)
-		id=SDL_SwapLE16(*((Uint16 *)(data+8)));
+		id=unpack_u16_le(data+8);
 	else
 		id=unset_item_uid;
 
 	pos= data[6];
 	flags= data[7];
-	image_id=SDL_SwapLE16(*((Uint16 *)(data)));
-	quantity=SDL_SwapLE32(*((Uint32 *)(data+2)));
+	image_id=unpack_u16_le(data);
+	quantity=unpack_u32_le(data+2);
 
 #ifdef ENGLISH
 	if (now_harvesting() && (quantity >= item_list[pos].quantity) ) {	//some harvests, eg hydrogenium and wolfram, also decrease an item number. only count what goes up
@@ -1312,8 +1312,8 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 		}
 		else if(storage_item_dragged!=-1){
 			str[0]=WITHDRAW_ITEM;
-			*((Uint16*)(str+1))=SDL_SwapLE16(storage_items[storage_item_dragged].pos);
-			*((Uint32*)(str+3))=SDL_SwapLE32(item_quantity);
+			pack_u16_le(str+1, storage_items[storage_item_dragged].pos);
+			pack_u32_le(str+3, item_quantity);
 			my_tcp_send(my_socket, str, 6);
 			do_drop_item_sound();
 			if(storage_items[storage_item_dragged].quantity<=item_quantity) storage_item_dragged=-1;
@@ -1328,9 +1328,9 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 				str[0]=DROP_ITEM;
 				str[1]=item_list[pos].pos;
 				if(item_list[pos].is_stackable)
-					*((Uint32 *)(str+2))=SDL_SwapLE32(item_list[pos].quantity);
+					pack_u32_le(str+2, item_list[pos].quantity);
 				else
-					*((Uint32 *)(str+2))=SDL_SwapLE32(36);//Drop all
+					pack_u32_le(str+2, 36);//Drop all
 				my_tcp_send(my_socket, str, 6);
 				do_drop_item_sound();
 #ifdef FR_VERSION
@@ -1343,9 +1343,9 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 				str[0] = DEPOSITE_ITEM;
 				str[1] = pos;
 				if(item_list[pos].is_stackable)
-					*((Uint32*)(str+2))=SDL_SwapLE32(item_list[pos].quantity);
+					pack_u32_le(str+2, item_list[pos].quantity);
 				else
-					*((Uint32*)(str+2))=SDL_SwapLE32(36);
+					pack_u32_le(str+2, 36);
 				my_tcp_send(my_socket, str, 6);
 				do_drop_item_sound();
 #else //FR_VERSION
@@ -1353,7 +1353,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 				if ((storage_win >= 0) && (get_show_window(storage_win)) && (view_only_storage == 0)) {
 						str[0]=DEPOSITE_ITEM;
 						str[1]=item_list[pos].pos;
-						*((Uint32*)(str+2))=SDL_SwapLE32(INT_MAX);
+						pack_u32_le(str+2, INT_MAX);
 						my_tcp_send(my_socket, str, 6);
 					}
 					do_drop_item_sound();
@@ -1463,28 +1463,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 
    	// Sto All button
 	else if(over_button(win, mx, my)==BUT_STORE && storage_win >= 0 && view_only_storage == 0 && get_show_window(storage_win) /*thanks alberich*/){
-#ifdef FR_VERSION
-		str[0]=TOUT_DEPOT;
-		my_tcp_send(my_socket, str, 1);
-#else //FR_VERSION
-#ifdef STORE_ALL
-		/*
-		* Future code to save server load by having one byte to represent the 36 slot inventory loop. Will need server support.
-		*/
-		str[0]=DEPOSITE_ITEM;
-		str[1]=STORE_ALL;
-		my_tcp_send(my_socket, str, 2);
-#else
-		for(pos=((items_stoall_nofirstrow)?6:0);pos<((items_stoall_nolastrow)?30:36);pos++){
-			if(item_list[pos].quantity>0){
-				str[0]=DEPOSITE_ITEM;
-				str[1]=item_list[pos].pos;
-				*((Uint32*)(str+2))=SDL_SwapLE32(item_list[pos].quantity);
-				my_tcp_send(my_socket, str, 6);
-			}
-		}
-#endif
-#endif //FR_VERSION
+		store_all_handler();
 	}
 
 	// Drop All button
@@ -1591,7 +1570,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 					equip_item(i, destination_pos);
 					str[0] = DEPOSITE_ITEM;
 					str[1] = destination_pos;
-					*((Uint32*)(str+2))=SDL_SwapLE32(1);
+					pack_u32_le(str+2, 1);
 					my_tcp_send(my_socket, str, 6);
 				}
 			}
@@ -1646,8 +1625,8 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 
 			// on met dans le sac un seul exemplaire de l'objet du dépot avant de l'équiper
 			str[0]=WITHDRAW_ITEM;
-			*((Uint16*)(str+1))=SDL_SwapLE16(storage_items[storage_item_dragged].pos);
-			*((Uint32*)(str+3))=SDL_SwapLE32(1);
+			pack_u16_le(str+1, storage_items[storage_item_dragged].pos);
+			pack_u32_le(str+3, 1);
 			my_tcp_send(my_socket, str, 6);
 			item_list[temp_case].pos = temp_case;
 			equip_item(temp_case, pos);
@@ -1690,7 +1669,7 @@ int click_items_handler(window_info *win, int mx, int my, Uint32 flags)
 					equip_item(pos, temp_case);
 					str[0]=DEPOSITE_ITEM;
 					str[1]=temp_case;
-					*((Uint32*)(str+2))=SDL_SwapLE32(1);
+					pack_u32_le(str+2, 1);
 					my_tcp_send(my_socket, str, 6);
 					return 1;
 				}
@@ -1867,48 +1846,51 @@ int keypress_items_handler(window_info * win, int x, int y, Uint32 key, Uint32 k
 			quantities.selected=edit_quantity;
 			edit_quantity=-1;
 			return 1;
-		} else if(keysym>='0' && keysym<='9' && *len<5){
-			str[*len]=keysym;
-			(*len)++;
-			str[*len]=0;
-
-			*val=atoi(str);
+		} else if (isalnum(keysym) && *len < 9) {
+			str[(*len)++] = keysym;
+			str[*len] = 0;
+			int v = calc_exp(str);
+			*val = !calc_geterror() && v > 0 ? v : 0;
 			return 1;
 		}
 	}
-
+	if (key == SDLK_ESCAPE) {
+		item_lists_cancel();
+	}
 	return 0;
 }
 
 #ifndef ENGLISH
 // Fonction indépendante aussi bien pour le bouton que le raccourci clavier
-void get_all_handler()
-{
-	int pos;
+void get_all_handler() {
 	actor *me = get_our_actor();
-	if (!me) return;//Wtf!?
-
-	for (pos=0; pos<NUM_BAGS; pos++)
-	{
-		if ((bag_list[pos].x==me->x_tile_pos) && (bag_list[pos].y==me->y_tile_pos))
-		{
-			if (! get_show_window(ground_items_win))
-			{
-				// if auto empty bags enable, set the open timer
-				if (items_auto_get_all)
-					ground_items_empty_next_bag = SDL_GetTicks();
-				else
-					ground_items_empty_next_bag = 0;
-				open_bag(bag_list[pos].obj_3d_id);
+	if (!me) {
+		return;
+	}
+	if (get_show_window(ground_items_win)) {
+		pick_up_all_items();
+		return;
+	}
+	bag *best = 0;
+	int d, bd = 9999999, x = me->x_tile_pos, y = me->y_tile_pos;
+	for (bag *b = bag_list, *be = b + NUM_BAGS; bd && b < be; ++b) {
+		if (b->obj_3d_id != -1) {
+			d = max2i(abs(b->x - x), abs(b->y - y));
+			if (d < bd) {
+				bd = d;
+				best = b;
 			}
-			else pick_up_all_items();
-			break;
 		}
+	}
+	if (best && bd < 6) {
+		ground_items_empty_next_bag = items_auto_get_all ? cur_time : 0;
+		open_bag(best->obj_3d_id);
+		pf_destroy_path();
 	}
 }
 #endif //ENGLISH
 
-static void drop_all_handler ()
+void drop_all_handler ()
 {
 	Uint8 str[6] = {0};
 	int i;
@@ -1936,7 +1918,7 @@ static void drop_all_handler ()
 #endif //FR_VERSION
 				str[0] = DROP_ITEM;
 				str[1] = item_list[i].pos;
-				*((Uint32 *)(str+2)) = SDL_SwapLE32(item_list[i].quantity);
+				pack_u32_le(str+2, item_list[i].quantity);
 				my_tcp_send (my_socket, str, 6);
 #ifdef NEW_SOUND
 				dropped_something = 1;
@@ -1951,6 +1933,24 @@ static void drop_all_handler ()
 #ifdef FR_VERSION
 	else set_shown_string(c_orange2, dc_warning_str);
 #endif //FR_VERSION
+}
+
+void store_all_handler() {
+	#define xkeep(x) x(nofirstrow, 3f) x(nolastrow, fc0000000) x(nofirstcol, 41041041) x(nolastcol, 820820820)
+	#define asor(n, h) (-items_stoall_##n & 0x##h) |
+	Uint64 k = xkeep(asor) 0, s = ~k, w = 1;
+	Uint8 d = TOUT_DEPOT, b[8] = {DEPOSITE_ITEM};
+	if (!k) {
+		my_tcp_send(my_socket, &d, 1);
+		return;
+	}
+	for (item *i = item_list, *e = i + ITEM_WEAR_START; i < e; ++i, w <<= 1) {
+		if (i->quantity > 0 && s & w) {
+			b[1] = i->pos;
+			pack_u32_le(b+2, i->quantity);
+			my_tcp_send(my_socket, b, 6);
+		}
+	}
 }
 
 #ifdef FR_VERSION
@@ -2028,7 +2028,7 @@ int show_items_handler(window_info * win)
 
 	cm_remove_regions(items_win);
 #ifdef FR_VERSION
-//	cm_add_region(cm_stoall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[1], XLENBUT, YLENBUT);
+	cm_add_region(cm_stoall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[1], XLENBUT, YLENBUT);
 	cm_add_region(cm_getall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[0], XLENBUT, YLENBUT);
 	cm_add_region(cm_dropall_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[2], XLENBUT, YLENBUT);
 	cm_add_region(cm_mix_but, items_win, win->len_x-(XLENBUT+3), wear_items_y_offset+but_y_off[4], XLENBUT, YLENBUT);
@@ -2169,8 +2169,8 @@ void get_items_cooldown (const Uint8 *data, int len)
 	for (iitem = 0; iitem < nitems; iitem++)
 	{
 		pos = data[ibyte];
-		max_cooldown = SDL_SwapLE16 (*((Uint16*)(&data[ibyte+1])));
-		cooldown = SDL_SwapLE16 (*((Uint16*)(&data[ibyte+3])));
+		max_cooldown = unpack_u16_le(&data[ibyte+1]);
+		cooldown = unpack_u16_le(&data[ibyte+3]);
 		ibyte += 5;
 
 		item_list[pos].cooldown_rate = 1000 * (Uint32)max_cooldown;

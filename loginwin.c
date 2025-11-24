@@ -477,11 +477,11 @@ int display_login_handler (window_info *win)
 		draw_string_shadowed(cadre_x+40, cadre_y+cadre_y_len-100, (unsigned char*)login_rules_str, num_lines, 1.0f,1.0f,1.0f, 0.0f,0.0f,0.0f);
     }
 
-	draw_string_shadowed(username_bar_x + 4, username_text_y, (unsigned char*)username_str, 1, 1.0f,0.5f,0.1f, 0.3f,0.0f,0.0f);
+	draw_string_shadowed(username_bar_x + 4, username_text_y, (unsigned char*)username, 1, 1.0f,0.5f,0.1f, 0.3f,0.0f,0.0f);
 	draw_string_shadowed(password_bar_x + 4, password_text_y, (unsigned char*)display_password_str, 1, 1.0f,0.5f,0.1f, 0.3f,0.0f,0.0f);
 #else //ENGLISH
 	glColor3f (0.0f, 0.9f, 1.0f);
-	draw_string (username_bar_x + 4, username_text_y, (unsigned char*)username_str, 1);
+	draw_string (username_bar_x + 4, username_text_y, (unsigned char*)username, 1);
 	draw_string (password_bar_x + 4, password_text_y, (unsigned char*)display_password_str, 1);
 #endif //ENGLISH
 	glColor3f (1.0f, 0.0f, 0.0f);
@@ -499,7 +499,7 @@ int display_login_handler (window_info *win)
 int mouseover_login_handler (window_info *win, int mx, int my)
 {
 	// check to see if the log in button is active, or not
-	if (mx >= log_in_x && mx <= log_in_x + log_in_x_len && my >= log_in_y && my <= log_in_y + log_in_y_len && username_str[0] && password_str[0])
+	if (mx >= log_in_x && mx <= log_in_x + log_in_x_len && my >= log_in_y && my <= log_in_y + log_in_y_len && username[0] && password[0])
 		log_in_button_selected = 1;
 	else
 		log_in_button_selected = 0;
@@ -581,7 +581,7 @@ int keypress_login_handler (window_info *win, int mx, int my, Uint32 key, Uint32
 	{
 		return 1;
 	}
-	else if (ch == SDLK_RETURN && username_str[0] && password_str[0])
+	else if (ch == SDLK_RETURN && username[0] && password[0])
 	{
 		log_in_error_str[0] = '\0';
 		send_login_info();

@@ -491,7 +491,9 @@ void check_bbox_tree(BBOX_TREE* bbox_tree)
 		{
 			bbox_tree->intersect[idx].count = 0;
 			check_sub_nodes(bbox_tree, 0, bbox_tree->intersect[idx].frustum_mask);
-			qsort((void *)(bbox_tree->intersect[idx].items), bbox_tree->intersect[idx].count, sizeof(BBOX_ITEM), comp_items);
+			if (bbox_tree->intersect[idx].items) {
+				qsort((void *)(bbox_tree->intersect[idx].items), bbox_tree->intersect[idx].count, sizeof(BBOX_ITEM), comp_items);
+			}
 			build_start_stop(bbox_tree);
 			bbox_tree->intersect[idx].intersect_update_needed = 0;
 		}
@@ -1767,7 +1769,9 @@ void check_bbox_tree_shadow(BBOX_TREE* bbox_tree, const FRUSTUM frustum, Uint32 
 			calculate_frustum_data(data, view_frustum, light_dir, view_mask);
 			bbox_tree->intersect[idx].count = 0;
 			check_sub_nodes_shadow(bbox_tree, 0, frustum, mask, view_frustum, data, light_dir, view_mask, point_mask);
-			qsort((void *)(bbox_tree->intersect[idx].items), bbox_tree->intersect[idx].count, sizeof(BBOX_ITEM), comp_items);
+			if (bbox_tree->intersect[idx].items) {
+				qsort((void *)(bbox_tree->intersect[idx].items), bbox_tree->intersect[idx].count, sizeof(BBOX_ITEM), comp_items);
+			}
 			build_start_stop(bbox_tree);
 			bbox_tree->intersect[idx].intersect_update_needed = 0;
 		}

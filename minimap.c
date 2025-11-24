@@ -43,7 +43,7 @@ float minimap_tiles_distance = 48;
 float radius_shift = 0.707106779283f;
 int rotate_minimap = 1;
 int pin_minimap = 0;
-int open_minimap_on_start = 0;
+int minimap_lancement = 0;
 
 static int enable_controls = 0;
 
@@ -58,7 +58,7 @@ int minimap_win_x = 5;
 int minimap_win_y = 20;
 GLubyte exploration_map[256][256];
 char current_exploration_map_filename[256];
-float minimap_size_coefficient = 0.7f;
+float minimap_scale = 0.7f;
 
 static __inline__ float minimap_get_zoom ()
 {
@@ -891,8 +891,8 @@ void display_minimap()
 {
 	window_info *win;
 
-	minimap_size = 256 * minimap_size_coefficient;
-	float_minimap_size = 256.0 * minimap_size_coefficient;
+	minimap_size = 256 * minimap_scale;
+	float_minimap_size = 256.0 * minimap_scale;
 
 	if(minimap_tiles_distance < 48)
 		minimap_tiles_distance = 48;
@@ -922,7 +922,7 @@ void display_minimap()
 		cm_add_region(win->cm_id, minimap_win, win->len_x/2-32, 0, 64, ELW_TITLE_HEIGHT );
 		cm_bool_line(win->cm_id, ELW_CM_MENU_LEN+1, &rotate_minimap, "rotate_minimap");
 		cm_bool_line(win->cm_id, ELW_CM_MENU_LEN+2, &pin_minimap, "pin_minimap");
-		cm_bool_line(win->cm_id, ELW_CM_MENU_LEN+3, &open_minimap_on_start, NULL);
+		cm_bool_line(win->cm_id, ELW_CM_MENU_LEN+3, &minimap_lancement, NULL);
 	} else {
 		show_window(minimap_win);
 		select_window(minimap_win);

@@ -285,9 +285,9 @@ typedef struct {
 
 int have_sound = 0;
 int have_music = 0;
-int no_sound = 0;
-int sound_on = 1;
-int music_on = 1;
+int disable_sound = 0;
+int enable_sound = 1;
+int enable_music = 1;
 Uint8 inited = 0;
 
 SDL_Thread *sound_streams_thread = NULL;
@@ -304,7 +304,7 @@ ALfloat actor_gain = 1.0f;
 ALfloat walking_gain = 1.0f;
 ALfloat gamewin_gain = 1.0f;
 ALfloat client_gain = 1.0f;
-ALfloat warnings_gain = 1.0f;
+ALfloat warn_gain = 1.0f;
 
 int used_sources = 0;						// the number of sources currently playing
 
@@ -469,7 +469,7 @@ void turn_sound_on()
 	if (!have_sound)
 		return;
 	LOCK_SOUND_LIST();
-	sound_on = 1;
+	enable_sound = 1;
 	for (i = 0; i < used_sources; i++)
 	{
 		source = sound_source_data[i].source;
@@ -493,13 +493,13 @@ void turn_sound_off()
 	ALuint error;
 	if (!inited)
 		return;
-	if (!have_music || !music_on)
+	if (!have_music || !enable_music)
 	{
 		destroy_sound();
 		return;
 	}
 	LOCK_SOUND_LIST();
-	sound_on = 0;
+	enable_sound = 0;
 	while (i < used_sources)
 	{
 		if (sound_source_data[i].current_stage == STAGE_STREAM)
@@ -538,7 +538,7 @@ void turn_music_on()
 {
 	if (!video_mode_set)
 		return;			// Don't load the config until we have video (so we don't load before the loading screen)
-	music_on = 1;		// Set this here so if ness we will init the sound
+	enable_music = 1;		// Set this here so if ness we will init the sound
 	if (!inited)
 	{
 		init_sound();
@@ -552,7 +552,7 @@ void turn_music_off()
 {
 	if (!inited)
 		return;
-	if (!have_sound || !sound_on)
+	if (!have_sound || !enable_sound)
 	{
 		destroy_sound();
 		return;
@@ -561,7 +561,7 @@ void turn_music_off()
 		return;
 
 	LOCK_SOUND_LIST();
-	music_on = 0;
+	enable_music = 0;
 	if (sound_streams_thread != NULL)
 	{
 		if (music_stream)
@@ -575,7 +575,7 @@ void turn_music_off()
 void toggle_sounds(int *var)
 {
 	*var = !*var;
-	if (!sound_on) {
+	if (!enable_sound) {
 		turn_sound_off();
 	} else {
 		turn_sound_on();
@@ -584,24 +584,24 @@ void toggle_sounds(int *var)
 
 void toggle_music(int * var) {
 	*var = !*var;
-	if (!music_on) {
+	if (!enable_music) {
 		turn_music_off();
 	} else {
 		turn_music_on();
 	}
 }
 
-void disable_sound(int *var)
+void stop_all_sound(int *var)
 {
 	*var = !*var;
-	if (no_sound) {
+	if (disable_sound) {
 		destroy_sound();
 		clear_sound_data();
 		have_sound_config = 0;
 	} else {
-		if (sound_on)
+		if (enable_sound)
 			turn_sound_on();
-		if (music_on)
+		if (enable_music)
 			turn_music_on();
 	}
 }
@@ -681,8 +681,8 @@ int stream_ogg_file(char * in_filename, stream_data * stream, int numBuffers)
 		stream->stream_opened = 0;
 	}
 
-	// Add the datadir to the input filename and try to open it
-	safe_strncpy(filename, datadir, sizeof(filename));
+	// Add the data_dir to the input filename and try to open it
+	safe_strncpy(filename, data_dir, sizeof(filename));
 	safe_strcat(filename, in_filename, sizeof(filename));
 	result = load_ogg_file(filename, &stream->stream);
 	if (!result) {
@@ -1469,7 +1469,7 @@ int update_streams(void * dummy)
 #ifdef _EXTRA_SOUND_DEBUG
 	printf("Starting streams thread\n");
 #endif //_EXTRA_SOUND_DEBUG
-	while (!exit_now && ((have_music && music_on) || (have_sound && sound_on)))
+	while (!exit_now && ((have_music && enable_music) || (have_sound && enable_sound)))
 	{
 		SDL_Delay(sleep);
 
@@ -1491,14 +1491,14 @@ int update_streams(void * dummy)
 		{
 			// Check if we need to start or stop any streams
 #ifdef FR_VERSION
-			if (have_music && music_on)
+			if (have_music && enable_music)
 #else //FR_VERSION
-			if (have_music && music_on && (!music_stream || !music_stream->playing))
+			if (have_music && enable_music && (!music_stream || !music_stream->playing))
 #endif //FR_VERSION
 			{
 				find_next_song(tx, ty, day_time);
 			}
-			if (have_sound && sound_on)
+			if (have_sound && enable_sound)
 			{
 				check_for_new_streams(tx, ty);
 			}
@@ -1512,17 +1512,17 @@ int update_streams(void * dummy)
 					switch (streams[i].type)
 					{
 						case STREAM_TYPE_MUSIC:
-							if (!have_music || !music_on)
+							if (!have_music || !enable_music)
 								continue;			// We aren't playing music so skip this stream
 							gain = music_gain;
 							break;
 						case STREAM_TYPE_SOUNDS:
-							if (!have_sound || !sound_on)
+							if (!have_sound || !enable_sound)
 								continue;			// We aren't playing sounds so skip this stream
 							gain = sound_gain * enviro_gain * sound_type_data[streams[i].sound].variant[streams[i].variant].gain;
 							break;
 						case STREAM_TYPE_CROWD:
-							if (!have_sound || !sound_on)
+							if (!have_sound || !enable_sound)
 								continue;			// We aren't playing sounds so skip this stream
 							if (distanceSq_to_near_enhanced_actors == 0)
 								distanceSq_to_near_enhanced_actors = 100.0f;	// Due to no actors when calc'ing
@@ -1541,7 +1541,7 @@ int update_streams(void * dummy)
 		UNLOCK_ACTORS_LISTS();
 	}
 #ifdef _EXTRA_SOUND_DEBUG
-	printf("Exiting streams thread. have_music: %d, music_on: %d, have_sound: %d, sound_on: %d, exit_now: %d\n", have_music, music_on, have_sound, sound_on, exit_now);
+	printf("Exiting streams thread. have_music: %d, enable_music: %d, have_sound: %d, enable_sound: %d, exit_now: %d\n", have_music, enable_music, have_sound, enable_sound, exit_now);
 #endif //_EXTRA_SOUND_DEBUG
 	return 1;
 }
@@ -1936,20 +1936,15 @@ void affiche_fenetre_musique ()
 #endif //FR_VERSION
 
         /* Option pour changer le volume de la musique */
-#ifdef FR_FENETRE_OPTIONS
-        volume_musique = spinbutton_add(fenetre_musique, NULL, position_widget, hauteur_liste_musique + 5, 80, 20, SPIN_FLOAT, liste_variables.variable[recherche_variable("music_gain", OPT_FLOAT)]->variable, 0.0, 1.0, 0.1);
-        set_var_unsaved("music_gain", OPT_FLOAT);
-#else //FR_FENETRE_OPTIONS
-        volume_musique = spinbutton_add(fenetre_musique, NULL, position_widget, hauteur_liste_musique + 5, 80, 20, SPIN_FLOAT, our_vars.var[find_var("music_gain", OPT_FLOAT)]->var, 0.0, 1.0, 0.1);
-        set_var_unsaved("music_gain", OPT_FLOAT);
-#endif //FR_FENETRE_OPTIONS
+		volume_musique = spinbutton_add(fenetre_musique, NULL, position_widget, hauteur_liste_musique + 5, 80, 20, SPIN_FLOAT, our_vars.cvars[find_var("music_gain", CVD_FLOAT)].pfloat, 0.0, 1.0, 0.1);
+		set_var_unsaved("music_gain", VNK_INI);
 
         /* Option pour utiliser les musiques de la carte */
         bouton_musique_carte = checkbox_add_extended(fenetre_musique, 0, NULL, position_widget, hauteur_liste_musique + 35, 15, 15, 0, 1.0, 0.77f, 0.59f, 0.39f, &musique_carte);
 
         /* Option pour permettre au serveur de changer la musique */
         bouton_serveur_musique = checkbox_add_extended(fenetre_musique, 1, NULL, position_widget, hauteur_liste_musique + 55, 15, 15, 0, 1.0, 0.77f, 0.59f, 0.39f, &auto_serveur_musique);
-        set_var_unsaved("auto_serveur_musique", OPT_BOOL);
+		set_var_unsaved("auto_serveur_musique", VNK_INI);
 
         /* Option pour lire aléatoirement la liste de musique */
         bouton_aleatoire_musique = checkbox_add_extended(fenetre_musique, 2, NULL, position_widget, hauteur_liste_musique + 75, 15, 15, 0, 1.0, 0.77f, 0.59f, 0.39f, &aleatoire_musique);
@@ -2530,7 +2525,7 @@ void set_sound_gain(source_data * pSource, int loaded_sound_num, float new_gain)
 			type_gain = gamewin_gain;
 			break;
 		case SOUNDS_WARNINGS:
-			type_gain = warnings_gain;
+			type_gain = warn_gain;
 			break;
 	}
 	// Check if we need to update the base gain for this sound
@@ -2671,7 +2666,7 @@ int ensure_sample_loaded(char * in_filename)
 	pSample = &sound_sample_data[sample_num];
 
 	// Add the data dir to the front of the input filename
-	safe_strncpy(filename, datadir, sizeof(filename));
+	safe_strncpy(filename, data_dir, sizeof(filename));
 	safe_strcat(filename, in_filename, sizeof(filename));
 
 	// Load the file into memory
@@ -3004,7 +2999,7 @@ unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial
 	if (sound_num == -1)
 	{
 		// Check if we should bother erroring - an overflow of sounds when sound is disabled we can ignore
-		if (have_sound && sound_on)
+		if (have_sound && enable_sound)
 		{
 #ifdef _EXTRA_SOUND_DEBUG
 			printf("Error: Too many sounds loaded!! n00b! Not playing this sound: %d (%s)\n", type, pNewType->name);
@@ -3030,7 +3025,7 @@ unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial
 	num_sounds++;
 
 	// Check if we should try to load the samples (sound is enabled)
-	if (inited && have_sound && sound_on)
+	if (inited && have_sound && enable_sound)
 	{
 		// Load all samples used by this type
 		sounds_list[sound_num].variant = load_samples(pNewType);
@@ -3068,7 +3063,7 @@ unsigned int add_sound_object_gain(int type, int x, int y, int me, float initial
 	{
 		// Sound isn't enabled so bail now. When sound is enabled, these sounds (if applicable) will be
 		// loaded and played then
-		printf("Not playing this sound as sound isn't enabled yet. Inited: %d, Have sound: %d, Sound on: %d, Cookie: %d\n", inited, have_sound, sound_on, cookie);
+		printf("Not playing this sound as sound isn't enabled yet. Inited: %d, Have sound: %d, Sound on: %d, Cookie: %d\n", inited, have_sound, enable_sound, cookie);
 	}
 #endif //_EXTRA_SOUND_DEBUG
 
@@ -3447,7 +3442,7 @@ void update_sound(int ms)
 	int l;
 
 	// Check if we have a sound config, and thus if its worth doing anything (or sound is disabled)
-	if (num_types < 1 || no_sound)
+	if (num_types < 1 || disable_sound)
 		return;
 
 	LOCK_ACTORS_LISTS();
@@ -3511,7 +3506,7 @@ void update_sound(int ms)
 			{
 				distanceSq = (tx - x) * (tx - x) + (ty - y) * (ty - y);
 				maxDistSq = pSoundType->distance * pSoundType->distance;
-				if (sound_on && (distanceSq < maxDistSq))
+				if (enable_sound && (distanceSq < maxDistSq))
 				{
 					// This sound is back in range so load it into a source and play it
 #ifdef _EXTRA_SOUND_DEBUG
@@ -3776,7 +3771,7 @@ void update_sound(int ms)
 				stop_sound_source_at_index(i);
 				continue;
 			}
-			else if (sound_on && (state == AL_PAUSED) && (distanceSq < maxDistSq))
+			else if (enable_sound && (state == AL_PAUSED) && (distanceSq < maxDistSq))
 			{
 				LOG_ERROR("Sound error: We found a wasted source. Sound %d (%s) was loaded into a source and paused!!\n", i, pSoundType->name);
 				alSourcePlay(pSource->source);
@@ -4794,7 +4789,7 @@ void init_sound()
 #endif //FR_VERSION
 
 	// If we don't have sound/music then bail so we don't grab the soundcard.
-	if (inited || no_sound || (!sound_on && !music_on))
+	if (inited || disable_sound || (!enable_sound && !enable_music))
 		return;
 
 	// Begin by setting all data to a known state
@@ -4984,7 +4979,7 @@ void destroy_sound()
 	}
 	for (i = 0; i < MAX_BUFFERS * 2; i++)
 	{
-		if (no_sound) {
+		if (disable_sound) {
 			unload_sound(i);
 		} else {
 			// Flag all sounds as unloaded, but don't remove them
@@ -5244,7 +5239,7 @@ sound_file * load_sound_part(sound_file *pPart, SOUND_STAGE stage, const char * 
 
 	if (!pPart || !strcasecmp(pPart->file_path, ""))
 	{
-		safe_strncpy(filename, datadir, sizeof(filename));
+		safe_strncpy(filename, data_dir, sizeof(filename));
 		safe_strcat(filename, content, sizeof(filename));
 		if (file_exists(filename))
 		{
@@ -6349,7 +6344,7 @@ void load_sound_config_data (const char *file)
 	xmlDoc *doc;
 	const xmlNode *root = NULL;
 
-	if (no_sound)
+	if (disable_sound)
 		return;
 
     if (!el_file_exists(file))

@@ -38,7 +38,7 @@ const Uint32 select_size = 5;
 const Uint32 select_offset = 2;
 const float select_scale = 2.0f;
 const float select_scale_max = 16.0f;
-Uint32 use_new_selection = 1;
+int use_new_selection = 1;
 
 static inline void update_color(Uint8 *color, GLfloat *colorf, const Uint32 index, const bool selectable)
 {

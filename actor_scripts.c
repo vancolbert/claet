@@ -10,6 +10,7 @@
 #include "cursors.h"
 #include "draw_scene.h"
 #include "errors.h"
+#include "gamewin.h"
 #include "global.h"
 #include "hud.h"
 #include "init.h"
@@ -514,6 +515,16 @@ void animate_actors()
 	UNLOCK_ACTORS_LISTS();
 
 	last_update = cur_time;
+	actor *a = get_our_actor();
+	if (a && a->fighting) {
+		exphits.t = cur_time;
+	} else {
+		flee.on = 0;
+	}
+	if (flee.on && cur_time > flee.t) {
+		flee.t = cur_time + 300 + (cur_time & 127);
+		move_self_forward();
+	}
 }
 
 void unqueue_cmd(int i){
@@ -2115,6 +2126,7 @@ void destroy_actor(int actor_id)
 void destroy_all_actors()
 {
 	int i=0;
+	stash_mapcam();
 	LOCK_ACTORS_LISTS();	//lock it to avoid timing issues
 	set_our_actor (NULL);
 	for(i=0;i<max_actors;i++) {
@@ -2415,7 +2427,7 @@ void add_command_to_actor(int actor_id, unsigned char command)
 #ifdef MORE_ATTACHED_ACTORS
 			int j2=k2-1;
 #endif
-			while(act->que[j]>=turn_n&&act->que[j]<=turn_nw&&j>=0) j--; //skip rotations
+			while(j>=0&&act->que[j]>=turn_n&&act->que[j]<=turn_nw) j--; //skip rotations
 #ifdef MORE_ATTACHED_ACTORS
 			if (act->attached_actor >= 0)
 				while(actors_list[act->attached_actor]->que[j2]>=turn_n
@@ -2449,6 +2461,9 @@ void add_command_to_actor(int actor_id, unsigned char command)
 		switch(command) {
 		case enter_combat:
 			act->async_fighting= 1;
+			if (isme) {
+				memset(exphits.n, 0, sizeof(exphits.n));
+			}
 #ifdef MISSILES
 			if(ranging_lock && auto_disable_ranging_lock)
 			{
@@ -2695,7 +2710,7 @@ void get_actor_damage(int actor_id, int damage)
 	if(!act){
 		//if we got here, it means we don't have this actor, so get it from the server...
 	} else {
-		if(floatingmessages_enabled){
+		if(use_floating_messages){
 			act->last_health_loss=cur_time;
 		}
 
@@ -2766,7 +2781,7 @@ void get_actor_heal(int actor_id, int quantity)
 		if (actor_id == yourself)
 			set_last_heal(quantity);
 
-		if(floatingmessages_enabled){
+		if(use_floating_messages){
 			act->damage=-quantity;
 			act->damage_ms=2000;
 			act->last_health_loss=cur_time;
@@ -2804,7 +2819,7 @@ void get_actor_health(int actor_id, int quantity)
 	if(!act){
 		//if we got here, it means we don't have this actor, so get it from the server...
 	} else {
-//		if(floatingmessages_enabled){
+//		if(use_floating_messages){
 			//act->damage=-quantity;
 			//act->damage_ms=2000;
 			//act->last_health_loss=cur_time;

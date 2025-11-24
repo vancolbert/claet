@@ -10,6 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "misc.h"
 
 #define XML_ID_SIZE 64
 
@@ -18,12 +19,10 @@ extern "C" {
  */
 typedef struct
 {
-	unsigned char str[51];     /*!< str */
-#ifdef WRITE_XML
-	int saved_str;             /*!< saved_str */
-#endif
+	unsigned char str[51]; //NB this controls width of displayed labels
 	unsigned char desc[251];   /*!< desc */
 #ifdef WRITE_XML
+	int saved_str;             /*!< saved_str */
 	int saved_desc;            /*!< saved_desc */
 #endif
 } dichar;
@@ -1074,7 +1073,7 @@ void load_translatables();
  * \sa      add_xml_distringid
  * \callgraph
  */
-void add_options_distringid(char * xml_id, dichar * var, char * str, char * desc);
+void add_options_distringid(cstr xml_id, dichar *var, cstr str, cstr desc);
 
 
 /*!

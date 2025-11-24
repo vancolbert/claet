@@ -97,8 +97,8 @@ void add_mines_from_list (const Uint8 *data)
 	for (i = 0; i < mines_no; i++)
 	{
 		my_offset = i * 6 + 1;
-		mine_x = SDL_SwapLE16(*((Uint16 *)(data + my_offset)));
-		mine_y = SDL_SwapLE16(*((Uint16 *)(data + my_offset + 2)));
+		mine_x = unpack_u16_le(data + my_offset);
+		mine_y = unpack_u16_le(data + my_offset + 2);
 		mine_id = *((Uint8 *)(data + my_offset + 4));
 		mine_type = *((Uint8 *)(data + my_offset + 5));
 		if (mine_id >= NUM_MINES)

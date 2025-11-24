@@ -34,6 +34,7 @@
 #include "init.h"
 #include "interface.h"
 #include "items.h"
+#include "item_lists.h"
 #include "lights.h"
 #include "manufacture.h"
 #include "map.h"
@@ -99,9 +100,9 @@ float fps_average = 100.0;
 int include_use_cursor_on_animals = 0;
 int logo_click_to_url = 1;
 #ifdef ENGLISH
-char LOGO_URL_LINK[128] = "http://www.eternal-lands.com";
+char logo_link[128] = "http://www.eternal-lands.com";
 #else //ENGLISH
-char LOGO_URL_LINK[128] = "http://www.landes-eternelles.com";
+char logo_link[128] = "http://www.landes-eternelles.com";
 float chat_alpha_background = 0.5;
 #endif //ENGLISH
 int have_mouse = 0;
@@ -121,6 +122,8 @@ int auto_disable_ranging_lock = 1;
 #ifdef WALK_AFTER_SPELL_FR
 int walk_after_spell=0;
 #endif
+Exphits exphits = {1};
+Flee flee;
 
 void draw_special_cursors()
 {
@@ -356,7 +359,7 @@ void toggle_have_mouse()
 		if (sdl_cursors)
 #endif // NEW_CURSOR
 			SDL_ShowCursor(0);
-		if (fol_cam) toggle_follow_cam(&fol_cam);
+		if (follow_cam) toggle_follow_cam(&follow_cam);
 #ifdef ENGLISH
 		LOG_TO_CONSOLE (c_red1, "Grab mode: press alt+g again to enter Normal mode.");
 #else //ENGLISH
@@ -385,7 +388,7 @@ void toggle_first_person()
 			rz=me->z_rot;
 		rx=-90;
 		first_person = 1;
-		fol_cam = 0;
+		follow_cam = 0;
 	} else {
 		first_person = 0;
 		if (rx < -90) {rx = -90;}
@@ -593,7 +596,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 	if (mx > win->len_x - 64 && my < 54 ) // 10 pixels dead space to try to prevent accidental misclicks
 	{
 		if (logo_click_to_url)
-			open_web_link(LOGO_URL_LINK);
+			open_web_link(logo_link);
 		return 1;
 	}
 
@@ -754,7 +757,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 #endif //ENGLISH
 		str[0] = DROP_ITEM;
 		str[1] = item_list[item_dragged].pos;
-		*((Uint32 *) (str + 2)) = SDL_SwapLE32(item_quantity);
+		pack_u32_le(str + 2, item_quantity);
 		my_tcp_send(my_socket, str, 6);
 		return 1;
 	}
@@ -821,7 +824,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 					achievements_requested(mouse_x, mouse_y, flag_ctrl);
 #endif
 				str[0] = GET_PLAYER_INFO;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 				return 1;
 			}
@@ -834,7 +837,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 				LOG_TO_CONSOLE(c_green1, log);
 #endif
 				str[0] = LOOK_AT_MAP_OBJECT;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 				return 1;
 			}
@@ -874,7 +877,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 						add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
 
 						str[0] = TOUCH_PLAYER;
-						*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+						pack_u32_le(str+1, object_under_mouse);
 						my_tcp_send (my_socket, str, 5);
 					}
 				}
@@ -895,7 +898,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 #endif //FR_VERSION
 				return 1;
 			str[0] = TRADE_WITH;
-			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+			pack_u32_le(str+1, object_under_mouse);
 			my_tcp_send (my_socket, str, 5);
 			return 1;
 
@@ -920,75 +923,20 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 					if(this_actor != NULL)
 						add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_ATTACK_TARGET);
 				}
-
-#ifdef FR_FAST_SPELL
-				if(selected_spell == -1) {
-#endif
-				  str[0] = ATTACK_SOMEONE;
-				  *((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
-				  my_tcp_send (my_socket, str, 5);
-				  return 1;
-
-#ifdef FR_FAST_SPELL
+				if (selected_spell == -1) {
+					str[0] = ATTACK_SOMEONE;
+					pack_u32_le(str+1, object_under_mouse);
+					my_tcp_send (my_socket, str, 5);
+					return 1;
 				} else {
-#ifndef FR_MORE_MQB
-				  if(mqb_data[selected_spell]->spell_id != -1) {
-				    send_spell(mqb_data[selected_spell]->spell_str, mqb_data[selected_spell]->spell_str[1]+2);
-				    selected_spell_sent = 1;
-				    selected_spell_target = object_under_mouse;
-				  }
+					send_mqb_spell(object_under_mouse);
 				}
-#else //FR_MORE_MQB
-					switch (quickspell_mqb_selected)
-					{
-					case 0:
-						if(mqb_data[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data[selected_spell]->spell_str, mqb_data[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 1:
-						if(mqb_data2[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data2[selected_spell]->spell_str, mqb_data2[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 2:
-						if(mqb_data3[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data3[selected_spell]->spell_str, mqb_data3[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 3:
-						if(mqb_data4[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data4[selected_spell]->spell_str, mqb_data4[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					case 4:
-						if(mqb_data5[selected_spell]->spell_id != -1) {
-							send_spell(mqb_data5[selected_spell]->spell_str, mqb_data5[selected_spell]->spell_str[1]+2);
-							selected_spell_sent = 1;
-							selected_spell_target = object_under_mouse;
-						}
-						break;
-					
-					default:
-						break;
-					}
-				}
-#endif //FR_MORE_MQB
-#endif
 			}
 #ifdef MISSILES
 			else if (range_weapon_equipped && thing_under_the_mouse == UNDER_MOUSE_3D_OBJ)
 			{
 				str[0] = FIRE_MISSILE_AT_OBJECT;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send(my_socket, str, 5);
 			}
 #endif // MISSILES
@@ -1018,7 +966,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			{
 				int i;
 				str[0] = TOUCH_PLAYER;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 
 				// clear the previous dialogue entries, so we won't have a left over from some other NPC
@@ -1028,16 +976,16 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			}
 
 			str[0] = USE_MAP_OBJECT;
-			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+			pack_u32_le(str+1, object_under_mouse);
 			if (use_item != -1 && current_cursor == CURSOR_USE_WITEM)
 			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)item_list[use_item].pos);
+				pack_u32_le(str+5, item_list[use_item].pos);
 				use_item = -1;
 				action_mode = ACTION_WALK;
 			}
 			else
 			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)-1);
+				pack_u32_le(str+5, -1);
 			}
 
 			my_tcp_send (my_socket, str, 9);
@@ -1063,7 +1011,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			{
 				int i;
 				str[0] = TOUCH_PLAYER;
-				*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+				pack_u32_le(str+1, object_under_mouse);
 				my_tcp_send (my_socket, str, 5);
 
 				// clear the previous dialogue entries, so we won't have a left over from some other NPC
@@ -1073,23 +1021,16 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
 			}
 
 			str[0] = USE_MAP_OBJECT;
-			*((int *)(str+1)) = SDL_SwapLE32((int)object_under_mouse);
+			pack_u32_le(str+1, object_under_mouse);
 			if (use_item != -1 && current_cursor == CURSOR_USE_WITEM)
 			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)item_list[use_item].pos);
-#ifdef ENGLISH
-				if (!shift_on)
-				{
-#endif //ENGLISH
-				use_item = -1;
-				action_mode = ACTION_WALK;
-			}
-#ifdef ENGLISH
-			}
-#endif //ENGLISH
-			else
-			{
-				*((int *)(str+5)) = SDL_SwapLE32((int)-1);
+				pack_u32_le(str+5, item_list[use_item].pos);
+				if (!shift_on) {
+					use_item = -1;
+					action_mode = ACTION_WALK;
+				}
+			} else {
+				pack_u32_le(str+5, -1);
 			}
 
 			my_tcp_send (my_socket, str, 9);
@@ -1139,7 +1080,7 @@ int click_game_handler(window_info *win, int mx, int my, Uint32 flags)
                 return 1;
 #endif //FR_VERSION
 			str[0] = HARVEST;
-			*((Uint16 *)(str+1)) = SDL_SwapLE16((Uint16)object_under_mouse);
+			pack_u16_le(str+1, object_under_mouse);
 			my_tcp_send (my_socket, str, 3);
 			return 1;
 			break;
@@ -1336,7 +1277,7 @@ int display_game_handler (window_info *win)
             glPopMatrix();
         }
 
-		if (use_fog)
+		if (render_fog)
 			weather_render_fog();
 
 		// only draw scene lights if inside or it is night
@@ -1372,7 +1313,7 @@ int display_game_handler (window_info *win)
 		if (!dungeon && shadows_on && (is_day || lightning_falling))
 		{
 			glNormal3f(0.0f,0.0f,1.0f);
-			if (use_fog && any_reflection) blend_reflection_fog();
+			if (render_fog && any_reflection) blend_reflection_fog();
 			draw_sun_shadowed_scene (any_reflection);
 		}
 		else
@@ -1511,12 +1452,31 @@ int display_game_handler (window_info *win)
 			}
 		}
 	}
+	if (exphits.show && cur_time - exphits.t < 5000) {
+		float s = name_text_size, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
+		int x = win->len_x - HUD_MARGIN_X - 8*sx, y = win->len_y - HUD_MARGIN_Y - 3*sy;
+		#define skn(w) (char *)attributes.w##_skill.shortname
+		char b[32], *n[2] = {skn(attack), skn(defense)};
+		for (int i = 0; i < 2; ++i, y += sy) {
+			safe_snprintf(b, sizeof(b), "%s: %2d", n[i], exphits.n[i]);
+			draw_string_scaled_shadowed(x, y, (Uint8 *)b, 1, sx, sy, 1, 1, 0.2f, 0, 0, 0);
+		}
+	}
+	if (flee.on) {
+		float s = 2.0f * name_text_size, sx = s * DEFAULT_FONT_X_LEN, sy = s * DEFAULT_FONT_Y_LEN;
+		int x = (win->len_x - HUD_MARGIN_X)/2 - 3*sx, y = (win->len_y - HUD_MARGIN_Y)*3/4;
+		Uint8 *m = (Uint8 *)"FUITE!";
+		if ((cur_time & 511) < 256) {
+			draw_string_scaled_shadowed(x, y, m, 1, sx, sy, 0.9f, 0.4f, 0.4f, 1.0f, 0.9f, 0.0f);
+		} else {
+			draw_string_scaled_shadowed(x, y, m, 1, sx, sy, 0.8f, 0.2f, 0.2f, 0.2f, 0.1f, 0.1f);
+		}
+	}
 	if (show_fps)
 	{
 #ifdef	DEBUG
-		actor *me = get_our_actor ();
-
 		glColor3f (1.0f, 1.0f, 1.0f);
+		actor *me = get_our_actor();
 		if(me){
  			safe_snprintf((char*)str,sizeof(str),"Busy: %i",me->busy);
 	 		draw_string (400, 4, str, 1);
@@ -1570,12 +1530,12 @@ int display_game_handler (window_info *win)
 
 	CHECK_GL_ERRORS ();
 	/* Draw the chat text */
-	if (use_windowed_chat != 2)
+	if (windowed_chat != 2)
 	{
 		int msg, offset, filter;
 #ifndef ENGLISH
         int ytext = 20;
-        if (use_windowed_chat ==1)
+		if (windowed_chat ==1)
         {
             if (nb_ligne_tabs == 1)
             {
@@ -1587,12 +1547,12 @@ int display_game_handler (window_info *win)
             }
         }
 #endif //ENGLISH
-		filter = use_windowed_chat == 1 ? current_filter : FILTER_ALL;
+		filter = windowed_chat == 1 ? current_filter : FILTER_ALL;
 		if (find_last_lines_time (&msg, &offset, filter, console_text_width))
 		{
 			set_font(chat_font);	// switch to the chat font
 #ifdef ENGLISH
-			draw_messages (10, use_windowed_chat == 1 ? 25 : 20, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
+			draw_messages (10, windowed_chat == 1 ? 25 : 20, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_text_size), chat_text_size, NULL);
 #else //ENGLISH
 			// Ajout d'un fond semi-transparent derrière les lignes d'historique
 			if (chat_alpha_background > 0)
@@ -1604,13 +1564,13 @@ int display_game_handler (window_info *win)
 				glBegin(GL_QUADS);
 					glVertex3i(10,                      ytext, 0);
 					glVertex3i(10 + console_text_width, ytext, 0);
-					glVertex3i(10 + console_text_width, ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_zoom, 0);
-					glVertex3i(10,                      ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_zoom, 0);
+					glVertex3i(10 + console_text_width, ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_text_size, 0);
+					glVertex3i(10,                      ytext + lines_to_show * DEFAULT_FONT_Y_LEN * chat_text_size, 0);
 				glEnd();
 				glDisable(GL_BLEND);
 				glEnable(GL_TEXTURE_2D);
 			}
-			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_zoom), chat_zoom, NULL);
+			draw_messages (10, ytext, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, filter, msg, offset, -1, console_text_width, (int) (1 + lines_to_show * 18 * chat_text_size), chat_text_size, NULL);
 #endif //ENGLISH
 			set_font (0);	// switch to fixed
 		}
@@ -2137,6 +2097,13 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 	else if (action_spell_keys(key))
 	{
 	}
+	else if (key == K_SPELLTARGET) {
+		if (set_fast_spell_target ^= 1) {
+			LOG_TO_CONSOLE(c_yellow1, "Sélectionne un sort pour le ciblage automatique.");
+		} else {
+			fast_spell_decible();
+		}
+	}
 	// hide all windows
 	else if(key==K_HIDEWINS)
 	{
@@ -2227,7 +2194,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 #ifdef FR_VERSION
     else if (key == K_FENETRE_MUSIQUE)
     {
-        if (music_on == 1)
+		if (enable_music == 1)
         {
             view_window (&fenetre_musique, 0);
         }
@@ -2343,6 +2310,8 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		{
 			go_ifk ();
 		}
+	} else if (key == K_SPELLSELF) {
+		fast_spell_cast(yourself);
 	}
 #ifdef ENGLISH
 	else if(key == K_RANGINGWIN)
@@ -2369,6 +2338,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		item_dragged = -1;
 		storage_item_dragged = -1;
 		fr_quickitem_dragged = -1;
+		item_lists_cancel();
 #endif //FR_VERSION
 	}
 	else if(key == K_NEXT_CHAT_TAB)
@@ -2376,7 +2346,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		int next_tab;
 		widget_list *widget;
 		tab_collection *collection;
-		switch(use_windowed_chat)
+		switch(windowed_chat)
 		{
 			case 1: //Tabs
 #ifndef ENGLISH
@@ -2449,7 +2419,7 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		int next_tab;
 		widget_list *widget;
 		tab_collection *collection;
-		switch(use_windowed_chat)
+		switch(windowed_chat)
 		{
 			case 1: //Tab
 #ifndef ENGLISH
@@ -2538,9 +2508,19 @@ int keypress_root_common (Uint32 key, Uint32 unikey)
 		{
 			repeat_spell();
 		}
-	}
-	else
-	{
+	} else if (key == K_REPEATDIALOG) {
+		repeat_last_dialogue_response();
+	} else if (key == K_MIXONE) {
+		mix_handler(1, mix_empty_str);
+	} else if (key == K_MIXALL) {
+		mix_handler(255, mix_empty_str);
+	} else if (key == K_DROPALL) {
+		drop_all_handler();
+	} else if (key == K_STOREALL) {
+		store_all_handler();
+	} else if (key == K_WITHDRAW) {
+		item_lists_withdraw();
+	} else {
 		return 0; // nothing we can handle
 	}
 
@@ -2624,6 +2604,8 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 	}
 	else if (key==K_ADVANCE)
 	{
+		actor *a = get_our_actor();
+		flee.on ^= a && a->fighting;
 		move_self_forward();
 	}
 	else if (key == K_ROTATELEFT)
@@ -2631,7 +2613,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed = (first_person?-1:1)*normal_camera_rotation_speed / 800.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 800;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2643,7 +2625,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed /= 4.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 200;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2654,7 +2636,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed = (first_person?1:-1)*normal_camera_rotation_speed / 800.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 800;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2666,7 +2648,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		camera_rotation_speed /= 4.0;
 		camera_rotation_deceleration = normal_camera_deceleration*0.5E-3;
 		camera_rotation_duration = 200;
-		if (fol_cam && !fol_cam_behind)
+		if (follow_cam && !fol_cam_behind)
 		{
 			hold_camera += camera_kludge - last_kludge;
 			last_kludge = camera_kludge;
@@ -2762,7 +2744,7 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 	}
 	else if (key == K_EXTEND_CAM)
 	{
-		toggle_ext_cam(&ext_cam);
+		toggle_ext_cam(&extended_cam);
 	}
 #ifdef PAWN
 	else if (keysym == SDLK_F8)
@@ -2782,12 +2764,6 @@ int keypress_game_handler (window_info *win, int mx, int my, Uint32 key, Uint32 
 		actor *me = get_actor_ptr_from_id (yourself);
 		ec_create_campfire(me->x_pos + 0.25f, me->y_pos + 0.25f, get_tile_height(me->x_tile_pos, me->y_tile_pos), 0.0, 1.0, (poor_man ? 6 : 10), 0.7);
 	}
-#ifdef FR_FENETRE_OPTIONS
-    else if (keysym == SDLK_F12)
-    {
-		view_window (&fenetre_options, 0);
-    }
-#endif //FR_FENETRE_OPTIONS
 #ifdef DEBUG
 	else if (keysym == SDLK_F10)
 	{
@@ -2891,7 +2867,7 @@ void do_keypress(Uint32 key)
 int show_game_handler (window_info *win) {
 	init_hud_interface (HUD_INTERFACE_GAME);
 	show_hud_windows();
-	if (use_windowed_chat == 1)
+	if (windowed_chat == 1)
 			display_tab_bar();
 	return 1;
 }
@@ -2919,9 +2895,9 @@ void create_game_root_window (int width, int height)
 			else
 				set_text_message_color (&input_text_line, 1.0f, 1.0f, 1.0f);
 #ifdef FR_VERSION
-			id = text_field_add_extended(game_root_win, 42, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
+			id = text_field_add_extended(game_root_win, 42, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
 #else //FR_VERSION
-			id = text_field_add_extended(game_root_win, 42, NULL, 0, height-INPUT_HEIGHT-hud_y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_zoom, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
+			id = text_field_add_extended(game_root_win, 42, NULL, 0, height-INPUT_HEIGHT-hud_y, width-hud_x, INPUT_HEIGHT, INPUT_DEFAULT_FLAGS, chat_text_size, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
 #endif //FR_VERSION
 			input_widget = widget_find(game_root_win, id);
 			input_widget->OnResize = input_field_resize;

@@ -15,7 +15,7 @@ int clear_log = 0;
 FILE* open_log (const char *fname, const char *mode)
 {
 	FILE *file = open_file_config (fname, mode);
-	char starttime[200], sttime[200];
+	char s[256];
 	struct tm *l_time; time_t c_time;
 	if (file == NULL)
 	{
@@ -25,9 +25,8 @@ FILE* open_log (const char *fname, const char *mode)
 
 	time (&c_time);
 	l_time = localtime (&c_time);
-	strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime", l_time);
-	safe_snprintf(starttime, sizeof(starttime), "%s (%s)\n\n", sttime, tzname[l_time->tm_isdst>0]);
-	fwrite (starttime, strlen(starttime), 1, file);
+	int n = strftime(s, sizeof(s), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime %Z\n\n", l_time);
+	fwrite(s, n, 1, file);
 	return file;
 }
 

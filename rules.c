@@ -153,7 +153,7 @@ int read_rules()
 	char file_name[120];
 	xmlDoc * doc;
 	xmlNode * root;
-	safe_snprintf(file_name, sizeof(file_name), "languages/%s/rules.xml",lang);
+	safe_snprintf(file_name, sizeof(file_name), "languages/%s/rules.xml",language);
 
 	if ((doc = xmlReadFile(file_name, NULL, 0)) == NULL) {
 		if((doc=xmlReadFile("languages/en/rules.xml",NULL,0))==NULL){
@@ -384,7 +384,7 @@ void highlight_rule (int type, const Uint8 *rule, int no)
 				next_win_id = game_root_win; break;
 		}
 
-		create_rules_root_window ( window_width, window_height, next_win_id, SDL_SwapLE16(*((Uint16*)(rule))) );
+		create_rules_root_window ( window_width, window_height, next_win_id, unpack_u16_le(rule));
 		hide_all_root_windows ();
 		hide_hud_windows ();
 		show_window (rules_root_win);

@@ -76,7 +76,7 @@ typedef struct {
 
 floating_message floating_messages[MAX_NUMBER_OF_FLOATING_MESSAGES];
 
-int floatingmessages_enabled = 1;
+int use_floating_messages = 1;
 
 void floatingmessages_add_level(int actor_id, int level, const unsigned char * skillname);
 void floatingmessages_compare_stat(int actor_id, int value, int new_value, const unsigned char *skillname);
@@ -99,176 +99,176 @@ void get_the_stats(Sint16 *stats)
         init_attribf();
 	#endif
 
-	your_info.phy.cur=SDL_SwapLE16(stats[0]);
-	your_info.phy.base=SDL_SwapLE16(stats[1]);
-	your_info.coo.cur=SDL_SwapLE16(stats[2]);
-	your_info.coo.base=SDL_SwapLE16(stats[3]);
-	your_info.rea.cur=SDL_SwapLE16(stats[4]);
-	your_info.rea.base=SDL_SwapLE16(stats[5]);
-	your_info.wil.cur=SDL_SwapLE16(stats[6]);
-	your_info.wil.base=SDL_SwapLE16(stats[7]);
-	your_info.ins.cur=SDL_SwapLE16(stats[8]);
-	your_info.ins.base=SDL_SwapLE16(stats[9]);
-	your_info.vit.cur=SDL_SwapLE16(stats[10]);
-	your_info.vit.base=SDL_SwapLE16(stats[11]);
+	your_info.phy.cur=unpack_u16_le(stats + 0);
+	your_info.phy.base=unpack_u16_le(stats + 1);
+	your_info.coo.cur=unpack_u16_le(stats + 2);
+	your_info.coo.base=unpack_u16_le(stats + 3);
+	your_info.rea.cur=unpack_u16_le(stats + 4);
+	your_info.rea.base=unpack_u16_le(stats + 5);
+	your_info.wil.cur=unpack_u16_le(stats + 6);
+	your_info.wil.base=unpack_u16_le(stats + 7);
+	your_info.ins.cur=unpack_u16_le(stats + 8);
+	your_info.ins.base=unpack_u16_le(stats + 9);
+	your_info.vit.cur=unpack_u16_le(stats + 10);
+	your_info.vit.base=unpack_u16_le(stats + 11);
  #ifdef FR_RCM_WRAITH
-	your_info.sangf.cur=SDL_SwapLE16(stats[99]);
-	your_info.sangf.base=SDL_SwapLE16(stats[100]);
+	your_info.sangf.cur=unpack_u16_le(stats + 99);
+	your_info.sangf.base=unpack_u16_le(stats + 100);
  #endif
 
 #ifdef FR_NEXUS
-	your_info.defense_nexus.cur=SDL_SwapLE16(stats[12]);
-	your_info.defense_nexus.base=SDL_SwapLE16(stats[13]);
+	your_info.defense_nexus.cur=unpack_u16_le(stats + 12);
+	your_info.defense_nexus.base=unpack_u16_le(stats + 13);
 
-	your_info.necro_nexus.cur=SDL_SwapLE16(stats[14]);
-	your_info.necro_nexus.base=SDL_SwapLE16(stats[15]);
+	your_info.necro_nexus.cur=unpack_u16_le(stats + 14);
+	your_info.necro_nexus.base=unpack_u16_le(stats + 15);
 
-	your_info.potion_nexus.cur=SDL_SwapLE16(stats[16]);
-	your_info.potion_nexus.base=SDL_SwapLE16(stats[17]);
+	your_info.potion_nexus.cur=unpack_u16_le(stats + 16);
+	your_info.potion_nexus.base=unpack_u16_le(stats + 17);
 
-	your_info.recolte_nexus.cur=SDL_SwapLE16(stats[18]);
-	your_info.recolte_nexus.base=SDL_SwapLE16(stats[19]);
+	your_info.recolte_nexus.cur=unpack_u16_le(stats + 18);
+	your_info.recolte_nexus.base=unpack_u16_le(stats + 19);
 
-	your_info.fabrication_nexus.cur=SDL_SwapLE16(stats[20]);
-	your_info.fabrication_nexus.base=SDL_SwapLE16(stats[21]);
+	your_info.fabrication_nexus.cur=unpack_u16_le(stats + 20);
+	your_info.fabrication_nexus.base=unpack_u16_le(stats + 21);
 
-	your_info.artisanat_nexus.cur=SDL_SwapLE16(stats[22]);
-	your_info.artisanat_nexus.base=SDL_SwapLE16(stats[23]);
+	your_info.artisanat_nexus.cur=unpack_u16_le(stats + 22);
+	your_info.artisanat_nexus.base=unpack_u16_le(stats + 23);
     // new value add see to end
 
 
 #else
-    your_info.human_nex.cur=SDL_SwapLE16(stats[12]);
-	your_info.human_nex.base=SDL_SwapLE16(stats[13]);
-	your_info.animal_nex.cur=SDL_SwapLE16(stats[14]);
-	your_info.animal_nex.base=SDL_SwapLE16(stats[15]);
-	your_info.vegetal_nex.cur=SDL_SwapLE16(stats[16]);
-	your_info.vegetal_nex.base=SDL_SwapLE16(stats[17]);
-	your_info.inorganic_nex.cur=SDL_SwapLE16(stats[18]);
-	your_info.inorganic_nex.base=SDL_SwapLE16(stats[19]);
-	your_info.artificial_nex.cur=SDL_SwapLE16(stats[20]);
-	your_info.artificial_nex.base=SDL_SwapLE16(stats[21]);
-	your_info.magic_nex.cur=SDL_SwapLE16(stats[22]);
-	your_info.magic_nex.base=SDL_SwapLE16(stats[23]);
+	your_info.human_nex.cur=unpack_u16_le(stats + 12);
+	your_info.human_nex.base=unpack_u16_le(stats + 13);
+	your_info.animal_nex.cur=unpack_u16_le(stats + 14);
+	your_info.animal_nex.base=unpack_u16_le(stats + 15);
+	your_info.vegetal_nex.cur=unpack_u16_le(stats + 16);
+	your_info.vegetal_nex.base=unpack_u16_le(stats + 17);
+	your_info.inorganic_nex.cur=unpack_u16_le(stats + 18);
+	your_info.inorganic_nex.base=unpack_u16_le(stats + 19);
+	your_info.artificial_nex.cur=unpack_u16_le(stats + 20);
+	your_info.artificial_nex.base=unpack_u16_le(stats + 21);
+	your_info.magic_nex.cur=unpack_u16_le(stats + 22);
+	your_info.magic_nex.base=unpack_u16_le(stats + 23);
 #endif
 
-	your_info.manufacturing_skill.cur=SDL_SwapLE16(stats[24]);
-	your_info.manufacturing_skill.base=SDL_SwapLE16(stats[25]);
-	your_info.harvesting_skill.cur=SDL_SwapLE16(stats[26]);
-	your_info.harvesting_skill.base=SDL_SwapLE16(stats[27]);
-	your_info.alchemy_skill.cur=SDL_SwapLE16(stats[28]);
-	your_info.alchemy_skill.base=SDL_SwapLE16(stats[29]);
-	your_info.overall_skill.cur=SDL_SwapLE16(stats[30]);
-	your_info.overall_skill.base=SDL_SwapLE16(stats[31]);
-	your_info.attack_skill.cur=SDL_SwapLE16(stats[32]);
-	your_info.attack_skill.base=SDL_SwapLE16(stats[33]);
-	your_info.defense_skill.cur=SDL_SwapLE16(stats[34]);
-	your_info.defense_skill.base=SDL_SwapLE16(stats[35]);
-	your_info.magic_skill.cur=SDL_SwapLE16(stats[36]);
-	your_info.magic_skill.base=SDL_SwapLE16(stats[37]);
-	your_info.potion_skill.cur=SDL_SwapLE16(stats[38]);
-	your_info.potion_skill.base=SDL_SwapLE16(stats[39]);
-	your_info.carry_capacity.cur=SDL_SwapLE16(stats[40]);
-	your_info.carry_capacity.base=SDL_SwapLE16(stats[41]);
-	your_info.material_points.cur=SDL_SwapLE16(stats[42]);
-	your_info.material_points.base=SDL_SwapLE16(stats[43]);
-	your_info.ethereal_points.cur=SDL_SwapLE16(stats[44]);
-	your_info.ethereal_points.base=SDL_SwapLE16(stats[45]);
-	your_info.food_level=SDL_SwapLE16(stats[46]);
+	your_info.manufacturing_skill.cur=unpack_u16_le(stats + 24);
+	your_info.manufacturing_skill.base=unpack_u16_le(stats + 25);
+	your_info.harvesting_skill.cur=unpack_u16_le(stats + 26);
+	your_info.harvesting_skill.base=unpack_u16_le(stats + 27);
+	your_info.alchemy_skill.cur=unpack_u16_le(stats + 28);
+	your_info.alchemy_skill.base=unpack_u16_le(stats + 29);
+	your_info.overall_skill.cur=unpack_u16_le(stats + 30);
+	your_info.overall_skill.base=unpack_u16_le(stats + 31);
+	your_info.attack_skill.cur=unpack_u16_le(stats + 32);
+	your_info.attack_skill.base=unpack_u16_le(stats + 33);
+	your_info.defense_skill.cur=unpack_u16_le(stats + 34);
+	your_info.defense_skill.base=unpack_u16_le(stats + 35);
+	your_info.magic_skill.cur=unpack_u16_le(stats + 36);
+	your_info.magic_skill.base=unpack_u16_le(stats + 37);
+	your_info.potion_skill.cur=unpack_u16_le(stats + 38);
+	your_info.potion_skill.base=unpack_u16_le(stats + 39);
+	your_info.carry_capacity.cur=unpack_u16_le(stats + 40);
+	your_info.carry_capacity.base=unpack_u16_le(stats + 41);
+	your_info.material_points.cur=unpack_u16_le(stats + 42);
+	your_info.material_points.base=unpack_u16_le(stats + 43);
+	your_info.ethereal_points.cur=unpack_u16_le(stats + 44);
+	your_info.ethereal_points.base=unpack_u16_le(stats + 45);
+	your_info.food_level=unpack_u16_le(stats + 46);
 
-	your_info.manufacturing_exp=SDL_SwapLE32(*((Uint32 *)(stats+49)));
-	your_info.manufacturing_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+51)));
-	your_info.harvesting_exp=SDL_SwapLE32(*((Uint32 *)(stats+53)));
-	your_info.harvesting_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+55)));
-	your_info.alchemy_exp=SDL_SwapLE32(*((Uint32 *)(stats+57)));
-	your_info.alchemy_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+59)));
-	your_info.overall_exp=SDL_SwapLE32(*((Uint32 *)(stats+61)));
-	your_info.overall_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+63)));
-	your_info.attack_exp=SDL_SwapLE32(*((Uint32 *)(stats+65)));
-	your_info.attack_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+67)));
-	your_info.defense_exp=SDL_SwapLE32(*((Uint32 *)(stats+69)));
-	your_info.defense_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+71)));
-	your_info.magic_exp=SDL_SwapLE32(*((Uint32 *)(stats+73)));
-	your_info.magic_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+75)));
-	your_info.potion_exp=SDL_SwapLE32(*((Uint32 *)(stats+77)));
-	your_info.potion_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+79)));
+	your_info.manufacturing_exp=unpack_u32_le(stats+49);
+	your_info.manufacturing_exp_next_lev=unpack_u32_le(stats+51);
+	your_info.harvesting_exp=unpack_u32_le(stats+53);
+	your_info.harvesting_exp_next_lev=unpack_u32_le(stats+55);
+	your_info.alchemy_exp=unpack_u32_le(stats+57);
+	your_info.alchemy_exp_next_lev=unpack_u32_le(stats+59);
+	your_info.overall_exp=unpack_u32_le(stats+61);
+	your_info.overall_exp_next_lev=unpack_u32_le(stats+63);
+	your_info.attack_exp=unpack_u32_le(stats+65);
+	your_info.attack_exp_next_lev=unpack_u32_le(stats+67);
+	your_info.defense_exp=unpack_u32_le(stats+69);
+	your_info.defense_exp_next_lev=unpack_u32_le(stats+71);
+	your_info.magic_exp=unpack_u32_le(stats+73);
+	your_info.magic_exp_next_lev=unpack_u32_le(stats+75);
+	your_info.potion_exp=unpack_u32_le(stats+77);
+	your_info.potion_exp_next_lev=unpack_u32_le(stats+79);
 
-	your_info.summoning_skill.cur=SDL_SwapLE16(stats[83]);
-	your_info.summoning_skill.base=SDL_SwapLE16(stats[84]);
-	your_info.summoning_exp=SDL_SwapLE32(*((Uint32 *)(stats+85)));
-	your_info.summoning_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+87)));
-	your_info.crafting_skill.cur=SDL_SwapLE16(stats[89]);
-	your_info.crafting_skill.base=SDL_SwapLE16(stats[90]);
-	your_info.crafting_exp=SDL_SwapLE32(*((Uint32 *)(stats+91)));
-	your_info.crafting_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+93)));
+	your_info.summoning_skill.cur=unpack_u16_le(stats + 83);
+	your_info.summoning_skill.base=unpack_u16_le(stats + 84);
+	your_info.summoning_exp=unpack_u32_le(stats+85);
+	your_info.summoning_exp_next_lev=unpack_u32_le(stats+87);
+	your_info.crafting_skill.cur=unpack_u16_le(stats + 89);
+	your_info.crafting_skill.base=unpack_u16_le(stats + 90);
+	your_info.crafting_exp=unpack_u32_le(stats+91);
+	your_info.crafting_exp_next_lev=unpack_u32_le(stats+93);
 #ifdef ENGLISH
-	your_info.engineering_skill.cur=SDL_SwapLE16(stats[95]);
-	your_info.engineering_skill.base=SDL_SwapLE16(stats[96]);
-	your_info.engineering_exp=SDL_SwapLE32(*((Uint32 *)(stats+97)));
-	your_info.engineering_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+99)));
-	your_info.tailoring_skill.cur=SDL_SwapLE16(stats[101]);
-	your_info.tailoring_skill.base=SDL_SwapLE16(stats[102]);
-	your_info.tailoring_exp=SDL_SwapLE32(*((Uint32 *)(stats+103)));
-	your_info.tailoring_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+105)));
-	your_info.ranging_skill.cur=SDL_SwapLE16(stats[107]);
-	your_info.ranging_skill.base=SDL_SwapLE16(stats[108]);
-	your_info.ranging_exp=SDL_SwapLE32(*((Uint32 *)(stats+109)));
-	your_info.ranging_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+111)));
+	your_info.engineering_skill.cur=unpack_u16_le(stats + 95);
+	your_info.engineering_skill.base=unpack_u16_le(stats + 96);
+	your_info.engineering_exp=unpack_u32_le(stats+97);
+	your_info.engineering_exp_next_lev=unpack_u32_le(stats+99);
+	your_info.tailoring_skill.cur=unpack_u16_le(stats + 101);
+	your_info.tailoring_skill.base=unpack_u16_le(stats + 102);
+	your_info.tailoring_exp=unpack_u32_le(stats+103);
+	your_info.tailoring_exp_next_lev=unpack_u32_le(stats+105);
+	your_info.ranging_skill.cur=unpack_u16_le(stats + 107);
+	your_info.ranging_skill.base=unpack_u16_le(stats + 108);
+	your_info.ranging_exp=unpack_u32_le(stats+109);
+	your_info.ranging_exp_next_lev=unpack_u32_le(stats+111);
 #else //ENGLISH
-	your_info.notoriete=SDL_SwapLE16(stats[95]);
-	your_info.religion=SDL_SwapLE16(stats[96]);
-	your_info.niv_rel=SDL_SwapLE16(stats[97]);
-	your_info.race=SDL_SwapLE16(stats[98]);
+	your_info.notoriete=unpack_u16_le(stats + 95);
+	your_info.religion=unpack_u16_le(stats + 96);
+	your_info.niv_rel=unpack_u16_le(stats + 97);
+	your_info.race=unpack_u16_le(stats + 98);
 #endif //ENGLISH
-	your_info.research_completed=SDL_SwapLE16(stats[47]);
-	your_info.researching=SDL_SwapLE16(stats[81]);
-	your_info.research_total=SDL_SwapLE16(stats[82]);
+	your_info.research_completed=unpack_u16_le(stats + 47);
+	your_info.researching=unpack_u16_le(stats + 81);
+	your_info.research_total=unpack_u16_le(stats + 82);
 
 #ifdef FR_NEXUS
-    your_info.magie_nexus.cur=SDL_SwapLE16(stats[101]);
-	your_info.magie_nexus.base=SDL_SwapLE16(stats[102]);
+	your_info.magie_nexus.cur=unpack_u16_le(stats + 101);
+	your_info.magie_nexus.base=unpack_u16_le(stats + 102);
 
-	your_info.alchimie_nexus.cur=SDL_SwapLE16(stats[103]);
-	your_info.alchimie_nexus.base=SDL_SwapLE16(stats[104]);
+	your_info.alchimie_nexus.cur=unpack_u16_le(stats + 103);
+	your_info.alchimie_nexus.base=unpack_u16_le(stats + 104);
 #endif
 
 #ifdef FR_ATTRIBUTS_SECONDAIRE
-    your_info.might.base=SDL_SwapLE16( stats[105]);
-    your_info.might.cur = SDL_SwapLE16( stats[106] );
+	your_info.might.base=unpack_u16_le(stats + 105);
+	your_info.might.cur = unpack_u16_le(stats + 106);
 
-	your_info.matter.base=SDL_SwapLE16(stats[107]);
-    your_info.matter.cur=SDL_SwapLE16(stats[108]);
+	your_info.matter.base=unpack_u16_le(stats + 107);
+	your_info.matter.cur=unpack_u16_le(stats + 108);
 
-	your_info.tough.base=SDL_SwapLE16(stats[109]);
-    your_info.tough.cur=SDL_SwapLE16(stats[110]);
+	your_info.tough.base=unpack_u16_le(stats + 109);
+	your_info.tough.cur=unpack_u16_le(stats + 110);
 
-	your_info.charm.base=SDL_SwapLE16(stats[111]);
-    your_info.charm.cur=SDL_SwapLE16(stats[112]);
+	your_info.charm.base=unpack_u16_le(stats + 111);
+	your_info.charm.cur=unpack_u16_le(stats + 112);
 
-	your_info.react.base=SDL_SwapLE16(stats[113]);
-    your_info.react.cur=SDL_SwapLE16(stats[114]);
+	your_info.react.base=unpack_u16_le(stats + 113);
+	your_info.react.cur=unpack_u16_le(stats + 114);
 
-	your_info.perc.base=SDL_SwapLE16(stats[115]);
-    your_info.perc.cur=SDL_SwapLE16(stats[116]);
+	your_info.perc.base=unpack_u16_le(stats + 115);
+	your_info.perc.cur=unpack_u16_le(stats + 116);
 
-	your_info.ration.base=SDL_SwapLE16(stats[117]);
-    your_info.ration.cur=SDL_SwapLE16(stats[118]);
+	your_info.ration.base=unpack_u16_le(stats + 117);
+	your_info.ration.cur=unpack_u16_le(stats + 118);
 
-	your_info.dext.base=SDL_SwapLE16(stats[119]);
-    your_info.dext.cur=SDL_SwapLE16(stats[120]);
+	your_info.dext.base=unpack_u16_le(stats + 119);
+	your_info.dext.cur=unpack_u16_le(stats + 120);
 
-    your_info.eth.base=SDL_SwapLE16(stats[121]);
-    your_info.eth.cur=SDL_SwapLE16(stats[122]);
+	your_info.eth.base=unpack_u16_le(stats + 121);
+	your_info.eth.cur=unpack_u16_le(stats + 122);
 
 #endif
 
 #ifdef INGENIERIE
-	your_info.engineering_skill.cur=SDL_SwapLE16(stats[123]);
-	your_info.engineering_skill.base=SDL_SwapLE16(stats[124]);
-	your_info.engineering_exp=SDL_SwapLE32(*((Uint32 *)(stats+125)));
-	your_info.engineering_exp_next_lev=SDL_SwapLE32(*((Uint32 *)(stats+127)));
-	your_info.ingenierie_nexus.cur=SDL_SwapLE16(stats[129]);
-	your_info.ingenierie_nexus.base=SDL_SwapLE16(stats[130]);
+	your_info.engineering_skill.cur=unpack_u16_le(stats + 123);
+	your_info.engineering_skill.base=unpack_u16_le(stats + 124);
+	your_info.engineering_exp=unpack_u32_le(stats+125);
+	your_info.engineering_exp_next_lev=unpack_u32_le(stats+127);
+	your_info.ingenierie_nexus.cur=unpack_u16_le(stats + 129);
+	your_info.ingenierie_nexus.base=unpack_u16_le(stats + 130);
 #endif
 
     check_book_known();
@@ -279,8 +279,8 @@ void get_the_stats(Sint16 *stats)
             your_info.action_points.cur=0;
             your_info.action_points.base=0;
         } else {
-            your_info.action_points.cur=SDL_SwapLE16(stats[113]);
-            your_info.action_points.base=SDL_SwapLE16(stats[114]);
+			your_info.action_points.cur=unpack_u16_le(stats + 113);
+			your_info.action_points.base=unpack_u16_le(stats + 114);
         }
 #endif //ENGLISH
 
@@ -1802,7 +1802,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
         cut=message->active_time/4000.0f;
         f = ((float)(message->active_time-(cur_time-message->first_time)))/message->active_time;
         glColor4f(message->color[0], message->color[1], message->color[2], f > cut ? 1.0f : (f / cut));
-		width = (float)get_string_width((unsigned char*)message->message) * INGAME_FONT_X_LEN * name_zoom * 8.0;
+		width = (float)get_string_width((unsigned char*)message->message) * INGAME_FONT_X_LEN * name_text_size * 8.0;
 
         //Figure out where the point just above the actor's head is in the viewport
         glGetDoublev(GL_MODELVIEW_MATRIX, model);
@@ -1816,7 +1816,7 @@ void draw_floatingmessage(floating_message *message, float healthbar_z) {
         else
         {
 			gluProject(0.0, 0.0, healthbar_z * get_actor_scale(your_actor), model, proj, view, &x, &y, &z);
-			y += 50*name_zoom; // size of the actor name/bar
+			y += 50*name_text_size; // size of the actor name/bar
         }
 
 

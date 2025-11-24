@@ -62,10 +62,10 @@ int skybox_show_clouds = 1;
 int skybox_show_sun = 1;
 int skybox_show_moons = 1;
 int skybox_show_stars = 1;
-int skybox_show_horizon_fog = 0;
-float skybox_sunny_sky_bias = -0.3;
-float skybox_sunny_clouds_bias = -0.3;
-float skybox_sunny_fog_bias = -0.3;
+int horizon_fog = 0;
+float sunny_sky_bias = -0.3;
+float sunny_clouds_bias = -0.3;
+float sunny_fog_bias = -0.3;
 float skybox_moonlight1_bias = 0.92;
 float skybox_moonlight2_bias = 0.98;
 
@@ -592,7 +592,7 @@ static __inline__ float get_sky_sunlight(const GLfloat normal[3])
 {
 	GLfloat dot = normal[0]*sun_position[0]+normal[1]*sun_position[1]+normal[2]*sun_position[2];
     if (skybox_show_sun && !skybox_no_sun)
-        return (dot > skybox_sunny_sky_bias ? (dot-skybox_sunny_sky_bias)/(1.0-skybox_sunny_sky_bias) : 0.0);
+		return (dot > sunny_sky_bias ? (dot-sunny_sky_bias)/(1.0-sunny_sky_bias) : 0.0);
     else
         return 0.0;
 }
@@ -601,7 +601,7 @@ static __inline__ float get_clouds_sunlight(const GLfloat normal[3])
 {
 	GLfloat dot = normal[0]*sun_position[0]+normal[1]*sun_position[1]+normal[2]*sun_position[2];
     if (skybox_show_sun && !skybox_no_sun)
-        return (dot > skybox_sunny_clouds_bias ? (dot-skybox_sunny_clouds_bias)/(1.0-skybox_sunny_clouds_bias) : 0.0);
+		return (dot > sunny_clouds_bias ? (dot-sunny_clouds_bias)/(1.0-sunny_clouds_bias) : 0.0);
     else
         return 0.0;
 }
@@ -610,7 +610,7 @@ static __inline__ float get_fog_sunlight(const GLfloat normal[3])
 {
 	GLfloat dot = normal[0]*sun_position[0]+normal[1]*sun_position[1]+normal[2]*sun_position[2];
     if (skybox_show_sun && !skybox_no_sun)
-        return (dot > skybox_sunny_fog_bias ? (dot-skybox_sunny_fog_bias)/(1.0-skybox_sunny_fog_bias) : 0.0);
+		return (dot > sunny_fog_bias ? (dot-sunny_fog_bias)/(1.0-sunny_fog_bias) : 0.0);
     else
         return 0.0;
 }
@@ -1585,8 +1585,9 @@ void cloudy_sky()
 		glDisable(GL_LIGHT2);
 	case 1:
 		glDisable(GL_LIGHT1);
-	default:
+	case 0:
 		glDisable(GL_LIGHT0);
+	default:
 		break;
 	}
 
@@ -1603,7 +1604,7 @@ void cloudy_sky()
     glDisable(GL_DEPTH_TEST);
 
 	// we draw a ring to continue the sky a bit under the horizon
-    if (skybox_show_horizon_fog)
+	if (horizon_fog)
     {
         glBegin(GL_QUAD_STRIP);
         for (i = 0; i < dome_sky.slices_count; ++i)
@@ -1648,7 +1649,7 @@ void cloudy_sky()
 
 	glEnable(GL_BLEND);
 
-    if (skybox_show_horizon_fog)
+	if (horizon_fog)
     {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         draw_horizon_fog(rain_coef);
@@ -1935,8 +1936,9 @@ void cloudy_sky()
 			glEnable(GL_LIGHT2);
 		case 1:
 			glEnable(GL_LIGHT1);
-		default:
+		case 0:
 			glEnable(GL_LIGHT0);
+		default:
 			break;
 		}
 	}

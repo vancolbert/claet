@@ -140,7 +140,7 @@ namespace Trade_Log
 		if (their_stuff)
 			delete their_stuff;
 
-		std::string you = std::string(username_str);
+		std::string you = std::string(username);
 		your_stuff = new List(you.c_str(), yours, max_items);
 		their_stuff = new List(name, others, max_items);
 
@@ -181,7 +181,7 @@ namespace Trade_Log
 		if ((trade_log_mode == TRADE_LOG_CONSOLE) || (trade_log_mode == TRADE_LOG_BOTH))
 		{
 		std::string message_str =  message.str();
-		message_str.erase(std::find_if(message_str.rbegin(), message_str.rend(), std::not1(std::ptr_fun<int, int>(std::iscntrl))).base(), message_str.end());
+		message_str.erase(std::find_if(message_str.rbegin(), message_str.rend(), [](int c){return !iscntrl(c);}).base(), message_str.end());
 			LOG_TO_CONSOLE(c_green2, message_str.c_str()); // stripped of final newline
 		}
 
@@ -190,9 +190,9 @@ namespace Trade_Log
 		{
 			if (filename.empty())
 			{
-				std::string username = std::string(username_str);
-				std::transform(username.begin(), username.end(), username.begin(), tolower);
-				filename = std::string(get_path_config()) + "trade_" + username + ".log";
+				std::string un = std::string(username);
+				std::transform(un.begin(), un.end(), un.begin(), tolower);
+				filename = std::string(get_path_config()) + "trade_" + un + ".log";
 			}
 			std::ofstream out(filename.c_str(), std::ios_base::out | std::ios_base::binary | std::ios_base::app);
 			if (!out)

@@ -14,10 +14,11 @@
 int afk=0;
 int last_action_time=0;
 int afk_time=DEFAULT_AFK_MINUTES*60000;
-int afk_time_conf=DEFAULT_AFK_MINUTES; //For elconfig window
+int auto_afk_time=DEFAULT_AFK_MINUTES; //For elconfig window
 char afk_message[MAX_TEXT_MESSAGE_LENGTH]={0};
 char afk_title[101];
 int afk_local = 0;
+static Uint32 afk_when;
 
 struct pm_struct pm_log;
 
@@ -56,6 +57,7 @@ void go_afk()
 		}
 	afk++;
 	save_url_count();
+	afk_when = cur_time;
 }
 
 void go_ifk()
@@ -76,7 +78,7 @@ void check_afk_state(void)
 				go_afk();
 			}
 		}
-		else if(afk)
+		else if(afk && cur_time - afk_when > 10000)
 		{
 			go_ifk();
 		}
@@ -207,7 +209,7 @@ void add_message_to_pm_log (char *message, int len, Uint8 channel)
 
 	pm_log.afk_msgs[z].messages = realloc (pm_log.afk_msgs[z].messages, (pm_log.afk_msgs[z].msgs+1) * sizeof (char *));
 	// time name message
-	safe_snprintf (buf, sizeof(buf), "<%1d:%02d> %s: %.*s", real_game_minute/60, real_game_minute%60, last_msg_from, strlen(mymsg), mymsg);
+	safe_snprintf (buf, sizeof(buf), "<%1d:%02d> %s: %s", real_game_minute/60, real_game_minute%60, last_msg_from, mymsg);
 	pm_log.afk_msgs[z].messages[pm_log.afk_msgs[z].msgs] = calloc (strlen (buf) + 1, sizeof (char));
 	safe_strncpy (pm_log.afk_msgs[z].messages[pm_log.afk_msgs[z].msgs], buf, (strlen(buf) + 1) * sizeof(char));
 	pm_log.afk_msgs[z].msgs++;
@@ -217,12 +219,12 @@ void add_message_to_pm_log (char *message, int len, Uint8 channel)
 int my_namecmp(char *check)
 {
 	int i=0;
-	char username[32];
-	safe_strncpy(username, username_str, sizeof(username));
-	my_tolower(username);
+	char un[32];
+	safe_strncpy(un, username, sizeof(un));
+	my_tolower(un);
 
-	for(;i<20 && username[i] && check[i]==username[i];i++);
-	if(check[i]==username[i]||((check[i]==' '||!isalpha((unsigned char)check[i])) && !username[i])) return 0;
+	for(;i<20 && un[i] && check[i]==un[i];i++);
+	if(check[i]==un[i]||((check[i]==' '||!isalpha((unsigned char)check[i])) && !un[i])) return 0;
 	return 1;
 }
 

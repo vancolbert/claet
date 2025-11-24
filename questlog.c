@@ -46,7 +46,7 @@ void load_questlog()
 	char questlog_ini[2048];
 
 	// Utilisation d'un fichier nominatif de quetes
-	strcpy (temp, username_str);
+	strcpy (temp, username);
 	my_tolower(temp);
 
 #ifndef WINDOWS
@@ -159,7 +159,7 @@ void add_questlog(char *t, int len)
 		char questlog_ini[256];
 		char text[256];
 
-		strcpy (text, username_str);
+		strcpy (text, username);
 		my_tolower(text);
 
 #ifndef WINDOWS

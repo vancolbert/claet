@@ -660,7 +660,7 @@ extern "C" void ec_destroy_all_effects()
 		ec_idle();
 	}
 	if (!references.empty()) // unlikely to happen but just so we don't get stick on exit.
-		LOG_ERROR("%s: failed to clear up. references.size()=%lu", __PRETTY_FUNCTION__, references.size());
+		LOG_ERROR("%s: failed to clear up. references.size()=%d", __PRETTY_FUNCTION__, (int)references.size());
 	delete self_actor.obstruction;
 }
 

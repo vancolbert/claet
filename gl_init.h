@@ -20,12 +20,12 @@ extern int window_height; /*!< height of the window */
 
 extern int bpp; /*!< color depth to use */
 extern int video_mode; /*!< currently selected video mode */
-extern int video_user_width; /*!< userdefined window width */
-extern int video_user_height; /*!< userdefined window height */
+extern int video_width; /*!< userdefined window width */
+extern int video_height; /*!< userdefined window height */
 extern int disable_window_adjustment; /*<! Switch off window size adjustment for window borders, task bar and the like */
 extern int full_screen; /*!< flag that inidicates whether we are in fullscreen or windowed mode */
 extern int disable_gamma_adjust;
-extern float gamma_var; /*!< The current gamma value */
+extern float video_gamma; /*!< The current video_gamma value */
 extern float perspective; /*!< The perspective "angle". Higher values mean higher distortion. Default is 0.15f */
 /* near plane not used in FPV. FPV uses fixed near clipping plane of .2
  */

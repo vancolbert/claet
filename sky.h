@@ -3,13 +3,16 @@
 
 
 #include "lights.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern int skybox_show_sky;
 extern int skybox_show_clouds;
 extern int skybox_show_sun;
 extern int skybox_show_moons;
 extern int skybox_show_stars;
-extern int skybox_show_horizon_fog;
+extern int horizon_fog;
 
 // position of the sun (different from the light position!)
 extern float skybox_sun_position[4];
@@ -46,9 +49,9 @@ extern float skybox_fog_color[4];
 extern float skybox_fog_density;
 extern float skybox_light_ambient_color[4];
 extern float skybox_light_diffuse_color[4];
-extern float skybox_sunny_sky_bias;
-extern float skybox_sunny_clouds_bias;
-extern float skybox_sunny_fog_bias;
+extern float sunny_sky_bias;
+extern float sunny_clouds_bias;
+extern float sunny_fog_bias;
 
 typedef enum {
     SKYBOX_NONE = 0,
@@ -93,4 +96,7 @@ static __inline__ void skybox_blend_current_colors(float result[4], float orig_t
 	blend_colors(result, color1, color2, t, 4);
 }
 
+#ifdef __cplusplus
+}
+#endif
 #endif // __SKY_H__

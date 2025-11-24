@@ -640,7 +640,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<Text>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"Text")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"Text") && numpage >= 0){
 				_Text *T=(_Text*)malloc(sizeof(_Text));
 				_Text *t=&Page[numpage].T;
 				T->Next=NULL;
@@ -676,7 +676,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<Image>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"image")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"image") && numpage >= 0){
 				_Image *I=(_Image*)malloc(sizeof(_Image));
 				_Image *i=&Page[numpage].I;
 				xposupdate=1; yposupdate=1;
@@ -712,7 +712,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<sImage>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"simage")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"simage") && numpage >= 0){
 				_Image *I=(_Image*)malloc(sizeof(_Image));
 				_Image *i=&Page[numpage].I;
 				int picsperrow,xtile,ytile;
@@ -766,7 +766,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<ddsImage>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"ddsimage")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"ddsimage") && numpage >= 0){
 				_Image *I=(_Image*)malloc(sizeof(_Image));
 				_Image *i=&Page[numpage].I;
 				int picsperrow,xtile,ytile;
@@ -820,7 +820,7 @@ void ReadCategoryXML(xmlNode * a_node)
 			}
 
 			//<link>
-			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"link")){
+			if(!xmlStrcasecmp(cur_node->name,(xmlChar*)"link") && numpage >= 0){
 				_Text *T=(_Text*)malloc(sizeof(_Text));
 				_Text *t=&Page[numpage].T;
 				ParseLink(cur_node->properties);
@@ -840,7 +840,7 @@ void ReadCategoryXML(xmlNode * a_node)
 				save_raw_page_link(T->ref, T->text, numpage);
 			}
 			// See if this is the new maximum length.
-			if(Page[numpage].max_y < y)
+			if(numpage >= 0 && Page[numpage].max_y < y)
 			{
 				Page[numpage].max_y = y;
 			}
@@ -864,7 +864,7 @@ void ReadIndexXML(xmlNode * a_node)
 				num_category++;
 
 				//we load the category now
-				safe_snprintf(tmp,sizeof(tmp),"languages/%s/Encyclopedia/%s.xml",lang,cur_node->children->content);
+				safe_snprintf(tmp,sizeof(tmp),"languages/%s/Encyclopedia/%s.xml",language,cur_node->children->content);
 				doc=xmlReadFile(tmp, NULL, 0);
 				if (doc==NULL)
 					{
@@ -934,7 +934,7 @@ void ReloadEncyclopedia ()
 	 if(tab_help_win>0)
 		hide_window(tab_help_win);
      FreeXML();
-	 snprintf(temp, sizeof(temp), "languages/%s/Encyclopedia/index.xml",lang);
+	 snprintf(temp, sizeof(temp), "languages/%s/Encyclopedia/index.xml",language);
 	 ReadXML(temp);
 }
 #endif //ENGLISH
@@ -1063,22 +1063,26 @@ static void save_confirmed_page_link(const char *link, const char *title, size_t
 	//printf("[%s] [%s] %lu [%s]\n", title, link, (unsigned long)from_page_index, Page[from_page_index].Name);
 }
 
-
-/*	Free encyclopedia navigation memory before exit.
-*/
-static void encycl_nav_free(void)
-{
-	size_t i;
-	for (i=0; i<num_gen_titles; i++)
-		free(gen_titles[i]);
-	free(gen_titles);
-	free(page_links);
-	if (last_search != NULL)
+static void encycl_nav_free(void) {
+	if (gen_titles) {
+		for (int i = 0; i < num_gen_titles; ++i) {
+			free(gen_titles[i]);
+		}
+		free(gen_titles);
+		gen_titles = 0;
+	}
+	if (page_links) {
+		free(page_links);
+		page_links = 0;
+	}
+	if (last_search) {
 		free(last_search);
-	last_search = NULL;
-	if (raw_page_links != NULL)
+		last_search = 0;
+	}
+	if (raw_page_links) {
 		free(raw_page_links);
-	raw_page_links = NULL;
+		raw_page_links = 0;
+	}
 	max_gen_titles = num_gen_titles = max_page_links = num_page_links = 0;
 }
 

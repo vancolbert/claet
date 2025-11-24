@@ -152,7 +152,7 @@ int handle_knowledge_book()
 
 void check_book_known()
 {
-	static int last_checked_book = -1;
+	static Uint16 last_checked_book = -1;
 	if (your_info.researching != last_checked_book)
 	{
 		last_checked_book = your_info.researching;
@@ -305,6 +305,7 @@ int display_knowledge_handler(window_info *win)
         }
 		draw_string_zoomed(4, 2+saut_ligne*i, (unsigned char*)categories[i].nom, 1, 0.8);
     }
+	float max_name_x = win->len_x - x - 32;
 #else //FR_VERSION
 	int rx = win->len_x - 15;
 	int lx = win->len_x - 15 - (455-330);
@@ -335,7 +336,7 @@ int display_knowledge_handler(window_info *win)
 		research_string = knowledge_list[your_info.researching].name;
 #endif //FR_VERSION
 	}
-	else if (your_info.researching < sizeof(knowledge_list))
+	else if (your_info.researching < KNOWLEDGE_LIST_SIZE)
 	{
 		research_string = unknown_book_short_str;
 	}
@@ -394,7 +395,7 @@ int display_knowledge_handler(window_info *win)
 	draw_string_small(4,210,(unsigned char*)knowledge_string,4);
 	glColor3f(1.0f,1.0f,1.0f);
 	draw_string_small(10,320,(unsigned char*)researching_str,1);
-	draw_string_small(100,320,(unsigned char*)research_string,1);
+	draw_string_scaled(100,320,(unsigned char*)research_string,328,1,SMALL_FONT_X_LEN,SMALL_FONT_Y_LEN);
 	draw_string_small(480,320,(unsigned char*)points_string,1);
 #else //FR_VERSION
 	//progress bar
@@ -512,7 +513,7 @@ int display_knowledge_handler(window_info *win)
 #endif //FR_VERSION
 
 #ifdef FR_VERSION
-		draw_string_zoomed(x, y, (unsigned char*)liste_courante[i].name, 1, 0.7);
+		draw_string_zoomed_width(x, y, (unsigned char*)liste_courante[i].name, max_name_x, 1, 0.7);
         y += saut_ligne;
 #else //FR_VERSION
 		/* truncate the string if it is too long */
@@ -628,7 +629,7 @@ int click_knowledge_handler(window_info *win, int mx, int my, Uint32 flags)
 				for (i=0; i<nb_liste_courante; i++) liste_courante[i].click = 0;
 				liste_courante[idx].click = 1;
 				str[0] = GET_KNOWLEDGE_INFO;
-				*(Uint16 *)(str+1) = SDL_SwapLE16((short)liste_courante[idx].id);
+				pack_u16_le(str+1, liste_courante[idx].id);
 				my_tcp_send(my_socket, str, 3);
 			}
 		}
@@ -645,7 +646,7 @@ int click_knowledge_handler(window_info *win, int mx, int my, Uint32 flags)
 		if(idx < knowledge_count)
 			{
 				str[0] = GET_KNOWLEDGE_INFO;
-				*(Uint16 *)(str+1) = SDL_SwapLE16((short)idx);
+				pack_u16_le(str+1, idx);
 				my_tcp_send(my_socket,str,3);
 				// Check if we display the book image and label
 				knowledge_book_id = idx;

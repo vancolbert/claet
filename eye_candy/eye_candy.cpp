@@ -1545,7 +1545,7 @@ namespace ec
 		assert(pos.is_valid());
 #endif //TOO_MANY_SPELL_BUG_PATCH
 
-		const short offset = (short)long(&alpha); //Unique to the particle.
+		const short offset = (uintptr_t)&alpha; //Unique to the particle.
 
 		tmp = offset;
 
@@ -1656,6 +1656,9 @@ namespace ec
 
 	coord_t SmoothPolygonBoundingRange::get_radius(const angle_t angle) const
 	{
+		if (elements.size() < 1) {
+			return 0;
+		}
 		const float angle2 = (angle < 0 ? angle + 2 * PI : angle);
 		std::vector<SmoothPolygonElement>::const_iterator lower, upper;
 		lower = elements.begin() + (elements.size() - 1);
@@ -1669,10 +1672,6 @@ namespace ec
 			upper = elements.begin();
 		float upper_percent;
 
-#ifndef ENGLISH
-        //@TRINITA 2011 - Ajout d'un contrôle sur l'élément qu'on souhaite afficher.
-        if( elements.size() > 0 ) {
-#endif
 		if (upper->angle > lower->angle)
 			upper_percent = (angle2 - lower->angle) / (upper->angle
 				- lower->angle);
@@ -1684,13 +1683,6 @@ namespace ec
 				+ 2 * PI - lower->angle);
 		return upper_percent * upper->radius + (1.0 - upper_percent)
 			* lower->radius;
-
-#ifndef ENGLISH
-        } else {
-            return 0;
-        }
-#endif
-
 	}
 
 	BoundingMover::BoundingMover(Effect* _effect, const Vec3 _center_pos,
@@ -2465,7 +2457,7 @@ namespace ec
 		/* Fog hurts blending with 5 color blending
 		 * (red, green, blue, alpha and burn)
 		 */
-		if (use_fog)
+		if (render_fog)
 		{
 			glDisable(GL_FOG);
 		}
@@ -2511,7 +2503,7 @@ namespace ec
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 #ifndef MAP_EDITOR
-		if (use_fog)
+		if (render_fog)
 		{
 			glEnable(GL_FOG);
 		}

@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 #define KNOWLEDGE_LIST_SIZE 1024 /*!< maximum size of the \ref knowledge_list */
-#define KNOWLEDGE_NAME_SIZE 40 /*!< maximum size (including termination) of each \ref knowledge_list name string */
+#define KNOWLEDGE_NAME_SIZE 80 /*!< maximum size (including termination) of each \ref knowledge_list name string */
 
 /*!
  * knowledge structure

@@ -959,76 +959,39 @@ void destroy_e3d(e3d_object *e3d_id)
 }
 
 // for support of the 1.0.3 server, change if an object is to be displayed or not
-void set_3d_object (Uint8 display, const void *ptr, int len)
-{
-	const Uint32 *id_ptr = ptr;
-
-	// first look for the override to process ALL objects
-	if (len < sizeof(*id_ptr))
-	{
-		int i;
-		for (i = 0; i < next_obj_3d; i++)
-		{
-			if (objects_list[i])
+void set_3d_object (Uint8 display, const void *data, int len) {
+	if (len < 4) {
+		for (int i = 0; i < next_obj_3d; i++) {
+			if (objects_list[i]) {
 				objects_list[i]->display = display;
 			}
 		}
-	else
-	{
-		int idx = 0;
-		while (len >= sizeof(*id_ptr))
-		{
-			int obj_id = SDL_SwapLE32(id_ptr[idx]);
-			if (obj_id < next_obj_3d && objects_list[obj_id])
-			{
+	} else {
+		const Uint8 *p = (const Uint8 *)data;
+		for (; len >= 4; len -= 4, p += 4) {
+			Uint32 obj_id = unpack_u32_le(p);
+			if (obj_id < next_obj_3d && objects_list[obj_id]) {
 				objects_list[obj_id]->display = display;
-#ifdef ENGLISH
-				idx++;
-				len -= sizeof (*id_ptr);
-#endif //ENGLISH
 			}
-#ifndef ENGLISH
-	    	idx++;
-			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }
 
 // for future expansion
-void state_3d_object (Uint8 state, const void *ptr, int len)
-{
-	const Uint32 *id_ptr = ptr;
-
-	// first look for the override to process ALL objects
-	if (len < sizeof(*id_ptr))
-	{
-		int i;
-		for (i = 0; i < next_obj_3d; i++)
-		{
-			if (objects_list[i])
-				objects_list[i]->state= state;
+void state_3d_object (Uint8 state, const void *data, int len) {
+	if (len < 4) {
+		for (int i = 0; i < next_obj_3d; i++) {
+			if (objects_list[i]) {
+				objects_list[i]->state = state;
 			}
 		}
-	else
-	{
-		int idx = 0;
-
-		while (len >= sizeof(*id_ptr))
-		{
-			int obj_id = SDL_SwapLE32(id_ptr[idx]);
-			if (obj_id < next_obj_3d && objects_list[obj_id])
-			{
+	} else {
+		const Uint8 *p = (const Uint8 *)data;
+		for (; len >= 4; len -= 4, p += 4) {
+			Uint32 obj_id = unpack_u32_le(p);
+			if (obj_id < next_obj_3d && objects_list[obj_id]) {
 				objects_list[obj_id]->state = state;
-#ifdef ENGLISH
-				idx++;
-				len -= sizeof (*id_ptr);
-#endif //ENGLISH
 			}
-#ifndef ENGLISH
-	    	idx++;
-			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }

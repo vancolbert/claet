@@ -212,7 +212,7 @@ static void save_recipe_names(void)
 	if (!recipe_names_changed)
 		return;
 
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username);
 	my_tolower(fname);
 	fp = open_file_config(fname,"w");
 	if(fp == NULL)
@@ -266,7 +266,7 @@ static void load_recipe_names(void)
 
 	recipe_names_changed = 0;
 
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.names",username);
 	my_tolower(fname);
 
 	/* sliently ignore non existing file */
@@ -520,7 +520,7 @@ void load_recipes (){
 #endif //ENGLISH
 
 #ifdef ENGLISH
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username);
 	my_tolower(fname);
 
 	/* get file length, if a valid length adjust the number of recipe slots if required */
@@ -559,7 +559,7 @@ void load_recipes (){
 		return;
 	}
 #else //ENGLISH
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username);
 	my_tolower(fname);
 #endif //ENGLISH
 
@@ -629,7 +629,7 @@ void save_recipes(){
 
 	save_recipe_names();
 
-	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "recipes_%s.dat",username);
 	my_tolower(fname);
 #ifndef ENGLISH
 	// si le fichier n'a pas été lu, alors il ne faut pas l'écraser !
@@ -1091,7 +1091,7 @@ static int	display_manufacture_handler(window_info *win)
 	 */
 	if (recipes_shown)
 	{
-		if ((cur_recipe < SHOW_MAX_RECIPE) && (recipe_name[cur_recipe] != NULL))
+		if (cur_recipe >= 0 && cur_recipe < SHOW_MAX_RECIPE && recipe_name[cur_recipe] != NULL)
 		{
 			i = cur_recipe*33 - get_window_scroll_pos(recipe_win);
 			if (i>=0) show_help(recipe_name[cur_recipe], 33*6+30, win->len_y + i + (33-SMALL_FONT_Y_LEN)/2);
@@ -1259,6 +1259,7 @@ static int keypress_recipe_handler(window_info *win, int mx, int my, Uint32 key,
 	if (keychar == SDLK_ESCAPE)
 	{
 		clear_recipe_filter();
+		item_lists_cancel();
 		return 1;
 	}
 	if (string_input(recipe_name_filter, sizeof(recipe_name_filter), keychar) || (keychar == SDLK_RETURN))
@@ -1930,7 +1931,7 @@ int mix_handler(Uint8 quantity, const char* empty_error_str)
 	for(i=MIX_SLOT_OFFSET;i<MIX_SLOT_OFFSET+NUM_MIX_SLOTS;i++){
 		if(manufacture_list[i].quantity > 0){
 			str[items_no*3+2]=manufacture_list[i].pos;
-			*((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(manufacture_list[i].quantity);
+			pack_u16_le(str+items_no*3+2+1, manufacture_list[i].quantity);
 			items_no++;
 		}
 	}
@@ -1940,7 +1941,7 @@ int mix_handler(Uint8 quantity, const char* empty_error_str)
 		if ((cur_valids[i-ITEM_WEAR_START]) && (manufacture_list[i].pos >= 0))
 		{
 			str[items_no*3+2] = manufacture_list[i].pos;
-			*((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(manufacture_list[i].quantity);
+			pack_u16_le(str+items_no*3+2+1, manufacture_list[i].quantity);
 			items_no++;
 		}
 		else

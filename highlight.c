@@ -97,7 +97,7 @@ void display_highlight_marker(const highlight_marker *marker) {
 
 	switch (marker->type) {
 		case HIGHLIGHT_TYPE_WALKING_DESTINATION:
-			glColor4f(0.0f, 1.0f, 0.0f, a);
+			glColor4fv((GLfloat []){0.f,1.f,0.f,a,0.78f,0.28f,0.f,a} + 4*!get_tile_walkable(marker->x, marker->y));
 			break;
 		case HIGHLIGHT_TYPE_SPELL_TARGET:
 			glColor4f(0.0f, 0.0f, 1.0f, a);

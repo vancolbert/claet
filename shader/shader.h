@@ -3,6 +3,9 @@
 
 #include <SDL_types.h>
 #include "../platform.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum
 {
@@ -33,4 +36,7 @@ GLhandleARB get_shader(shader_type type, shader_shadow_type shadow_type, shader_
 
 void free_shaders();
 
+#ifdef __cplusplus
+}
+#endif
 #endif	// _SHADER_H_

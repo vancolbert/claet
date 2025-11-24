@@ -2,7 +2,7 @@
 	Provide item description and emu lookup from a data file.
 
 	Using the file from http://el.other-life.com/downloads/item_info.txt
-	The file should be stored in the datadir or updates directory and is
+	The file should be stored in the data_dir or updates directory and is
 	read when first needed.
 
 	Functions provide descriptions and emu for items based on their image
@@ -72,8 +72,8 @@ namespace Item_Info
 		emu = atoi(fields[2].c_str());
 		description = fields[3];
 		// thanks http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-		description.erase(description.begin(), std::find_if(description.begin(), description.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-		description.erase(std::find_if(description.rbegin(), description.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), description.end());
+		description.erase(description.begin(), std::find_if(description.begin(), description.end(), [](int c){return !isspace(c);}));
+		description.erase(std::find_if(description.rbegin(), description.rend(), [](int c){return !isspace(c);}).base(), description.end());
 		if (description.empty())
 			return;
 		valid = true;
@@ -229,7 +229,7 @@ namespace Item_Info
 		in.open(fname.c_str());
 		if (!in)
 		{
-			fname = std::string(datadir) + std::string("item_info.txt");
+			fname = std::string(data_dir) + std::string("item_info.txt");
 			in.clear();
 			in.open(fname.c_str());
 			if (!in)

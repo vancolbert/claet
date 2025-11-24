@@ -300,7 +300,7 @@ static int save_notes_button_id = -1;
 static int note_button_scroll_id = -1;
 
 int notepad_loaded = 0;
-float note_zoom = 0.8f;
+float note_text_size = 0.8f;
 static int note_widget_id = 0;
 static INPUT_POPUP popup_str;
 
@@ -554,7 +554,7 @@ int notepad_save_file()
 	{
 #ifndef WINDOWS
 		// error writing. try the data directory
-		safe_snprintf (file, sizeof (file), "%s/%s", datadir, "notes.xml");
+		safe_snprintf (file, sizeof (file), "%s/%s", data_dir, "notes.xml");
 		if (xmlSaveFormatFileEnc(file, doc, "UTF-8", 1) < 0)
 		{
 			LOG_ERROR(cant_save_notes, file);
@@ -652,9 +652,9 @@ static void open_note_tab_continued(int id)
 
 	// input text field
 #ifdef FR_VERSION
-	note_list[id].input = text_field_add_extended (note_list[id].window, note_widget_id++, NULL, tf_x, tf_y, tf_width, tf_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_CAN_GROW|TEXT_FIELD_SCROLLBAR, note_zoom, 0, 0.77f, 0.57f, 0.39f, &note_list[id].text, 1, FILTER_ALL, 5, 5);
+	note_list[id].input = text_field_add_extended (note_list[id].window, note_widget_id++, NULL, tf_x, tf_y, tf_width, tf_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_CAN_GROW|TEXT_FIELD_SCROLLBAR, note_text_size, 0, 0.77f, 0.57f, 0.39f, &note_list[id].text, 1, FILTER_ALL, 5, 5);
 #else //FR_VERSION
-	note_list[id].input = text_field_add_extended(note_list[id].window, note_widget_id++, NULL, tf_x, tf_y, tf_width, tf_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_CAN_GROW|TEXT_FIELD_SCROLLBAR, note_zoom, 0.77f, 0.57f, 0.39f, &note_list[id].text, 1, FILTER_ALL, 5, 5);
+	note_list[id].input = text_field_add_extended(note_list[id].window, note_widget_id++, NULL, tf_x, tf_y, tf_width, tf_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_CAN_GROW|TEXT_FIELD_SCROLLBAR, note_text_size, 0.77f, 0.57f, 0.39f, &note_list[id].text, 1, FILTER_ALL, 5, 5);
 #endif //FR_VERSION
 
 	// remove button
@@ -864,10 +864,10 @@ void notepad_win_update_zoom()
 
 	for (i = 0; i < nr_notes; i++)
 #ifdef ENGLISH
-		widget_set_size (notepad_win, note_list[i].input, note_zoom);
+		widget_set_size (notepad_win, note_list[i].input, note_text_size);
 #else
 		//@tosh : il faut bien appliquer le zoom sur chaque fenêtre de la note_list :)
-		widget_set_size (note_list[i].window, note_list[i].input, note_zoom);
+		widget_set_size (note_list[i].window, note_list[i].input, note_text_size);
 #endif
 }
 

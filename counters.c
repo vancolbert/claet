@@ -267,15 +267,15 @@ void sort_counter(int counter_id)
 
 FILE *open_counters_file(char *mode)
 {
-   char filename[256], username[16];
+   char filename[256], un[16];
    int i;
 
-   safe_strncpy(username, username_str, sizeof(username));
-   for (i = 0; username[i]; i++) {
-      username[i] = tolower(username[i]);
+   safe_strncpy(un, username, sizeof(un));
+   for (i = 0; un[i]; i++) {
+	  un[i] = tolower(un[i]);
    }
 
-   safe_snprintf(filename, sizeof(filename), "counters_%s.dat", username);
+   safe_snprintf(filename, sizeof(filename), "counters_%s.dat", un);
 
 	LOG_DEBUG("Open counters file '%s'", filename);
 
@@ -319,9 +319,9 @@ void load_counters()
    search_len = malloc (sizeof (size_t) * num_search_str);
    for (i=0; i<num_search_str; i++)
    {
-      size_t max_len = strlen (username_str) + strlen (temp_event_string[i]) + 1;
+	  size_t max_len = strlen (username) + strlen (temp_event_string[i]) + 1;
       search_str[i] = malloc (max_len);
-      safe_snprintf (search_str[i], max_len, temp_event_string[i], username_str);
+	  safe_snprintf (search_str[i], max_len, temp_event_string[i], username);
       search_len[i] = strlen (search_str[i]);
    }
 
@@ -720,7 +720,7 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
 				{
 					floating_counter_flags |= 1 << flagbit;
 					if (!floating_session_counters)
-						toggle_OPT_BOOL_by_name("floating_session_counters");
+						toggle_bool_var("floating_session_counters");
 				}
 				else
 					floating_counter_flags &= ~(1 << flagbit);
@@ -930,6 +930,10 @@ int display_counters_handler(window_info *win)
 			elglColourN("global.mouseselected");
 		else if (mouse_over_this_entry)
 			elglColourN("global.mousehighlight");
+		else if (counters[i][j].n_fullsession)
+			elglColourN("global.row.nonzero");
+		else if (j & 1)
+			elglColourN("global.row.odd");
 		else
          glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -1459,11 +1463,11 @@ void increment_summon_manu_counter()
 
 void increment_summon_counter(char *string)
 {
-   if (strncmp(string, username_str, strlen(username_str))) {
+   if (strncmp(string, username, strlen(username))) {
       return;
    }
 
-   string += strlen(username_str);
+   string += strlen(username);
 
 #ifdef ENGLISH
    if (strncmp(string, " summoned a ", 12)) {

@@ -30,13 +30,13 @@ extern float camera_tilt_deceleration;
 //Move comments here if desired.
 extern float camera_kludge; /*!< Holds character's y rotation to allow camera to follow character  */
 extern float last_kludge;
-extern int fol_cam;
+extern int follow_cam;
 extern int fol_cam_behind;
-extern float fol_con;
-extern float fol_lin;
-extern float fol_quad;
-extern float fol_strn;
-extern int ext_cam;
+extern float const_speed;
+extern float lin_speed;
+extern float quad_speed;
+extern float follow_strength;
+extern int extended_cam;
 extern int ext_cam_auto_zoom;
 extern float min_tilt_angle;
 extern float max_tilt_angle;
@@ -130,6 +130,9 @@ void CalculateFrustum();
  */
 int update_have_display(window_info *win);
 
+extern int use_mapcam;
+void stash_mapcam(void);
+void restore_mapcam(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif

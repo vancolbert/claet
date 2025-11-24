@@ -174,7 +174,7 @@ int Hud_Timer::cm_handler(window_info *win, int option)
 		case CMHT_RESET: reset(); break;
 		case CMHT_HELP:
 			{
-				const char *desc = get_option_description("view_hud_timer", INI_FILE_VAR);
+				const char *desc = get_option_description("view_hud_timer", VNK_INI);
 				if (desc && (strlen(desc) > 0))
 					LOG_TO_CONSOLE(c_green1, desc);
 			}

@@ -143,59 +143,12 @@
 
 #ifdef __GNUC__
 #define UNUSED(x) x __attribute__((unused))
+#define CHECK_PRINTF(n) __attribute__((format(printf, n, n+1)))
 #else
 #define UNUSED(x) x
+#define CHECK_PRINTF(n)
 #endif // __GNUC__
 
-#ifdef EL_BIG_ENDIAN
- #define SwapLEFloat(X) SwapFloat(X)
-#else
- #define SwapLEFloat(X) (X)
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef X86_64
-typedef long int point;
-#else
-typedef int point;
-#endif
-
-/*!
- * \ingroup platform
- * \brief Swaps a float properly
- *
- *      Swaps the bytes of the given float \a t
- *
- * \param t         the float to swap
- * \retval float    the swapped float
- */
 #include <SDL_endian.h>
-static __inline__ float SwapFloat (float t)
-{
-	union
-	{
-		float f;
-		Uint32 i;
-	} intOrFloat;
-
-	intOrFloat.f = t;
-	intOrFloat.i = SDL_Swap32 (intOrFloat.i);
-	return intOrFloat.f;
-}
-
-#ifdef _MSC_VER
-#include <math.h>
-static __inline__ double trunc(const double d)
-{
-    return (d < 0 ? ceil(d) : floor(d));
-}
-#endif
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
 
 #endif // PLATFORM_H

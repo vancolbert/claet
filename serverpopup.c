@@ -41,7 +41,7 @@ may be do:
 
 /* these are visible externally and exported in the header file */
 int server_pop_chan = CHAT_POPUP;
-int use_server_pop_win = 1;
+int serverpopup = 1;
 
 /* these are visible only to this code module but are needed by handlers for example */
 static const int sep = 5;
@@ -178,7 +178,7 @@ static int get_height(int num_lines)
 	}
 	retvalue = 2 * sep + button_widget->len_y;
 	if (num_lines > 0){
-		retvalue += 3*sep + num_lines * DEFAULT_FONT_Y_LEN * chat_zoom;
+		retvalue += 3*sep + num_lines * DEFAULT_FONT_Y_LEN * chat_text_size;
 	}
 	return retvalue;
 }
@@ -223,7 +223,7 @@ static int resize_handler(window_info *win, int width, int height)
 	actual_scroll_width = 0;
 
 	/* only add a scroll bar if needed, i.e. more lines than we can display */
-	if (text_widget_height < (2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_zoom)){
+	if (text_widget_height < (2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_text_size)){
 		actual_scroll_width = scroll_width;
 	}
 
@@ -234,15 +234,15 @@ static int resize_handler(window_info *win, int width, int height)
 	widget_resize(server_popup_win, textId, text_widget_width, text_widget_height);
 	if (!text_message_is_empty (&widget_text)) {
 #ifdef FR_VERSION
-		num_text_lines = rewrap_message(&widget_text, chat_zoom, chat_font, text_widget_width - 2*sep, NULL);
+		num_text_lines = rewrap_message(&widget_text, chat_text_size, chat_font, text_widget_width - 2*sep, NULL);
 #else //FR_VERSION
-		num_text_lines = rewrap_message(&widget_text, chat_zoom, text_widget_width - 2*sep, NULL);
+		num_text_lines = rewrap_message(&widget_text, chat_text_size, text_widget_width - 2*sep, NULL);
 #endif //FR_VERSION
 	}
 
 	/* if we (only now) need a scroll bar, adjust again */
 	if (!actual_scroll_width &&
-		(text_widget_height < (2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_zoom)))
+		(text_widget_height < (2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_text_size)))
 	{
 		actual_scroll_width = scroll_width;
 		text_widget_width = width - (2*sep + actual_scroll_width);
@@ -250,9 +250,9 @@ static int resize_handler(window_info *win, int width, int height)
 		/* rewrap the text again as the available width is now less */
 		if (!text_message_is_empty (&widget_text))
 #ifdef FR_VERSION
-			num_text_lines = rewrap_message(&widget_text, chat_zoom, chat_font, text_widget_width - 2*sep, NULL);
+			num_text_lines = rewrap_message(&widget_text, chat_text_size, chat_font, text_widget_width - 2*sep, NULL);
 #else //FR_VERSION
-			num_text_lines = rewrap_message(&widget_text, chat_zoom, text_widget_width - 2*sep, NULL);
+			num_text_lines = rewrap_message(&widget_text, chat_text_size, text_widget_width - 2*sep, NULL);
 #endif //FR_VERSION
 	}
 
@@ -270,7 +270,7 @@ static int resize_handler(window_info *win, int width, int height)
 #ifdef FR_VERSION
 		scroll_id = vscrollbar_add_extended( server_popup_win, scroll_id, NULL,
 		width - (scroll_width + sep), sep, scroll_width, text_widget_height,
-		0, (text_widget_height - 2*sep) / (DEFAULT_FONT_Y_LEN * chat_zoom),
+		0, (text_widget_height - 2*sep) / (DEFAULT_FONT_Y_LEN * chat_text_size),
 		0.77f, 0.57f, 0.39f, scroll_line, 1, num_text_lines);
 #else //FR_VERSION
 		scroll_id = vscrollbar_add_extended( server_popup_win, scroll_id, NULL,
@@ -353,9 +353,9 @@ void display_server_popup_win(const char * const message)
 		 this will avoid the later wrap (after the resize) changing the number of lines */
 	if (!text_message_is_empty (&widget_text)) {
 #ifdef FR_VERSION
-		num_text_lines = rewrap_message(&widget_text, chat_zoom, chat_font, (window_width - unusable_width) - 4*sep, NULL);
+		num_text_lines = rewrap_message(&widget_text, chat_text_size, chat_font, (window_width - unusable_width) - 4*sep, NULL);
 #else //FR_VERSION
-		num_text_lines = rewrap_message(&widget_text, chat_zoom, (window_width - unusable_width) - 4*sep, NULL);
+		num_text_lines = rewrap_message(&widget_text, chat_text_size, (window_width - unusable_width) - 4*sep, NULL);
 #endif //FR_VERSION
 	}
 
@@ -369,7 +369,7 @@ void display_server_popup_win(const char * const message)
 
 	/* create the OK button, setup its click handler and get its structure */
 	buttonId = button_add_extended (server_popup_win, buttonId, NULL, 0,
-		 0, 0, 0, 0, chat_zoom, 0.77f, 0.57f, 0.39f, "OK");
+		 0, 0, 0, 0, chat_text_size, 0.77f, 0.57f, 0.39f, "OK");
 	widget_set_OnClick(server_popup_win, buttonId, close_handler);
 	}
 
@@ -379,7 +379,7 @@ void display_server_popup_win(const char * const message)
 	winHeight = 2*sep + button_widget->len_y;
 	if (!text_message_is_empty (&widget_text))
 	{
-		text_widget_height = 1 + 2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_zoom;
+		text_widget_height = 1 + 2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_text_size;
 		winHeight = text_widget_height + 3*sep + button_widget->len_y;
 	}
 
@@ -402,7 +402,7 @@ void display_server_popup_win(const char * const message)
 	}
 
 	/* if we'll need a scroll bar allow for it in the width calulation */
-	if (!text_message_is_empty (&widget_text) && (text_widget_height < (2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_zoom))){
+	if (!text_message_is_empty (&widget_text) && (text_widget_height < (2*sep + num_text_lines * DEFAULT_FONT_Y_LEN * chat_text_size))){
 		actual_scroll_width = scroll_width;
 	}
 
@@ -436,11 +436,11 @@ void display_server_popup_win(const char * const message)
 #ifdef FR_VERSION
 		textId = text_field_add_extended( server_popup_win, textId, NULL, sep, sep,
 			text_widget_width, text_widget_height, TEXT_FIELD_NO_KEYPRESS,
-			chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &widget_text, 1, FILTER_NONE, sep, sep);
+			chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, &widget_text, 1, FILTER_NONE, sep, sep);
 #else //FR_VERSION
 		textId = text_field_add_extended( server_popup_win, textId, NULL, sep, sep,
 			text_widget_width, text_widget_height, TEXT_FIELD_NO_KEYPRESS,
-			chat_zoom, 0.77f, 0.57f, 0.39f, &widget_text, 1, FILTER_NONE, sep, sep);
+			chat_text_size, 0.77f, 0.57f, 0.39f, &widget_text, 1, FILTER_NONE, sep, sep);
 #endif //FR_VERSION
 	}
 

@@ -6,15 +6,61 @@
 #ifndef __MISC_H__
 #define __MISC_H__
 
-#include <SDL_endian.h>
 #include "platform.h"
 #include <zlib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+typedef const char *cstr;
+#define countof(a) (sizeof(a)/sizeof(*a))
 
 #define BUTTONRADIUS 15
+
+static __inline__ float SwapFloat(float t) {
+	union { float f; Uint32 i; } u = {t};
+	u.i = SDL_Swap32(u.i);
+	return u.f;
+}
+#ifdef EL_BIG_ENDIAN
+#define SwapLEFloat(X) SwapFloat(X)
+#else
+#define SwapLEFloat(X) (X)
+#endif
+static __inline__ Uint16 unpack_u16_le(const void *p) {
+	const Uint8 *u = (const Uint8 *)p;
+	Uint16 a = u[0], b = u[1];
+	return a | b<<8;
+}
+static __inline__ Uint32 unpack_u32_le(const void *p) {
+	const Uint8 *u = (const Uint8 *)p;
+	Uint32 a = u[0], b = u[1], c = u[2], d = u[3];
+	return a | b<<8 | c<<16 | d<<24;
+}
+static __inline__ float unpack_f32_le(const void *p) {
+	float t;
+	memcpy(&t, p, sizeof(t));
+	return SwapLEFloat(t);
+}
+static __inline__ void pack_u16_le(void *p, Uint16 v) {
+	Uint8 *o = (Uint8 *)p;
+	o[0] = v;
+	o[1] = v >> 8;
+}
+static __inline__ void pack_u32_le(void *p, Uint32 v) {
+	Uint8 *o = (Uint8 *)p;
+	o[0] = v;
+	o[1] = v >> 8;
+	o[2] = v >> 16;
+	o[3] = v >> 24;
+}
+#ifdef _MSC_VER
+#include <math.h>
+static __inline__ double trunc(const double d)
+{
+	return (d < 0 ? ceil(d) : floor(d));
+}
+#endif
 
 /*!
  * \ingroup misc
@@ -286,7 +332,7 @@ static __inline__ float max2f (float x, float y)
 	return (x >= y)? x : y;
 }
 
-static __inline float max3f (float x, float y, float z)
+static __inline__ float max3f (float x, float y, float z)
 {
 	return max2f(x, max2f(y, z));
 }
@@ -310,7 +356,7 @@ static __inline__ float clampf(float x, float l, float u)
 
 void init_reflection_portals(int size);
 
-extern Uint32 use_new_selection;
+extern int use_new_selection;
 
 #ifdef __cplusplus
 } // extern "C"

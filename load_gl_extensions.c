@@ -1158,7 +1158,7 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_multitexture();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_multitexture;
+			extensions |= 1ull << arb_multitexture;
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &texture_units);
 		}
 	}
@@ -1170,7 +1170,7 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_texture_compression();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_texture_compression;
+			extensions |= 1ull << arb_texture_compression;
 		}
 	}
 /*	GL_ARB_texture_compression		*/
@@ -1180,14 +1180,14 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_point_parameters();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_point_parameters;
+			extensions |= 1ull << arb_point_parameters;
 		}
 	}
 /*	GL_ARB_point_parameters			*/
 /*	GL_ARB_point_sprite			*/
 	if (strstr(extensions_string, "GL_ARB_point_sprite") != NULL)
 	{
-		extensions |= 1 << arb_point_sprite;
+		extensions |= 1ull << arb_point_sprite;
 	}
 /*	GL_ARB_point_sprite			*/
 /*	GL_ARB_vertex_buffer_object		*/
@@ -1196,32 +1196,32 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_vertex_buffer_object();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_vertex_buffer_object;
+			extensions |= 1ull << arb_vertex_buffer_object;
 		}
 	}
 /*	GL_ARB_vertex_buffer_object		*/
 /*	GL_ARB_shadow				*/
 	if (strstr(extensions_string, "GL_ARB_shadow") != NULL)
 	{
-		extensions |= 1 << arb_shadow;
+		extensions |= 1ull << arb_shadow;
 	}
 /*	GL_ARB_shadow				*/
 /*	GL_ARB_texture_env_combine		*/
 	if (strstr(extensions_string, "GL_ARB_texture_env_combine") != NULL)
 	{
-		extensions |= 1 << arb_texture_env_combine;
+		extensions |= 1ull << arb_texture_env_combine;
 	}
 /*	GL_ARB_texture_env_combine		*/
 /*	GL_ARB_texture_env_crossbar		*/
 	if (strstr(extensions_string, "GL_ARB_texture_env_crossbar") != NULL)
 	{
-		extensions |= 1 << arb_texture_env_crossbar;
+		extensions |= 1ull << arb_texture_env_crossbar;
 	}
 /*	GL_ARB_texture_env_crossbar		*/
 /*	GL_ARB_texture_env_dot3			*/
 	if (strstr(extensions_string, "GL_ARB_texture_env_dot3") != NULL)
 	{
-		extensions |= 1 << arb_texture_env_dot3;
+		extensions |= 1ull << arb_texture_env_dot3;
 	}
 /*	GL_ARB_texture_env_dot3			*/
 /*	GL_ARB_occlusion_query			*/
@@ -1230,20 +1230,20 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_occlusion_query();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_occlusion_query;
+			extensions |= 1ull << arb_occlusion_query;
 		}
 	}
 /*	GL_ARB_occlusion_query			*/
 /*	GL_ARB_depth_texture			*/
 	if (strstr(extensions_string, "GL_ARB_depth_texture") != NULL)
 	{
-		extensions |= 1 << arb_depth_texture;
+		extensions |= 1ull << arb_depth_texture;
 	}
 /*	GL_ARB_depth_texture			*/
 /*	GL_ARB_fragment_program			*/
 	if (strstr(extensions_string, "GL_ARB_fragment_program") != NULL)
 	{
-		extensions |= 1 << arb_fragment_program;
+		extensions |= 1ull << arb_fragment_program;
 	}
 /*	GL_ARB_fragment_program			*/
 /*	GL_ARB_vertex_program			*/
@@ -1252,14 +1252,14 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_vertex_program();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_vertex_program;
+			extensions |= 1ull << arb_vertex_program;
 		}
 	}
 /*	GL_ARB_vertex_program			*/
 /*	GL_ARB_fragment_shader			*/
 	if (strstr(extensions_string, "GL_ARB_fragment_shader") != NULL)
 	{
-		extensions |= 1 << arb_fragment_shader;
+		extensions |= 1ull << arb_fragment_shader;
 	}
 /*	GL_ARB_fragment_shader			*/
 /*	GL_ARB_vertex_shader			*/
@@ -1268,7 +1268,7 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_vertex_shader();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_vertex_shader;
+			extensions |= 1ull << arb_vertex_shader;
 		}
 	}
 /*	GL_ARB_vertex_shader			*/
@@ -1278,19 +1278,19 @@ void init_opengl_extensions()
 		e = el_init_GL_ARB_shader_objects();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << arb_shader_objects;
+			extensions |= 1ull << arb_shader_objects;
 		}
 	}
 /*	GL_ARB_shader_objects			*/
 /*	GL_ARB_shading_language_100		*/
 	if (strstr(extensions_string, "GL_ARB_shading_language_100") != NULL)
 	{
-		extensions |= 1 << arb_shading_language_100;
+		extensions |= 1ull << arb_shading_language_100;
 	}
 /*	GL_ARB_shading_language_100		*/
 	if (strstr(extensions_string, "GL_ARB_texture_non_power_of_two") != NULL)
 	{
-		extensions |= 1 << arb_texture_non_power_of_two;
+		extensions |= 1ull << arb_texture_non_power_of_two;
 	}
 /*	GL_EXT_compiled_vertex_array		*/
 	if (strstr(extensions_string, "GL_EXT_compiled_vertex_array") != NULL)
@@ -1298,7 +1298,7 @@ void init_opengl_extensions()
 		e = el_init_GL_EXT_compiled_vertex_array();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << ext_compiled_vertex_array;
+			extensions |= 1ull << ext_compiled_vertex_array;
 		}
 	}
 /*	GL_EXT_compiled_vertex_array		*/
@@ -1308,7 +1308,7 @@ void init_opengl_extensions()
 		e = el_init_GL_EXT_draw_range_elements();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << ext_draw_range_elements;
+			extensions |= 1ull << ext_draw_range_elements;
 		}
 	}
 /*	GL_EXT_draw_range_elements		*/
@@ -1318,38 +1318,38 @@ void init_opengl_extensions()
 		e = el_init_GL_EXT_framebuffer_object();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << ext_framebuffer_object;
+			extensions |= 1ull << ext_framebuffer_object;
 		}
 	}
 /*	GL_EXT_framebuffer_object		*/
 /*	GL_EXT_texture_compression_s3tc		*/
 	if (strstr(extensions_string, "GL_EXT_texture_compression_s3tc") != NULL)
 	{
-		extensions |= 1 << ext_texture_compression_s3tc;
+		extensions |= 1ull << ext_texture_compression_s3tc;
 	}
 /*	GL_EXT_texture_compression_s3tc		*/
 /*	GL_EXT_texture_filter_anisotropic	*/
 	if (strstr(extensions_string, "GL_EXT_texture_filter_anisotropic") != NULL)
 	{
-		extensions |= 1 << ext_texture_filter_anisotropic;
+		extensions |= 1ull << ext_texture_filter_anisotropic;
 	}
 /*	GL_EXT_texture_filter_anisotropic	*/
 /*	GL_SGIS_generate_mipmap			*/
 	if (strstr(extensions_string, "GL_SGIS_generate_mipmap") != NULL)
 	{
-		extensions |= 1 << sgis_generate_mipmap;
+		extensions |= 1ull << sgis_generate_mipmap;
 	}
 /*	GL_SGIS_generate_mipmap			*/
 /*	GL_ARB_texture_mirrored_repeat		*/
 	if (strstr(extensions_string, "GL_ARB_texture_mirrored_repeat") != NULL)
 	{
-		extensions |= 1 << arb_texture_mirrored_repeat;
+		extensions |= 1ull << arb_texture_mirrored_repeat;
 	}
 /*	GL_ARB_texture_mirrored_repeat		*/
 /*	GL_ARB_texture_rectangle		*/
 	if (strstr(extensions_string, "GL_ARB_texture_rectangle") != NULL)
 	{
-		extensions |= 1 << arb_texture_rectangle;
+		extensions |= 1ull << arb_texture_rectangle;
 	}
 /*	GL_ARB_texture_rectangle		*/
 /*	GL_EXT_fog_coord			*/
@@ -1358,44 +1358,44 @@ void init_opengl_extensions()
 		e = el_init_GL_EXT_fog_coord();
 		if (e == GL_TRUE)
 		{
-			extensions |= 1 << ext_fog_coord;
+			extensions |= 1ull << ext_fog_coord;
 		}
 	}
 /*	GL_EXT_fog_coord			*/
 /*	GL_ATI_texture_compression_3dc		*/
 	if (strstr(extensions_string, "GL_ATI_texture_compression_3dc") != NULL)
 	{
-		extensions |= 1 << ati_texture_compression_3dc;
+		extensions |= 1ull << ati_texture_compression_3dc;
 	}
 /*	GL_ATI_texture_compression_3dc		*/
 /*	GL_EXT_texture_compression_latc		*/
 	if (strstr(extensions_string, "GL_EXT_texture_compression_latc") != NULL)
 	{
-		extensions |= 1 << ext_texture_compression_latc;
+		extensions |= 1ull << ext_texture_compression_latc;
 	}
 /*	GL_EXT_texture_compression_latc		*/
 /*	GL_EXT_texture_compression_rgtc		*/
 	if (strstr(extensions_string, "GL_EXT_texture_compression_rgtc") != NULL)
 	{
-		extensions |= 1 << ext_texture_compression_rgtc;
+		extensions |= 1ull << ext_texture_compression_rgtc;
 	}
 /*	GL_EXT_texture_compression_rgtc		*/
 /*	GL_ARB_texture_cube_map			*/
 	if (strstr(extensions_string, "GL_ARB_texture_cube_map") != NULL)
 	{
-		extensions |= 1 << arb_texture_cube_map;
+		extensions |= 1ull << arb_texture_cube_map;
 	}
 /*	GL_ARB_texture_cube_map			*/
 /*	GL_ARB_texture_float			*/
 	if (strstr(extensions_string, "GL_ARB_texture_float") != NULL)
 	{
-		extensions |= 1 << arb_texture_float;
+		extensions |= 1ull << arb_texture_float;
 	}
 /*	GL_ARB_texture_float			*/
 /*	GL_EXT_abgr			*/
 	if (strstr(extensions_string, "GL_EXT_abgr") != NULL)
 	{
-		extensions |= ((Uint64)1) << ext_abgr;
+		extensions |= 1ull << ext_abgr;
 	}
 /*	GL_EXT_abgr			*/
 /*	GL_EXT_gpu_program_parameters	*/
@@ -1404,7 +1404,7 @@ void init_opengl_extensions()
 		e = el_init_GL_EXT_gpu_program_parameters();
 		if (e == GL_TRUE)
 		{
-			extensions |= ((Uint64)1) << ext_gpu_program_parameters;
+			extensions |= 1ull << ext_gpu_program_parameters;
 		}
 	}
 /*	GL_EXT_gpu_program_parameters	*/
@@ -1412,7 +1412,7 @@ void init_opengl_extensions()
 
 Uint32 have_extension(extension_enum extension)
 {
-	return (extensions & (1 << extension)) != 0;
+	return (extensions & (1ull << extension)) != 0;
 }
 
 Uint32 get_texture_units()

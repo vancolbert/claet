@@ -93,6 +93,7 @@ namespace ItemLists
 			void del(size_t item_index);
 			void add(size_t over_item_number, int image_id, Uint16 id, int quantity);
 			bool is_valid_format(void) const { return format_error; }
+			void clear(void) { image_ids.clear(); quantities.clear(); item_ids.clear(); }
 		private:
 			std::string name;
 			std::vector<int> image_ids;
@@ -217,6 +218,8 @@ namespace ItemLists
 			int draw(window_info *win);
 #ifdef WITHDRAW_LIST
             void process_withdraw_list(int last_item);
+			void cancel_withdraw(void);
+			void setup_withdraw(void);
 #endif //WITHDRAW_LIST
 			void new_or_rename_list(bool is_new);
 			int mouseover(window_info *win, int mx, int my);
@@ -383,7 +386,7 @@ namespace ItemLists
 		// don't use a list with unequal or empty data sets
 		if ((quantities.size() != image_ids.size()) || (quantities.size() != item_ids.size()) || quantities.empty())
 		{
-			LOG_ERROR("%s: %s name=[%s] #id=%d #cnts=%d #uid=%d\n", __FILE__, item_list_format_error, name_line.c_str(), image_ids.size(), quantities.size(), item_ids.size() );
+			LOG_ERROR("%s: %s name=[%s] #id=%d #cnts=%d #uid=%d\n", __FILE__, item_list_format_error, name_line.c_str(), (int)image_ids.size(), (int)quantities.size(), (int)item_ids.size() );
 			format_error = true;
 			return false;
 		}
@@ -882,10 +885,27 @@ namespace ItemLists
 			make_active_visable();
 			close_ipu(&ipu_item_list_name);
 			Vars::quantity_input()->close();
+			cancel_withdraw();
 		}
 	}
-
-
+	void List_Window::setup_withdraw(void) {
+		storage_item_dragged = item_dragged = -1;
+		if (Vars::lists()->valid_active_list()) {
+			do_click_sound();
+			const List &l = Vars::lists()->get_list();
+			if (!withdraw_list_item.get_num_items()) {
+				for (size_t i = 0; i < l.get_num_items(); ++i)  {
+					withdraw_list_item.add(i, l.get_image_id(i), l.get_item_id(i), l.get_quantity(i));
+				}
+			}
+		}
+	}
+	void List_Window::cancel_withdraw(void) {
+		withdraw_list_item.clear();
+		storage_item_dragged = -1;
+		item_dragged = -1;
+		storage_moove_cat_called = 0;
+	}
 	// Draw the item list window
 	//
 	int List_Window::draw(window_info *win)
@@ -987,6 +1007,17 @@ namespace ItemLists
 			rendergrid(1, 1, x_start-1, y_start-1, get_grid_size()+2, get_grid_size()+2);
 		}
 
+		if (Vars::lists()->valid_active_list() && (cur_time < 10000 + last_time_storage_change || mouse_over_get_button)) {
+			const List &l = Vars::lists()->get_list();
+			float c[][3] = {{1.0f, 0.3f, 0.3f}, {0.8f, 0.8f, 0.2f}, {0.2f, 0.8f, 0.2f}, {0.1f, 1.0f, 1.0f}};
+			for (int i = 0, n = min2i(l.get_num_items(), 6*num_grid_rows), s = get_grid_size(); i < n; ++i) {
+				int x = i % 6 * s + 1, y = i / 6 * s, u = l.get_item_id(i), q = l.get_quantity(i), h = 0;
+				for (item *it = item_list, *ie = it + ITEM_WEAR_START; it < ie; h += it->id == u && it->quantity > 0 ? it->quantity : 0, ++it);
+				glColor3fv(c[(h > 0) + (h >= q) + (h > q)]);
+				#define draw_outline(x, y, w, h, t) do { glBegin(GL_TRIANGLE_STRIP); glVertex2i(x,y); glVertex2i(x+t,y+t); glVertex2i(x+w,y); glVertex2i(x+w-t,y+t); glVertex2i(x+w,y+h); glVertex2i(x+w-t,y+h-t); glVertex2i(x,y+h); glVertex2i(x+t,y+h-t); glVertex2i(x,y); glVertex2i(x+t,y+t); glEnd(); } while(0)
+				draw_outline(x, y, s, s, 3);
+			}
+		}
 		glEnable(GL_TEXTURE_2D);
 
 		// draw the quantities over everything else so they always show
@@ -1016,6 +1047,8 @@ namespace ItemLists
         // Drawn the new list button (>) with highlight when mouse over
         if (mouse_over_get_button)
             glColor3f(0.99f,0.77f,0.55f);
+        else if (withdraw_list_item.get_num_items() && (cur_time & 255) < 128)
+            glColor3f(1.0f,1.0f,0.8f);
         else
             glColor3f(0.77f,0.57f,0.39f);
         draw_string_zoomed(add_button_x, add_button_y+17, (unsigned const char*)">", 1, 2.0);
@@ -1074,21 +1107,9 @@ namespace ItemLists
 		mouse_over_add_button = clicked = false;
 #else //WITHDRAW_LIST
         mouse_over_add_button = false;
-
-        if (clicked && mouse_over_get_button && Vars::lists()->valid_active_list())
-        {
-            do_click_sound();
-            if(Vars::lists()->get_list().get_num_items() > 0 && withdraw_list_item.get_num_items() <= 0)
-            {
-                //on copie la liste active dans une liste qui nous servira de buffer
-                for(size_t i=0; i<Vars::lists()->get_list().get_num_items(); i++)
-                {
-                    withdraw_list_item.add(i,Vars::lists()->get_list().get_image_id(i),Vars::lists()->get_list().get_item_id(i),Vars::lists()->get_list().get_quantity(i));
-                }
-
-            }
+        if (clicked && mouse_over_get_button) {
+            setup_withdraw();
         }
-
         if(withdraw_list_item.get_num_items() == 1)
             process_withdraw_list(1);
         else if(withdraw_list_item.get_num_items() > 0)
@@ -1430,6 +1451,7 @@ CHECK_GL_ERRORS();
 		{
 			filter[0] = '\0';
 			last_key_time = 0;
+			item_lists_cancel();
 			return 1;
 		}
 		if (string_input(filter, sizeof(filter), the_key) || (the_key == SDLK_RETURN))
@@ -1636,7 +1658,8 @@ extern "C"
 	{
 		ItemLists::Vars::win()->reset_pickup_fail_time();
 	}
-
+	void item_lists_cancel(void) { ItemLists::Vars::win()->cancel_withdraw(); }
+	void item_lists_withdraw(void) { ItemLists::Vars::win()->setup_withdraw(); }
 #ifdef WITHDRAW_LIST
     int min_time_between_withdraw;
 #endif //WITHDRAW_LIST

@@ -2,6 +2,7 @@
 #include "servers.h"
 #include "asc.h"
 #include "errors.h"
+#include "main.h"
 #include "misc.h"
 #include "multiplayer.h"
 #include "io/elpathwrapper.h"
@@ -19,8 +20,6 @@ typedef struct
 server_def servers[MAX_SERVERS];		// The details of all the servers we know about
 int num_servers = 0;
 int cur_server = -1;
-
-char * check_server_id_on_command_line();	// From main.c
 
 const char * get_server_name(void)
 {

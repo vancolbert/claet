@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern int use_server_pop_win;
+extern int serverpopup;
 extern int server_pop_chan;
 
 void display_server_popup_win(const char * const message);

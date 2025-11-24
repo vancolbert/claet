@@ -238,23 +238,19 @@ void set_channel_tabs (const Uint32 *chans)
 	}
 }
 
-void set_active_channels (Uint8 active, const Uint32 *channels, int nchan)
-{
+void set_active_channels(Uint8 active, const Uint8 *data, int len) {
 	Uint32 tmp[MAX_ACTIVE_CHANNELS];
-	int i;
-
-	for (i = 0; i < MAX_ACTIVE_CHANNELS; i++)
-    {
+	int i, nchan = len/4;
+	for (i = 0; i < MAX_ACTIVE_CHANNELS; i++) {
 		tmp[i] = active_channels[i];
     }
-
-	for (i = 0; i < nchan; i++)
-		active_channels[i] = SDL_SwapLE32(channels[i]);
-	for ( ; i < MAX_ACTIVE_CHANNELS; i++)
+	for (i = 0; i < nchan; i++) {
+		active_channels[i] = unpack_u32_le(data + i*4);
+	}
+	for (; i < MAX_ACTIVE_CHANNELS; i++) {
 		active_channels[i] = 0;
-
-	set_channel_tabs (tmp);
-
+	}
+	set_channel_tabs(tmp);
 	current_channel = active;
 }
 
@@ -306,11 +302,11 @@ int coord_chat_separate = 0;
 #endif //ENGLISH
 
 /*
- * use_windowed_chat == 0: old behaviour, all text is printed
- * use_windowed_chat == 1: channel selection bar
- * use_windowed_chat == 2: chat window
+ * windowed_chat == 0: old behaviour, all text is printed
+ * windowed_chat == 1: channel selection bar
+ * windowed_chat == 2: chat window
  */
-int use_windowed_chat = 1;
+int windowed_chat = 1;
 int highlight_tab_on_nick = 1;
 
 ////////////////////////////////////////////////////////////////////////
@@ -339,7 +335,7 @@ chan_name *tab_label (Uint8 chan);//Forward declaration
 void clear_chat_wins (void)
 {
 	int i = 0;
-	if(use_windowed_chat != 2){return;}
+	if(windowed_chat != 2){return;}
 
 	for (;i < MAX_CHAT_TABS; ++i){
 		channels[i].nr_lines = 0;
@@ -376,7 +372,7 @@ void clear_input_line (void)
 		field->cursor = 0;
 		field->cursor_line = 0;
 		field->nr_lines = 1;
-		if(use_windowed_chat != 2) {
+		if(windowed_chat != 2) {
 			widget_resize(input_widget->window_id, input_widget->id, input_widget->len_x, field->y_space*2+DEFAULT_FONT_Y_LEN*input_widget->size);
 		}
 	}
@@ -475,9 +471,9 @@ int add_chat_tab(int nlines, Uint8 channel)
 
 			set_window_min_size (channels[ichan].tab_id, 0, 0);
 #ifdef FR_VERSION
-			channels[ichan].out_id = text_field_add_extended (channels[ichan].tab_id, channels[ichan].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, channel, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
+			channels[ichan].out_id = text_field_add_extended (channels[ichan].tab_id, channels[ichan].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, channel, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
 #else //FR_VERSION
-			channels[ichan].out_id = text_field_add_extended (channels[ichan].tab_id, channels[ichan].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, channel, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
+			channels[ichan].out_id = text_field_add_extended (channels[ichan].tab_id, channels[ichan].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_text_size, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, channel, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
 #endif //FR_VERSION
 
 			set_window_handler (channels[ichan].tab_id, ELW_HANDLER_DESTROY, close_channel);
@@ -560,9 +556,9 @@ void update_chat_window (text_message *msg, char highlight)
 	// rewrap message to get correct # of lines
 	width = windows_list.window[chat_win].len_x;
 #ifdef FR_VERSION
-	nlines = rewrap_message(msg, chat_zoom, chat_font, width, NULL);
+	nlines = rewrap_message(msg, chat_text_size, chat_font, width, NULL);
 #else //FR_VERSION
-	nlines = rewrap_message(msg, chat_zoom, width, NULL);
+	nlines = rewrap_message(msg, chat_text_size, width, NULL);
 #endif //FR_VERSION
 
 	// first check if we need to display in all open channels
@@ -672,7 +668,7 @@ int display_chat_handler (window_info *win)
 	{
 		int line = vscrollbar_get_pos (chat_win, chat_scroll_id);
 
-		find_line_nr (channels[active_tab].nr_lines, line, channels[active_tab].chan_nr, &msg_start, &offset_start, chat_zoom, chat_win_text_width);
+		find_line_nr (channels[active_tab].nr_lines, line, channels[active_tab].chan_nr, &msg_start, &offset_start, chat_text_size, chat_win_text_width);
 		text_field_set_buf_pos (channels[active_tab].tab_id, channels[active_tab].out_id, msg_start, offset_start);
 		text_changed = 0;
 	}
@@ -908,7 +904,7 @@ int resize_chat_handler(window_info *win, int width, int height)
 	int input_y = height - input_height - CHAT_WIN_SPACE;
 	int tabcol_height = input_y - 2 * CHAT_WIN_SPACE;
 	int output_height = tabcol_height - CHAT_WIN_TAG_HEIGHT;
-	int line_height = DEFAULT_FONT_Y_LEN*chat_zoom;
+	int line_height = DEFAULT_FONT_Y_LEN*chat_text_size;
 
 	if (output_height < 5*line_height + 2 * CHAT_WIN_SPACE && input_height > 3*line_height + 2 * CHAT_WIN_SPACE)
 	{
@@ -966,7 +962,7 @@ void update_chat_win_buffers(void)
 	}
 
 	// adjust the text position and scroll bar
-	nr_displayed_lines = (int) (chat_out_text_height / (18.0f * chat_zoom));
+	nr_displayed_lines = (int) (chat_out_text_height / (18.0f * chat_text_size));
 	current_line = channels[active_tab].nr_lines - nr_displayed_lines;
 	if (current_line < 0)
 		current_line = 0;
@@ -991,7 +987,7 @@ void parse_input(char *data, int len)
 
 	if (data[0] == '%' && len > 1)
 	{
-		if ( (check_var ((char*)&(data[1]), IN_GAME_VAR) ) < 0)
+		if ( (check_var ((char*)&(data[1]), VNK_GAME) ) < 0)
 		{
 			send_input_text_line ((char*)data, len);
 		}
@@ -1140,7 +1136,7 @@ void paste_in_input_field (const Uint8 *text)
 #else //FR_VERSION
 	tf->nr_lines = rewrap_message(msg, input_widget->size, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
 #endif //FR_VERSION
-	if(use_windowed_chat != 2) {
+	if(windowed_chat != 2) {
 		widget_resize(input_widget->window_id, input_widget->id, input_widget->len_x, tf->y_space*2 + ceilf(DEFAULT_FONT_Y_LEN*input_widget->size*tf->nr_lines));
 	}
 }
@@ -1159,7 +1155,7 @@ void put_string_in_input_field(const Uint8 *text)
 #else //FR_VERSION
 		tf->nr_lines = rewrap_message(msg, input_widget->size, input_widget->len_x - 2 * tf->x_space, &tf->cursor);
 #endif //FR_VERSION
-		if(use_windowed_chat != 2) {
+		if(windowed_chat != 2) {
 			widget_resize(input_widget->window_id, input_widget->id, input_widget->len_x, tf->y_space*2 + ceilf(DEFAULT_FONT_Y_LEN*input_widget->size*tf->nr_lines));
 		}
 		if(input_widget->window_id == game_root_win) {
@@ -1172,8 +1168,8 @@ int close_chat_handler (window_info *win)
 {
 	// revert to using the tab bar
 	// call the config function to make sure it's done properly
-	change_windowed_chat(&use_windowed_chat, 1);
-	set_var_unsaved("windowed_chat", INI_FILE_VAR);
+	change_windowed_chat(&windowed_chat, 1);
+	set_var_unsaved("windowed_chat", VNK_INI);
 
 	return 1;
 }
@@ -1188,10 +1184,10 @@ void create_chat_window(void)
 	int input_y = tabcol_height + 2 * CHAT_WIN_SPACE;
 	int input_height = CHAT_IN_TEXT_HEIGHT + 2 * CHAT_WIN_SPACE;
 
-	int min_width = CHAT_WIN_SCROLL_WIDTH + 2 * CHAT_WIN_SPACE + (int)(CHAT_WIN_TEXT_WIDTH * chat_zoom);
-	int min_height = 7 * CHAT_WIN_SPACE + CHAT_WIN_TAG_HEIGHT + (int) ((2+5) * 18.0 * chat_zoom);
+	int min_width = CHAT_WIN_SCROLL_WIDTH + 2 * CHAT_WIN_SPACE + (int)(CHAT_WIN_TEXT_WIDTH * chat_text_size);
+	int min_height = 7 * CHAT_WIN_SPACE + CHAT_WIN_TAG_HEIGHT + (int) ((2+5) * 18.0 * chat_text_size);
 
-	nr_displayed_lines = (int) ((CHAT_OUT_TEXT_HEIGHT-1) / (18.0 * chat_zoom));
+	nr_displayed_lines = (int) ((CHAT_OUT_TEXT_HEIGHT-1) / (18.0 * chat_text_size));
 
 	chat_win = create_window ("Chat", game_root_win, 0, chat_win_x, chat_win_y, chat_win_width, chat_win_height, ELW_WIN_DEFAULT|ELW_RESIZEABLE|ELW_CLICK_TRANSPARENT);
 
@@ -1214,9 +1210,9 @@ void create_chat_window(void)
 	set_window_flag (channels[0].tab_id, ELW_CLICK_TRANSPARENT);
 	set_window_min_size (channels[0].tab_id, 0, 0);
 #ifdef FR_VERSION
-	channels[0].out_id = text_field_add_extended (channels[0].tab_id, channels[0].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
+	channels[0].out_id = text_field_add_extended (channels[0].tab_id, channels[0].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
 #else //FR_VERSION
-	channels[0].out_id = text_field_add_extended (channels[0].tab_id, channels[0].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_zoom, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
+	channels[0].out_id = text_field_add_extended (channels[0].tab_id, channels[0].out_id, NULL, 0, 0, inout_width, output_height, 0, chat_text_size, 0.77f, 0.57f, 0.39f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
 #endif //FR_VERSION
 	channels[0].chan_nr = CHAT_ALL;
 	channels[0].nr_lines = 0;
@@ -1228,9 +1224,9 @@ void create_chat_window(void)
 		Uint32 id;
 		set_text_message_color (&input_text_line, 1.0f, 1.0f, 1.0f);
 #ifdef FR_VERSION
-		id = text_field_add_extended (chat_win, 19, NULL, CHAT_WIN_SPACE, input_y, inout_width, input_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_NO_KEYPRESS, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
+		id = text_field_add_extended (chat_win, 19, NULL, CHAT_WIN_SPACE, input_y, inout_width, input_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_NO_KEYPRESS, chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
 #else //FR_VERSION
-		id = text_field_add_extended (chat_win, 19, NULL, CHAT_WIN_SPACE, input_y, inout_width, input_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_NO_KEYPRESS, chat_zoom, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
+		id = text_field_add_extended (chat_win, 19, NULL, CHAT_WIN_SPACE, input_y, inout_width, input_height, TEXT_FIELD_BORDER|TEXT_FIELD_EDITABLE|TEXT_FIELD_NO_KEYPRESS, chat_text_size, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, CHAT_WIN_SPACE, CHAT_WIN_SPACE);
 #endif //FR_VERSION
 		widget_set_OnKey (chat_win, id, chat_input_key);
 		input_widget = widget_find(chat_win, id);
@@ -1259,10 +1255,10 @@ void chat_win_update_zoom(void)
 {
 	int itab;
 
-	widget_set_size(chat_win, input_widget->id, chat_zoom);
+	widget_set_size(chat_win, input_widget->id, chat_text_size);
 	for (itab = 0; itab < MAX_CHAT_TABS; itab++) {
 		if (channels[itab].open) {
-			widget_set_size(channels[itab].tab_id, channels[itab].out_id, chat_zoom);
+			widget_set_size(channels[itab].tab_id, channels[itab].out_id, chat_text_size);
 		}
 	}
 	text_changed = 1;
@@ -1394,7 +1390,7 @@ void init_channel_names(void)
 
 	// Load the file, depending on WINDOWS = def|undef
 	// Then parse it. If that fails, fallback onto the english one. If that fails, use builtins.
-	safe_snprintf (file, sizeof (file), "languages/%s/strings/channels.xml", lang);
+	safe_snprintf (file, sizeof (file), "languages/%s/strings/channels.xml", language);
 
 	doc = xmlParseFile (file);
 	if (doc == NULL ) {
@@ -1405,7 +1401,7 @@ void init_channel_names(void)
 			return;
 		}
 		//well the localised version didn't load, but the 'en' version did
-		LOG_ERROR (using_eng_chanlist, lang);
+		LOG_ERROR (using_eng_chanlist, language);
 	}
 
 	// Get the root element, if it exists.
@@ -1683,7 +1679,7 @@ int highlight_tab(const Uint8 channel)
 		//We don't want to highlight
 		return 0;
 	}
-	switch(use_windowed_chat)
+	switch(windowed_chat)
 	{
 		case 1:
 #ifndef ENGLISH
@@ -2000,7 +1996,7 @@ int tab_bar_button_click (widget_list *w, int mx, int my, Uint32 flags, int lign
 		}
 	}
 
-	lines_to_show = 10;
+	lines_to_show = max_lines_to_show;
 
 	return 1;
 }
@@ -2077,7 +2073,7 @@ int tab_bar_button_click (widget_list *w, int mx, int my, Uint32 flags)
 			switch_to_tab(itab);
 			do_click_sound();
 		}
-		lines_to_show = 10;
+		lines_to_show = max_lines_to_show;
 	}
 	return 1;
 }
@@ -2827,7 +2823,7 @@ void remove_tab_button (Uint8 channel, int ligne)
 			// On décalle et on change la taille de la console_out
 			widget_move(console_root_win, console_out_id, 10, 10 + nb_ligne_tabs*tab_bar_height);
 			widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_win->len_y - input_widget->len_y - CONSOLE_SEP_HEIGHT - HUD_MARGIN_Y - 10 - nb_ligne_tabs*tab_bar_height);
-			nr_console_lines = (console_out_w->len_y - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_zoom);
+			nr_console_lines = (console_out_w->len_y - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_text_size);
 			display_console_handler((widget_find(console_root_win, console_out_id))->widget_info);
         }
     }
@@ -2877,9 +2873,9 @@ void update_tab_bar (text_message * msg)
 	channel = get_tab_channel (msg->chan_idx);
 	if (channel == CHAT_ALL || channel == CHAT_MODPM) {
 #ifdef FR_VERSION
-		lines_to_show += rewrap_message(msg, chat_zoom, chat_font, get_console_text_width(), NULL);
+		lines_to_show += rewrap_message(msg, chat_text_size, chat_font, get_console_text_width(), NULL);
 #else //FR_VERSION
-		lines_to_show += rewrap_message(msg, chat_zoom, get_console_text_width(), NULL);
+		lines_to_show += rewrap_message(msg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
 		if (lines_to_show >= 10) lines_to_show = 10;
 		return;
@@ -2891,11 +2887,11 @@ void update_tab_bar (text_message * msg)
 	if (tabs[current_tab].channel == CHAT_ALL) {
 #endif //FR_VERSION
 #ifdef FR_VERSION
-		lines_to_show += rewrap_message(msg, chat_zoom, chat_font, get_console_text_width(), NULL);
+		lines_to_show += rewrap_message(msg, chat_text_size, chat_font, get_console_text_width(), NULL);
 #else //FR_VERSION
-		lines_to_show += rewrap_message(msg, chat_zoom, get_console_text_width(), NULL);
+		lines_to_show += rewrap_message(msg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
-		if (lines_to_show >= 10) lines_to_show = 10;
+		lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 	}
 
 #ifndef ENGLISH
@@ -2916,11 +2912,11 @@ void update_tab_bar (text_message * msg)
 			if (current_tab == itab) {
 #endif //ENGLISH
 #ifdef FR_VERSION
-				lines_to_show += rewrap_message(msg, chat_zoom, chat_font, get_console_text_width(), NULL);
+				lines_to_show += rewrap_message(msg, chat_text_size, chat_font, get_console_text_width(), NULL);
 #else //FR_VERSION
-				lines_to_show += rewrap_message(msg, chat_zoom, get_console_text_width(), NULL);
+				lines_to_show += rewrap_message(msg, chat_text_size, get_console_text_width(), NULL);
 #endif //FR_VERSION
-				if (lines_to_show >= 10) lines_to_show = 10;
+				lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 			}
 			return;
 		}
@@ -2934,11 +2930,11 @@ void update_tab_bar (text_message * msg)
 				widget_set_color (tab_bar_win_2, tabs_2[itab].button, 1.0f, 1.0f, 0.0f);
 			if (current_tab == itab && current_bar == 2) {
 #ifdef FR_VERSION
-				lines_to_show += rewrap_message(msg, chat_zoom, chat_font, console_text_width, NULL);
+				lines_to_show += rewrap_message(msg, chat_text_size, chat_font, console_text_width, NULL);
 #else //FR_VERSION
-				lines_to_show += rewrap_message(msg, chat_zoom, console_text_width, NULL);
+				lines_to_show += rewrap_message(msg, chat_text_size, console_text_width, NULL);
 #endif //FR_VERSION
-				if (lines_to_show >= 10) lines_to_show = 10;
+				lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 			}
 			return;
 		}
@@ -2991,7 +2987,7 @@ void create_tab_bar(void)
 	// On décalle et on change la taille de la console_out
 	widget_move(console_root_win, console_out_id, 10, 10 + nb_ligne_tabs*tab_bar_height);
 	widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_win->len_y - input_widget->len_y - CONSOLE_SEP_HEIGHT - HUD_MARGIN_Y - 10 - nb_ligne_tabs*tab_bar_height);
-	nr_console_lines = console_out_w->len_y / (int)(DEFAULT_FONT_Y_LEN * chat_zoom);
+	nr_console_lines = console_out_w->len_y / (int)(DEFAULT_FONT_Y_LEN * chat_text_size);
 	display_console_handler((widget_find(console_root_win, console_out_id))->widget_info);
 #else //ENGLISH
 	int tab_bar_x = 10;
@@ -3580,7 +3576,7 @@ void load_channel_colors (){
 		channel_colors[i].color = -1;
 	}
 
-	safe_snprintf(fname, sizeof(fname), "channel_colors_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "channel_colors_%s.dat",username);
 	my_tolower(fname);
 
 	/* sliently ignore non existing file */
@@ -3620,7 +3616,7 @@ void save_channel_colors(){
 	if (!channel_colors_set)
 		return;
 
-	safe_snprintf(fname, sizeof(fname), "channel_colors_%s.dat",username_str);
+	safe_snprintf(fname, sizeof(fname), "channel_colors_%s.dat",username);
 	my_tolower(fname);
 	fp=open_file_config(fname,"wb");
 	if(fp == NULL){

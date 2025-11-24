@@ -88,6 +88,7 @@ int ParseWidget (xmlNode *node, int winid);
 int ParseTab (xmlNode *node, int winid, int colid);
 int GetWidgetType (const char *w);
 int disable_double_click = 0;
+float mouse_wheel_scroll_sensitivity = 3.0f;
 
 // <--- Common widget functions ---
 widget_list * widget_find(int window_id, Uint32 widget_id)
@@ -1100,9 +1101,9 @@ int vscrollbar_click (widget_list *W, int mx, int my, Uint32 flags)
 	vscrollbar *b = (vscrollbar *)W->widget_info;
 #ifdef FR_VERSION
 	if ((flags & ELW_WHEEL_UP) || my < 15)
-		return vscrollbar_set_pos_base(W, b->pos - b->pos_inc);
+		return vscrollbar_set_pos_base(W, b->pos - mouse_wheel_scroll_sensitivity * b->pos_inc);
 	if ((flags & ELW_WHEEL_DOWN) || my > W->len_y - 15)
-		return vscrollbar_set_pos_base(W, b->pos + b->pos_inc);
+		return vscrollbar_set_pos_base(W, b->pos + mouse_wheel_scroll_sensitivity * b->pos_inc);
 
 	if (b->bar_len > W->size)
 	{
@@ -1174,7 +1175,7 @@ int vscrollbar_scroll_up(int window_id, Uint32 widget_id)
 		vscrollbar *scrollbar = w->widget_info;
 #ifdef FR_VERSION
 		// évite de refaire un widget_find avec la fonction set_pos
-		return vscrollbar_set_pos_base(w, scrollbar->pos - scrollbar->pos_inc);
+		return vscrollbar_set_pos_base(w, scrollbar->pos - mouse_wheel_scroll_sensitivity * scrollbar->pos_inc);
 #else //FR_VERSION
 		return vscrollbar_set_pos(window_id, widget_id, scrollbar->pos - scrollbar->pos_inc);
 #endif //FR_VERSION
@@ -1189,7 +1190,7 @@ int vscrollbar_scroll_down(int window_id, Uint32 widget_id)
 		vscrollbar *scrollbar = w->widget_info;
 #ifdef FR_VERSION
 		// évite de refaire un widget_find avec la fonction set_pos
-		return vscrollbar_set_pos_base(w, scrollbar->pos + scrollbar->pos_inc);
+		return vscrollbar_set_pos_base(w, scrollbar->pos + mouse_wheel_scroll_sensitivity * scrollbar->pos_inc);
 #else //FR_VERSION
 		return vscrollbar_set_pos(window_id, widget_id, scrollbar->pos + scrollbar->pos_inc);
 #endif //FR_VERSION

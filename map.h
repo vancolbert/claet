@@ -160,7 +160,8 @@ void display_map_marks(void); //draw cross
 void change_3d_marks(int *rel);
 extern hash_table *server_marks;
 extern float mark_z_rot;
-extern int marks_3d;
+extern int map_3d_markers;
+extern int use_loading_snapshot;
 #define MARK_CLIP_POS 20
 #define MARK_DIST 20
 

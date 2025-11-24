@@ -40,7 +40,7 @@
 #endif
 #include "sound.h"
 
-char browser_name[120];
+char browser[120];
 int url_win_x = 100;
 int url_win_y = 50;
 int url_win = -1;
@@ -361,7 +361,7 @@ static int only_call_from_open_web_link__go_to_url(void * url)
 	init_thread_log("web_link");
 
 	// build the command line and execute it
-	safe_snprintf (browser_command, sizeof (browser_command), "%s \"%s\"", browser_name, url),
+	safe_snprintf (browser_command, sizeof (browser_command), "%s \"%s\"", browser, (char *)url),
 	system(browser_command);	// Do not use this command on UNIX.
 
 	// free the memory allocated in open_web_link()
@@ -379,7 +379,7 @@ void open_web_link(const char * url)
 	CFRelease(newurl);
 #else
 	// browser name can override the windows default, and if not defined in Linux, don't error
-	if(*browser_name){
+	if(*browser){
 #ifndef WINDOWS
 		static int have_set_signal = 0;
 
@@ -396,7 +396,7 @@ void open_web_link(const char * url)
 		}
 
 		if (fork() == 0){
-			execlp(browser_name, browser_name, url, NULL);
+			execlp(browser, browser, url, NULL);
 			// in case the exec errors
 			_exit(1);
 		}

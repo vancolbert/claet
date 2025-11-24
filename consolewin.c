@@ -142,7 +142,7 @@ static int display_console_handler (window_info *win)
 		set_font(chat_font);	// switch to the chat font
 		if (console_text_changed)
 		{
-			find_line_nr (total_nr_lines, total_nr_lines - nr_console_lines - scroll_up_lines, FILTER_ALL, &msg, &offset, chat_zoom, console_text_width);
+			find_line_nr (total_nr_lines, total_nr_lines - nr_console_lines - scroll_up_lines, FILTER_ALL, &msg, &offset, chat_text_size, console_text_width);
 			text_field_set_buf_pos (console_root_win, console_out_id, msg, offset);
 #ifdef ENGLISH
 			update_console_scrollbar();
@@ -322,7 +322,7 @@ static int resize_console_handler (window_info *win, int width, int height)
 	widget_resize (console_root_win, input_widget->id, width - hud_x, input_widget->len_y);
 	widget_move (console_root_win, input_widget->id, 0, height - input_widget->len_y - HUD_MARGIN_Y);
 
-	nr_console_lines = (height - input_widget->len_y - HUD_MARGIN_Y - 20 - nb_ligne_tabs*tab_bar_height - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_zoom);
+	nr_console_lines = (height - input_widget->len_y - HUD_MARGIN_Y - 20 - nb_ligne_tabs*tab_bar_height - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_text_size);
 
 	console_text_width = (int) (width - hud_x - 20);
 #else //FR_VERSION
@@ -336,7 +336,7 @@ static int resize_console_handler (window_info *win, int width, int height)
 	widget_resize (console_root_win, input_widget->id, console_active_width, input_widget->len_y);
 	widget_move (console_root_win, input_widget->id, 0, console_active_height - input_widget->len_y);
 
-	nr_console_lines = (int) (text_display_height / (DEFAULT_FONT_Y_LEN * chat_zoom));
+	nr_console_lines = (int) (text_display_height / (DEFAULT_FONT_Y_LEN * chat_text_size));
 
 	if (console_scrollbar_enabled)
 	{
@@ -424,7 +424,7 @@ static int show_console_handler (window_info *win) {
 #endif //ENGLISH
 	hide_window(color_race_win);
 
-	if (use_windowed_chat == 1) {
+	if (windowed_chat == 1) {
 		display_tab_bar ();
 	}
 	return 1;
@@ -444,7 +444,7 @@ int get_total_nr_lines(void)
 #ifdef ENGLISH
 void console_font_resize(float font_size)
 {
-	nr_console_lines= (int) (window_height - input_widget->len_y - CONSOLE_SEP_HEIGHT - hud_y - CONSOLE_TEXT_Y_BORDER) / (DEFAULT_FONT_Y_LEN * chat_zoom);
+	nr_console_lines= (int) (window_height - input_widget->len_y - CONSOLE_SEP_HEIGHT - hud_y - CONSOLE_TEXT_Y_BORDER) / (DEFAULT_FONT_Y_LEN * chat_text_size);
 	widget_set_size(console_root_win, console_out_id, font_size);
 	resize_console_handler (&windows_list.window[console_root_win], window_width, window_height);
 }
@@ -463,7 +463,7 @@ void clear_console(){
 void update_console_win (text_message * msg)
 {
 #ifdef FR_VERSION
-		int nlines = rewrap_message(msg, chat_zoom, chat_font, console_text_width, NULL);
+		int nlines = rewrap_message(msg, chat_text_size, chat_font, console_text_width, NULL);
 #endif //FR_VERSION
 	if (msg->deleted) {
 #ifdef FR_VERSION
@@ -482,7 +482,7 @@ void update_console_win (text_message * msg)
 #endif //ENGLISH
 	} else {
 #ifdef ENGLISH
-		int nlines = rewrap_message(msg, chat_zoom, console_text_width, NULL);
+		int nlines = rewrap_message(msg, chat_text_size, console_text_width, NULL);
 #endif //ENGLISH
 		if (scroll_up_lines == 0) {
 			console_text_changed = 1;
@@ -538,29 +538,29 @@ void create_console_root_window (int width, int height)
 		console_out_id = text_field_add_extended (console_root_win, console_out_id, NULL,
 			 10, 10 + nb_ligne_tabs*tab_bar_height,
 			 width - hud_x - 20, height - INPUT_HEIGHT - HUD_MARGIN_Y - 20 - nb_ligne_tabs*tab_bar_height,
-			 0, chat_zoom, chat_font, -1.0f, -1.0f, -1.0f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, CHAT_ALL, 0, 0
+			 0, chat_text_size, chat_font, -1.0f, -1.0f, -1.0f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, CHAT_ALL, 0, 0
 		);
 #else //FR_VERSION
 		console_out_id = text_field_add_extended (console_root_win, console_out_id, NULL,
 			CONSOLE_TEXT_X_BORDER, CONSOLE_Y_OFFSET,
 			console_text_width, console_active_height - INPUT_HEIGHT - CONSOLE_SEP_HEIGHT - CONSOLE_TEXT_Y_BORDER,
-			0, chat_zoom, -1.0f, -1.0f, -1.0f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, CHAT_ALL, 0, 0);
+			0, chat_text_size, -1.0f, -1.0f, -1.0f, display_text_buffer, DISPLAY_TEXT_BUFFER_SIZE, CHAT_ALL, 0, 0);
 
 		total_nr_lines = 0;
 		for (i=0; i<DISPLAY_TEXT_BUFFER_SIZE; i++)
 			if (display_text_buffer[i].len && !display_text_buffer[i].deleted)
-				total_nr_lines += rewrap_message(&display_text_buffer[i], chat_zoom, console_text_width, NULL);
+				total_nr_lines += rewrap_message(&display_text_buffer[i], chat_text_size, console_text_width, NULL);
 #endif //FR_VERSION
 
 		if(input_widget == NULL) {
 			Uint32 id;
 #ifdef FR_VERSION
-			id = text_field_add_extended(console_root_win, 0, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, (INPUT_DEFAULT_FLAGS|TEXT_FIELD_BORDER)^WIDGET_CLICK_TRANSPARENT, chat_zoom, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
+			id = text_field_add_extended(console_root_win, 0, NULL, 0, height - INPUT_HEIGHT - HUD_MARGIN_Y, width-hud_x, INPUT_HEIGHT, (INPUT_DEFAULT_FLAGS|TEXT_FIELD_BORDER)^WIDGET_CLICK_TRANSPARENT, chat_text_size, chat_font, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
 #else //FR_VERSION
 			id = text_field_add_extended(console_root_win, console_in_id, NULL,
 				0, console_active_height - INPUT_HEIGHT, console_active_width, INPUT_HEIGHT,
 				(INPUT_DEFAULT_FLAGS|TEXT_FIELD_BORDER)^WIDGET_CLICK_TRANSPARENT,
-				chat_zoom, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
+				chat_text_size, 0.77f, 0.57f, 0.39f, &input_text_line, 1, FILTER_ALL, INPUT_MARGIN, INPUT_MARGIN);
 #endif //FR_VERSION
 			input_widget = widget_find(console_root_win, id);
 			input_widget->OnResize = input_field_resize;
@@ -572,10 +572,10 @@ void create_console_root_window (int width, int height)
 		widget_set_OnKey(input_widget->window_id, input_widget->id, chat_input_key);
 
 #ifdef FR_VERSION
-		nr_console_lines = (height - input_widget->len_y - HUD_MARGIN_Y - 20 - nb_ligne_tabs*tab_bar_height - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_zoom);
+		nr_console_lines = (height - input_widget->len_y - HUD_MARGIN_Y - 20 - nb_ligne_tabs*tab_bar_height - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_text_size);
 		console_text_width = (int) (width - hud_x - 20);
 #else //FR_VERSION
-		nr_console_lines = (int) (console_active_height - input_widget->len_y -  CONSOLE_SEP_HEIGHT - CONSOLE_TEXT_Y_BORDER) / (DEFAULT_FONT_Y_LEN * chat_zoom);
+		nr_console_lines = (int) (console_active_height - input_widget->len_y -  CONSOLE_SEP_HEIGHT - CONSOLE_TEXT_Y_BORDER) / (DEFAULT_FONT_Y_LEN * chat_text_size);
 
 		if (console_scrollbar_enabled)
 		{
@@ -618,7 +618,7 @@ int input_field_resize(widget_list *w, Uint32 x, Uint32 y)
 	tf->nr_lines = rewrap_message(msg, w->size, w->len_x - 2 * tf->x_space, &tf->cursor);
 #endif //FR_VERSION
 	msg->chan_idx = tmp_chan;
-	if(use_windowed_chat != 2 || !get_show_window(chat_win)) {
+	if(windowed_chat != 2 || !get_show_window(chat_win)) {
 		window_info *win = &windows_list.window[w->window_id];
 		widget_move(input_widget->window_id, input_widget->id, 0, win->len_y - input_widget->len_y - HUD_MARGIN_Y);
 	}
@@ -627,13 +627,13 @@ int input_field_resize(widget_list *w, Uint32 x, Uint32 y)
 	// redimensionnement de la console out en conséquence
 	widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_win->len_y - HUD_MARGIN_Y - input_widget->len_y - 20 - nb_ligne_tabs*tab_bar_height);
 	widget_resize(console_root_win, CONSOLE_SCROLLBAR_ID, CONSOLE_SCROLLBAR_WIDTH, console_win->len_y - HUD_MARGIN_Y - input_widget->len_y);
-	nr_console_lines = (console_out_w->len_y - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_zoom);
+	nr_console_lines = (console_out_w->len_y - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_text_size);
 #else //FR_VERSION
 	console_active_height = console_win->len_y - HUD_MARGIN_Y - input_widget->len_y - CONSOLE_SEP_HEIGHT - CONSOLE_TEXT_Y_BORDER;
 	widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_active_height);
 	if (console_scrollbar_enabled)
 		widget_resize(console_root_win, console_scrollbar_id, ELW_BOX_SIZE, console_active_height);
-	nr_console_lines = (int) console_out_w->len_y / (DEFAULT_FONT_Y_LEN * chat_zoom);
+	nr_console_lines = (int) console_out_w->len_y / (DEFAULT_FONT_Y_LEN * chat_text_size);
 #endif //FR_VERSION
 	console_text_changed = 1;
 	return 1;

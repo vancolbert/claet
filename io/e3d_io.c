@@ -478,10 +478,10 @@ static e3d_object* do_load_e3d_detail(e3d_object* cur_object)
 
 	if (short_index(header.vertex_format))
 	{
-		if (index_size != sizeof(Uint16))
+		if (index_size != 2)
 		{
 			LOG_ERROR("File '%s' has wrong index size! Expected size %d, found size %d.",
-				cur_object->file_name, sizeof(Uint16), index_size);
+				cur_object->file_name, 2, index_size);
 			free_e3d_pointer(cur_object);
 			el_close(file);
 			return 0;
@@ -489,10 +489,10 @@ static e3d_object* do_load_e3d_detail(e3d_object* cur_object)
 	}
 	else
 	{
-		if (index_size != sizeof(Uint32))
+		if (index_size != 4)
 		{
 			LOG_ERROR("File '%s' has wrong index size! Expected size %d, found size %d.",
-				cur_object->file_name, sizeof(Uint32), index_size);
+				cur_object->file_name, 4, index_size);
 			free_e3d_pointer(cur_object);
 			el_close(file);
 			return 0;

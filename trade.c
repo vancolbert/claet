@@ -328,13 +328,13 @@ int click_trade_handler(window_info *win, int mx, int my, Uint32 flags)
         //
         //  Modification de la fonction cote server la position est toujours en uint16 maintenant
         //
-       	*((Uint16 *)(str+2))= SDL_SwapLE16(item_list[item_dragged].pos);
+		pack_u16_le(str+2, item_list[item_dragged].pos);
         trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
-		*((Uint32 *)(str+trade_quantity_storage_offset))= SDL_SwapLE32(item_quantity);
+		pack_u32_le(str+trade_quantity_storage_offset, item_quantity);
 		my_tcp_send(my_socket,str, 4 + trade_quantity_storage_offset );
 #else //FR_VERSION
         str[2]=item_list[item_dragged].pos;
-		*((Uint32 *)(str+3))= SDL_SwapLE32(item_quantity);
+		pack_u32_le(str+3, item_quantity);
 		my_tcp_send(my_socket,str,7);
 #endif //FR_VERSION
 		do_drop_item_sound();
@@ -343,18 +343,18 @@ int click_trade_handler(window_info *win, int mx, int my, Uint32 flags)
 		str[0]=PUT_OBJECT_ON_TRADE;
 		str[1]=ITEM_BANK;
 #ifdef FR_VERSION
-       	*((Uint16 *)(str+2))= SDL_SwapLE16(storage_items[storage_item_dragged].pos);
-			trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
-		*((Uint32 *)(str+trade_quantity_storage_offset))= SDL_SwapLE32(item_quantity);
+		pack_u16_le(str+2, storage_items[storage_item_dragged].pos);
+		trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
+		pack_u32_le(str+trade_quantity_storage_offset, item_quantity);
 		my_tcp_send(my_socket,str, 4 + trade_quantity_storage_offset );
 #else //FR_VERSION
 		if ( storage_items[storage_item_dragged].pos > 255 ) {
-			*((Uint16 *)(str+2))= SDL_SwapLE16(storage_items[storage_item_dragged].pos);
+			pack_u16_le(str+2, storage_items[storage_item_dragged].pos);
 			trade_quantity_storage_offset++; /* Offset is 1 byte ahead now */
 		} else {
 			str[2]=storage_items[storage_item_dragged].pos;
 		}
-		*((Uint32 *)(str+trade_quantity_storage_offset))= SDL_SwapLE32(item_quantity);
+		pack_u32_le(str+trade_quantity_storage_offset, item_quantity);
 		my_tcp_send(my_socket,str, 4 + trade_quantity_storage_offset );
 #endif //FR_VERSION
 		do_drop_item_sound();
@@ -372,7 +372,7 @@ int click_trade_handler(window_info *win, int mx, int my, Uint32 flags)
 			} else {
 				str[0]=REMOVE_OBJECT_FROM_TRADE;
 				str[1]=pos;
-				*((Uint32 *)(str+2))=SDL_SwapLE32(item_quantity);
+				pack_u32_le(str+2, item_quantity);
 				my_tcp_send(my_socket,str,6);
 				do_drag_item_sound();
 			}
@@ -508,24 +508,24 @@ void put_item_on_trade (const Uint8 *data)
 	pos=data[7];
 	if(!data[8])
 	{
-		your_trade_list[pos].image_id=SDL_SwapLE16(*((Uint16 *)(data)));
-		your_trade_list[pos].quantity+=SDL_SwapLE32(*((Uint32 *)(data+2)));
+		your_trade_list[pos].image_id=unpack_u16_le(data);
+		your_trade_list[pos].quantity+=unpack_u32_le(data+2);
 		your_trade_list[pos].type=data[6];
 		if (item_uid_enabled)
-			your_trade_list[pos].id=SDL_SwapLE16(*((Uint16 *)(data+9)));
+			your_trade_list[pos].id=unpack_u16_le(data+9);
 		else
 			your_trade_list[pos].id=unset_item_uid;
 	}
 	else
 	{
-		others_trade_list[pos].image_id=SDL_SwapLE16(*((Uint16 *)(data)));
-		others_trade_list[pos].quantity+=SDL_SwapLE32(*((Uint32 *)(data+2)));
+		others_trade_list[pos].image_id=unpack_u16_le(data);
+		others_trade_list[pos].quantity+=unpack_u32_le(data+2);
 		others_trade_list[pos].type=data[6];
 		if (item_uid_enabled)
 #ifdef FR_VERSION
 		{
 #endif //FR_VERSION
-			others_trade_list[pos].id=SDL_SwapLE16(*((Uint16 *)(data+9)));
+			others_trade_list[pos].id=unpack_u16_le(data+9);
 #ifdef FR_VERSION
 			if (others_trade_list[pos].id == 981)
 			{
@@ -544,7 +544,7 @@ void remove_item_from_trade (const Uint8 *data)
 	int quantity;
 
 	pos=data[4];
-	quantity=SDL_SwapLE32(*((Uint32 *)(data)));
+	quantity=unpack_u32_le(data);
 
 	if(!data[5])
 	{

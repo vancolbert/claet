@@ -278,13 +278,8 @@ static void parse_2d0(const char* desc, Uint32 len, const char* cur_dir,
 
 	def->u_start = (float)u_start/file_x_len;
 	def->u_end = (float)u_end/file_x_len;
-#ifdef NEW_TEXTURES
-	def->v_start = 1.0f + (float)v_start/file_y_len;
-	def->v_end = 1.0f + (float)v_end/file_y_len;
-#else
 	def->v_start = 1.0f - (float)v_start/file_y_len;
 	def->v_end = 1.0f - (float)v_end/file_y_len;
-#endif
 	if (def->alpha_test < 0)
 		def->alpha_test = 0;
 }
@@ -1070,73 +1065,39 @@ void destroy_all_2d_object_defs()
 }
 
 // for support of the 1.0.3 server, change if an object is to be displayed or not
-void set_2d_object (Uint8 display, const void *ptr, int len)
-{
-	const Uint32 *id_ptr = ptr;
-
-	// first look for the override to process ALL objects
-	if (len < sizeof(*id_ptr) ){
-		int	i;
-
-		for (i = 0; i < MAX_OBJ_2D; i++)
-		{
-			if (obj_2d_list[i]){
-				obj_2d_list[i]->display= display;
+void set_2d_object(Uint8 display, const void *data, int len) {
+	if (len < 4) {
+		for (int i = 0; i < MAX_OBJ_2D; i++) {
+			if (obj_2d_list[i]) {
+				obj_2d_list[i]->display = display;
 			}
 		}
 	} else {
-		int idx = 0;
-
-		while(len >= sizeof(*id_ptr)){
-			Uint32 obj_id = SDL_SwapLE32(id_ptr[idx]);
-
-			if(obj_id < MAX_OBJ_2D && obj_2d_list[obj_id]){
-				obj_2d_list[obj_id]->display= display;
-#ifdef ENGLISH
-				idx++;
-				len-= sizeof(*id_ptr);
-#endif //ENGLISH
+		const Uint8 *p = (const Uint8 *)data;
+		for (; len >= 4; len -= 4, p += 4) {
+			Uint32 obj_id = unpack_u32_le(p);
+			if (obj_id < MAX_OBJ_2D && obj_2d_list[obj_id]) {
+				obj_2d_list[obj_id]->display = display;
 			}
-#ifndef ENGLISH
-	    	idx++;
-			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }
 
 // for future expansion
-void state_2d_object (Uint8 state, const void *ptr, int len)
-{
-	const Uint32 *id_ptr = ptr;
-
-	// first look for the override to process ALL objects
-	if (len < sizeof(*id_ptr) ){
-		int	i;
-
-		for (i = 0; i < MAX_OBJ_2D; i++)
-		{
-			if (obj_2d_list[i]){
-				obj_2d_list[i]->state= state;
+void state_2d_object(Uint8 state, const void *data, int len) {
+	if (len < 4) {
+		for (int i = 0; i < MAX_OBJ_2D; i++) {
+			if (obj_2d_list[i]) {
+				obj_2d_list[i]->state = state;
 			}
 		}
 	} else {
-		int idx = 0;
-
-		while(len >= sizeof(*id_ptr)){
-			Uint32 obj_id = SDL_SwapLE32(id_ptr[idx]);
-
-			if(obj_id < MAX_OBJ_2D && obj_2d_list[obj_id]){
-				obj_2d_list[obj_id]->state= state;
-#ifndef ENGLISH
-				idx++;
-				len -= sizeof (*id_ptr);
-#endif //ENGLISH
+		const Uint8 *p = (const Uint8 *)data;
+		for (; len >= 4; len -= 4, p += 4) {
+			Uint32 obj_id = unpack_u32_le(p);
+			if (obj_id < MAX_OBJ_2D && obj_2d_list[obj_id]) {
+				obj_2d_list[obj_id]->state = state;
 			}
-#ifndef ENGLISH
-	    	idx++;
-			len -= sizeof (*id_ptr);
-#endif //ENGLISH
 		}
 	}
 }

@@ -264,7 +264,7 @@ typedef struct
 #endif //FR_VERSION
 }bin_cfg;
 
-extern int auto_update; /*!<this flags signals whether or not autoupdates are performed at startup, or not. It requires a restart to have an effect. */
+extern int autoupdate; /*!<this flags signals whether or not autoupdates are performed at startup, or not. It requires a restart to have an effect. */
 #ifdef  CUSTOM_UPDATE
 extern int custom_update; /*!<this flags signals whether or not autoupdates of custom looks is permitted. */
 extern int custom_clothing; /*!<this flags signals whether or not custom is displayed. */
@@ -281,7 +281,7 @@ extern int mouse_limit;
 extern int show_fps; /*!< flag that indicates whether to display FPS or not */
 #ifdef OSX
 extern int square_buttons; /* flag to overcome intel opengl issues on early MacBooks*/
-extern int emulate3buttonmouse;
+extern int emulate_3_button_mouse;
 #endif
 #ifdef DEBUG
 extern int render_skeleton;
@@ -295,7 +295,7 @@ extern int no_adjust_shadows;
 extern int clouds_shadows; /*!< flag that indicates whether the shadows of clouds should be displayed or not */
 extern int buddy_log_notice; /*!< whether to log buddy logged on/off notices to screen */
 extern char configdir[256]; /*!< the default directory where we look for configuration files */
-extern char datadir[256]; /*!< the default directory where we look for data files (aka installation dir) */
+extern char data_dir[256]; /*!< the default directory where we look for data files (aka installation dir) */
 #if !defined(WINDOWS) && !defined(OSX)
 extern int use_clipboard; /*!< whether to use CLIPBOARD or PRIMARY for pasting */
 #endif
@@ -305,7 +305,7 @@ extern int exit_now;	/*!< a flag that indicates we should exit the programm imme
 extern int restart_required;    /*!< a flag that the exit should attempt to restart, not just exit */
 extern int allow_restart;   /*!< a flag that indicates if restarting after download is permitted */
 
-extern char lang[10]; /*!< contains the identifier for the current language. \todo Shouldn't this go into translate.h? */
+extern char language[10]; /*!< contains the identifier for the current language. \todo Shouldn't this go into translate.h? */
 
 extern int video_mode_set;
 

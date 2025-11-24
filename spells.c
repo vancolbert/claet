@@ -94,12 +94,11 @@ typedef struct
 	int have_sigil;
 }sigil_def;
 
-#ifdef FR_FAST_SPELL
 int selected_spell = -1;
-int selected_spell_sent = 0;
+int selected_spell_sent;
 int selected_spell_target = -1;
-int fast_spell_cible_bool = 0;
-#endif
+int fast_spell_cible_bool;
+int set_fast_spell_target;
 
 sigil_def sigils_list[SIGILS_NO];
 int sigils_text;
@@ -140,20 +139,16 @@ typedef struct {
 } spell_info;
 
 spell_info spells_list[SPELLS_NO];
-int num_spells=0;
+int num_spells;
 Uint8 spell_text[256];
 unsigned char spell_help[256];
 Sint8 on_cast[6];
 Uint8 last_spell_str[20];
-int last_spell_len= 0;
-int spell_result=0;
-int have_error_message=0;
-int we_have_spell=-1; //selected spell
-int on_spell=-1;//mouse over this spell
-#ifdef ENGLISH
-int show_poison_count = 0; // elconfig variable
-static int poison_drop_counter = 0;
-#endif //ENGLISH
+int last_spell_len;
+int spell_result;
+int have_error_message;
+int we_have_spell = -1; //selected spell
+int on_spell = -1;//mouse over this spell
 
 typedef struct {
 	unsigned char desc[120];
@@ -161,7 +156,7 @@ typedef struct {
 	int spells_id[SPELLS_NO];
 	int x,y;
 } group_def;
-int num_groups=0;
+int num_groups;
 group_def groups_list[GROUPS_NO];
 
 typedef struct
@@ -184,219 +179,50 @@ int last_win=-1;
 #ifdef FR_FENETRE_NECRO
 int necro_win = -1;
 #ifdef FR_NECRO_RECETTES
-int creature_en_cours = 0;
-int double_invoc = 0;
+int creature_en_cours;
+int double_invoc;
 int securite_invoc = 1;
 int nb_recettes_necro = -1;//Nombre recettes de nécro		45
 char **nom_bestiole;	//Tableau des noms des invocation	char nom_bestiole[45][30]
 int **liste_items_necro;//Tableau des recettes			int liste_items_necro[45][20]    (mars 2020)
-static char items_string[350]={0};
-static size_t last_items_string_id = 0;
+static char items_string[350];
+static size_t last_items_string_id;
 #endif //FR_NECRO_RECETTES
 #endif //FR_FENETRE_NECRO
-int start_mini_spells=0; //do we start minimized?
-int init_ok=0;
+int start_mini_spells; //do we start minimized?
+int init_ok;
 int sigil_menu_x=10;
 int sigil_menu_y=20;
 //big window
-int spell_x_len=0;
-int spell_y_len=0;
-int spell_y_len_ext=0;
+int spell_x_len;
+int spell_y_len;
+int spell_y_len_ext;
 //sigil window
 int sigil_x_len=NUM_SIGILS_LINE*33+20;
 int sigil_y_len=(3+NUM_SIGILS_ROW)*33;
 //mini window
-int spell_mini_x_len=0;
-int spell_mini_y_len=0;
-int spell_mini_rows=0;
+int spell_mini_x_len;
+int spell_mini_y_len;
+int spell_mini_rows;
 #ifdef FR_FENETRE_NECRO
 //necro window
 int necro_x_len = (NECRO_NO+1) * 33 + NECRO_SPACE_Y + 40 + NECRO_SPACE_Y_BETWEEN * 8;
 int necro_y_len = NECRO_ALIGN_X * 33 + NECRO_SPACE_X + 55 + 190 - 15;
 #endif //FR_FENETRE_NECRO
-#ifdef ENGLISH
-/* spell duration state */
-static Uint16 requested_durations = 0;
-static Uint16 last_requested_duration = 0;
-static size_t buff_duration_colour_id = 0;
-
-/* mapping of spell buff value from spells.xml to buff bit-masks */
-typedef struct buff_buffmask {
-	Uint32 buff;
-	Uint16 buffmask;
-} buff_buffmask;
-static buff_buffmask buff_to_buffmask[NUM_BUFFS] = {
-		{11, BUFF_INVISIBILITY},
-		{3, BUFF_MAGIC_IMMUNITY},
-		{1, BUFF_MAGIC_PROTECTION},
-		{23, BUFF_COLD_SHIELD},
-		{24, BUFF_HEAT_SHIELD},
-		{25, BUFF_RADIATION_SHIELD},
-		{0, BUFF_SHIELD},
-		{7, BUFF_TRUE_SIGHT},
-		{5, BUFF_ACCURACY},
-		{6, BUFF_EVASION},
-		{0xFFFFFFFF, BUFF_DOUBLE_SPEED}
-	};
-
-/* display debug information about buff durations */
-#if defined(BUFF_DURATION_DEBUG)
-static void duration_debug(int buff, int duration, const char*message)
-{
-	size_t i;
-	char buf[128];
-	const char *buff_name = "Unknown";
-	if (buff == 5)
-		buff_name = "Accuracy";
-	else if (buff == 6)
-		buff_name = "Evasion";
-	else
-		for (i=0; i<SPELLS_NO; i++)
-			if (spells_list[i].buff == buff)
-			{
-				buff_name = spells_list[i].name;
-				break;
-			}
-	safe_snprintf(buf, sizeof(buf), "Debug: Buff [%s] %s: %d seconds", buff_name, message, duration, message);
-	LOG_TO_CONSOLE (c_red1, buf);
-}
-#endif
-
-/* Called when the client receives SEND_BUFF_DURATION from server.
- * Set the duration and start the time out for the buff duration.
-*/
-void here_is_a_buff_duration(Uint8 duration)
-{
-	/* check the request is on the queue */
-	if (requested_durations & last_requested_duration)
-	{
-		size_t i;
-		Uint32 buff = 0xFFFFFFFF;
-
-		/* get the spell / buff value from the bit-mask we used */
-		for (i=0; i<NUM_BUFFS; i++)
-			if (last_requested_duration == buff_to_buffmask[i].buffmask)
-			{
-				buff = buff_to_buffmask[i].buff;
-				break;
-			}
-
-		/* if we have a matching spell, set the duration information */
-		for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
-		{
-			if ((active_spells[i].spell != -1) && (buff == active_spells[i].spell))
-			{
-				active_spells[i].cast_time = get_game_time_sec();
-				active_spells[i].duration = (Uint32)duration;
-#if defined(BUFF_DURATION_DEBUG)
-				duration_debug(buff, active_spells[i].duration, "duration from server");
-#endif
-				break;
-			}
-		}
-
-		/* clear request */
-		requested_durations &= ~last_requested_duration;
-		last_requested_duration = 0;
-	}
-
-	/* to save waiting, process others in the queue now */
-	check_then_do_buff_duration_request();
-}
-
-
-/* Called periodically from the main loop
- * Time out any old requests.
- * If no request is pending but we have one in the queue, ask the server for the duration.
-*/
-void check_then_do_buff_duration_request(void)
-{
-	static Uint32 last_request_time = 0;
-
-	/* wait until the client knows the game time fully */
-	if (!is_real_game_second_valid())
-		return;
-
-	/* stop waiting for server response after 10 seconds, clear all other requests */
-	if (last_requested_duration && abs(SDL_GetTicks() - last_request_time) > 10000)
-	{
-		last_requested_duration = 0;
-		requested_durations = 0;
-	}
-
-	/* else if there is no active request but we have one queued, make the server request */
-	else if (!last_requested_duration && requested_durations)
-	{
-		Uint8 str[4];
-
-		last_requested_duration = 1;
-		while (!(requested_durations & last_requested_duration))
-			last_requested_duration <<= 1;
-		last_request_time = SDL_GetTicks();
-
-		str[0] = GET_BUFF_DURATION;
-		*((Uint16 *)(str+1)) = SDL_SwapLE16(last_requested_duration);
-		my_tcp_send (my_socket, str, 3);
-	}
-}
-
-/*	Called when we receive notification that a spell is active.
- * 	If the spell is in the buff bit-mask array, queue the duration request.
-*/
-static void request_buff_duration(Uint32 buff)
-{
-	size_t i;
-	for (i=0; i<NUM_BUFFS; i++)
-		if (buff == buff_to_buffmask[i].buff)
-		{
-			requested_durations |= buff_to_buffmask[i].buffmask;
-			check_then_do_buff_duration_request();
-			return;
-		}
-}
-
-
-typedef struct {
-	char spell_name[60];//The spell_name
-	Sint8 spell_image;//image_id
-	Sint8 spell_id;
-	Uint8 spell_str[30];
-	//to be difficult, we will store the entire string ready
-	//to be sent to the server, including CAST_SPELL and len bytes, len will be byte 2
-} mqbdata;
-#endif //ENGLISH
-
-//QUICKSPELLS
-int clear_mouseover=0;
-int cast_mouseover=0;
-#ifdef ENGLISH
-mqbdata * mqb_data[MAX_QUICKBAR_SLOTS+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-int quickspell_size=20;//size of displayed icons in pixels
-int quickspell_x_len=26;
-int quickspell_y_len=6*30;
-int quickspell_x=60;
-int quickspell_y=64;
-#else //ENGLISH
-mqbdata * mqb_data[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-#ifdef FR_MORE_MQB
-int quickspell_mqb_selected = 0;
-mqbdata * mqb_data2[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-mqbdata * mqb_data3[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-mqbdata * mqb_data4[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-mqbdata * mqb_data5[QUICKSPELLS_MAXSIZE+1]={NULL};//mqb_data will hold the magic quickbar name, image, pos.
-#endif //FR_MORE_MQB
-int quickspells_nb = 0;             // nombre de raccourcis existants
+int clear_mouseover;
+int cast_mouseover;
+Mqbspell *mqbars[5][QUICKSPELLS_MAXSIZE + 1];
+int quickspell_mqb_selected;
+int quickspells_nb;             // nombre de raccourcis existants
 int quickspells_size = 6;           // nombre de raccourcis    (cf ini)
 int quickspells_dir = VERTICAL;     // orientation par défaut  (cf cfg)
 int quickspells_on_top = 1;         // toujours au dessus ?    (cf cfg)
-int quickspells_draggable = 0;      // fenêtre déplaçable ?    (cf cfg)
+int quickspells_draggable;      // fenêtre déplaçable ?    (cf cfg)
 int quickspell_x = HUD_MARGIN_X;    // position x par défaut   (cf cfg)
 int quickspell_y = HUD_MARGIN_X;    // position y par défaut   (cf cfg)
 int quickspell_x_len = (1+30)*1 +1; // largeur par défaut
 int quickspell_y_len = (1+30)*1 +1; // longueur par défaut
-#endif //ENGLISH
-int quickspells_loaded = 0;
-
+int quickspells_loaded;
 
 int cast_handler();
 int prepare_for_cast();
@@ -410,14 +236,13 @@ size_t cm_quickspells_win_id = CM_INIT_VALUE;
 size_t cm_quickspells_id = CM_INIT_VALUE;
 void cm_update_quickspells(void);
 
-
 #ifdef FR_RCM_MAGIE
-    int sort_menu_x=10;
-    int sort_menu_y=20;
-    int sort_menu_x_len=9*33+20;
-    int sort_menu_y_len=4*33+115;
-    static int button_y_top = 4*33+40;
-    static int button_y_bot = 4*33+60;
+int sort_menu_x=10;
+int sort_menu_y=20;
+int sort_menu_x_len=9*33+20;
+int sort_menu_y_len=4*33+115;
+static int button_y_top = 4*33+40;
+static int button_y_bot = 4*33+60;
 #endif
 
 void repeat_spell(){
@@ -1013,7 +838,7 @@ void get_active_spell_list(const Uint8 *my_spell_list)
 		// le serveur FR envoit des données différentes
 		active_spells[i].spell = my_spell_list[i*3];
 		// récupération de la durée restante
-		active_spells[i].duration = SDL_SwapLE16(*((Uint16 *)(my_spell_list+i*3+1)));
+		active_spells[i].duration = unpack_u16_le(my_spell_list+i*3+1);
 		if (active_spells[i].spell < 0) active_spells[i].duration = 0;
 		// mémorisation de la date de fin du sort
 		active_spells[i].cast_time = cur_time + active_spells[i].duration * 1000;
@@ -1365,7 +1190,6 @@ void draw_current_spell(int x, int y, int sigils_too){
 	if(we_have_spell>=0){
 		int i,j;
 		unsigned char str[4];
-		//we have a current spell (cliked or casted) !!mqb_data[0] can still be null!!
 		j=we_have_spell;
 		draw_spell_icon(spells_list[j].image,x,y,32,1,0);
 
@@ -1381,13 +1205,9 @@ void draw_current_spell(int x, int y, int sigils_too){
 
 		//draw reagents
 		x+= (sigils_too) ? (33*6+33):(33+16);
-#ifdef ENGLISH
-		for(i=0;spells_list[j].reagents_id[i]>0;i++) {
-#else //ENGLISH
         // Modification car sur les sorts avec 4 essences différentes
         // l'affichage pose soucis
-		for(i=0;spells_list[j].reagents_id[i]>0&&i<4;i++) {
-#endif //ENGLISH
+		for (i = 0; i < 4 && spells_list[j].reagents_id[i] > 0; ++i) {
 			draw_item(spells_list[j].reagents_id[i],x+33*i,y,33);
 			safe_snprintf((char *)str, sizeof(str), "%i",spells_list[j].reagents_qt[i]);
 			draw_string_small_shadowed(x+33*i, y+21, (unsigned char*)str, 1,1.0f,1.0f,1.0f, 0.0f, 0.0f, 0.0f);
@@ -1437,6 +1257,9 @@ void draw_current_spell(int x, int y, int sigils_too){
 	rendergrid (1, 1, x, y, 33, 33);
 }
 
+static inline Mqbspell **cur_mqb(void) {
+	return mqbars[quickspell_mqb_selected];
+}
 int display_sigils_handler(window_info *win)
 {
 	int i;
@@ -1450,7 +1273,8 @@ int display_sigils_handler(window_info *win)
 	//let's add the new spell icon if we have one
 	x_start=350;
 	y_start=112;
-	if(mqb_data[0] && mqb_data[0]->spell_id!=-1) draw_spell_icon(mqb_data[0]->spell_image,x_start,y_start,32,1,0);
+	Mqbspell **m = cur_mqb();
+	if (m[0] && m[0]->spell_id != -1) draw_spell_icon(m[0]->spell_image, x_start, y_start, 32, 1, 0);
 
 	//ok, now let's draw the objects...
 	for(i=0;i<SIGILS_NO;i++){
@@ -1488,7 +1312,7 @@ int display_sigils_handler(window_info *win)
 
 	glEnable(GL_TEXTURE_2D);
 
-	if(show_last_spell_help && mqb_data[0] && mqb_data[0]->spell_id!=-1)show_help(mqb_data[0]->spell_name,350-8*strlen(mqb_data[0]->spell_name),120);
+	if (show_last_spell_help && m[0] && m[0]->spell_id != -1) show_help(m[0]->spell_name, 350 - 8*strlen(m[0]->spell_name), 120);
 	show_last_spell_help=0;
 #ifdef OPENGL_TRACE
 CHECK_GL_ERRORS();
@@ -2036,10 +1860,11 @@ int click_switcher_handler(window_info *win, int mx, int my, Uint32 flags){
 
 int click_sigils_handler(window_info *win, int mx, int my, Uint32 flags)
 {
+	Mqbspell **m = cur_mqb();
 	// only handle real clicks, not scroll wheel moves
 	if ( (flags & ELW_MOUSE_BUTTON) == 0 ) {
 		return 0;
-	} else if(mx>=350 && mx<=381 && my>=112 && my<=143&&mqb_data[0] && mqb_data[0]->spell_id!=-1) {
+	} else if (mx >= 350 && mx <= 381 && my >= 112 && my <= 143 && m[0] && m[0]->spell_id != -1) {
 		add_spell_to_quickbar();
 		return 1;
 	} else if(mx>0 && mx<NUM_SIGILS_LINE*33 && my>0 && my<NUM_SIGILS_ROW*33) {
@@ -2074,7 +1899,36 @@ int click_sigils_handler(window_info *win, int mx, int my, Uint32 flags)
 	if (init_ok) click_switcher_handler(win,mx,my,flags);
 	return 0;
 }
-
+static void remove_spell_from_quickbar(int pos) {
+	Mqbspell **m = cur_mqb();
+	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || !m[pos]) {
+		return;
+	}
+	free(m[pos]);
+	for (int i = pos; i < QUICKSPELLS_MAXSIZE; ++i) {
+		m[i] = m[i + 1];
+		if (!m[i]) {
+			break;
+		}
+	}
+	m[QUICKSPELLS_MAXSIZE] = 0;
+	resize_quickspells(0);
+	save_quickspells();
+}
+static void modify_mqb_with_prepared_spell(Uint32 click_flags) {
+	if (click_flags & ELW_CTRL) {
+		Mqbspell **m = cur_mqb();
+		if (m[0]) {
+			for (int i = 1; i <= QUICKSPELLS_MAXSIZE; ++i) {
+				if (m[i] && m[i]->spell_id == m[0]->spell_id) {
+					remove_spell_from_quickbar(i);
+				}
+			}
+		}
+	} else {
+		add_spell_to_quickbar();
+	}
+}
 int click_spells_handler(window_info *win, int mx, int my, Uint32 flags){
 	int pos,i,the_group=-1,the_spell=-1;
 	static int last_clicked=0;
@@ -2095,7 +1949,10 @@ int click_spells_handler(window_info *win, int mx, int my, Uint32 flags){
 		//a spell has been clicked
 		int code_pos=(the_group*256+the_spell);
 		we_have_spell=groups_list[the_group].spells_id[the_spell];
-		put_on_cast();
+		if (put_on_cast() && we_have_spell >= 0 && (flags & ELW_RIGHT_MOUSE)) {
+			prepare_for_cast();
+			modify_mqb_with_prepared_spell(flags);
+		}
 		//handle double click && cast spell
 		if ( ((SDL_GetTicks() - last_clicked) < 400)&&last_pos==code_pos) cast_handler();
 		else have_error_message=0; //if not double click, clear server msg
@@ -2105,13 +1962,11 @@ int click_spells_handler(window_info *win, int mx, int my, Uint32 flags){
 		//check spell icon
 		if(we_have_spell>=0&&mx>20&&mx<53&&my>spell_y_len-37&&my<spell_y_len-4) {
 			if(flags & ELW_LEFT_MOUSE) {
-				//cast spell
 				if (put_on_cast()) cast_handler();
 			} else if (flags & ELW_RIGHT_MOUSE) {
-				//add to quickbar
-				if(put_on_cast()) {
+				if (put_on_cast()) {
 					prepare_for_cast();
-					add_spell_to_quickbar();
+					modify_mqb_with_prepared_spell(flags);
 				}
 			}
 		} else click_switcher_handler(win,mx,my,flags);
@@ -2283,8 +2138,8 @@ int mouseover_sigils_handler(window_info *win, int mx, int my)
 	if(!have_error_message) {
 		spell_text[0] = 0;
 	}
-
-	if(mx>=350 && mx<=381 && my>=112 && my<=143&&mqb_data[0] &&mqb_data[0]->spell_name[0]) {
+	Mqbspell **m = cur_mqb();
+	if (mx >= 350 && mx <= 381 && my >= 112 && my <= 143 && m[0] && m[0]->spell_name[0]) {
 		show_last_spell_help = 1;
 	}
 
@@ -2310,18 +2165,11 @@ int mouseover_sigils_handler(window_info *win, int mx, int my)
 		}
 		return 0;
 	}
-
-	if(mx>=350 && mx<=381 && my>=112 && my<=143 && mqb_data[0] && mqb_data[0]->spell_id != -1) {
-#ifdef ENGLISH
-		safe_snprintf((char*)spell_text, sizeof(spell_text), "Click to add the spell to the quickbar");
-#else //ENGLISH
+	if (mx >= 350 && mx <= 381 && my >= 112 && my <= 143 && m[0] && m[0]->spell_id != -1) {
 		safe_snprintf((char*)spell_text, sizeof(spell_text), click_to_add_str);
-#endif //ENGLISH
 		return 0;
 	}
-#ifdef FR_VERSION
 	mouseover_switcher_handler(win, mx, my);
-#endif //FR_VERSION
 	return 0;
 }
 
@@ -2466,7 +2314,7 @@ int mouseover_necro_handler(window_info *win, int mx, int my)
 void get_sigils_we_have(Uint32 sigils_we_have, Uint32 sigils2)
 {
 	int i;
-	int po2=1;
+	Uint32 po2=1;
 
 	// the first 32 sigils
 	for(i=0;i<32;i++)
@@ -2486,168 +2334,90 @@ void get_sigils_we_have(Uint32 sigils_we_have, Uint32 sigils2)
 		}
 	check_castability();
 }
-
-
-int have_spell_name(int spell_id)
-{
-	int i;
-
-#ifdef ENGLISH
-	for(i=1;i<MAX_QUICKBAR_SLOTS+1;i++){
-#else //ENGLISH
-    for(i=1;i<=QUICKSPELLS_MAXSIZE;i++){
-#endif //ENGLISH
-		if(mqb_data[i] && mqb_data[i]->spell_id==spell_id && mqb_data[i]->spell_name[0]){
-			if(mqb_data[0])
-				safe_snprintf(mqb_data[0]->spell_name, sizeof(mqb_data[0]->spell_name), "%s", mqb_data[i]->spell_name);
+int have_spell_name(int spell_id) {
+	Mqbspell **m = cur_mqb();
+	for (int i = 1; i <= QUICKSPELLS_MAXSIZE; ++i) {
+		if (m[i] && m[i]->spell_id == spell_id && m[i]->spell_name[0]) {
+			if (m[0]) {
+				memcpy(m[0]->spell_name, m[i]->spell_name, sizeof(m[0]->spell_name));
+			}
 			return 1;
 		}
 	}
 	return 0;
 }
-
-
-void set_spell_name (int id, const char *data, int len)
-{
-	int i;
-
-	if (len >= 60) return;
-
+void set_spell_name(int id, const char *data, int len) {
 	counters_set_spell_name(id, (char *)data, len);
-
-#ifdef ENGLISH
-	for (i = 0; i < MAX_QUICKBAR_SLOTS+1; i++)
-#else //ENGLISH
-	for (i = 0; i < QUICKSPELLS_MAXSIZE; i++)
-#endif //ENGLISH
-	{
-		if (mqb_data[i] != NULL && mqb_data[i]->spell_id==id)
-		{
-			safe_snprintf (mqb_data[i]->spell_name, sizeof(mqb_data[i]->spell_name), "%.*s", len, data);
-		}
-	}
-
-}
-
-#ifdef ENGLISH
-static void spell_cast(const Uint8 id)
-{
-	Uint32 i, spell;
-
-	spell = 0xFFFFFFFF;
-
-	for (i = 0; i < SPELLS_NO; i++)
-	{
-		if (spells_list[i].id == id)
-		{
-			spell = spells_list[i].buff;
-			break;
-		}
-	}
-
-	for (i = 0; i < NUM_ACTIVE_SPELLS; i++)
-	{
-		if (active_spells[i].spell == spell)
-		{
-#ifdef ENGLISH
-			request_buff_duration(spell);
-#else //ENGLISH
-			active_spells[i].cast_time = SDL_GetTicks();
-#endif //ENGLISH
-			return;
+	Mqbspell **m = cur_mqb();
+	int s = sizeof(m[0]->spell_name), n = min2i(len, s - 1);
+	for (int i = 0; i <= QUICKSPELLS_MAXSIZE; ++i) {
+		if (m[i] && m[i]->spell_id == id)  {
+			safe_snprintf(m[i]->spell_name, s, "%.*s", n, data);
 		}
 	}
 }
-#endif //ENGLISH
-
-void process_network_spell (const char *data, int len)
-{
+void process_network_spell(const char *d, int len) {
 	last_spell_name[0] = '\0';
-	switch (data[0])
-	{
-		case S_INVALID:
-			spell_result=0;
-			LOG_TO_CONSOLE(c_red1, invalid_spell_str);
-			return;
-		case S_NAME:
-			set_spell_name (data[1], &data[2], len-2);//Will set the spell name of the given ID
-			return;;
-		case S_SELECT_TARGET://spell_result==3
-		  spell_result=3;
-#ifdef FR_FAST_SPELL
-		  if(selected_spell != -1 && selected_spell_sent) {
-		    fast_spell_cast();
-		  }
-#endif
-		  action_mode=ACTION_WAND;
-
-			break;
-		case S_SELECT_TELE_LOCATION://spell_result==2
-		  // we're about to teleport, don't let the pathfinder
-		  // interfere with our destination
-		  if (pf_follow_path) pf_destroy_path ();
-
-#ifdef FR_FAST_SPELL
-		  if(selected_spell != -1 && selected_spell_sent) {
-		    fast_spell_teleport();
-		  }
-#endif
-
-		  spell_result=2;
-		  action_mode=ACTION_WAND;
-
-			break;
-		case S_SUCCES://spell_result==1
-			spell_result=1;
-#ifdef FR_FAST_SPELL
-			if(selected_spell_sent) {
-			  action_mode=ACTION_ATTACK;
-			  selected_spell_sent = 0;
-			} else
-#endif
-			action_mode=ACTION_WALK;
-#ifdef ENGLISH
-			spell_cast(data[1]);
-#endif //ENGLISH
-			break;
-		case S_FAILED:
-#ifdef FR_FAST_SPELL
-		  	if(selected_spell_sent) {
-			  selected_spell_sent = 0;
-			  action_mode=ACTION_ATTACK;
-			} else
-#endif
-			action_mode=ACTION_WALK;
-			spell_result=0;
-
-			return;
-	}
-
-	if(!mqb_data[0]){
-		mqb_data[0]=(mqbdata*)calloc(1,sizeof(mqbdata));
-		mqb_data[0]->spell_id=-1;
-	}
-
-	if(mqb_data[0]->spell_id!=data[1]){
-		if(!have_spell_name(data[1])){
-			Uint8 str[2];
-
-			str[0]=SPELL_NAME;
-			str[1]=data[1];
-			my_tcp_send(my_socket, str, 2);
+	switch (d[0]) {
+	case S_INVALID:
+		spell_result = 0;
+		LOG_TO_CONSOLE(c_red1, invalid_spell_str);
+		return;
+	case S_NAME:
+		set_spell_name(d[1], d + 2, len - 2); // Will set the spell name of the given ID
+		return;
+	case S_SELECT_TARGET:
+		spell_result = 3;
+		if (selected_spell != -1 && selected_spell_sent) {
+			fast_spell_cast(selected_spell_target);
 		}
-
-		mqb_data[0]->spell_id=data[1];
-		mqb_data[0]->spell_image=data[2];
+		action_mode = ACTION_WAND;
+		break;
+	case S_SELECT_TELE_LOCATION:
+		spell_result = 2;
+		// we're about to teleport, don't let the pathfinder
+		// interfere with our destination
+		if (pf_follow_path) {
+			pf_destroy_path();
+		}
+		if (selected_spell != -1 && selected_spell_sent) {
+			fast_spell_teleport();
+		}
+		action_mode = ACTION_WAND;
+		break;
+	case S_SUCCES:
+		spell_result = 1;
+		if (selected_spell_sent) {
+			action_mode = ACTION_ATTACK;
+			selected_spell_sent = 0;
+		} else {
+			action_mode = ACTION_WALK;
+		}
+		break;
+	case S_FAILED:
+		spell_result = 0;
+		if (selected_spell_sent) {
+			selected_spell_sent = 0;
+			action_mode = ACTION_ATTACK;
+		} else {
+			action_mode = ACTION_WALK;
+		}
+		return;
+	}
+	Mqbspell **m = cur_mqb();
+	if (!m[0]) {
+		m[0] = calloc(1, sizeof(**m));
+		m[0]->spell_id = -1;
+	}
+	if (m[0]->spell_id != d[1]) {
+		m[0]->spell_id = d[1];
+		m[0]->spell_image = d[2];
+		if (!have_spell_name(d[1])) {
+			Uint8 b[2] = {SPELL_NAME, d[1]};
+			my_tcp_send(my_socket, b, 2);
+		}
 	}
 }
-
-
-
-/****** QUICKSPELLS FUNCTIONS *****/
-
-#ifdef FR_VERSION
-
 /* Retourne l'indice de la case de la barre rapide correspondant aux coordonnées de la souris */
 int get_quickspell_from_mouse(int mx, int my)
 {
@@ -2719,10 +2489,11 @@ void reset_quickspells()
 /* Mise à jour du nombre d'icones affichées et redimensionnement de la barre si nécessaire */
 int resize_quickspells(int nb)
 {
+	Mqbspell **m = cur_mqb();
 	if (nb >= 0)
 	{
 		if (nb > quickspells_size) nb = quickspells_size;
-		while ((nb<quickspells_size) && (mqb_data[nb+1])) nb++;
+		while ((nb<quickspells_size) && (m[nb+1])) nb++;
 		if (nb < 1) nb = 1; // minimum 1 case, même sans icone
 	}
 	if (nb != quickspells_nb)
@@ -2736,1499 +2507,171 @@ int resize_quickspells(int nb)
 	}
 	return nb;
 }
-
-#endif //FR_VERSION
-
-//Quickspell I/O start
-
-
-void add_spell_to_quickbar()
-{
+void add_spell_to_quickbar(void) {
+	Mqbspell **m = cur_mqb();
+	if (!m[0]) {
+		return;
+	}
 	int i;
-
-	if(!mqb_data[0])
-		return;
-
-#ifdef ENGLISH
-	for(i=1;i<num_quickbar_slots+1;i++) {
-		if(mqb_data[i] && mqb_data[0]->spell_id==mqb_data[i]->spell_id) {
+	for (i = 1; i <= QUICKSPELLS_MAXSIZE; ++i) {
+		if (m[i] && m[0]->spell_id == m[i]->spell_id) {
+			if (i > quickspells_size) {
+				Mqbspell *t = m[quickspells_size];
+				m[quickspells_size] = m[i];
+				m[i] = t;
+				save_quickspells();
+			}
 			return;
 		}
 	}
-
-	for (i = 1; i < num_quickbar_slots+1; i++)
-	{
-		if (mqb_data[i] == NULL)
-		{
-			// Free slot
-			mqb_data[i] = calloc(1, sizeof (mqbdata));
+	for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++) {
+		if (!m[i]) {
+			m[i] = calloc(1, sizeof(**m));
+			resize_quickspells(i);
 			break;
 		}
 	}
-
-	if (i >= num_quickbar_slots+1)
-		// No free slot, overwrite the last entry
-		i = num_quickbar_slots;
-
-	memcpy (mqb_data[i], mqb_data[0], sizeof (mqbdata));
+	if (i > QUICKSPELLS_MAXSIZE) {
+		*m[quickspells_size] = *m[0];
+	} else if (i > quickspells_size) {
+		*m[i] = *m[quickspells_size];
+		*m[quickspells_size] = *m[0];
+	} else {
+		*m[i] = *m[0];
+	}
 	save_quickspells();
-	cm_update_quickspells();
-#else //ENGLISH
-
-#ifndef FR_MORE_MQB
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data[i] && mqb_data[0]->spell_id==mqb_data[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data[quickspells_size];
-				mqb_data[quickspells_size] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data[i] == NULL)
-		{
-			// Free slot
-			mqb_data[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data[i], mqb_data[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data[i], mqb_data[0], sizeof(mqbdata));
-	}
-#else //FR_MORE_MQB
-
-switch (quickspell_mqb_selected)
-{
-case 0:
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data[i] && mqb_data[0]->spell_id==mqb_data[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data[quickspells_size];
-				mqb_data[quickspells_size] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data[i] == NULL)
-		{
-			// Free slot
-			mqb_data[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data[i], mqb_data[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data[i], mqb_data[0], sizeof(mqbdata));
-	}
-	break;
-case 1:
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data2[i] && mqb_data[0]->spell_id==mqb_data2[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data2[quickspells_size];
-				mqb_data2[quickspells_size] = mqb_data2[i];
-				mqb_data2[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data2[i] == NULL)
-		{
-			// Free slot
-			mqb_data2[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data2[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data2[i], mqb_data2[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data2[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data2[i], mqb_data[0], sizeof(mqbdata));
-	}
-	break;
-case 2:
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data3[i] && mqb_data[0]->spell_id==mqb_data3[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data3[quickspells_size];
-				mqb_data3[quickspells_size] = mqb_data3[i];
-				mqb_data3[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data3[i] == NULL)
-		{
-			// Free slot
-			mqb_data3[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data3[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data3[i], mqb_data3[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data3[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data3[i], mqb_data[0], sizeof(mqbdata));
-	}
-	break;
-case 3:
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data4[i] && mqb_data[0]->spell_id==mqb_data4[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data4[quickspells_size];
-				mqb_data4[quickspells_size] = mqb_data4[i];
-				mqb_data4[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data4[i] == NULL)
-		{
-			// Free slot
-			mqb_data4[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data4[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data4[i], mqb_data4[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data4[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data4[i], mqb_data[0], sizeof(mqbdata));
-	}
-	break;
-case 4:
-	// recherche si le raccourci existe déjà dans la barre
-    for (i=1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data5[i] && mqb_data[0]->spell_id==mqb_data5[i]->spell_id)
-		{
-			// échange avec le dernier visible s'il se trouvait au delà
-			if (i > quickspells_size)
-			{
-				mqbdata * mqb_temp;
-				mqb_temp = mqb_data5[quickspells_size];
-				mqb_data5[quickspells_size] = mqb_data5[i];
-				mqb_data5[i] = mqb_temp;
-				save_quickspells();
-			}
-			return;
-		}
-	}
-
-    for (i = 1; i <= QUICKSPELLS_MAXSIZE; i++)
-	{
-		if (mqb_data5[i] == NULL)
-		{
-			// Free slot
-			mqb_data5[i] = calloc(1, sizeof(mqbdata));
-			resize_quickspells(i);
-			break;
-		}
-	}
-
-	if (i > QUICKSPELLS_MAXSIZE)
-	{
-		// barre complète : on remplace le dernier raccourci visible
-		memcpy(mqb_data5[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else if (i > quickspells_size)
-	{
-		// place dispo au delà des raccourcis visible : échange avec le dernier
-		memcpy(mqb_data5[i], mqb_data5[quickspells_size], sizeof(mqbdata));
-		memcpy(mqb_data5[quickspells_size], mqb_data[0], sizeof(mqbdata));
-	}
-	else
-	{
-		memcpy(mqb_data5[i], mqb_data[0], sizeof(mqbdata));
-	}
-	break;
-
-default:
-	break;
-}
-	
-
-#endif //FR_MORE_MQB
-	save_quickspells();
-#endif //ENGLISH
 }
 
-void remove_spell_from_quickbar (int pos)
-{
-	int i = 0;
-
-#ifdef ENGLISH
-	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) {
-		return;
-	}
-
-	// remove the spell
-	free (mqb_data[pos]);
-
-	// move the other spells one up
-	for (i = pos; i < MAX_QUICKBAR_SLOTS; i++) {
-		mqb_data[i] = mqb_data[i+1];
-	}
-
-	mqb_data[MAX_QUICKBAR_SLOTS] = NULL;
-	save_quickspells();
-	cm_update_quickspells();
-
-#else //ENGLISH
-#ifndef FR_MORE_MQB
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data[i] = mqb_data[i+1];
-		if (mqb_data[i] == NULL) break;
-	}
-
-	mqb_data[QUICKSPELLS_MAXSIZE] = NULL;
-#else //FR_MORE_MQB
-switch (quickspell_mqb_selected)
-{
-case 0:
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data[i] = mqb_data[i+1];
-		if (mqb_data[i] == NULL) break;
-	}
-
-	mqb_data[QUICKSPELLS_MAXSIZE] = NULL;
-	break;
-case 1:
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data2[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data2[i] = mqb_data2[i+1];
-		if (mqb_data2[i] == NULL) break;
-	}
-
-	mqb_data2[QUICKSPELLS_MAXSIZE] = NULL;
-	break;
-case 2:
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data3[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data3[i] = mqb_data3[i+1];
-		if (mqb_data3[i] == NULL) break;
-	}
-
-	mqb_data3[QUICKSPELLS_MAXSIZE] = NULL;
-	break;
-case 3:
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data4[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data4[i] = mqb_data4[i+1];
-		if (mqb_data4[i] == NULL) break;
-	}
-
-	mqb_data4[QUICKSPELLS_MAXSIZE] = NULL;
-	break;
-case 4:
-	if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data5[pos] == NULL) return;
-
-	// remonte les raccourcis suivants (tant qu'il en existe)
-	for (i = pos; i < QUICKSPELLS_MAXSIZE; i++) {
-		mqb_data5[i] = mqb_data5[i+1];
-		if (mqb_data5[i] == NULL) break;
-	}
-
-	mqb_data5[QUICKSPELLS_MAXSIZE] = NULL;
-	break;
-
-default:
-	break;
-}
-	
-#endif //FR_MORE_MQB
-	resize_quickspells(i - 1);
-	save_quickspells();
-#endif //ENGLISH
-}
-
-
-void move_spell_on_quickbar (int pos, int direction)
-{
-	int i=pos;
-	mqbdata * mqb_temp;
-#ifdef FR_VERSION
-#ifndef FR_MORE_MQB
-    if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-	switch (direction) {
-		case 0 : // up
-		    if (pos == 1) return;
-			mqb_temp = mqb_data[i-1];
-			mqb_data[i-1] = mqb_data[i];
-			mqb_data[i] = mqb_temp;
-			break;
-		case 1 : // down
-			if (pos == QUICKSPELLS_MAXSIZE) return;
-			mqb_temp = mqb_data[i+1];
-			mqb_data[i+1] = mqb_data[i];
-			mqb_data[i] = mqb_temp;
-			break;
-		case 2 : // first
-		    if (pos == 1) return;
-			mqb_temp = mqb_data[pos];
-			for (i=pos; i>1; i--) mqb_data[i] = mqb_data[i-1];
-			mqb_data[1] = mqb_temp;
-			break;
-		case 3 : // last
-			if (pos == quickspells_nb) return;
-			mqb_temp = mqb_data[pos];
-			for (i=pos; i<quickspells_nb; i++) mqb_data[i] = mqb_data[i+1];
-			mqb_data[quickspells_nb] = mqb_temp;
-			break;
-	}
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data[i-1];
-				mqb_data[i-1] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data[i+1];
-				mqb_data[i+1] = mqb_data[i];
-				mqb_data[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data[pos];
-				for (i=pos; i>1; i--) mqb_data[i] = mqb_data[i-1];
-				mqb_data[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data[i] = mqb_data[i+1];
-				mqb_data[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 1:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data2[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data2[i-1];
-				mqb_data2[i-1] = mqb_data2[i];
-				mqb_data2[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data2[i+1];
-				mqb_data2[i+1] = mqb_data2[i];
-				mqb_data2[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data2[pos];
-				for (i=pos; i>1; i--) mqb_data2[i] = mqb_data2[i-1];
-				mqb_data2[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data2[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data2[i] = mqb_data2[i+1];
-				mqb_data2[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 2:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data3[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data3[i-1];
-				mqb_data3[i-1] = mqb_data3[i];
-				mqb_data3[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data3[i+1];
-				mqb_data3[i+1] = mqb_data3[i];
-				mqb_data3[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data3[pos];
-				for (i=pos; i>1; i--) mqb_data3[i] = mqb_data3[i-1];
-				mqb_data3[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data3[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data3[i] = mqb_data3[i+1];
-				mqb_data3[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 3:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data4[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data4[i-1];
-				mqb_data4[i-1] = mqb_data4[i];
-				mqb_data4[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data4[i+1];
-				mqb_data4[i+1] = mqb_data4[i];
-				mqb_data4[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data4[pos];
-				for (i=pos; i>1; i--) mqb_data4[i] = mqb_data4[i-1];
-				mqb_data4[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data4[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data4[i] = mqb_data4[i+1];
-				mqb_data4[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	case 4:
-		if (pos < 1 || pos > QUICKSPELLS_MAXSIZE || mqb_data5[pos] == NULL) return;
-		switch (direction) {
-			case 0 : // up
-				if (pos == 1) return;
-				mqb_temp = mqb_data5[i-1];
-				mqb_data5[i-1] = mqb_data5[i];
-				mqb_data5[i] = mqb_temp;
-				break;
-			case 1 : // down
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data5[i+1];
-				mqb_data5[i+1] = mqb_data5[i];
-				mqb_data5[i] = mqb_temp;
-				break;
-			case 2 : // first
-				if (pos == 1) return;
-				mqb_temp = mqb_data5[pos];
-				for (i=pos; i>1; i--) mqb_data5[i] = mqb_data5[i-1];
-				mqb_data5[1] = mqb_temp;
-				break;
-			case 3 : // last
-				if (pos == quickspells_nb) return;
-				mqb_temp = mqb_data5[pos];
-				for (i=pos; i<quickspells_nb; i++) mqb_data5[i] = mqb_data5[i+1];
-				mqb_data5[quickspells_nb] = mqb_temp;
-				break;
-		}	
-		break;
-	
-	default:
-		break;
-	}
-#endif //FR_MORE_MQB
-	save_quickspells();
-#else //FR_VERSION
-	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) return;
-	if ((pos ==1 && direction==0)||(pos==num_quickbar_slots && direction==1)) return;
-	if (direction==0){
-		mqb_temp=mqb_data[i-1];
-		mqb_data[i-1]=mqb_data[i]; //move it up
-		mqb_data[i]=mqb_temp; //move it up
+void move_spell_on_quickbar(int pos, int where) {
+	Mqbspell **m = cur_mqb(), *t;
+	int i = pos, last = 1;
+	for (; last <= QUICKSPELLS_MAXSIZE && m[last]; ++last);
+	if (i > 0 && i <= --last && (t = m[i])) {
+		enum { w_up, w_down, w_first, w_last };
+		if (where == w_up && i > 1) {
+			m[i--] = m[pos - 1];
+		} else if (where == w_down && i < last) {
+			m[i++] = m[pos + 1];
+		} else if (where == w_first && i > 1) {
+			memmove(m + 2, m + 1, sizeof(*m)*(i - 1));
+			i = 1;
+		} else if (where == w_last && i < last) {
+			memmove(m + i, m + i + 1, sizeof(*m)*(last - i));
+			i = last;
+		}
+		m[i] = t;
 		save_quickspells();
 	}
-	else if(direction==1){
-		if(mqb_data[pos+1] == NULL) return;
-		mqb_temp=mqb_data[i+1];
-		mqb_data[i+1]=mqb_data[i]; //move it down
-		mqb_data[i]=mqb_temp; //move it down
-		save_quickspells();
-	}
-#endif //FR_VERSION
 }
 
-static mqbdata* build_quickspell_data(const Uint32 spell_id)
-{
-	Uint8 str[20];
-	mqbdata* result;
-	Uint32 i, count, index, len, size;
-
-	index = 0xFFFFFFFF;
-
-	for (i = 0; i < SPELLS_NO; i++)
-	{
-		if (spells_list[i].id == spell_id)
-		{
-			index = i;
+static Mqbspell *build_quickspell_data(Uint32 spell_id) {
+	spell_info *s = 0;
+	for (spell_info *p = spells_list, *e = p + SPELLS_NO; p < e; ++p) {
+		if (p->id == spell_id) {
+			s = p;
 			break;
 		}
 	}
-
-	if (index == 0xFFFFFFFF)
-	{
+	if (!s) {
 		LOG_WARNING("Invalid spell id %d", spell_id);
-
 		return 0;
 	}
-
-	memset(str, 0, sizeof(str));
-
-	count = 0;
-
-	for (i = 0; i < 6; i++)
-	{
-		if (spells_list[index].sigils[i] != -1)
-		{
-			str[count + 2] = spells_list[index].sigils[i];
-			count++;
-		}
-	}
-
-	str[0] = CAST_SPELL;
-	str[1] = count;
-
-	result = calloc(1, sizeof(mqbdata));
-
-	if (result == 0)
-	{
+	Mqbspell *r = calloc(1, sizeof(*r));
+	if (!r) {
 		LOG_WARNING("Can't allocate memory for spell");
-
 		return 0;
 	}
-
-	result->spell_id = spells_list[index].id;
-	result->spell_image = spells_list[index].image;
-
-	size = sizeof(result->spell_name);
-
-	len = strlen(spells_list[index].name);
-
-	if (size > len)
-	{
-		size = len;
+	Uint8 *b = r->spell_str;
+	b[0] = CAST_SPELL;
+	int n = 0;
+	for (int i = 0; i < 6; ++i) {
+		if (s->sigils[i] != -1) {
+			b[n++ + 2] = s->sigils[i];
+		}
 	}
-	else
-	{
-		size -= 1;
-	}
-
-	memset(result->spell_name, 0, size);
-	memset(result->spell_str, 0, sizeof(result->spell_str));
-	memcpy(result->spell_name, spells_list[index].name, len);
-	memcpy(result->spell_str, str, count + 2);
-
-	return result;
+	b[1] = n;
+	r->spell_id = s->id;
+	r->spell_image = s->image;
+	safe_snprintf(r->spell_name, sizeof(r->spell_name), "%s", s->name);
+	return r;
 }
 
-#ifndef FR_MORE_MQB
-void load_quickspells ()
-{
-	char fname[128];
-	Uint8 num_spells;
-	FILE *fp;
-	Uint32 i, index;
-
-	// Grum: move this over here instead of at the end of the function,
-	// so that quickspells are always saved when the player logs in.
-	// (We're only interested in if this function is called, not if it
-	// succeeds)
+static inline void make_mqb_filename(char *b, int n, int i) {
+	char s[8] = {i ? '1' + i : 0};
+	safe_snprintf(b, n, "spells_%s%s.dat", username, s);
+	my_tolower(b);
+}
+static void load_mqb(int which) {
+	char p[128];
+	make_mqb_filename(p, sizeof(p), which);
+	if (file_exists_config(p) != 1) {
+		return;
+	}
+	FILE *f = open_file_config(p, "rb");
+	if (!f) {
+		LOG_ERROR("%s: %s \"%s\": %s", reg_error_str, cant_open_file, p, strerror(errno));
+		return;
+	}
+	Uint8 n;
+	if (fread(&n, sizeof(n), 1, f) != 1) {
+		LOG_ERROR("%s() read failed for [%s]", __FUNCTION__, p);
+		fclose(f);
+		return;
+	}
+	if (n) {
+		--n;
+	}
+	if (n > QUICKSPELLS_MAXSIZE) {
+		LOG_WARNING("Too many spells (%d), only %d spells allowed", n, QUICKSPELLS_MAXSIZE);
+		n = QUICKSPELLS_MAXSIZE;
+	}
+	Mqbspell **m = mqbars[which];
+	for (int i = 0, j = 1; i < n; ++i) {
+		Mqbspell t;
+		if (fread(&t, sizeof(t), 1, f) == 1) {
+			if ((m[j] = build_quickspell_data(t.spell_id))) {
+				++j;
+			}
+		} else {
+			LOG_ERROR("Failed reading spell %d from file '%s'", i, p);
+		}
+	}
+	fclose(f);
+}
+void load_quickspells(void) {
+	for (int i = 0; i < 5; ++i) {
+		load_mqb(i);
+	}
 	quickspells_loaded = 1;
-
-	//open the data file
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
-	my_tolower(fname);
-
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname)!=1)
-		return;
-
-	fp = open_file_config(fname,"rb");
-
-	if (fp == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname, strerror(errno));
-		return;
-	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname);
-		fclose (fp);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-#ifdef FR_VERSION
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-#else //FR_VERSION
-	if (num_spells > MAX_QUICKBAR_SLOTS)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, MAX_QUICKBAR_SLOTS);
-
-		num_spells = MAX_QUICKBAR_SLOTS;
-	}
-#endif //FR_VERSION
-
-	memset(mqb_data, 0, sizeof (mqb_data));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname);
-
-	index = 1;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname);
-			continue;
-		}
-
-		mqb_data[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data[index]->spell_name, index);
-
-		index++;
-	}
-	fclose (fp);
-
-#ifdef FR_VERSION
-	resize_quickspells(index - 1);
-#else //FR_VERSION
-	cm_update_quickspells();
-#endif //FR_VERSION
-
-	LEAVE_DEBUG_MARK("load spells");
+	resize_quickspells(0);
 }
-#else //FR_MORE_MQB
-void load_quickspells ()
-{
-	char fname[128];
-	char fname2[128];
-	char fname3[128];
-	char fname4[128];
-	char fname5[128];
-	Uint8 num_spells;
-	FILE *fp;
-	FILE *fp2;
-	FILE *fp3;
-	FILE *fp4;
-	FILE *fp5;
-	Uint32 i, index, max_index;
-
-	// Grum: move this over here instead of at the end of the function,
-	// so that quickspells are always saved when the player logs in.
-	// (We're only interested in if this function is called, not if it
-	// succeeds)
-	quickspells_loaded = 1;
-
-	//open the data file
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
-	my_tolower(fname);
-	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat",username_str,2);
-	my_tolower(fname2);
-	safe_snprintf(fname3, sizeof(fname3), "spells_%s%d.dat",username_str,3);
-	my_tolower(fname3);
-	safe_snprintf(fname4, sizeof(fname4), "spells_%s%d.dat",username_str,4);
-	my_tolower(fname4);
-	safe_snprintf(fname5, sizeof(fname5), "spells_%s%d.dat",username_str,5);
-	my_tolower(fname5);
-
-	/* First MQB*/
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname)!=1)
-		return;
-
-	fp = open_file_config(fname,"rb");
-
-	if (fp == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname, strerror(errno));
+static void save_mqb(int which) {
+	char p[128];
+	make_mqb_filename(p, sizeof(p), which);
+	FILE *f = open_file_config(p, "wb");
+	if (!f) {
+		LOG_ERROR("%s: %s \"%s\": %s", reg_error_str, cant_open_file, p, strerror(errno));
 		return;
 	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname);
-		fclose (fp);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-
-
-	memset(mqb_data, 0, sizeof (mqb_data));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname);
-
-	index = 1;
-	max_index = index;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname);
-			continue;
+	Mqbspell **m = mqbars[which];
+	Uint8 n;
+	for (n = 1; n <= QUICKSPELLS_MAXSIZE && m[n]; ++n);
+	fwrite(&n, sizeof(n), 1, f);
+	for (int i = 1; i < n; ++i) {
+		if (fwrite(m[i], sizeof(*m[i]), 1, f) != 1) {
+			LOG_ERROR("Failed writing spell '%s' to file '%s'", m[i]->spell_name, p);
+			break;
 		}
-
-		mqb_data[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data[index]->spell_name, index);
-
-		index++;
 	}
-	fclose (fp);
-	if(max_index < index){
-		max_index = index;
-	}
-	resize_quickspells(max_index - 1);
-
-	/* /First MQB*/
-
-	/* Second MQB*/
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname2)!=1)
-		return;
-
-	fp2 = open_file_config(fname2,"rb");
-
-	if (fp2 == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname2, strerror(errno));
-		return;
-	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp2) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname2);
-		fclose (fp2);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-
-
-	memset(mqb_data2, 0, sizeof (mqb_data2));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname2);
-
-	index = 1;
-	max_index = index;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp2) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname2);
-			continue;
-		}
-
-		mqb_data2[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data2[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data2[index]->spell_name, index);
-
-		index++;
-	}
-	fclose (fp2);
-	if(max_index < index){
-		max_index = index;
-	}
-	resize_quickspells(max_index - 1);
-	/* /Second MQB*/
-
-	/* Third MQB*/
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname3)!=1)
-		return;
-
-	fp3 = open_file_config(fname3,"rb");
-
-	if (fp3 == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname3, strerror(errno));
-		return;
-	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp3) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname3);
-		fclose (fp3);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-
-
-	memset(mqb_data3, 0, sizeof (mqb_data3));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname3);
-
-	index = 1;
-	max_index = index;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp3) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname3);
-			continue;
-		}
-
-		mqb_data3[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data3[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data3[index]->spell_name, index);
-
-		index++;
-	}
-	fclose (fp3);
-	if(max_index < index){
-		max_index = index;
-	}
-	resize_quickspells(max_index - 1);
-	/* /Third MQB*/
-
-	/* Fourth MQB*/
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname4)!=1)
-		return;
-
-	fp4 = open_file_config(fname4,"rb");
-
-	if (fp4 == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname4, strerror(errno));
-		return;
-	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp4) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname4);
-		fclose (fp4);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-
-
-	memset(mqb_data4, 0, sizeof (mqb_data4));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname4);
-
-	index = 1;
-	max_index = index;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp4) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname4);
-			continue;
-		}
-
-		mqb_data4[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data4[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data4[index]->spell_name, index);
-
-		index++;
-	}
-	fclose (fp4);
-	if(max_index < index){
-		max_index = index;
-	}
-	resize_quickspells(max_index - 1);
-	/* /Fourth MQB*/
-
-	/* Fifth MQB*/
-	/* sliently ignore non existing file */
-	if (file_exists_config(fname5)!=1)
-		return;
-
-	fp5 = open_file_config(fname5,"rb");
-
-	if (fp5 == NULL)
-	{
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file,
-			fname5, strerror(errno));
-		return;
-	}
-
-	if (fread(&num_spells, sizeof(num_spells), 1, fp5) != 1)
-	{
-		LOG_ERROR("%s() read failed for [%s] \n", __FUNCTION__, fname5);
-		fclose (fp5);
-		return;
-	}
-
-	ENTER_DEBUG_MARK("load spells");
-
-	if (num_spells > 0)
-	{
-		num_spells--;
-	}
-
-	if (num_spells > QUICKSPELLS_MAXSIZE)
-	{
-		LOG_WARNING("Too many spells (%d), only %d spells allowed",
-			num_spells, QUICKSPELLS_MAXSIZE);
-
-		num_spells = QUICKSPELLS_MAXSIZE;
-	}
-
-
-	memset(mqb_data5, 0, sizeof (mqb_data5));
-
-	LOG_DEBUG("Reading %d spells from file '%s'", num_spells, fname5);
-
-	index = 1;
-	max_index = index;
-
-	for (i = 0; i < num_spells; i++)
-	{
-		mqbdata tmp;
-
-		if (fread(&tmp, sizeof(mqbdata), 1, fp5) != 1)
-		{
-			LOG_ERROR("Failed reading spell %d from file '%s'", i,
-				fname5);
-			continue;
-		}
-
-		mqb_data5[index] = build_quickspell_data(tmp.spell_id);
-
-		if (mqb_data5[index] == 0)
-		{
-			continue;
-		}
-
-		LOG_DEBUG("Added quickspell %d '%s' at index %d", i,
-			mqb_data5[index]->spell_name, index);
-
-		index++;
-	}
-	fclose (fp5);
-	if(max_index < index){
-		max_index = index;
-	}
-	resize_quickspells(max_index - 1);
-	/* /Fifth MQB*/
-
-	LEAVE_DEBUG_MARK("load spells");
+	fclose(f);
 }
-#endif //FR_MORE_MQB
-
-#ifndef FR_MORE_MQB
-void save_quickspells()
-{
-	char fname[128];
-	FILE *fp;
-	Uint8 i;
-
-	if (!quickspells_loaded)
-		return;
-
-	//write to the data file, to ensure data integrity, we will write all the information
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
-	my_tolower(fname);
-	fp=open_file_config(fname,"wb");
-	if(fp == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname, strerror(errno));
-		return;
-	}
-
-#ifdef FR_VERSION
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-#else //FR_VERSION
-	for (i = 1; i < MAX_QUICKBAR_SLOTS+1; i++)
-#endif //FR_VERSION
-	{
-		if (mqb_data[i] == NULL)
-			break;
-	}
-
-	ENTER_DEBUG_MARK("save spells");
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname);
-
-#ifdef FR_VERSION
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-#else //FR_VERSION
-	for (i = 1; i < (MAX_QUICKBAR_SLOTS + 1); i++)
-#endif //FR_VERSION
-	{
-		if (mqb_data[i] == 0)
-		{
-			break;
+void save_quickspells(void) {
+	if (quickspells_loaded) {
+		for (int i = 0; i < 5; ++i) {
+			save_mqb(i);
 		}
-
-		if (fwrite(mqb_data[i], sizeof(mqbdata), 1, fp) != 1)
-	{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data[i]->spell_name, fname);
-			break;
 	}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data[i]->spell_name, fname);
-	}
-
-	fclose(fp);
-
-	LEAVE_DEBUG_MARK("save spells");
 }
-#else //FR_MORE_MQB
-void save_quickspells()
-{
-	char fname[128];
-	char fname2[128];
-	char fname3[128];
-	char fname4[128];
-	char fname5[128];
-	FILE *fp;
-	FILE *fp2;
-	FILE *fp3;
-	FILE *fp4;
-	FILE *fp5;
-	Uint8 i;
-
-	if (!quickspells_loaded)
-		return;
-
-	//write to the data file, to ensure data integrity, we will write all the information
-	safe_snprintf(fname, sizeof(fname), "spells_%s.dat",username_str);
-	my_tolower(fname);
-	fp=open_file_config(fname,"wb");
-	safe_snprintf(fname2, sizeof(fname2), "spells_%s%d.dat",username_str,2);
-	my_tolower(fname2);
-	fp2=open_file_config(fname2,"wb");
-	safe_snprintf(fname3, sizeof(fname3), "spells_%s%d.dat",username_str,3);
-	my_tolower(fname3);
-	fp3=open_file_config(fname3,"wb");
-	safe_snprintf(fname4, sizeof(fname4), "spells_%s%d.dat",username_str,4);
-	my_tolower(fname4);
-	fp4=open_file_config(fname4,"wb");
-	safe_snprintf(fname5, sizeof(fname5), "spells_%s%d.dat",username_str,5);
-	my_tolower(fname5);
-	fp5=open_file_config(fname5,"wb");
-	if(fp == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname, strerror(errno));
-		return;
-	}
-	if(fp2 == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname2, strerror(errno));
-		return;
-	}
-	if(fp3 == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname3, strerror(errno));
-		return;
-	}
-	if(fp4 == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname4, strerror(errno));
-		return;
-	}
-	if(fp5 == NULL){
-		LOG_ERROR("%s: %s \"%s\": %s\n", reg_error_str, cant_open_file, fname5, strerror(errno));
-		return;
-	}
-
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-	{
-		if (mqb_data[i] == NULL)
-			break;
-	}
-
-	ENTER_DEBUG_MARK("save spells");
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname);
-
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-	{
-		if (mqb_data[i] == 0)
-		{
-			break;
-		}
-
-		if (fwrite(mqb_data[i], sizeof(mqbdata), 1, fp) != 1)
-	{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data[i]->spell_name, fname);
-			break;
-	}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data[i]->spell_name, fname);
-	}
-	fclose(fp);
-
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-	{
-		if (mqb_data2[i] == NULL)
-			break;
-	}
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp2);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname2);
-
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-	{
-		if (mqb_data2[i] == 0)
-		{
-			break;
-		}
-
-		if (fwrite(mqb_data2[i], sizeof(mqbdata), 1, fp2) != 1)
-	{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data2[i]->spell_name, fname2);
-			break;
-	}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data2[i]->spell_name, fname2);
-	}
-	fclose(fp2);
-
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-	{
-		if (mqb_data3[i] == NULL)
-			break;
-	}
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp3);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname3);
-
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-	{
-		if (mqb_data3[i] == 0)
-		{
-			break;
-		}
-
-		if (fwrite(mqb_data3[i], sizeof(mqbdata), 1, fp3) != 1)
-	{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data3[i]->spell_name, fname3);
-			break;
-	}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data3[i]->spell_name, fname3);
-	}
-	fclose(fp3);
-
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-	{
-		if (mqb_data4[i] == NULL)
-			break;
-	}
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp4);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname4);
-
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-	{
-		if (mqb_data4[i] == 0)
-		{
-			break;
-		}
-
-		if (fwrite(mqb_data4[i], sizeof(mqbdata), 1, fp4) != 1)
-		{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data4[i]->spell_name, fname4);
-			break;
-		}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data4[i]->spell_name, fname4);
-	}
-	fclose(fp4);
-
-	for (i = 1; i < QUICKSPELLS_MAXSIZE+1; i++)
-	{
-		if (mqb_data5[i] == NULL)
-			break;
-	}
-
-	// write the number of spells + 1
-	fwrite(&i, sizeof(i), 1, fp5);
-
-	LOG_DEBUG("Writing %d spells to file '%s'", i, fname5);
-
-	for (i = 1; i < (QUICKSPELLS_MAXSIZE+ 1); i++)
-	{
-		if (mqb_data5[i] == 0)
-		{
-			break;
-		}
-
-		if (fwrite(mqb_data5[i], sizeof(mqbdata), 1, fp5) != 1)
-	{
-			LOG_ERROR("Failed writing spell '%s' to file '%s'",
-				mqb_data5[i]->spell_name, fname5);
-			break;
-	}
-
-		LOG_DEBUG("Wrote spell '%s' to file '%s'",
-			mqb_data5[i]->spell_name, fname5);
-	}
-	fclose(fp5);
-
-	LEAVE_DEBUG_MARK("save spells");
-}
-#endif //FR_MORE_MQB
 
 // Quickspell window start
 
@@ -4247,27 +2690,9 @@ int get_quickspell_y_len(void)
 	the base is higher */
 int get_quickspell_y_base()
 {
-#ifdef FR_VERSION
 	if (quickspells_draggable) return 0;
 	if (quickspell_x > HUD_MARGIN_X) return 0;
 	return quickspell_y + quickspell_y_len;
-#else //FR_VERSION
-	int active_len = quickspell_y + get_quickspell_y_len();
-	int i;
-
-	if (!quickspells_loaded)
-		return quickspell_y;
-
-	for (i = num_quickbar_slots; i > 0; i--)
-	{
-		if (mqb_data[i] == NULL)
-			active_len -= 30;
-		else
-			break;
-	}
-
-	return active_len;
-#endif //FR_VERSION
 }
 
 
@@ -4331,210 +2756,44 @@ CHECK_GL_ERRORS();
 	glEnable(GL_BLEND);	// Turn Blending On
 	glBlendFunc(GL_SRC_ALPHA,GL_DST_ALPHA);
 
-#ifdef FR_VERSION
-#ifndef FR_MORE_MQB
-	for (i = 1; i <= quickspells_size; i++)
-	{
-		if (!mqb_data[i] || !mqb_data[i]->spell_name[0]) break;
+	Mqbspell **m = cur_mqb();
+	for (i = 1; i <= quickspells_size; i++) {
+		if (!m[i] || !m[i]->spell_name[0]) break;
 		y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-		  if (quickspell_over == i) {
+		if (quickspell_over == i) {
 			over = y;
 			glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-		}
-		else
-		{
+		} else {
 			glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
 		}
 		if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-		draw_spell_icon(mqb_data[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
+		draw_spell_icon(m[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
 	}
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		for (i = 1; i <= quickspells_size; i++)
-		{
-			if (!mqb_data[i] || !mqb_data[i]->spell_name[0]) break;
-			y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-			if (quickspell_over == i) {
-				over = y;
-				glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-			} else {
-				glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-			}
-			if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-			draw_spell_icon(mqb_data[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
-		}
-		break;
-	case 1:
-		for (i = 1; i <= quickspells_size; i++)
-		{
-			if (!mqb_data2[i] || !mqb_data2[i]->spell_name[0]) break;
-			y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-			if (quickspell_over == i) {
-				over = y;
-				glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-			} else {
-				glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-			}
-			if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-			draw_spell_icon(mqb_data2[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
-		}
-		break;
-	case 2:
-		for (i = 1; i <= quickspells_size; i++)
-		{
-			if (!mqb_data3[i] || !mqb_data3[i]->spell_name[0]) break;
-			y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-			if (quickspell_over == i) {
-				over = y;
-				glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-			} else {
-				glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-			}
-			if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-			draw_spell_icon(mqb_data3[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
-		}
-		break;
-	case 3:
-		for (i = 1; i <= quickspells_size; i++)
-		{
-			if (!mqb_data4[i] || !mqb_data4[i]->spell_name[0]) break;
-			y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-			if (quickspell_over == i) {
-				over = y;
-				glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-			} else {
-				glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-			}
-			if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-			draw_spell_icon(mqb_data4[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
-		}
-		break;
-	case 4:
-		for (i = 1; i <= quickspells_size; i++)
-		{
-			if (!mqb_data5[i] || !mqb_data5[i]->spell_name[0]) break;
-			y = (1+quickspells_dim)*(i-1) + (int)(i/quickspells_div)*quickspells_sep;
-
-			if (quickspell_over == i) {
-				over = y;
-				glColor4f(1.0f, 1.0f, 1.0f, 1.5f);
-			} else {
-				glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-			}
-			if (quickspells_dir != VERTICAL) { x = y; y = 1; } else { x = 1; }
-			draw_spell_icon(mqb_data5[i]->spell_image, x+width, y+width, quickspells_ico, 0, 0);
-		}
-		break;
-	
-	default:
-		break;
-	}
-#endif //FR_MORE_MQB
-#else //FR_VERSION
-	for(i=1;i<num_quickbar_slots+1;i++) {
-		if(mqb_data[i] && mqb_data[i]->spell_name[0]){
-			x=quickspell_size/2;
-			y=(i-1)*30+15;
-			width=quickspell_size/2;
-
-			if(quickspell_over==i){	//highlight if we are hovering over
-				glColor4f(1.0f,1.0f,1.0f,1.0f);
-			} else {	//otherwise shade it a bit
-				glColor4f(1.0f,1.0f,1.0f,0.6f);
-			}
-
-			draw_spell_icon(mqb_data[i]->spell_image,x-width,y-width,quickspell_size,0,0);
-		}
-	}
-#endif //FR_VERSION
-
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	glDisable(GL_BLEND);	// Turn Blending Off
 	glDisable(GL_ALPHA_TEST);
-	
-#ifdef FR_VERSION
-#ifdef FR_FAST_SPELL
-	if(selected_spell != -1) {
-	  int loc = (1+quickspells_dim)*(selected_spell-1) + (int)(selected_spell/quickspells_div)*quickspells_sep;
-	  if (quickspells_dir == VERTICAL)
-	    show_help("*", -5 - 8, loc + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-	  else
-	    show_help("*", loc + width, 5 + quickspells_dim);
-	}
-#endif
-#ifndef FR_MORE_MQB
-	if (quickspell_over > 0 && mqb_data[quickspell_over])
-	{
+	if (selected_spell != -1) {
+		int loc = (1+quickspells_dim)*(selected_spell-1) + (int)(selected_spell/quickspells_div)*quickspells_sep;
 		if (quickspells_dir == VERTICAL)
-			show_help(mqb_data[quickspell_over]->spell_name, -5 - strlen(mqb_data[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
+			show_help("*", -5 - 8, loc + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
 		else
-			show_help(mqb_data[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
+			show_help("*", loc + width, 5 + quickspells_dim);
 	}
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		if (quickspell_over > 0 && mqb_data[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data[quickspell_over]->spell_name, -5 - strlen(mqb_data[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
+	Mqbspell *mo = m[quickspell_over];
+	if (quickspell_over > 0 && mo) {
+		const char *n = mo->spell_name;
+		for (int i = 0; i < SPELLS_NO; ++i) {
+			if (spells_list[i].id == mo->spell_id) {
+				n = spells_list[i].name;
+				break;
+			}
 		}
-		break;
-	case 1:
-		if (quickspell_over > 0 && mqb_data2[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data2[quickspell_over]->spell_name, -5 - strlen(mqb_data2[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data2[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
+		if (quickspells_dir == VERTICAL) {
+			show_help(n, -5 - strlen(n)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
+		} else {
+			show_help(n, over + width, 5 + quickspells_dim);
 		}
-		break;
-	case 2:
-		if (quickspell_over > 0 && mqb_data3[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data3[quickspell_over]->spell_name, -5 - strlen(mqb_data3[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data3[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	case 3:
-		if (quickspell_over > 0 && mqb_data4[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data4[quickspell_over]->spell_name, -5 - strlen(mqb_data4[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data4[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	case 4:
-		if (quickspell_over > 0 && mqb_data5[quickspell_over])
-		{
-			if (quickspells_dir == VERTICAL)
-				show_help(mqb_data5[quickspell_over]->spell_name, -5 - strlen(mqb_data5[quickspell_over]->spell_name)*8, over + (quickspells_dim-SMALL_FONT_Y_LEN)/2);
-			else
-				show_help(mqb_data5[quickspell_over]->spell_name, over + width, 5 + quickspells_dim);
-		}
-		break;
-	
-	default:
-		break;
 	}
-#endif //FR_MORE_MQB
-
-#else //FR_VERSION
-	if(quickspell_over!=-1 && mqb_data[quickspell_over])
-		show_help(mqb_data[quickspell_over]->spell_name,-10-strlen(mqb_data[quickspell_over]->spell_name)*8,(quickspell_over-1)*30+10);
-#endif //FR_VERSION
 	quickspell_over=-1;
 #ifdef OPENGL_TRACE
 CHECK_GL_ERRORS();
@@ -4543,82 +2802,32 @@ CHECK_GL_ERRORS();
 	return 1;
 }
 
-int mouseover_quickspell_handler(window_info *win, int mx, int my)
-{
-	int pos;
-
-#ifdef FR_VERSION
-	pos = get_quickspell_from_mouse(mx, my) + 1;
-#ifndef FR_MORE_MQB
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
+int mouseover_quickspell_handler(window_info *win, int mx, int my) {
+	int pos = get_quickspell_from_mouse(mx, my) + 1;
+	Mqbspell **m = cur_mqb();
+	if (pos > 0 && m[pos] && m[pos]->spell_name[0]) {
 		quickspell_over = pos;
 		elwin_mouse = CURSOR_WAND;
 		return 1;
 	}
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-		{
-			quickspell_over = pos;
-			elwin_mouse = CURSOR_WAND;
-			return 1;
-		}
-		break;
-	case 1:
-		if (pos > 0 && mqb_data2[pos] && mqb_data2[pos]->spell_name[0])
-		{
-			quickspell_over = pos;
-			elwin_mouse = CURSOR_WAND;
-			return 1;
-		}
-		break;
-	case 2:
-		if (pos > 0 && mqb_data3[pos] && mqb_data3[pos]->spell_name[0])
-		{
-			quickspell_over = pos;
-			elwin_mouse = CURSOR_WAND;
-			return 1;
-		}
-		break;
-	case 3:
-		if (pos > 0 && mqb_data4[pos] && mqb_data4[pos]->spell_name[0])
-		{
-			quickspell_over = pos;
-			elwin_mouse = CURSOR_WAND;
-			return 1;
-		}
-		break;
-	case 4:
-		if (pos > 0 && mqb_data5[pos] && mqb_data5[pos]->spell_name[0])
-		{
-			quickspell_over = pos;
-			elwin_mouse = CURSOR_WAND;
-			return 1;
-		}
-		break;
-
-	default:
-		break;
-	}
-#endif //FR_MORE_MQB
-#else //FR_VERSION
-	pos=my/30+1;
-	if(pos<num_quickbar_slots+1 && pos>=1 && mqb_data[pos] && mqb_data[pos]->spell_name[0]) {
-		quickspell_over=pos;
-		elwin_mouse=CURSOR_WAND;
-		return 1;
-	}
-#endif //FR_VERSION
 	return 0;
 }
 
+static inline void next_mqb(void) {
+	if (++quickspell_mqb_selected > 4) {
+		quickspell_mqb_selected = 0;
+	}
+	resize_quickspells(0);
+}
+static inline void prev_mqb(void) {
+	if (--quickspell_mqb_selected < 0) {
+		quickspell_mqb_selected = 4;
+	}
+	resize_quickspells(0);
+}
 int click_quickspell_handler(window_info *win, int mx, int my, Uint32 flags)
 {
 	int pos;
-#ifdef FR_VERSION
 	int ctrl_on = flags & ELW_CTRL;
 	int shift_on = flags & ELW_SHIFT;
 
@@ -4640,285 +2849,62 @@ int click_quickspell_handler(window_info *win, int mx, int my, Uint32 flags)
 	}
 
 	pos = get_quickspell_from_mouse(mx, my) + 1;
-
+	Mqbspell **m = cur_mqb();
 	// menus contextuels (clic droit simple)
-	if (flags & ELW_RIGHT_MOUSE)
-	{
+	if (flags & ELW_RIGHT_MOUSE) {
 		// clic droit sur un icone : affichage du menu contextuel des icones (général inclus)
-#ifndef FR_MORE_MQB
-		if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-		{
+		if (pos > 0 && m[pos] && m[pos]->spell_name[0]) {
 			cm_show_direct(cm_quickspells_id, quickspell_win, -1);
 			return 1;
 		}
-#else //FR_MORE_MQB
-switch (quickspell_mqb_selected)
-{
-case 0:
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
-		cm_show_direct(cm_quickspells_id, quickspell_win, -1);
-		return 1;
-	}
-	break;
-case 1:
-	if (pos > 0 && mqb_data2[pos] && mqb_data2[pos]->spell_name[0])
-	{
-		cm_show_direct(cm_quickspells_id, quickspell_win, -1);
-		return 1;
-	}
-	break;
-case 2:
-	if (pos > 0 && mqb_data3[pos] && mqb_data3[pos]->spell_name[0])
-	{
-		cm_show_direct(cm_quickspells_id, quickspell_win, -1);
-		return 1;
-	}
-	break;
-case 3:
-	if (pos > 0 && mqb_data4[pos] && mqb_data4[pos]->spell_name[0])
-	{
-		cm_show_direct(cm_quickspells_id, quickspell_win, -1);
-		return 1;
-	}
-	break;
-case 4:
-	if (pos > 0 && mqb_data5[pos] && mqb_data5[pos]->spell_name[0])
-	{
-		cm_show_direct(cm_quickspells_id, quickspell_win, -1);
-		return 1;
-	}
-	break;
-
-default:
-	break;
-}
-
-#endif //FR_MORE_MQB
-
 		// clic droit en dehors des icones : affichage du menu contextuel général
 		cm_show_direct(cm_quickspells_win_id, quickspell_win, -1);
 		return 1;
 	}
-#ifndef FR_MORE_MQB
 	// actions sur un raccourci (clic gauche)
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data[pos]->spell_str, mqb_data[pos]->spell_str[1]+2);
+	if (pos > 0 && m[pos] && m[pos]->spell_name[0]) {
+		if (!ctrl_on && !shift_on) {
+			if (!m[pos]->spell_str[0]) return 0;
+			if (set_fast_spell_target) {
+				fast_spell_cible(pos);
+				set_fast_spell_target = 0;
+			} else {
+				send_spell(m[pos]->spell_str, m[pos]->spell_str[1]+2);
+			}
 			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
+		} else if (!ctrl_on && shift_on) {
 			remove_spell_from_quickbar(pos);
 			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
+		} else if (ctrl_on && !shift_on) {
 			move_spell_on_quickbar(pos, 2); // en premier
 			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
+		} else if (ctrl_on && shift_on) {
 			move_spell_on_quickbar(pos, 3); // en dernier
 			return 1;
 		}
 	}
-#else //FR_MORE_MQB
-switch (quickspell_mqb_selected)
-{
-case 0:
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data[pos]->spell_str, mqb_data[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 1:
-	if (pos > 0 && mqb_data2[pos] && mqb_data2[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data2[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data2[pos]->spell_str, mqb_data2[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 2:
-	if (pos > 0 && mqb_data3[pos] && mqb_data3[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data3[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data3[pos]->spell_str, mqb_data3[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 3:
-	if (pos > 0 && mqb_data4[pos] && mqb_data4[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data4[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data4[pos]->spell_str, mqb_data4[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-case 4:
-	if (pos > 0 && mqb_data5[pos] && mqb_data5[pos]->spell_name[0])
-	{
-		if (! ctrl_on && ! shift_on)
-		{
-			if (! mqb_data5[pos]->spell_str[0]) return 0;
-			send_spell(mqb_data5[pos]->spell_str, mqb_data5[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if (! ctrl_on && shift_on)
-		{
-			remove_spell_from_quickbar(pos);
-			return 1;
-		}
-		else if (ctrl_on && ! shift_on)
-		{
-			move_spell_on_quickbar(pos, 2); // en premier
-			return 1;
-		}
-		else if (ctrl_on && shift_on)
-		{
-			move_spell_on_quickbar(pos, 3); // en dernier
-			return 1;
-		}
-	}
-	break;
-
-default:
-	break;
-}
 	if(pos==0){
 		if(quickspells_dir != VERTICAL){
 			if(mx >= 0 && mx <= 8 && my >= 0 && my <= 10){
-				quickspell_mqb_selected++;
-				if(quickspell_mqb_selected>4) quickspell_mqb_selected=0;
+				next_mqb();
 				return 1;
 			} else if(mx >=0  && mx <= 8 && my >= 22 && my <= 32){
-				quickspell_mqb_selected--;
-				if(quickspell_mqb_selected<0) quickspell_mqb_selected=4;
+				prev_mqb();
 				return 1;
 			}
 		}else{
 			if(mx >= 0 && mx <= 10 && my >= 0 && my <= 8){
-				quickspell_mqb_selected--;
-				if(quickspell_mqb_selected<0) quickspell_mqb_selected=4;
+				prev_mqb();
 				return 1;
 			} else if(mx >=22  && mx <= 32 && my >= 0 && my <= 8){
-				quickspell_mqb_selected++;
-				if(quickspell_mqb_selected>4) quickspell_mqb_selected=0;
+				next_mqb();
 				return 1;
 			}
 		}
 	}
-#endif //FR_MORE_MQB
-
-#else //FR_VERSION
-	pos=my/30+1;
-
-	if(pos<num_quickbar_slots+1 && pos>=1 && mqb_data[pos])
-	{
-		if ((flags & ELW_LEFT_MOUSE)&&(flags & ELW_SHIFT))
-		{
-			move_spell_on_quickbar (pos,0);
-			return 1;
-		}
-		else if ((flags & ELW_RIGHT_MOUSE)&&(flags & ELW_SHIFT))
-		{
-			move_spell_on_quickbar (pos,1);
-			return 1;
-		}
-		else if (flags & ELW_LEFT_MOUSE && mqb_data[pos]->spell_str[0])
-		{
-			send_spell(mqb_data[pos]->spell_str, mqb_data[pos]->spell_str[1]+2);
-			return 1;
-		}
-		else if ((flags & ELW_RIGHT_MOUSE)&&(flags & ELW_CTRL))
-		{
-			remove_spell_from_quickbar (pos);
-			return 1;
-		}
-	}
-#endif //FR_VERSION
 	return 0;
 }
 
-#ifdef FR_VERSION
 // menu contextuel général (barre de titre ou fenêtre hors icones)
 static int context_quickspellwin_handler(window_info *win, int widget_id, int mx, int my, int option)
 {
@@ -4930,17 +2916,12 @@ static int context_quickspellwin_handler(window_info *win, int widget_id, int mx
 	}
 	return 1;
 }
-#endif //FR_VERSION
 
 static int context_quickspell_handler(window_info *win, int widget_id, int mx, int my, int option)
 {
-#ifdef FR_VERSION
+	Mqbspell **m = cur_mqb();
 	int pos = get_quickspell_from_mouse(mx, my) + 1;
-	if (pos > 0 && mqb_data[pos] && mqb_data[pos]->spell_name[0])
-#else //FR_VERSION
-	int pos=my/30+1;
-	if(pos<num_quickbar_slots+1 && pos>=1 && mqb_data[pos])
-#endif //FR_VERSION
+	if (pos > 0 && m[pos] && m[pos]->spell_name[0])
 	{
 		switch (option)
 		{
@@ -4967,22 +2948,6 @@ static int context_quickspell_handler(window_info *win, int widget_id, int mx, i
 	}
 	return 1;
 }
-
-#ifndef FR_VERSION
-void cm_update_quickspells(void)
-{
-	int active_y_len = 0, i;
-	if (quickspell_win < 0)
-		return;
-	for (i = num_quickbar_slots; i > 0; i--)
-	{
-		if (mqb_data[i] != NULL)
-			active_y_len += 30;
-	}
-	cm_remove_regions(quickspell_win);
-	cm_add_region(cm_quickspells_id, quickspell_win, 0, 0, quickspell_x_len, active_y_len);
-}
-#endif //FR_VERSION
 
 void init_quickspell()
 {
@@ -5077,67 +3042,36 @@ void send_spell(Uint8 *str, int len)
 	last_spell_len = len;
 }
 
-int action_spell_keys(Uint32 key)
-{
-	size_t i;
-	Uint32 keys[] = {K_SPELL1, K_SPELL2, K_SPELL3, K_SPELL4, K_SPELL5, K_SPELL6,
-					 K_SPELL7, K_SPELL8, K_SPELL9, K_SPELL10, K_SPELL11, K_SPELL12 };
-#ifdef FR_VERSION
-	for (i=0; (i<sizeof(keys)/sizeof(Uint32)) & (i < quickspells_size); i++)
-#else //FR_VERSION
-	for (i=0; (i<sizeof(keys)/sizeof(Uint32)) & (i < num_quickbar_slots); i++)
-#endif //FR_VERSION
-		if(key == keys[i])
-		{
-#ifndef FR_MORE_MQB
-			if(mqb_data[i+1] && mqb_data[i+1]->spell_str[0])
-				send_spell(mqb_data[i+1]->spell_str, mqb_data[i+1]->spell_str[1]+2);
-			return 1;
-#else //FR_MORE_MQB
-			switch (quickspell_mqb_selected)
-			{
-			case 0:
-				if(mqb_data[i+1] && mqb_data[i+1]->spell_str[0])
-					send_spell(mqb_data[i+1]->spell_str, mqb_data[i+1]->spell_str[1]+2);
-				return 1;
-				break;
-			case 1:
-				if(mqb_data2[i+1] && mqb_data2[i+1]->spell_str[0])
-					send_spell(mqb_data2[i+1]->spell_str, mqb_data2[i+1]->spell_str[1]+2);
-				return 1;
-				break;
-			case 2:
-				if(mqb_data3[i+1] && mqb_data3[i+1]->spell_str[0])
-					send_spell(mqb_data3[i+1]->spell_str, mqb_data3[i+1]->spell_str[1]+2);
-				return 1;
-				break;
-			case 3:
-				if(mqb_data4[i+1] && mqb_data4[i+1]->spell_str[0])
-					send_spell(mqb_data4[i+1]->spell_str, mqb_data4[i+1]->spell_str[1]+2);
-				return 1;
-				break;
-			case 4:
-				if(mqb_data5[i+1] && mqb_data5[i+1]->spell_str[0])
-					send_spell(mqb_data5[i+1]->spell_str, mqb_data5[i+1]->spell_str[1]+2);
-				return 1;
-				break;
+void send_mqb_spell(int target_id) {
+	Mqbspell **m = cur_mqb();
+	send_spell(m[selected_spell]->spell_str, m[selected_spell]->spell_str[1] + 2);
+	selected_spell_sent = 1;
+	selected_spell_target = target_id;
+}
 
-			default:
-				break;
+int action_spell_keys(Uint32 key) {
+	Uint32 keys[] = {K_SPELL1, K_SPELL2, K_SPELL3, K_SPELL4, K_SPELL5, K_SPELL6, K_SPELL7, K_SPELL8, K_SPELL9, K_SPELL10, K_SPELL11, K_SPELL12};
+	Mqbspell **m = cur_mqb();
+	for (int i = 0; i < countof(keys); ++i) {
+		if (key == keys[i]) {
+			if (set_fast_spell_target) {
+				fast_spell_cible(i + 1);
+				set_fast_spell_target = 0;
+				return 1;
 			}
-#endif //FR_MORE_MQB
-		}
-
-		if(key == K_PREVQUICKSPELLBAR){
-			quickspell_mqb_selected--;
-			if(quickspell_mqb_selected<0) quickspell_mqb_selected=4;
-			return 1;
-		}else if (key == K_NEXTQUICKSPELLBAR){
-			quickspell_mqb_selected++;
-			if(quickspell_mqb_selected>4) quickspell_mqb_selected=0;
+			if (m[i+1] && m[i+1]->spell_str[0]) {
+				send_spell(m[i+1]->spell_str, m[i+1]->spell_str[1]+2);
+			}
 			return 1;
 		}
-
+		if (key == K_PREVQUICKSPELLBAR) {
+			prev_mqb();
+			return 1;
+		} else if (key == K_NEXTQUICKSPELLBAR) {
+			next_mqb();
+			return 1;
+		}
+	}
 	return 0;
 }
 
@@ -5168,33 +3102,30 @@ int prepare_for_cast(){
 	}
 
 	str[1]=sigils_no;
-
-	if(!mqb_data[0]) {
-		mqb_data[0]=(mqbdata*)calloc(1,sizeof(mqbdata));
-		mqb_data[0]->spell_id=-1;
+	Mqbspell **m = cur_mqb();
+	if (!m[0]) {
+		m[0] = calloc(1, sizeof(**m));
+		m[0]->spell_id = -1;
 	}
 
 	if(sigil_win!=sigils_win&&we_have_spell>=0){
-		mqb_data[0]->spell_id=spells_list[we_have_spell].id;
-		mqb_data[0]->spell_image=spells_list[we_have_spell].image;
-		memcpy(mqb_data[0]->spell_name, spells_list[we_have_spell].name, 60);
+		m[0]->spell_id=spells_list[we_have_spell].id;
+		m[0]->spell_image=spells_list[we_have_spell].image;
+		memcpy(m[0]->spell_name, spells_list[we_have_spell].name, sizeof(m[0]->spell_name));
 	}
 
-	memcpy(mqb_data[0]->spell_str, str, sigils_no+2);//Copy the last spell send to the server
+	memcpy(m[0]->spell_str, str, sigils_no+2);
 	return sigils_no;
 }
 
-int cast_handler()
-{
-	//Cast?
-
-	int sigils_no=prepare_for_cast();
-	//ok, send it to the server...
-	if(sigils_no) send_spell(mqb_data[0]->spell_str, sigils_no+2);
+int cast_handler() {
+	int sigils_no = prepare_for_cast();
+	Mqbspell **m = cur_mqb();
+	if (sigils_no) {
+		send_spell(m[0]->spell_str, sigils_no + 2);
+	}
 	return 1;
 }
-
-
 
 //Calc windows size based on xml data
 void calc_spell_windows(){
@@ -5281,8 +3212,8 @@ int invocation_depuis_sorts(Uint8 quantity)
 	    for(i = 0; i < total; i++)
 	    {
 		str[items_no*3+2] = objet_recette[i][2];
-		if(double_invoc && i == total -1) *((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(1);
-		else *((Uint16 *)(str+items_no*3+2+1))=SDL_SwapLE16(liste_items_necro[creature_en_cours][i + 1 + liste_items_necro[creature_en_cours][0]*2]);
+		if(double_invoc && i == total -1) pack_u16_le(str+items_no*3+2+1, 1);
+		else pack_u16_le(str+items_no*3+2+1, liste_items_necro[creature_en_cours][i + 1 + liste_items_necro[creature_en_cours][0]*2]);
 		items_no++;
 	    }
 	    str[1]=items_no;
@@ -5760,114 +3691,48 @@ CHECK_GL_ERRORS();
 	return 1;
 }
 #endif
-
-#ifdef FR_FAST_SPELL
- void fast_spell_cible(int spell_id) {
-   char str[100];
-
-   if(selected_spell == -1) {
-     fast_spell_cible_bool = 1;
-     selected_spell = spell_id;
-   } else if(selected_spell == spell_id) {
-     fast_spell_cible_bool = 0;
-     selected_spell = -1;
-   } else {
-     fast_spell_cible_bool = 1;
-     selected_spell = spell_id;
-   }
-#ifndef FR_MORE_MQB
-   if(mqb_data[spell_id]) {
-     if(fast_spell_cible_bool) {
-       safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data[spell_id]->spell_name);
-       LOG_TO_CONSOLE(c_green1, str);
-     } else {
-       LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-     }
-   }
-#else //FR_MORE_MQB
-	switch (quickspell_mqb_selected)
-	{
-	case 0:
-		   if(mqb_data[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 1:
-		   if(mqb_data2[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data2[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 2:
-		   if(mqb_data3[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data3[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 3:
-		   if(mqb_data4[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data4[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	case 4:
-		   if(mqb_data5[spell_id]) {
-				if(fast_spell_cible_bool) {
-				safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", mqb_data5[spell_id]->spell_name);
-				LOG_TO_CONSOLE(c_green1, str);
-				} else {
-				LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
-				}
-			}
-		break;
-	
-	default:
-		break;
+void fast_spell_cible(int pos) {
+	char str[256];
+	if (selected_spell == -1) {
+		fast_spell_cible_bool = 1;
+		selected_spell = pos;
+	} else if (selected_spell == pos) {
+		fast_spell_cible_bool = 0;
+		selected_spell = -1;
+	} else {
+		fast_spell_cible_bool = 1;
+		selected_spell = pos;
 	}
-#endif //FR_MORE_MQB
- }
-
- void fast_spell_cast(void) {
-   Uint8 str[10];
-
-   if (selected_spell_target >= 0)
-     {
-       actor *this_actor = get_actor_ptr_from_id(selected_spell_target);
-       if(this_actor != NULL)
-	 {
-	   add_highlight(this_actor->x_tile_pos,this_actor->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
-
-	   str[0] = TOUCH_PLAYER;
-	   *((int *)(str+1)) = SDL_SwapLE32((int)selected_spell_target);
-	   my_tcp_send (my_socket, str, 5);
-	 }
-     }
- }
-
- void fast_spell_teleport(void) {
-   Uint8 str[10];
-
-   if(selected_spell_target >= 0) {
-     str[0] = ATTACK_SOMEONE;
-     *((int *)(str+1)) = SDL_SwapLE32((int)selected_spell_target);
-     my_tcp_send (my_socket, str, 5);
-   }
- }
-#endif
+	Mqbspell **m = cur_mqb();
+	if (m[pos]) {
+		if (fast_spell_cible_bool) {
+			safe_snprintf(str, sizeof(str), "Tu as sélectionné \"%s\" !", m[pos]->spell_name);
+			LOG_TO_CONSOLE(c_green1, str);
+		} else {
+			LOG_TO_CONSOLE(c_green1, "Tu ne séléctionne plus aucuns sorts.");
+		}
+	}
+}
+void fast_spell_cast(int actor_id) {
+	if (actor_id >= 0) {
+		actor *a = get_actor_ptr_from_id(actor_id);
+		if (a) {
+			Uint8 b[8] = {TOUCH_PLAYER};
+			pack_u32_le(b+1, actor_id);
+			my_tcp_send(my_socket, b, 5);
+			add_highlight(a->x_tile_pos, a->y_tile_pos, HIGHLIGHT_TYPE_SPELL_TARGET);
+		}
+	}
+}
+void fast_spell_teleport(void) {
+	if (selected_spell_target >= 0) {
+		Uint8 b[8] = {ATTACK_SOMEONE};
+		pack_u32_le(b+1, selected_spell_target);
+		my_tcp_send(my_socket, b, 5);
+	}
+}
+void fast_spell_decible(void) {
+    fast_spell_cible_bool = 0;
+    selected_spell = -1;
+    LOG_TO_CONSOLE(c_orange1, "Tu ne séléctionne plus aucuns sorts.");
+}

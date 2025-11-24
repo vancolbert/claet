@@ -33,9 +33,9 @@ typedef struct {
 
 extern char	auto_open_encyclopedia; /*!< flag, that indicates whether the encyclopedia window should be opened automatically upon startup of the client */
 
-extern int time_warn_h;	/*!< How many minutes before the new hour to give a warning */
-extern int time_warn_s;	/*!< How many minutes before sunrise/sunset to give a warning */
-extern int time_warn_d;	/*!< How many minutes before the new day to give a warning */
+extern int time_warning_hour;	/*!< How many minutes before the new hour to give a warning */
+extern int time_warning_sun;	/*!< How many minutes before sunrise/sunset to give a warning */
+extern int time_warning_day;	/*!< How many minutes before the new day to give a warning */
 
 /*!
  * \brief Print the Eternal Lands version number

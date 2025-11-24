@@ -290,7 +290,7 @@ void load_zip_archive(const char* file_name)
 
 	if (file_name == 0)
 	{
-		LOG_ERROR("Empty zip file name", file_name);
+		LOG_ERROR("Empty zip file name");
 
 		return;
 	}
@@ -539,7 +539,7 @@ static Uint32 file_exists_path(const char* file_name, const char* extra_path)
 		CHECK_AND_UNLOCK_MUTEX(zip_files[i].mutex);
 	}
 
-	if (do_file_exists(file_name, datadir, sizeof(str), str) == 1)
+	if (do_file_exists(file_name, data_dir, sizeof(str), str) == 1)
 		{
 			return 1;
 		}
@@ -788,7 +788,7 @@ static el_file_ptr file_open(const char* file_name, const char* extra_path)
 		CHECK_AND_UNLOCK_MUTEX(zip_files[i].mutex);
 	}
 
-	if (do_file_exists(file_name, datadir, sizeof(str), str) == 1)
+	if (do_file_exists(file_name, data_dir, sizeof(str), str) == 1)
 	{
 		return xz_gz_file_open(str);
 	}
@@ -876,15 +876,7 @@ int el_read_float(el_file_ptr file, float *f)
 {
 	if (file->current + sizeof(float) > file->end)
 		return 0;
-#ifdef EL_FORCE_ALIGNED_READ
-	{
-		float tmp;
-		memcpy(&tmp, file->current, sizeof(float));
-		*f = SwapLEFloat(tmp);
-	}
-#else
-	*f = SwapLEFloat(*((float*)file->current));
-#endif
+	*f = unpack_f32_le(file->current);
 	file->current += sizeof(float);
 	return 1;
 }
@@ -893,15 +885,7 @@ int el_read_int(el_file_ptr file, int *i)
 {
 	if (file->current + sizeof(int) > file->end)
 		return 0;
-#ifdef EL_FORCE_ALIGNED_READ
-	{
-		int tmp;
-		memcpy(&tmp, file->current, sizeof(int));
-		*i = SDL_SwapLE32(tmp);
-	}
-#else
-	*i = SDL_SwapLE32(*((int*)file->current));
-#endif
+	*i = unpack_u32_le(file->current);
 	file->current += sizeof(int);
 	return 1;
 }

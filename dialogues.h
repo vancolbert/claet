@@ -29,7 +29,7 @@ extern char npc_mark_str[20]; /*!< npc location in map mark - the template (prin
 #define	MAX_PORTRAITS_TEXTURES	16
 extern int portraits_tex[MAX_PORTRAITS_TEXTURES];
 
-extern int use_keypress_dialogue_boxes, use_full_dialogue_window;
+extern int use_keypress_dialog_boxes, use_full_dialogue_window;
 /*! @} */
 
 /*!
@@ -105,6 +105,7 @@ void display_dialogue();
  * \sa close_window
  */
 void close_dialogue();
+void repeat_last_dialogue_response(void);
 
 #ifdef __cplusplus
 } // extern "C"

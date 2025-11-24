@@ -297,9 +297,9 @@ void Quest_List::load(void)
 	quests.insert( std::make_pair( Quest::UNSET_ID, showall) );
 	max_title = showall.get_title().size();
 
-	std::string username = std::string(username_str);
-	std::transform(username.begin(), username.end(), username.begin(), tolower);
-	list_filename = std::string(get_path_config()) + "quest_" + username + ".list";
+	std::string un = std::string(username);
+	std::transform(un.begin(), un.end(), un.begin(), tolower);
+	list_filename = std::string(get_path_config()) + "quest_" + un + ".list";
 	recalc_num_shown();
 
 	std::ifstream in(list_filename.c_str());
@@ -466,7 +466,7 @@ void Quest_Title_Request::request(void)
 	//safe_snprintf(buf, 80, "Sending WHAT_QUEST_IS_THIS_ID with id=%d", id);
 	//LOG_TO_CONSOLE(c_green2,buf);
 	str[0]=WHAT_QUEST_IS_THIS_ID;
-	*((Uint16 *)(str+1)) = SDL_SwapLE16((Uint16)id);
+	pack_u16_le(str+1, id);
 	my_tcp_send (my_socket, str, 3);
 	request_time = SDL_GetTicks();
 	requested = true;
@@ -1801,9 +1801,9 @@ extern "C" void load_questlog()
 		return;
 	}
 
-	std::string username = std::string(username_str);
-	std::transform(username.begin(), username.end(), username.begin(), tolower);
-	filename = std::string(get_path_config()) + "quest_" + username + ".log";
+	std::string un = std::string(username);
+	std::transform(un.begin(), un.end(), un.begin(), tolower);
+	filename = std::string(get_path_config()) + "quest_" + un + ".log";
 
 	std::ifstream in(filename.c_str(), std::ios_base::in | std::ios_base::binary);
 	std::ofstream out;
