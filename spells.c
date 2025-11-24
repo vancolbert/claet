@@ -1629,7 +1629,7 @@ int display_necro_handler(window_info *win)
     int messages_invoc_x;
     int messages_invoc_y;
     int objet_recette[6][3] = {0};
-    int total;
+    int total = 0;
     if(nb_recettes_necro > 0)
     {
 	blocage_invoc_x = 13;
@@ -1824,7 +1824,7 @@ int display_necro_handler(window_info *win)
 #ifdef FR_NECRO_RECETTES
 int chargement_necro_recettes(int choix)
 {
-    int encours;
+    int encours = 0;
     int k = 0;
     char prov[30] = "";
     int bestiole_en_cours = 0;
@@ -3067,7 +3067,7 @@ default:
 
 void remove_spell_from_quickbar (int pos)
 {
-	int i;
+	int i = 0;
 
 #ifdef ENGLISH
 	if (pos < 1 || pos > num_quickbar_slots || mqb_data[pos] == NULL) {

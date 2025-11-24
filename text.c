@@ -1139,7 +1139,7 @@ int put_string_in_buffer (text_message *buf, const Uint8 *str, int pos)
 void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_to_add, int len)
 {
 	text_message *msg;
-	int minlen, text_color;
+	int minlen, text_color = c_grey2;
 	Uint32 cnr = 0, ibreak = -1, jbreak = -1;
 	char time_stamp[12];
 	struct tm *l_time; time_t c_time;

@@ -77,11 +77,6 @@ extern "C" CAL3D_WRAPPER_API CalMesh *CalModel_GetAttachedMesh(CalModel *self,in
 	return self->getVectorMesh()[i];
 }
 
-extern "C" CAL3D_WRAPPER_API void CalQuaternion_Invert(CalQuaternion *self)
-{
-	self->invert();
-}
-
 extern "C" CAL3D_WRAPPER_API int CalSkeleton_GetBonesNumber(struct CalSkeleton *self)
 {
 	return self->getVectorBone().size();

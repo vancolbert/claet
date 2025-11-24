@@ -278,7 +278,7 @@ int display_knowledge_handler(window_info *win)
 	int i,x=2,y=2;
 	int scroll = vscrollbar_get_pos (knowledge_win, knowledge_scroll_id);
 	char points_string[16];
-	char *research_string;
+	char *research_string = not_researching_anything;
 #ifdef FR_VERSION
 	int is_researching = 1;
 	int progress = (125*your_info.research_completed+1)/(your_info.research_total+1);

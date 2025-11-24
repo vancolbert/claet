@@ -73,6 +73,13 @@ class ElDataSource: public CalDataSource
 			return length == sizeof(Sint32);
 #endif
 		}
+		virtual bool readShort(short& value)
+		{
+			Sint16 tmp = 0;
+			int length = el_read(m_file, sizeof(Sint16), &tmp);
+			value = SDL_SwapLE16(tmp);
+			return length == sizeof(Sint16);
+		}
 
 		virtual bool readString(std::string &strValue)
 		{

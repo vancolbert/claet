@@ -31,7 +31,7 @@ int read_and_check_elc_header(el_file_ptr file, const magic_number magic, versio
 	{
 		char m_str[5], hm_str[5];
 
-		memcpy(m_str, magic, sizeof(m_str));
+		memcpy(m_str, magic, sizeof(magic_number));
 		m_str[4] = 0;
 
 		memcpy(hm_str, header.magic, sizeof(header.magic));

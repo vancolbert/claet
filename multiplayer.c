@@ -444,12 +444,14 @@ int my_tcp_send (TCPsocket my_socket, const Uint8 *str, int len)
 
 	new_str[0] = str[0];	//copy the protocol byte
 	*((short *)(new_str+1)) = SDL_SwapLE16((Uint16)len);//the data length
-		// copy the rest of the data
-		memcpy(&new_str[3], &str[1], len-1);
+	if (len + 4 > sizeof(new_str))
+		return 1;
+	// copy the rest of the data
+	memcpy(&new_str[3], &str[1], len-1);
 #ifdef	OLC
-		return olc_tcp_send(my_socket, new_str, len+2);
+	return olc_tcp_send(my_socket, new_str, len+2);
 #else	//OLC
-		return SDLNet_TCP_Send(my_socket, new_str, len+2);
+	return SDLNet_TCP_Send(my_socket, new_str, len+2);
 #endif	//OLC
 }
 
@@ -2760,7 +2762,7 @@ int get_message_from_server(void *thread_args)
 				safe_snprintf(str, sizeof(str), "<%1d:%02d>: %s: [%s]", tgm/60, tgm%60, disconnected_from_server, SDLNet_GetError());
 		 	else
 				safe_snprintf(str, sizeof(str), "<%1d:%02d>: %s", tgm/60, tgm%60, disconnected_from_server);
-				LOG_TO_CONSOLE(c_red2, str);
+			LOG_TO_CONSOLE(c_red2, str);
 			LOG_TO_CONSOLE(c_red2, alt_x_quit);
 			in_data_used = 0;
 			disconnected = 1;

@@ -274,18 +274,19 @@ void send_afk_message (const char *server_msg, int len, Uint8 channel)
 	{
 		int i, j;
 		//char *name = (char *)calloc(32, sizeof (char));
-		char	name[32];
+		char	name[32] = {0};
 
 		// Copy the name. This ought to work for both local chat and
 		// trade attempts
 		i = j = 0;
-		while (j < len && is_printable (server_msg[j]) )
+		while (j < len && is_printable (server_msg[j]) && i < sizeof(name))
 		{
 			name[i++] = server_msg[j];
 			if (server_msg[j] == ':' || server_msg[j] == ' ') break;
 			j++;
 		}
-		name[i-1] = '\0';
+		if (i > 0)
+			name[i-1] = '\0';
 
 		if (have_name(name, i-1) < 0)
 		{
