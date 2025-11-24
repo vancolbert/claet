@@ -1223,7 +1223,7 @@ void init_console()
 	add_xml_identifier(misc,"no_spell_to_show",no_spell_to_show_str,"No spell to show",sizeof(no_spell_to_show_str));
 	add_xml_identifier(misc,"invalid_spell_string",invalid_spell_string_str,"Invalid spell string",sizeof(invalid_spell_string_str));
 	add_xml_identifier(misc,"command_string_too_long",command_too_long_str,"Command string too long",sizeof(command_too_long_str));
-	add_xml_identifier(misc,"item_list_learn_cat",item_list_learn_cat_str,"Note: storage categories need to be learnt by selecting each category.",sizeof(item_list_learn_cat_str));
+	add_xml_identifier(misc,"item_list_learn_cat",item_list_learn_cat_str,"Cliquez sur chaque catégorie pour que le jeu les reconnaisse.",sizeof(item_list_learn_cat_str));
 
 	add_xml_identifier(loading_msg,"init_opengl",init_opengl_str,"Initializing OpenGL extensions",sizeof(init_opengl_str));
 	add_xml_identifier(loading_msg,"init_random",init_random_str,"Generating random seed",sizeof(init_random_str));
@@ -1482,7 +1482,7 @@ void init_errors()
 	add_xml_identifier(video,"extnotfound",gl_ext_not_found,"Couldn't find the %s extension, not using it...",sizeof(gl_ext_not_found));
 	add_xml_identifier(video,"multitex",gl_ext_no_multitexture,"Couldn't find the GL_ARB_multitexture extension, giving up clouds shadows, and texture detail...",sizeof(gl_ext_no_multitexture));
 	add_xml_identifier(video,"noshadowmapping",disabled_shadow_mapping,"Shadowmapping disabled (need newer hardware)",sizeof(disabled_shadow_mapping));
-	add_xml_identifier(video,"toobigshadowmap",shadow_map_size_not_supported_str,"Shadow map size not supported! Shadow map size reduced to %d!",sizeof(shadow_map_size_not_supported_str));
+	add_xml_identifier(video,"toobigshadowmap",shadow_map_size_not_supported_str,"La taille du shadow map a été réduite à %d!",sizeof(shadow_map_size_not_supported_str));
 	add_xml_identifier(video,"noframebuffer",disabled_framebuffer,"Framebuffer disabled (need newer driver)",sizeof(disabled_framebuffer));
 	//Framebuffer errors
 	add_xml_identifier(video,"fboattachmenterror",fbo_attachment_error,"Framebuffer: attachment error",sizeof(fbo_attachment_error));

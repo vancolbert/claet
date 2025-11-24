@@ -100,6 +100,7 @@ FEATURES += FR_CLIC_DROIT_LONG
 FEATURES += FR_FENETRE_STATS
 FEATURES += FR_NEXUS
 FEATURES += FR_NEW_ANIM                     #@TRINITA - &danse, &salto, &roue
+FEATURES += SOFT_CAP                        #@NATI - revue table xp suite à refonte jeu
 FEATURES += FR_ATTRIBUTS_SECONDAIRE          #@TRINTIA - Gestion SERVER des attributs secondaires.
 FEATURES += DEPOT_EXTEND                    #@TRINITA - SURPRISE !!!
 FEATURES += FR_FAST_SPELL                   #@TOSH - Bouton "cibler" de la barre de sort
