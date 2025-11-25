@@ -81,6 +81,7 @@
 #define USE 5
 
 Uint32 exp_lev[200];
+int num_exp_lev;
 #ifdef NEW_NEW_CHAR_WINDOW
 hud_interface last_interface = HUD_INTERFACE_NEW_CHAR; //Current interface (game or new character)
 #endif
@@ -2731,45 +2732,45 @@ void reset_quickbar()
 
 #endif //FR_VERSION
 
-
-void build_levels_table()
-{
-  int i;
+void build_levels_table() {
 #ifdef SOFT_CAP
-  Uint64 exp=100;
-
-  exp_lev[0]=0;
-  for(i=1;i<180;i++)
-    {
-        if(i<=10)exp+=exp*40/100;
-        else
-        if(i<=20)exp+=exp*30/100;
-        else
-        if(i<=30)exp+=exp*20/100;
-        else
-        if(i<=40)exp+=exp*14/100;
-	else
-	if(i<=90)exp+=exp*7/100;
-	else exp+=exp*5/100;
-        exp_lev[i]=(Uint32)exp;
-    }
+	num_exp_lev = 101;
+	exp_lev[0] = 0;
+	exp_lev[1] = 440;
+	exp_lev[2] = 728;
+	Uint64 exp = 728;
+	for (int i = 3; i < num_exp_lev; ++i) {
+		if (i <= 20) {
+			exp += (exp - exp_lev[i - 2]) * 120 / 100;
+		} else if (i <= 90) {
+			exp += (exp - exp_lev[i - 2]) * 110 / 100;
+		} else if (i <= 98) {
+			exp += (exp - exp_lev[i - 2]) * 160 / 100;
+		} else {
+			exp += (exp - exp_lev[i - 2]) * 170 / 100;
+		}
+		exp_lev[i] = exp;
+	}
 #else
-  Uint64 exp=728;
-
-  exp_lev[0]=0;
-  exp_lev[1]=440;
-  exp_lev[2]=728;
-
-  for(i=3;i<101;i++)
-    {
-
-        if(i<=20)exp+=(exp-exp_lev[i-2])*120/100;
-        else if(i<=90)exp+=(exp-exp_lev[i-2])*110/100;
-        else if(i<=98)exp+=(exp-exp_lev[i-2])*160/100;
-        else exp+=(exp-exp_lev[i-2])*170/100;
-
-        exp_lev[i]=(Uint32)exp;
-    }
+	num_exp_lev = 180;
+	exp_lev[0] = 0;
+	Uint64 exp = 100;
+	for (int i = 1; i < num_exp_lev; ++i) {
+		if (i <= 10) {
+			exp += exp * 40 / 100;
+		} else if (i <= 20) {
+			exp += exp * 30 / 100;
+		} else if (i <= 30) {
+			exp += exp * 20 / 100;
+		} else if (i <= 40) {
+			exp += exp * 14 / 100;
+		} else if (i <= 90) {
+			exp += exp * 7 / 100;
+		} else {
+			exp += exp * 5 / 100;
+		}
+		exp_lev[i] = exp;
+	}
 #endif
 }
 
