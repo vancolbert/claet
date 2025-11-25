@@ -61,6 +61,7 @@ int check_grid_x_left=0;
 int have_stats=0;
 
 struct stats_struct statsinfo[NUM_SKILLS];
+int overall_exp_is_in_k;
 
 #define MAX_NUMBER_OF_FLOATING_MESSAGES 25
 
@@ -1024,7 +1025,7 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, in
 
 	pourcent = (exp_lev[lvl->base] == exp_next) ? 100 : round(((exp-exp_lev[lvl->base])*100.0)/(exp_next-exp_lev[lvl->base]));
 	safe_snprintf(lvlstr, sizeof(lvlstr), "%5i/%-3i", lvl->cur, lvl->base);
-	safe_snprintf(expstr, sizeof(expstr), "%9i %12i", exp, exp_next);
+	safe_snprintf(expstr, sizeof(expstr), name == &attributes.overall_skill && overall_exp_is_in_k ? "%7i K %10i K" : "%9i %12i", exp, exp_next);
 
 	safe_snprintf(str, sizeof(str), "%-11s %-11s %-s %6i%%", lvlstr, niv_nexus, expstr, pourcent);
 

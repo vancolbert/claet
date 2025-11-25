@@ -223,10 +223,14 @@ int display_session_handler(window_info *win)
 		else
 			glColor3f(1.0f, 1.0f, 1.0f);
 #ifdef FR_VERSION
+		int in_k = i == SI_ALL && overall_exp_is_in_k;
+		float m = in_k ? 6e7f : 6e4f;
+		float per_min = m / timediff, full_per_min = m / fulltimediff;
 		if(affixp == 0)
 		{
-			safe_snprintf(buffer, sizeof(buffer), "%-13s%10u%9.1f%10u%9.1f%9u%9u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
+			safe_snprintf(buffer, sizeof(buffer), in_k ? "%-13s%8u K%9.1f%8u K%9.1f%7u K%7u K" : "%-13s%10u%9.1f%10u%9.1f%9u%9u", statsinfo[i].skillnames->name, *statsinfo[i].exp - fullsession_exp[i], full_per_min * (*statsinfo[i].exp - fullsession_exp[i]), *statsinfo[i].exp - session_exp[i], per_min * (*statsinfo[i].exp - session_exp[i]), max_exp[i], last_exp[i]);
 		} else {
+			const char *u = in_k ? " K" : "";
 			if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000000) {
 				millions = (*(statsinfo[i].exp) - fullsession_exp[i]);
 				nbmillions = millions / 1000000;	
@@ -247,7 +251,7 @@ int display_session_handler(window_info *win)
 				} else if (centaines < 100) {
 					sprintf(chcentaines, "0%d", centaines);
 				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(totxp, "%d'%s'%s", nbmillions, chmilliers, chcentaines);
+				sprintf(totxp, "%d'%s'%s%s", nbmillions, chmilliers, chcentaines, u);
 			} else if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000) {
 				milliers = (*(statsinfo[i].exp) - fullsession_exp[i]);
 				nbmilliers = milliers / 1000;
@@ -259,12 +263,11 @@ int display_session_handler(window_info *win)
 				} else if (centaines < 100) {
 					sprintf(chcentaines, "0%d", centaines);
 				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(totxp, "%d'%s", nbmilliers, chcentaines);
+				sprintf(totxp, "%d'%s%s", nbmilliers, chcentaines, u);
 			} else {
-				sprintf(totxp, "%d", *(statsinfo[i].exp) - fullsession_exp[i]);			
+				sprintf(totxp, "%d%s", *statsinfo[i].exp - fullsession_exp[i], u);
 			}
-			if ((float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f) >= 1000){
-				xpm = (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f);
+			if ((xpm = full_per_min * (*statsinfo[i].exp - fullsession_exp[i])) >= 1000) {
 				sprintf(provi, "%-.1f", xpm);
 				finxpm = strchr(provi, '.');
 				milliers = (int)xpm;
@@ -279,7 +282,7 @@ int display_session_handler(window_info *win)
 				} else sprintf(chcentaines, "%d", centaines);
 				sprintf(mtotxp, "%d'%s%s xp/mn", nbmilliers, chcentaines, finxpm);
 			} else	{
-				sprintf(mtotxp, "%.1lf xp/mn", (float)(*(statsinfo[i].exp)-fullsession_exp[i])/((float)fulltimediff/60000.0f));
+				sprintf(mtotxp, "%.1lf xp/mn", xpm);
 			}
 			if ((*(statsinfo[i].exp) - session_exp[i]) >= 1000000) {
 				millions = (*(statsinfo[i].exp) - session_exp[i]);
@@ -301,7 +304,7 @@ int display_session_handler(window_info *win)
 				} else if (centaines < 100) {
 					sprintf(chcentaines, "0%d", centaines);
 				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(sessxp, "%d'%s'%s", nbmillions, chmilliers, chcentaines);
+				sprintf(sessxp, "%d'%s'%s%s", nbmillions, chmilliers, chcentaines, u);
 			} else if ((*(statsinfo[i].exp) - session_exp[i]) >= 1000) {
 				milliers = (*(statsinfo[i].exp) - session_exp[i]);
 				nbmilliers = milliers / 1000;
@@ -313,12 +316,11 @@ int display_session_handler(window_info *win)
 				} else if (centaines < 100) {
 					sprintf(chcentaines, "0%d", centaines);
 				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(sessxp, "%d'%s", nbmilliers, chcentaines);
+				sprintf(sessxp, "%d'%s%s", nbmilliers, chcentaines, u);
 			} else	{
-				sprintf(sessxp, "%d", *(statsinfo[i].exp) - session_exp[i]);
+				sprintf(sessxp, "%d%s", *statsinfo[i].exp - session_exp[i], u);
 			}
-			if ((float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f) >= 1000){
-				xpm = (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f);
+			if ((xpm = per_min * (*statsinfo[i].exp - session_exp[i])) >= 1000) {
 				sprintf(provi, "%-.1f", xpm);
 				finxpm = strchr(provi, '.');
 				milliers = (int)xpm;
@@ -333,7 +335,7 @@ int display_session_handler(window_info *win)
 				} else sprintf(chcentaines, "%d", centaines);
 				sprintf(msessxp, "%d'%s%s xp/mn", nbmilliers, chcentaines, finxpm);
 			} else	{
-				sprintf(msessxp, "%.1lf xp/mn", (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f));
+				sprintf(msessxp, "%.1lf xp/mn", xpm);
 			}
 			sprintf(correcwarning, "%s", statsinfo[i].skillnames->name);
 			strcpy(compe, correcwarning);

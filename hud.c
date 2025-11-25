@@ -1079,8 +1079,7 @@ void init_stats_display()
 	reset_statsbar_exp_cm_regions();
 }
 
-void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, float r2, float g2, float b2)
-{
+static void draw_stats_bar_with_suffix(int x, int y, int val, int len, float r, float g, float b, float r2, float g2, float b2, const char *suffix) {
 	char buf[32];
 	int i; // i deals with massive bars by trimming at 110%
 
@@ -1131,7 +1130,7 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 	glEnable(GL_TEXTURE_2D);
 
 	// handle the text
-	safe_snprintf(buf, sizeof(buf), "%d", val);
+	safe_snprintf(buf, sizeof(buf), "%d%s", val, suffix);
 	//glColor3f(0.8f, 0.8f, 0.8f); moved to next line
 #ifdef ENGLISH
 	draw_string_small_shadowed(x-(1+8*strlen(buf))-1, y-2, (unsigned char*)buf, 1,0.8f, 0.8f, 0.8f,0.0f,0.0f,0.0f);
@@ -1141,6 +1140,10 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 #ifdef OPENGL_TRACE
 CHECK_GL_ERRORS();
 #endif //OPENGL_TRACE
+}
+
+static inline void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, float r2, float g2, float b2) {
+	draw_stats_bar_with_suffix(x, y, val, len, r, g, b, r2, g2, b2, "");
 }
 
 static void draw_side_stats_bar(const int x, const int y, const int baselev, const int cur_exp, const int nl_exp, size_t colour)
@@ -1924,7 +1927,7 @@ CHECK_GL_ERRORS();
 			if (stat_mouse_is_over == thestat)
 			{
 #ifdef FR_VERSION
-				safe_snprintf(str,sizeof(str),"%7u",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
+				safe_snprintf(str, sizeof(str), thestat == SI_ALL && overall_exp_is_in_k ? "%5u K" : "%7u", *statsinfo[thestat].next_lev - *statsinfo[thestat].exp);
 				// ne pas décaler la position lorsque les barres du HUD sont masquées
 				draw_string_small_shadowed(-(HUD_MARGIN_X+hover_offset), y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 #else //FR_VERSION
@@ -2734,6 +2737,7 @@ void reset_quickbar()
 
 void build_levels_table() {
 #ifdef SOFT_CAP
+	overall_exp_is_in_k = 1;
 	num_exp_lev = 101;
 	exp_lev[0] = 0;
 	exp_lev[1] = 440;
@@ -2856,7 +2860,9 @@ void draw_exp_display()
 
 			my_exp_bar_start_x += stats_bar_len+exp_bar_text_len;
 #else //ENGLISH
-			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, nl_exp - cur_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
+			int in_k = watch_this_stats[i] - 1 == SI_ALL && overall_exp_is_in_k;
+			if (in_k) my_exp_bar_start_x += 2 * SMALL_FONT_X_LEN;
+			draw_stats_bar_with_suffix(my_exp_bar_start_x, exp_bar_start_y, nl_exp - cur_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f, in_k ? " K" : "");
 			// affichage du nom de la compétence sous la barre (uniquement si la barre d'icone est finie)
 			if (my_exp_bar_start_x > windows_list.window[icons_win].len_y) {
 				draw_string_small_shadowed(my_exp_bar_start_x + 3, exp_bar_start_y - 3, name, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
