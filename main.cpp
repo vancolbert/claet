@@ -546,24 +546,34 @@ static void freemakeargv(char **argv)
 
 #define MAX_THREADS 32
 #define MAX_BT 256
-static int thread_counter;
+static volatile int thread_counter;
 typedef struct Callsite { void *addr, *from; } Callsite;
 typedef struct Trace { uint8_t n; Callsite a[MAX_BT]; } Trace;
 static Trace thread_traces[MAX_THREADS];
-static __thread int thread_id;
+static volatile __thread int thread_id;
 extern "C" {
 void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *func_addr, void *ret_addr) {
 	int i = thread_id;
 	if (!i) {
 		thread_id = i = __atomic_add_fetch(&thread_counter, 1, __ATOMIC_SEQ_CST);
 	}
-	Trace *t = thread_traces + i;
-	Callsite *c = t->a + t->n++;
-	c->addr = func_addr;
-	c->from = ret_addr;
+	if (i < MAX_THREADS) {
+		Trace *t = thread_traces + i;
+		if (t->n < MAX_BT) {
+			Callsite *c = t->a + t->n++;
+			c->addr = func_addr;
+			c->from = ret_addr;
+		}
+	}
 }
 void __attribute__((no_instrument_function)) __cyg_profile_func_exit(void *func_addr, void *ret_addr) {
-	--thread_traces[thread_id].n;
+	int i = thread_id;
+	if (0 < i && i < MAX_THREADS) {
+		Trace *t = thread_traces + i;
+		if (t->n > 0) {
+			--t->n;
+		}
+	}
 }
 } // extern "C"
 static void get_crashlog_path(char *o, int n) {
