@@ -113,6 +113,11 @@
 			<Add option="-DTOO_MANY_SPELL_BUG_PATCH" />
 			<Add option="-DFR_NECRO_RECETTES" />
 			<Add option="-DADD_SPELL_EFFECT_IMU_RESI_MAGIE" />
+			<Add option="-DSELECT_WITH_MOUSE_ON_BANNER" />
+			<Add option="-DINGENIERIE" />
+			<Add option="-DNEW_EFFECT_ADA_SWORD" />
+			<Add option="-DFR_MORE_MQB" />
+			<Add option="-DSOFT_CAP" />
 			<Add directory="..\Librairie\LE_libs\Iconv" />
 			<Add directory="..\Librairie\LE_libs\SDL-1.2.14\include" />
 			<Add directory="..\Librairie\LE_libs\SDL_net\include" />
