@@ -53,7 +53,7 @@ typedef int WRes;
 #define RINOK(x) { int __result__ = (x); if (__result__ != 0) return __result__; }
 #endif
 
-typedef Uint8 Byte;
+#define Byte Uint8
 typedef Sint16 Int16;
 typedef Uint16 UInt16;
 
