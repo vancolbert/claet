@@ -2742,6 +2742,7 @@ void reset_quickbar()
 #endif //FR_VERSION
 
 void build_levels_table() {
+	int i;
 #ifdef SOFT_CAP
 	overall_exp_is_in_k = 1;
 	num_exp_lev = 101;
@@ -2749,7 +2750,7 @@ void build_levels_table() {
 	exp_lev[1] = 440;
 	exp_lev[2] = 728;
 	Uint64 exp = 728;
-	for (int i = 3; i < num_exp_lev; ++i) {
+	for (i = 3; i < num_exp_lev; ++i) {
 		if (i <= 20) {
 			exp += (exp - exp_lev[i - 2]) * 120 / 100;
 		} else if (i <= 90) {
@@ -2765,7 +2766,7 @@ void build_levels_table() {
 	num_exp_lev = 180;
 	exp_lev[0] = 0;
 	Uint64 exp = 100;
-	for (int i = 1; i < num_exp_lev; ++i) {
+	for (i = 1; i < num_exp_lev; ++i) {
 		if (i <= 10) {
 			exp += exp * 40 / 100;
 		} else if (i <= 20) {
