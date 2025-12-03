@@ -220,11 +220,13 @@ int display_session_handler(window_info *win)
 		int in_k = i == SI_ALL && overall_exp_is_in_k;
 		float m = in_k ? 6e7f : 6e4f;
 		float per_min = m / timediff, full_per_min = m / fulltimediff;
+		const char *u = in_k ? " K" : "";
+		char b1[16], b2[16], b3[16], b4[16];
+		#define fmt(b, f, ...) (safe_snprintf(b, sizeof(b), f, ##__VA_ARGS__), b)
 		if(affixp == 0)
 		{
-			safe_snprintf(buffer, sizeof(buffer), in_k ? "%-20s%-5u K%-6.1f%-5u K%-6.1f%-11u K%-11u K" : "%-20s%-7u%-6.1f%-7u%-6.1f%-13u%-13u", statsinfo[i].skillnames->name, *statsinfo[i].exp - fullsession_exp[i], full_per_min * (*statsinfo[i].exp - fullsession_exp[i]), *statsinfo[i].exp - session_exp[i], per_min * (*statsinfo[i].exp - session_exp[i]), max_exp[i], last_exp[i]);
+			safe_snprintf(buffer, sizeof(buffer), "%-20s%-7s%-6.1f%-7s%-6.1f%-13s%-13s", statsinfo[i].skillnames->name, fmt(b1, "%u%s", *statsinfo[i].exp - fullsession_exp[i], u), full_per_min * (*statsinfo[i].exp - fullsession_exp[i]), fmt(b2, "%u%s", *statsinfo[i].exp - session_exp[i], u), per_min * (*statsinfo[i].exp - session_exp[i]), fmt(b3, "%u%s", max_exp[i], u), fmt(b4, "%u%s", last_exp[i], u));
 		} else {
-			const char *u = in_k ? " K" : "";
 			if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000000) {
 				millions = (*(statsinfo[i].exp) - fullsession_exp[i]);
 				nbmillions = millions / 1000000;	
