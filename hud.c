@@ -80,7 +80,7 @@
 #define ATTACK 4
 #define USE 5
 
-Uint32 exp_lev[200];
+Uint64 exp_lev[200];
 #ifdef NEW_NEW_CHAR_WINDOW
 hud_interface last_interface = HUD_INTERFACE_NEW_CHAR; //Current interface (game or new character)
 #endif
@@ -224,7 +224,7 @@ int show_exp(char *text, int len)
 			*statsinfo[thestat].exp, *statsinfo[thestat].next_lev,
 			*statsinfo[thestat].next_lev - *statsinfo[thestat].exp );
 #else //ENGLISH
-		safe_snprintf(buf, sizeof(buf), "%12s : niveau %-3u (%2u%%) %9u/%-9u suivant dans %u xp",
+		safe_snprintf(buf, sizeof(buf), "%12s : niveau %-3u (%2llu%%) %9llu/%-9llu suivant dans %llu xp",
 			statsinfo[thestat].skillnames->name, statsinfo[thestat].skillattr->base,
 			100 * (*statsinfo[thestat].exp - exp_lev[statsinfo[thestat].skillattr->base]) / (*statsinfo[thestat].next_lev - exp_lev[statsinfo[thestat].skillattr->base]),
 			*statsinfo[thestat].exp, *statsinfo[thestat].next_lev,
@@ -1923,7 +1923,7 @@ CHECK_GL_ERRORS();
 			if (stat_mouse_is_over == thestat)
 			{
 #ifdef FR_VERSION
-				safe_snprintf(str,sizeof(str),"%7u",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
+				safe_snprintf(str,sizeof(str),"%7llu",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
 				// ne pas décaler la position lorsque les barres du HUD sont masquées
 				draw_string_small_shadowed(-(HUD_MARGIN_X+hover_offset), y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 #else //FR_VERSION

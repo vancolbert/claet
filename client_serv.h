@@ -1133,6 +1133,7 @@ typedef enum
 #define SEND_IMAGE 120
 #define SEND_DATE 121
 #endif //FR_VERSION
+#define SEND_PARTIAL_STAT64 150
 
 #ifdef FR_VERSION
 /*!

@@ -229,32 +229,32 @@ typedef struct
 
 	Sint8 food_level; /*!< current food level */
 
-	Uint32 manufacturing_exp; /*!< current manu experience */
-	Uint32 manufacturing_exp_next_lev; /*!< experience level to reach next manu level */
-	Uint32 harvesting_exp; /*!< current harvesting experience */
-	Uint32 harvesting_exp_next_lev; /*!< experience level to reach next harvesting level */
-	Uint32 alchemy_exp; /*!< current alchemy experience */
-	Uint32 alchemy_exp_next_lev; /*!< experience level to reach next alchemy level */
-	Uint32 overall_exp; /*!< current overal experience */
-	Uint32 overall_exp_next_lev; /*!< experience level to reach next overall level */
-	Uint32 attack_exp; /*!< current attack experience */
-	Uint32 attack_exp_next_lev; /*!< experience level to reach next attack level */
-	Uint32 defense_exp; /*!< current defense experience */
-	Uint32 defense_exp_next_lev; /*!< experience level to reach next defense level */
-	Uint32 magic_exp; /*!< current magic experience */
-	Uint32 magic_exp_next_lev; /*!< experience level to reach next magic level */
-	Uint32 potion_exp; /*!< current potion experience */
-	Uint32 potion_exp_next_lev; /*!< experience level to reach next potion level */
-	Uint32 summoning_exp; /*!< current summoning level */
-	Uint32 summoning_exp_next_lev; /*!< experience level to reach next summoning level */
-	Uint32 crafting_exp; /*!< current crafting experience */
-	Uint32 crafting_exp_next_lev; /*!< experience level to reach next crafting level */
-	Uint32 engineering_exp; /*!< current engineering experience */
-	Uint32 engineering_exp_next_lev; /*!< experience level to reach next engineering level */
-	Uint32 tailoring_exp; /*!< current tailoring experience */
-	Uint32 tailoring_exp_next_lev; /*!< experience level to reach next tailoring level */
-	Uint32 ranging_exp; /*!< current ranging experience */
-	Uint32 ranging_exp_next_lev; /*!< experience level to reach next ranging level */
+	Uint64 manufacturing_exp; /*!< current manu experience */
+	Uint64 manufacturing_exp_next_lev; /*!< experience level to reach next manu level */
+	Uint64 harvesting_exp; /*!< current harvesting experience */
+	Uint64 harvesting_exp_next_lev; /*!< experience level to reach next harvesting level */
+	Uint64 alchemy_exp; /*!< current alchemy experience */
+	Uint64 alchemy_exp_next_lev; /*!< experience level to reach next alchemy level */
+	Uint64 overall_exp; /*!< current overal experience */
+	Uint64 overall_exp_next_lev; /*!< experience level to reach next overall level */
+	Uint64 attack_exp; /*!< current attack experience */
+	Uint64 attack_exp_next_lev; /*!< experience level to reach next attack level */
+	Uint64 defense_exp; /*!< current defense experience */
+	Uint64 defense_exp_next_lev; /*!< experience level to reach next defense level */
+	Uint64 magic_exp; /*!< current magic experience */
+	Uint64 magic_exp_next_lev; /*!< experience level to reach next magic level */
+	Uint64 potion_exp; /*!< current potion experience */
+	Uint64 potion_exp_next_lev; /*!< experience level to reach next potion level */
+	Uint64 summoning_exp; /*!< current summoning level */
+	Uint64 summoning_exp_next_lev; /*!< experience level to reach next summoning level */
+	Uint64 crafting_exp; /*!< current crafting experience */
+	Uint64 crafting_exp_next_lev; /*!< experience level to reach next crafting level */
+	Uint64 engineering_exp; /*!< current engineering experience */
+	Uint64 engineering_exp_next_lev; /*!< experience level to reach next engineering level */
+	Uint64 tailoring_exp; /*!< current tailoring experience */
+	Uint64 tailoring_exp_next_lev; /*!< experience level to reach next tailoring level */
+	Uint64 ranging_exp; /*!< current ranging experience */
+	Uint64 ranging_exp_next_lev; /*!< experience level to reach next ranging level */
 
 #ifndef ENGLISH
 	Sint8 notoriete;
@@ -275,8 +275,8 @@ typedef struct
 	added more simply. */
 struct stats_struct
 {
-	Uint32 *exp;
-	Uint32 *next_lev;
+	Uint64 *exp;
+	Uint64 *next_lev;
 	attrib_16 *skillattr;
 	names *skillnames;
 	int is_selected;
@@ -346,6 +346,7 @@ void get_the_stats(Sint16 *stats);
  * \param value The value of the stat to get.
  */
 void get_partial_stat(unsigned char name,Sint32 value);
+void get_partial_stat64(int stat_id, Uint64 value);
 
 /*!
  * \ingroup other
