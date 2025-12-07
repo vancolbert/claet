@@ -781,28 +781,20 @@ static int get_num_statsbar_exp(void)
 	return num_skills_bar;
 }
 
-
-// calculate the number of digits for the specified Uint32
-static Uint32 Uint32_digits(Uint32 number)
-{
-	Uint32 digits = 1;
-	long step = 10;
-	while ((step <= number) && (digits<11))
-	{
-		digits++;
-		step *= 10;
-	}
-	return digits;
+static int digit_count_u64(Uint64 n) {
+	int r = 1;
+	Uint64 v = 10;
+	for (; v <= n && r < 20; ++r, v *= 10);
+	return r;
 }
-
 
 // check if we need to adjust exp_bar_text_len due to an exp change
 static int recalc_exp_bar_text_len(void)
 {
 	static int init_flag = 1;
-	static Uint32 last_exp[NUM_WATCH_STAT-1];
-	static Uint32 last_to_go_len[NUM_WATCH_STAT-1];
-	static Uint32 last_selected[NUM_WATCH_STAT-1];
+	static Uint64 last_exp[NUM_WATCH_STAT-1];
+	static int last_to_go_len[NUM_WATCH_STAT-1];
+	static int last_selected[NUM_WATCH_STAT-1];
 	int recalc = 1;
 	int i;
 
@@ -811,7 +803,7 @@ static int recalc_exp_bar_text_len(void)
 		for (i=0; i<NUM_WATCH_STAT-1; i++)
 		{
 			last_exp[i] = *statsinfo[i].exp;
-			last_to_go_len[i] = Uint32_digits(*statsinfo[i].next_lev - *statsinfo[i].exp);
+			last_to_go_len[i] = digit_count_u64(*statsinfo[i].next_lev - *statsinfo[i].exp);
 			last_selected[i] = 0;
 		}
 		init_flag =  0;
@@ -822,7 +814,7 @@ static int recalc_exp_bar_text_len(void)
 		/* if any exp changes, recalculate the number of digits for next level value */
 		if (last_exp[i] != *statsinfo[i].exp)
 		{
-			unsigned int curr = Uint32_digits(*statsinfo[i].next_lev - *statsinfo[i].exp);
+			int curr = digit_count_u64(*statsinfo[i].next_lev - *statsinfo[i].exp);
 			/* if the number of digit changes, we need to recalulate exp_bar_text_len */
 			if (last_to_go_len[i] != curr)
 			{
@@ -1149,9 +1141,10 @@ CHECK_GL_ERRORS();
 #endif //OPENGL_TRACE
 }
 
-static void draw_side_stats_bar(const int x, const int y, const int baselev, const int cur_exp, const int nl_exp, size_t colour)
+static void draw_side_stats_bar(const int x, const int y, const int baselev, Uint64 cur_exp, Uint64 nl_exp, size_t colour)
 {
-	int len = 58-58.0f/(float)((float)(nl_exp-exp_lev[baselev])/(float)(nl_exp-cur_exp));
+	float d = nl_exp > cur_exp ? nl_exp - cur_exp : 1;
+	int len = 58 - 58.0f / ((float)(nl_exp - exp_lev[baselev]) / d);
 
 	GLfloat colours[2][2][3] = { { {0.11f, 0.11f, 0.11f}, {0.3f, 0.5f, 0.2f} },
 								 { {0.10f,0.10f,0.80f}, {0.40f,0.40f,1.00f} } };
@@ -2806,8 +2799,8 @@ void draw_exp_display()
 			int name_y = exp_bar_start_y+10;
 #endif //ENGLISH
 			int icon_x = get_icons_win_active_len();
-			int cur_exp = *statsinfo[watch_this_stats[i]-1].exp;
-			int nl_exp = *statsinfo[watch_this_stats[i]-1].next_lev;
+			Uint64 cur_exp = *statsinfo[watch_this_stats[i]-1].exp;
+			Uint64 nl_exp = *statsinfo[watch_this_stats[i]-1].next_lev;
 			int baselev = statsinfo[watch_this_stats[i]-1].skillattr->base;
 #ifdef ENGLISH
 			unsigned char * name = statsinfo[watch_this_stats[i]-1].skillnames->name;
@@ -2816,8 +2809,8 @@ void draw_exp_display()
 			unsigned char * full_name = statsinfo[watch_this_stats[i]-1].skillnames->name;
 #endif //ENGLISH
 			int exp_adjusted_x_len;
-			int delta_exp;
-			float prev_exp;
+			Uint64 delta_exp;
+			Uint64 prev_exp;
 
 	if(!baselev)
 		prev_exp= 0;
@@ -2826,7 +2819,7 @@ void draw_exp_display()
 
 	delta_exp= nl_exp-prev_exp;
 
-	if(!cur_exp || !nl_exp || delta_exp <=0)
+	if(!cur_exp || !nl_exp || nl_exp <= prev_exp)
 		exp_adjusted_x_len= 0;
 	else
 				exp_adjusted_x_len= stats_bar_len-(float)stats_bar_len/(float)((float)delta_exp/(float)(nl_exp-cur_exp));
