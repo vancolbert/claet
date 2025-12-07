@@ -937,6 +937,14 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			}
 			break;
 
+		case SEND_PARTIAL_STAT64:
+			if (data_length < 12) {
+				LOG_ERROR("not enough bytes to decode SEND_PARTIAL_STAT64 packet (expecting 12, got %d)\n", data_length);
+			} else {
+				get_partial_stat64(in_data[3], unpack_u64_le(in_data + 4));
+			}
+			break;
+
 		case GET_KNOWLEDGE_LIST:
 			{
 				Uint16 size;

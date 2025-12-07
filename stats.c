@@ -817,6 +817,20 @@ void get_partial_stat(Uint8 name,Sint32 value)
 
 }
 
+void get_partial_stat64(int stat_id, Uint64 value) {
+	switch (stat_id) {
+	case OVRL_EXP:
+		set_last_skill_exp(SI_ALL, value - your_info.overall_exp);
+		your_info.overall_exp = value;
+		break;
+	case OVRL_EXP_NEXT:
+		your_info.overall_exp_next_lev = value;
+		break;
+	default:
+		LOG_ERROR("get_partial_stat64: unhandled stat_id=%d value=%llu\n", stat_id, value);
+	}
+}
+
 #ifndef FR_RCM_WRAITH
 
 Sint16 get_base_might() { return (your_info.phy.base+your_info.coo.base)/2;}
@@ -1005,7 +1019,7 @@ void draw_stat(int len, int x, int y, attrib_16 * var, names * name)
     cur_nex)
 
 **/
-int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, int exp_next, int cur_nex, int base_nex) {
+int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, Uint64 exp, Uint64 exp_next, int cur_nex, int base_nex) {
 	char str[100];
 	char lvlstr[20];
 	char expstr[25];
@@ -1024,7 +1038,7 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, in
 
 	pourcent = (exp_lev[lvl->base] == exp_next) ? 100 : round(((exp-exp_lev[lvl->base])*100.0)/(exp_next-exp_lev[lvl->base]));
 	safe_snprintf(lvlstr, sizeof(lvlstr), "%5i/%-3i", lvl->cur, lvl->base);
-	safe_snprintf(expstr, sizeof(expstr), "%9i %12i", exp, exp_next);
+	safe_snprintf(expstr, sizeof(expstr), "%9llu %12llu", exp, exp_next);
 
 	safe_snprintf(str, sizeof(str), "%-11s %-11s %-s %6i%%", lvlstr, niv_nexus, expstr, pourcent);
 
