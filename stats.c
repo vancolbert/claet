@@ -1036,7 +1036,7 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, Uint64 exp,
       }
     }
 
-	pourcent = (exp_lev[lvl->base] == exp_next) ? 100 : round(((exp-exp_lev[lvl->base])*100.0)/(exp_next-exp_lev[lvl->base]));
+	pourcent = exp_next <= exp_lev[lvl->base] ? 100 : clampi(100 * (exp - exp_lev[lvl->base]) / (exp_next - exp_lev[lvl->base]), 0, 100);
 	safe_snprintf(lvlstr, sizeof(lvlstr), "%5i/%-3i", lvl->cur, lvl->base);
 	safe_snprintf(expstr, sizeof(expstr), "%9llu %12llu", exp, exp_next);
 

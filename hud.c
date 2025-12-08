@@ -780,6 +780,7 @@ static int digit_count_u64(Uint64 n) {
 	for (; v <= n && r < 20; ++r, v *= 10);
 	return r;
 }
+static inline Uint64 sub_gt_u64(Uint64 a, Uint64 b) { return a > b ? a - b : 0; }
 
 // check if we need to adjust exp_bar_text_len due to an exp change
 static int recalc_exp_bar_text_len(void)
@@ -796,7 +797,7 @@ static int recalc_exp_bar_text_len(void)
 		for (i=0; i<NUM_WATCH_STAT-1; i++)
 		{
 			last_exp[i] = *statsinfo[i].exp;
-			last_to_go_len[i] = digit_count_u64(*statsinfo[i].next_lev - *statsinfo[i].exp);
+			last_to_go_len[i] = digit_count_u64(sub_gt_u64(*statsinfo[i].next_lev, *statsinfo[i].exp));
 			last_selected[i] = 0;
 		}
 		init_flag =  0;
@@ -807,7 +808,7 @@ static int recalc_exp_bar_text_len(void)
 		/* if any exp changes, recalculate the number of digits for next level value */
 		if (last_exp[i] != *statsinfo[i].exp)
 		{
-			int curr = digit_count_u64(*statsinfo[i].next_lev - *statsinfo[i].exp);
+			int curr = digit_count_u64(sub_gt_u64(*statsinfo[i].next_lev, *statsinfo[i].exp));
 			/* if the number of digit changes, we need to recalulate exp_bar_text_len */
 			if (last_to_go_len[i] != curr)
 			{
@@ -1070,7 +1071,7 @@ void init_stats_display()
 	reset_statsbar_exp_cm_regions();
 }
 
-void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, float r2, float g2, float b2)
+static void draw_stats_bar(int x, int y, Sint64 val, int len, float r, float g, float b, float r2, float g2, float b2)
 {
 	char buf[32];
 	int i; // i deals with massive bars by trimming at 110%
@@ -1122,7 +1123,7 @@ void draw_stats_bar(int x, int y, int val, int len, float r, float g, float b, f
 	glEnable(GL_TEXTURE_2D);
 
 	// handle the text
-	safe_snprintf(buf, sizeof(buf), "%d", val);
+	safe_snprintf(buf, sizeof(buf), "%lld", val);
 	//glColor3f(0.8f, 0.8f, 0.8f); moved to next line
 #ifdef ENGLISH
 	draw_string_small_shadowed(x-(1+8*strlen(buf))-1, y-2, (unsigned char*)buf, 1,0.8f, 0.8f, 0.8f,0.0f,0.0f,0.0f);
@@ -1136,8 +1137,10 @@ CHECK_GL_ERRORS();
 
 static void draw_side_stats_bar(const int x, const int y, const int baselev, Uint64 cur_exp, Uint64 nl_exp, size_t colour)
 {
-	float d = nl_exp > cur_exp ? nl_exp - cur_exp : 1;
-	int len = 58 - 58.0f / ((float)(nl_exp - exp_lev[baselev]) / d);
+	int len = 58;
+	if (nl_exp > cur_exp && nl_exp > exp_lev[baselev]) {
+		len -= 58.0f / ((float)(nl_exp - exp_lev[baselev]) / (nl_exp - cur_exp));
+	}
 
 	GLfloat colours[2][2][3] = { { {0.11f, 0.11f, 0.11f}, {0.3f, 0.5f, 0.2f} },
 								 { {0.10f,0.10f,0.80f}, {0.40f,0.40f,1.00f} } };
@@ -2801,21 +2804,15 @@ void draw_exp_display()
 			unsigned char * full_name = statsinfo[watch_this_stats[i]-1].skillnames->name;
 #endif //ENGLISH
 			int exp_adjusted_x_len;
-			Uint64 delta_exp;
-			Uint64 prev_exp;
-
-	if(!baselev)
-		prev_exp= 0;
-	else
-		prev_exp= exp_lev[baselev];
-
-	delta_exp= nl_exp-prev_exp;
-
-	if(!cur_exp || !nl_exp || nl_exp <= prev_exp)
-		exp_adjusted_x_len= 0;
-	else
-				exp_adjusted_x_len= stats_bar_len-(float)stats_bar_len/(float)((float)delta_exp/(float)(nl_exp-cur_exp));
-
+			Uint64 prev_exp = baselev ? exp_lev[baselev] : 0;
+			Uint64 delta_exp = nl_exp > prev_exp ? nl_exp - prev_exp : 0;
+			if (!cur_exp || !nl_exp) {
+				exp_adjusted_x_len = 0;
+			} else if (!delta_exp || nl_exp <= cur_exp || prev_exp <= cur_exp) {
+				exp_adjusted_x_len = stats_bar_len;
+			} else {
+				exp_adjusted_x_len = stats_bar_len - (float)stats_bar_len / ((float)delta_exp / (float)(nl_exp - cur_exp));
+			}
 			name_x = my_exp_bar_start_x + stats_bar_len - strlen((char *)name) * SMALL_FONT_X_LEN;
 			// the the name would overlap with the icons...
 			if (name_x < icon_x)
@@ -2839,29 +2836,21 @@ void draw_exp_display()
 #endif //ENGLISH
 				}
 			}
-
-#ifdef ENGLISH
-	// only display if you are below the exp needed, don't allow negative bars
-	//if(exp_adjusted_x_len >= 0){
-				draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, nl_exp - cur_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
-			draw_string_small_shadowed(name_x, name_y, name, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-
-			my_exp_bar_start_x += stats_bar_len+exp_bar_text_len;
-#else //ENGLISH
-			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, nl_exp - cur_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
+			Sint64 rem_exp = nl_exp > cur_exp ? nl_exp - cur_exp : 0;
+			float percent = delta_exp ? clampf(100.0f - 100.0f * rem_exp / delta_exp, 0.0f, 100.0f) : 100.0f;
+			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, rem_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
 			// affichage du nom de la compétence sous la barre (uniquement si la barre d'icone est finie)
 			if (my_exp_bar_start_x > windows_list.window[icons_win].len_y) {
 				draw_string_small_shadowed(my_exp_bar_start_x + 3, exp_bar_start_y - 3, name, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 			}
 			// affichage du pourcentage d'avancement correspondant dans la barre de compétence
-			safe_snprintf(buf, sizeof(buf), "%4.1f%%", 100-100.0f/(float)((float)delta_exp/(float)(nl_exp-cur_exp)));
+			safe_snprintf(buf, sizeof(buf), "%4.1f%%", percent);
 			draw_string_small_shadowed(my_exp_bar_start_x+stats_bar_len-5*8-2, exp_bar_start_y-2, (unsigned char*)buf, 1,0.8f, 0.8f, 0.8f,0.0f,0.0f,0.0f);
 			// affichage de la compétence et du pourcentage en infobulle au survol de la barre
 			if (statbar_cursor_x > my_exp_bar_start_x && statbar_cursor_x < my_exp_bar_start_x + stats_bar_len) {
-				safe_snprintf(buf, sizeof(buf), "%s (%.1f%%)", full_name, 100-100.0f/(float)((float)delta_exp/(float)(nl_exp-cur_exp)));
+				safe_snprintf(buf, sizeof(buf), "%s (%.1f%%)", full_name, percent);
 				show_help(buf, my_exp_bar_start_x+stats_bar_len-strlen(buf)*8, exp_bar_start_y+12);
 			}
-#endif //ENGLISH
 			my_exp_bar_start_x += stats_bar_len + exp_bar_text_len;
 		}
 		else
