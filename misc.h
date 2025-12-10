@@ -311,6 +311,8 @@ static __inline__ Uint64 unpack_u64_le(const void *p) {
 	Uint64 a = u[0], b = u[1], c = u[2], d = u[3], e = u[4], f = u[5], g = u[6], h = u[7];
 	return a | b<<8 | c<<16 | d<<24 | e<<32| f<<40 | g<<48 | h<<56;
 }
+static __inline__ Uint64 subgt_u64(Uint64 a, Uint64 b) { return a > b ? a - b : 0; }
+
 /*! @} */
 
 void init_reflection_portals(int size);

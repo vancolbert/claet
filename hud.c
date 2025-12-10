@@ -211,27 +211,16 @@ void cleanup_hud(void)
 #endif //FR_VERSION
 }
 
-
 /* #exp console command, display current exp information */
-int show_exp(char *text, int len)
-{
-	int thestat;
-	char buf[256];
-	for (thestat=0; thestat<NUM_WATCH_STAT-1; thestat++)
-	{
-#ifdef ENGLISH
-		safe_snprintf(buf, sizeof(buf), "%s: level %u, %u/%u exp (%u to go)",
-			statsinfo[thestat].skillnames->name, statsinfo[thestat].skillattr->base,
-			*statsinfo[thestat].exp, *statsinfo[thestat].next_lev,
-			*statsinfo[thestat].next_lev - *statsinfo[thestat].exp );
-#else //ENGLISH
-		safe_snprintf(buf, sizeof(buf), "%12s : niveau %-3u (%2llu%%) %9llu/%-9llu suivant dans %llu xp",
-			statsinfo[thestat].skillnames->name, statsinfo[thestat].skillattr->base,
-			100 * (*statsinfo[thestat].exp - exp_lev[statsinfo[thestat].skillattr->base]) / (*statsinfo[thestat].next_lev - exp_lev[statsinfo[thestat].skillattr->base]),
-			*statsinfo[thestat].exp, *statsinfo[thestat].next_lev,
-			*statsinfo[thestat].next_lev - *statsinfo[thestat].exp );
-#endif //ENGLISH
-		LOG_TO_CONSOLE(c_green1, buf);
+int show_exp(char *text, int len) {
+	int i;
+	char t[256];
+	for (i = 0; i < NUM_WATCH_STAT - 1; ++i) {
+		struct stats_struct *s = statsinfo + i;
+		int b = clampi(s->skillattr->base, 0, num_exp_lev - 1);
+		Uint64 e = *s->exp, n = *s->next_lev, l = exp_lev[b], d = subgt_u64(n, l);
+		safe_snprintf(t, sizeof(t), "%12s : niveau %-3u (%3llu%%) %12llu/%-12llu suivant dans %llu xp",	s->skillnames->name, b, d ? clampi(100 * subgt_u64(e, l) / d, 0, 100) : 100, e, n, subgt_u64(n, e));
+		LOG_TO_CONSOLE(c_green1, t);
 	}
 	return 1;
 }
@@ -787,7 +776,6 @@ static int digit_count_u64(Uint64 n) {
 	for (; v <= n && r < 20; ++r, v *= 10);
 	return r;
 }
-static inline Uint64 sub_gt_u64(Uint64 a, Uint64 b) { return a > b ? a - b : 0; }
 
 // check if we need to adjust exp_bar_text_len due to an exp change
 static int recalc_exp_bar_text_len(void)
@@ -804,7 +792,7 @@ static int recalc_exp_bar_text_len(void)
 		for (i=0; i<NUM_WATCH_STAT-1; i++)
 		{
 			last_exp[i] = *statsinfo[i].exp;
-			last_to_go_len[i] = digit_count_u64(sub_gt_u64(*statsinfo[i].next_lev, *statsinfo[i].exp));
+			last_to_go_len[i] = digit_count_u64(subgt_u64(*statsinfo[i].next_lev, *statsinfo[i].exp));
 			last_selected[i] = 0;
 		}
 		init_flag =  0;
@@ -815,7 +803,7 @@ static int recalc_exp_bar_text_len(void)
 		/* if any exp changes, recalculate the number of digits for next level value */
 		if (last_exp[i] != *statsinfo[i].exp)
 		{
-			int curr = digit_count_u64(sub_gt_u64(*statsinfo[i].next_lev, *statsinfo[i].exp));
+			int curr = digit_count_u64(subgt_u64(*statsinfo[i].next_lev, *statsinfo[i].exp));
 			/* if the number of digit changes, we need to recalulate exp_bar_text_len */
 			if (last_to_go_len[i] != curr)
 			{
@@ -1145,8 +1133,9 @@ CHECK_GL_ERRORS();
 static void draw_side_stats_bar(const int x, const int y, const int baselev, Uint64 cur_exp, Uint64 nl_exp, size_t colour)
 {
 	int len = 58;
-	if (nl_exp > cur_exp && nl_exp > exp_lev[baselev]) {
-		len -= 58.0f / ((float)(nl_exp - exp_lev[baselev]) / (nl_exp - cur_exp));
+	Uint64 l = exp_lev[clampi(baselev, 0, num_exp_lev-1)];
+	if (nl_exp > cur_exp && nl_exp > l) {
+		len -= 58.0f * (nl_exp - cur_exp) / (nl_exp - l);
 	}
 
 	GLfloat colours[2][2][3] = { { {0.11f, 0.11f, 0.11f}, {0.3f, 0.5f, 0.2f} },
@@ -1888,8 +1877,6 @@ CHECK_GL_ERRORS();
 
 		for (thestat=0; thestat<NUM_WATCH_STAT-1; thestat++)
 		{
-			int hover_offset = 0;
-
 			/* skill skills until we have the skill displayed first */
 			if (thestat < first_disp_stat)
 				continue;
@@ -1910,33 +1897,18 @@ CHECK_GL_ERRORS();
 			else
    			    draw_string_small_shadowed(x+gx_adjust, y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 
-			if((thestat!=NUM_WATCH_STAT-2) && floatingmessages_enabled &&
-				(skill_modifier = statsinfo[thestat].skillattr->cur -
-				 	statsinfo[thestat].skillattr->base) != 0){
-				safe_snprintf(str,sizeof(str),"%+i",skill_modifier);
-				hover_offset = strlen(str)+1;
-				if(skill_modifier > 0){
-					draw_string_small_shadowed(-(int)(SMALL_FONT_X_LEN*(strlen(str)+0.5)), y+gy_adjust, (unsigned char*)str, 1,0.3f, 1.0f, 0.3f,0.0f,0.0f,0.0f);
-				} else {
-					draw_string_small_shadowed(-(int)(SMALL_FONT_X_LEN*(strlen(str)+0.5)), y+gy_adjust, (unsigned char*)str, 1,1.0f, 0.1f, 0.2f,0.0f,0.0f,0.0f);
-				}
+			int mod_width = 0;
+			if (thestat != NUM_WATCH_STAT - 2 && floatingmessages_enabled && (skill_modifier = statsinfo[thestat].skillattr->cur - statsinfo[thestat].skillattr->base)) {
+				mod_width = SMALL_FONT_X_LEN * safe_snprintf(str, sizeof(str), "%+i", skill_modifier);
+				float cl[] = {1,.1f,.2f,.3f,1,.3f}, *c = cl + 3*(skill_modifier > 0);
+				draw_string_small_shadowed(-mod_width, y + gy_adjust, (Uint8 *)str, 1, c[0], c[1], c[2], 0, 0, 0);
 			}
-
-			/* if the mouse is over the stat bar, draw the XP remaining */
-			if (stat_mouse_is_over == thestat)
-			{
-#ifdef FR_VERSION
-				safe_snprintf(str,sizeof(str),"%7llu",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
-				// ne pas décaler la position lorsque les barres du HUD sont masquées
-				draw_string_small_shadowed(-(HUD_MARGIN_X+hover_offset), y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#else //FR_VERSION
-				safe_snprintf(str,sizeof(str),"%li",(*statsinfo[thestat].next_lev - *statsinfo[thestat].exp));
-				draw_string_small_shadowed(-(int)(SMALL_FONT_X_LEN*(strlen(str)+0.5+hover_offset)), y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
-#endif //FR_VERSION
+			if (stat_mouse_is_over == thestat) {
+				int w = SMALL_FONT_X_LEN * safe_snprintf(str, sizeof(str), "%llu", subgt_u64(*statsinfo[thestat].next_lev, *statsinfo[thestat].exp));
+				draw_string_small_shadowed(-mod_width - w, y + gy_adjust, (Uint8 *)str, 1, 1, 1, 1, 0, 0, 0);
 				stat_mouse_is_over = -1;
 			}
-
-			y+=stats_bar_height;
+			y += stats_bar_height;
 		}
 	}
 
@@ -2811,15 +2783,12 @@ void draw_exp_display()
 			unsigned char * name = statsinfo[watch_this_stats[i]-1].skillnames->shortname;
 			unsigned char * full_name = statsinfo[watch_this_stats[i]-1].skillnames->name;
 #endif //ENGLISH
-			int exp_adjusted_x_len;
-			Uint64 prev_exp = baselev ? exp_lev[baselev] : 0;
-			Uint64 delta_exp = nl_exp > prev_exp ? nl_exp - prev_exp : 0;
+			int exp_adjusted_x_len = stats_bar_len;
+			Uint64 prev_exp = exp_lev[clampi(baselev, 0, num_exp_lev - 1)], delta_exp = subgt_u64(nl_exp, prev_exp), rem_exp = subgt_u64(nl_exp, cur_exp);
 			if (!cur_exp || !nl_exp) {
 				exp_adjusted_x_len = 0;
-			} else if (!delta_exp || nl_exp <= cur_exp || prev_exp <= cur_exp) {
-				exp_adjusted_x_len = stats_bar_len;
-			} else {
-				exp_adjusted_x_len = stats_bar_len - (float)stats_bar_len / ((float)delta_exp / (float)(nl_exp - cur_exp));
+			} else if (delta_exp && rem_exp) {
+				exp_adjusted_x_len -= stats_bar_len * rem_exp / delta_exp;
 			}
 			name_x = my_exp_bar_start_x + stats_bar_len - strlen((char *)name) * SMALL_FONT_X_LEN;
 			// the the name would overlap with the icons...
@@ -2844,8 +2813,7 @@ void draw_exp_display()
 #endif //ENGLISH
 				}
 			}
-			Sint64 rem_exp = nl_exp > cur_exp ? nl_exp - cur_exp : 0;
-			float percent = delta_exp ? clampf(100.0f - 100.0f * rem_exp / delta_exp, 0.0f, 100.0f) : 100.0f;
+			float percent = delta_exp ? clampf(100 - 100.0f * rem_exp / delta_exp, 0, 100) : 100;
 			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, rem_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
 			// affichage du nom de la compétence sous la barre (uniquement si la barre d'icone est finie)
 			if (my_exp_bar_start_x > windows_list.window[icons_win].len_y) {
