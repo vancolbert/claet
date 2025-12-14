@@ -110,7 +110,7 @@ int show_am=0;
 int gargc;
 char **  gargv;
 /**********************************************************************/
-
+static void free_e3d_object(void *p) { destroy_e3d((e3d_object *)p); }
 void cleanup_mem(void)
 {
 	int i;
@@ -131,7 +131,7 @@ void cleanup_mem(void)
 	/* 3d objects */
 	destroy_all_3d_objects();
 	/* caches */
-	cache_e3d->free_item = [](void *p) { destroy_e3d((e3d_object *)p); };
+	cache_e3d->free_item = free_e3d_object;
 	cache_delete(cache_e3d);
 	cache_e3d = NULL;
 #ifdef NEW_TEXTURES
