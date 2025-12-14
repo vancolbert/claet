@@ -39,10 +39,10 @@ int display_opening_handler ()
 	{
 		int msg, offset, iline;
 
-		iline = get_total_nr_lines() - nr_opening_lines;
+		iline = total_nr_lines - nr_opening_lines;
 		if (iline < 0) iline = 0;
 
-		find_line_nr (get_total_nr_lines(), iline, FILTER_ALL, &msg, &offset, chat_text_size, opening_win_text_width);
+		find_line_nr(total_nr_lines, iline, FILTER_ALL, &msg, &offset, chat_text_size, opening_win_text_width);
 		text_field_set_buf_pos (opening_root_win, opening_out_id, msg, offset);
 		draw_console_pic (cons_text);
 		CHECK_GL_ERRORS();
