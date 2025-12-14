@@ -12,9 +12,6 @@
 #include "chat.h"
 #include "console.h"
 #include "consolewin.h"
-#ifdef ENGLISH
-#include "elconfig.h"
-#endif //ENGLISH
 #include "errors.h"
 #include "filter.h"
 #include "gl_init.h"
@@ -32,9 +29,6 @@
 #include "url.h"
 #include "counters.h"
 #include "io/elpathwrapper.h"
-#ifdef ENGLISH
-#include "spells.h"
-#endif //ENGLISH
 #include "serverpopup.h"
 #include "sky.h"
 #include "sound.h"
@@ -43,12 +37,8 @@
 #include "actor_scripts.h"
 #include "emotes.h"
 #endif // EMOTES
-#ifndef ENGLISH
 #include "elconfig.h"
-#endif //ENGLISH
-#ifdef FR_VERSION
 #include "themes.h"
-#endif //FR_VERSION
 
 #ifdef EMOTES
 int emote_filter=0;
@@ -57,7 +47,6 @@ int summoning_filter=0;
 
 text_message display_text_buffer[DISPLAY_TEXT_BUFFER_SIZE];
 int last_message = -1;
-int total_nr_lines = 0;
 Uint8 current_filter = FILTER_ALL;
 
 int console_msg_nr = 0;
@@ -73,18 +62,10 @@ int max_lines_to_show = 10;
 float scroll_off_secs = 3.0f;
 
 int show_timestamp = 0;
-int dedup_lookback = 10;
+int dedup_lookback = 0;
 char not_from_the_end_console=0;
 
 int dark_channeltext = 0;
-
-#ifdef ENGLISH
-static int is_special_day = 0;
-int today_is_special_day(void) { return is_special_day; };
-void set_today_is_special_day(void) { is_special_day = 1; };
-void clear_today_is_special_day(void) { is_special_day = 0; };
-#endif //ENGLISH
-
 int log_chat = LOG_SERVER;
 
 float	chat_text_size=1.0;
@@ -162,11 +143,7 @@ void update_text_windows (text_message * pmsg)
 	if (console_root_win >= 0) update_console_win (pmsg);
 	switch (windowed_chat) {
 		case 0:
-#ifdef FR_VERSION
 			rewrap_message(pmsg, chat_text_size, chat_font, get_console_text_width(), NULL);
-#else //FR_VERSION
-			rewrap_message(pmsg, chat_text_size, get_console_text_width(), NULL);
-#endif //FR_VERSION
 			lines_to_show += pmsg->wrap_lines;
 			lines_to_show = clampi(lines_to_show, 0, max_lines_to_show);
 			break;
@@ -182,50 +159,10 @@ void update_text_windows (text_message * pmsg)
 void open_chat_log(){
 	char sttime[256];
 	struct tm *l_time; time_t c_time;
-#ifdef ENGLISH
-
-	char chat_log_file[100];
-	char srv_log_file[100];
-
-	time(&c_time);
-	l_time = localtime(&c_time);
-
-	if (get_rotate_chat_log())
-	{
-		char logsuffix[7];
-		strftime(logsuffix, sizeof(logsuffix), "%Y%m", l_time);
-		safe_snprintf (chat_log_file, sizeof (chat_log_file),  "chat_log_%s.txt", logsuffix);
-		safe_snprintf (srv_log_file, sizeof (srv_log_file), "srv_log_%s.txt", logsuffix);
-	}
-	else
-	{
-		safe_strncpy(chat_log_file, "chat_log.txt", sizeof(chat_log_file));
-		safe_strncpy(srv_log_file, "srv_log.txt", sizeof(srv_log_file));
-	}
-
-	chat_log = open_file_config (chat_log_file, "a");
-	if (log_chat == LOG_SERVER || log_chat == LOG_SERVER_SEPERATE)
-		srv_log = open_file_config (srv_log_file, "a");
-	if (chat_log == NULL)
-	{
-		LOG_TO_CONSOLE(c_red3, "Unable to open log file to write. We will NOT be recording anything.");
-		log_chat = LOG_NONE;
-		return;
-	}
-	else if ((log_chat == LOG_SERVER || log_chat == LOG_SERVER_SEPERATE) && srv_log == NULL)
-	{
-		LOG_TO_CONSOLE(c_red3, "Unable to open server log file to write. We will fall back to recording everything in chat_log.txt.");
-		log_chat = LOG_CHAT;
-		return;
-	}
-	strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime", l_time);
-#else //ENGLISH
 	char chat_log_file[100];
 
 	time(&c_time);
 	l_time = localtime(&c_time);
-
-//	safe_snprintf(chat_log_file, sizeof(chat_log_file), "chat_log_%s.txt", username);
 	mkdir_config("logs");
 	safe_snprintf(chat_log_file, sizeof(chat_log_file), "logs/chat_log_%s_%04d%02d.txt", username, l_time->tm_year +1900, l_time->tm_mon +1);
 	chat_log = open_file_config (chat_log_file, "a");
@@ -250,25 +187,18 @@ void open_chat_log(){
 		LOG_TO_CONSOLE(c_red3, "Impossible d'ouvrir les journaux pour le serveur. Tout sera enregsitré dans le fichier chat_log.txt.");
 		return;
 	}
-#endif //ENGLISH
 
-#ifdef ENGLISH
-	int n = strftime(sttime, sizeof(sttime), "\n\nLog started at %Y-%m-%d %H:%M:%S localtime %Z\n\n", l_time);
-#else //ENGLISH
 	int n = strftime(sttime, sizeof(sttime), "\n\nDébut du journal %Y-%m-%d %H:%M:%S (heure locale %Z)\n\n", l_time);
-#endif //ENGLISH
 	fwrite(sttime, n, 1, chat_log);
 }
 
-#ifndef ENGLISH
-void close_chat_log() {
+void close_chat_log(void) {
 	if (chat_log == NULL) return;
 	fclose(chat_log);
 	chat_log = NULL;
 }
-#endif //ENGLISH
 
-void timestamp_chat_log(){
+void timestamp_chat_log(void) {
 	char s[256];
 	struct tm *l_time; time_t c_time;
 
@@ -287,8 +217,7 @@ void timestamp_chat_log(){
 }
 
 
-void write_to_log (Uint8 channel, const Uint8* const data, int len)
-{
+void write_to_log(Uint8 channel, const Uint8 *data, int len) {
 	int i, j;
 	Uint8 ch;
 	char str[1024];
@@ -315,25 +244,10 @@ void write_to_log (Uint8 channel, const Uint8* const data, int len)
 	// The file we'll write to
 	fout = (channel == CHAT_SERVER && log_chat >= 3) ? srv_log : chat_log;
 
-#ifdef FR_VERSION
 	time(&c_time);
 	l_time = localtime(&c_time);
 	// 'data' already contains timestamp if 'show_timestamp'
 	j = strftime(str, sizeof(str), show_timestamp ? "%d " : "%d [%H:%M:%S] ", l_time);
-#else //FR_VERSION
-	if(!show_timestamp)
-	{
-	// Start filling the buffer with the time stamp
-	time (&c_time);
-	l_time = localtime (&c_time);
-	j = strftime (str, sizeof(str), "[%H:%M:%S] ", l_time);
-	}
-	else
-	{
-		//we already have a time stamp
-		j=0;
-	}
-#endif //FR_VERSION
 
 	i = 0;
 	while (i < len)
@@ -895,18 +809,12 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 		}
 	} else {	//We sent this PM or MODPM. Can we expect a reply?
 		int len = 0;
-#ifdef FR_VERSION
 		int type=0;
-#endif //FR_VERSION
 		char name[MAX_USERNAME_LENGTH];
 		for(;text_to_add[len+8] != ':' && len < MAX_USERNAME_LENGTH - 1; ++len);
 		safe_strncpy(name, text_to_add+8, len+1);
-#ifdef FR_VERSION
 		type=(channel==CHAT_PERSONAL)? IGN_MP : IGN_CANAUX;
 		if(check_if_ignored(name, type) && channel != CHAT_SERVER){
-#else //FR_VERSION
-		if(check_if_ignored(name)){
-#endif //FR_VERSION
 			char msg[65];
 			safe_snprintf(msg, sizeof(msg), warn_currently_ignoring, name);
 			LOG_TO_CONSOLE(c_red2, msg);
@@ -949,15 +857,6 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
 		}
 	}
 
-#ifdef ENGLISH
-	// look for astrology messages
-	if((channel == CHAT_SERVER) && is_astrology_message (text_to_add))
-	{
-		return 0;
-	}
-#endif //ENGLISH
-
-#ifdef FR_VERSION
 	if(is_color (text_to_add[0]))
 	{
 		//@tosh couleurs personnalisées pour les différents canaux
@@ -989,7 +888,6 @@ int filter_or_ignore_text (char *text_to_add, int len, int size, Uint8 channel)
             }
       }
 	}
-#endif //FR_VERSION
 	// filter any naughty words out
 	return filter_text (text_to_add, len, size);
 }
@@ -1178,7 +1076,7 @@ static inline int match_for_dedup(text_message *m, text_message *p) {
 }
 static inline int can_dedup(text_message *m) {
 	int x = ctsprefix_len();
-	return !m->deleted && m->chan_idx != CHAT_COMBAT && m->data && m->len > x && m->data[x] != ' ' && m->repeat_count < 65535;
+	return !m->deleted && m->data && m->len > x && m->data[x] != ' ' && m->repeat_count < 65535;
 }
 static inline text_message *deduplicate(text_message *m) {
 	text_message *p = m - 1;
@@ -1192,6 +1090,7 @@ static inline text_message *deduplicate(text_message *m) {
 			safe_snprintf(m->data + m->len, a + 1, repsuf_fmt, r + 1);
 			m->len += a;
 			m->repeat_count = r;
+			m->wrap_width = 0;
 			free_text_message_data(p);
 			memmove(p, p + 1, sizeof(*p)*(m - p));
 			init_text_message(m, 0);
@@ -1397,26 +1296,16 @@ void put_colored_text_in_buffer (Uint8 color, Uint8 channel, const Uint8 *text_t
 	// set invalid wrap data to force rewrapping
 	msg->wrap_lines = 0;
 	msg->wrap_zoom = 0.0f;
-#ifdef FR_VERSION
 	msg->wrap_font = 0;
-#endif //FR_VERSION
 	msg->wrap_width = 0;
 
 	msg->deleted = 0;
 	recolour_message(msg);
-	// log the message
-#ifdef ENGLISH
-	write_to_log (channel, (unsigned char*)msg->data, msg->len);
-#else //ENGLISH
-	if (strlen(username)>0)
-    {
-	    write_to_log (channel, (unsigned char*)msg->data, msg->len);
-    }
-    else
-    {
-        log_conn((unsigned char*)msg->data, msg->len);
-    }
-#endif //ENGLISH
+	if (*username) {
+		write_to_log(channel, (Uint8 *)msg->data, msg->len);
+	} else {
+		log_conn((Uint8 *)msg->data, msg->len);
+	}
 	if (can_dedup(msg)) {
 		msg = deduplicate(msg);
 	}
@@ -1528,7 +1417,7 @@ int find_last_lines_time(int *msg, int *offset, Uint8 filter, int width) {
 		lines_to_show = clampi(lines_to_show - 1, 0, max_lines_to_show);
 		last_server_message_time = cur_time;
 	}
-	return lines_to_show < 1 ? 0 : find_line_nr(get_total_nr_lines(), get_total_nr_lines() - lines_to_show, filter, msg, offset, chat_text_size, width);
+	return lines_to_show < 1 ? 0 : find_line_nr(total_nr_lines, total_nr_lines - lines_to_show, filter, msg, offset, chat_text_size, width);
 }
 
 int find_last_console_lines (int lines_no)
@@ -1560,30 +1449,15 @@ int find_line_nr (int nr_lines, int line, Uint8 filter, int *msg, int *offset, f
 			case CHAT_SERVER:   if (!server_chat_separate)   msgchan = CHAT_ALL; break;
 			case CHAT_MOD:      if (!mod_chat_separate)      msgchan = CHAT_ALL; break;
 			case CHAT_MODPM:                                 msgchan = CHAT_ALL; break;
-#ifndef ENGLISH
 			case CHAT_DEV:      if (!dev_chat_separate)      msgchan = CHAT_ALL; break;
 			case CHAT_COORD:      if (!coord_chat_separate)      msgchan = CHAT_ALL; break;
-#endif //ENGLISH
 		}
 
-#ifdef FR_VERSION
 		if (msgchan == filter || msgchan == CHAT_ALL || (filter == FILTER_ALL && msgchan != CHAT_COMBAT))
-#else //FR_VERSION
-		if (msgchan == filter || msgchan == CHAT_ALL || filter == FILTER_ALL)
-#endif //FR_VERSION
 		{
 			data = display_text_buffer[imsg].data;
-			if (data == NULL)
-				// Hmmm... we messed up. This should not be
-				// happening.
-				break;
-
-#ifdef FR_VERSION
+			if (!data) break;
 			rewrap_message(&display_text_buffer[imsg], zoom, chat_font, width, NULL);
-#else //FR_VERSION
-			rewrap_message(&display_text_buffer[imsg], zoom, width, NULL);
-#endif //FR_VERSION
-
 			for (ichar = display_text_buffer[imsg].len - 1; ichar >= 0; ichar--)
 			{
 				if (data[ichar] == '\n' || data[ichar] == '\r')
@@ -1616,8 +1490,7 @@ int find_line_nr (int nr_lines, int line, Uint8 filter, int *msg, int *offset, f
 	return 1;
 }
 
-void clear_display_text_buffer ()
-{
+void clear_display_text_buffer(void) {
 	int i;
 	for (i = 0; i < DISPLAY_TEXT_BUFFER_SIZE; ++i)
 	{
@@ -1631,7 +1504,6 @@ void clear_display_text_buffer ()
 	console_msg_offset = 0;
 	last_message = -1;
 	last_server_message_time = cur_time;
-	total_nr_lines = 0;
 	not_from_the_end_console = 1;
 
 	clear_console();
@@ -1640,58 +1512,18 @@ void clear_display_text_buffer ()
 	}
 }
 
-#ifdef FR_VERSION
-int rewrap_message(text_message * msg, float zoom, int font, int width, int * cursor)
-{
-	int nlines;
-	float max_line_width = 0;
-
-	if (msg == NULL || msg->data == NULL || msg->deleted)
-		return 0;
-//printf("GFM rewrap... (%i)->(%i) [%s]\n", font, msg->wrap_font, msg->data);
-	if (msg->wrap_width != width || msg->wrap_zoom != zoom || msg->wrap_font != font)
-	{
+int rewrap_message(text_message *msg, float zoom, int font, int width, int *cursor) {
+	if (!msg || !msg->data || msg->deleted) return 0;
+	if (msg->wrap_width != width || msg->wrap_zoom != zoom || msg->wrap_font != font) {
 		set_font(font);
- 		nlines = reset_soft_breaks(msg->data, msg->len, msg->size, zoom, width, cursor, &max_line_width);
-		if (msg->chan_idx != CHAT_NONE) total_nr_lines += nlines - msg->wrap_lines;
+		float max_line_width = 0;
+		msg->wrap_lines = reset_soft_breaks(msg->data, msg->len, msg->size, zoom, width, cursor, &max_line_width);
 		msg->len = strlen(msg->data);
-		msg->wrap_lines = nlines;
 		msg->wrap_width = width;
 		msg->wrap_zoom = zoom;
 		msg->wrap_font = font;
 		msg->max_line_width = max_line_width;
 		set_font(0);
-	} else {
-		nlines = msg->wrap_lines;
 	}
-
-	return nlines;
+	return msg->wrap_lines;
 }
-#else //FR_VERSION
-int rewrap_message(text_message * msg, float zoom, int width, int * cursor)
-{
-	int nlines;
-	float max_line_width = 0;
-
-	if (msg == NULL || msg->data == NULL || msg->deleted)
-		return 0;
-
-	if (msg->wrap_width != width || msg->wrap_zoom != zoom)
-	{
-		if (msg->chan_idx != CHAT_NONE)
-			total_nr_lines -= msg->wrap_lines;
- 		nlines = reset_soft_breaks(msg->data, msg->len, msg->size, zoom, width, cursor, &max_line_width);
-		if (msg->chan_idx != CHAT_NONE)
-			total_nr_lines += nlines;
-		msg->len = strlen(msg->data);
-		msg->wrap_lines = nlines;
-		msg->wrap_width = width;
-		msg->wrap_zoom = zoom;
-		msg->max_line_width = max_line_width;
-	} else {
-		nlines = msg->wrap_lines;
-	}
-
-	return nlines;
-}
-#endif //FR_VERSION

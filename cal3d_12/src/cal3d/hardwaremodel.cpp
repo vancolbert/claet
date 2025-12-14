@@ -573,7 +573,7 @@ Cal::UserData CalHardwareModel::getMapUserData(int mapId)
         // check if the map id is valid
         if((mapId < 0) || (mapId >= (int)vectorMap.size()))
         {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return 0;
         }
         
@@ -609,7 +609,7 @@ const Cal::UserData CalHardwareModel::getMapUserData(int mapId) const
     // check if the map id is valid
     if((mapId < 0) || (mapId >= (int)vectorMap.size()))
     {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return 0;
     }
 
@@ -639,7 +639,7 @@ bool CalHardwareModel::load(int baseVertexIndex, int startIndex,int maxBonesPerM
 {
   if(m_pVertexBuffer==NULL ||  m_pNormalBuffer ==NULL|| m_pWeightBuffer ==NULL || m_pMatrixIndexBuffer ==NULL)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;   
   }
 
@@ -648,7 +648,7 @@ bool CalHardwareModel::load(int baseVertexIndex, int startIndex,int maxBonesPerM
   {
     if(m_pTextureCoordBuffer[mapId]==NULL)
     {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return false;         
     }  
   } 

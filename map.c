@@ -52,7 +52,7 @@ Uint32 map_flags=0;
 #ifdef FR_VERSION
 Uint8 carte_modif = 0;
 #endif //FR_VERSION
-int use_loading_snapshot = 1;
+int use_loading_snapshot = 0;
 
 hash_table *server_marks=NULL;
 

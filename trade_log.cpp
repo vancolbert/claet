@@ -30,6 +30,8 @@
  * TODO		Write to Trade Log tab in one of the existing windows.
 */
 
+static int is_not_cntrl(int c) { return !std::iscntrl(c); }
+
 namespace Trade_Log
 {
 	//	Class to hold trade details for one party
@@ -181,7 +183,7 @@ namespace Trade_Log
 		if ((trade_log_mode == TRADE_LOG_CONSOLE) || (trade_log_mode == TRADE_LOG_BOTH))
 		{
 		std::string message_str =  message.str();
-		message_str.erase(std::find_if(message_str.rbegin(), message_str.rend(), [](int c){return !iscntrl(c);}).base(), message_str.end());
+		message_str.erase(std::find_if(message_str.rbegin(), message_str.rend(), is_not_cntrl).base(), message_str.end());
 			LOG_TO_CONSOLE(c_green2, message_str.c_str()); // stripped of final newline
 		}
 

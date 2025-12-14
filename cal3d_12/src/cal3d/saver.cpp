@@ -64,14 +64,14 @@ bool CalSaver::saveCoreAnimation(const std::string& strFilename, CalCoreAnimatio
   file.open(strFilename.c_str(), std::ios::out | std::ios::binary);
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_CREATION_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_CREATION_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write magic tag
   if(!CalPlatform::writeBytes(file, &Cal::ANIMATION_FILE_MAGIC, sizeof(Cal::ANIMATION_FILE_MAGIC)))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -79,7 +79,7 @@ bool CalSaver::saveCoreAnimation(const std::string& strFilename, CalCoreAnimatio
   int version = Cal::CURRENT_FILE_VERSION;
   if(!CalPlatform::writeInteger(file, version))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -90,7 +90,7 @@ bool CalSaver::saveCoreAnimation(const std::string& strFilename, CalCoreAnimatio
      int useCompressionFlag = useCompression;
      if (!CalPlatform::writeInteger(file, useCompressionFlag))
      {
-        CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+        CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
         return false;
      }
   }
@@ -98,7 +98,7 @@ bool CalSaver::saveCoreAnimation(const std::string& strFilename, CalCoreAnimatio
   // write the duration of the core animation
   if(!CalPlatform::writeFloat(file, pCoreAnimation->getDuration()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -108,7 +108,7 @@ bool CalSaver::saveCoreAnimation(const std::string& strFilename, CalCoreAnimatio
   // write the number of tracks
   if(!CalPlatform::writeInteger(file, listCoreTrack.size()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return 0;
   }
 
@@ -122,7 +122,7 @@ bool CalSaver::saveCoreAnimation(const std::string& strFilename, CalCoreAnimatio
 
   if(!CalPlatform::writeInteger(file, flags))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return 0;
   }
 
@@ -176,28 +176,28 @@ bool CalSaver::saveCoreAnimatedMorph(const std::string& strFilename, CalCoreAnim
    file.open(strFilename.c_str(), std::ios::out | std::ios::binary);
    if(!file)
    {
-      CalError::setLastError(CalError::FILE_CREATION_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_CREATION_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
    // write magic tag
    if(!CalPlatform::writeBytes(file, &Cal::ANIMATEDMORPH_FILE_MAGIC, sizeof(Cal::ANIMATEDMORPH_FILE_MAGIC)))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
    // write version info
    if(!CalPlatform::writeInteger(file, Cal::CURRENT_FILE_VERSION))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
    // write the duration of the core animatedMorph
    if(!CalPlatform::writeFloat(file, pCoreAnimatedMorph->getDuration()))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
@@ -207,7 +207,7 @@ bool CalSaver::saveCoreAnimatedMorph(const std::string& strFilename, CalCoreAnim
    // write the number of tracks
    if(!CalPlatform::writeInteger(file, listCoreMorphTrack.size()))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return 0;
    }
 
@@ -246,14 +246,14 @@ bool CalSaver::saveCoreBones(std::ofstream& file, const std::string& strFilename
 {
   if(!file)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write the name of the bone
   if(!CalPlatform::writeString(file, pCoreBone->getName()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -286,7 +286,7 @@ bool CalSaver::saveCoreBones(std::ofstream& file, const std::string& strFilename
   // write the parent bone id
   if(!CalPlatform::writeInteger(file, pCoreBone->getParentId()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -305,7 +305,7 @@ bool CalSaver::saveCoreBones(std::ofstream& file, const std::string& strFilename
   // write the number of children
   if(!CalPlatform::writeInteger(file, listChildId.size()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -316,7 +316,7 @@ bool CalSaver::saveCoreBones(std::ofstream& file, const std::string& strFilename
     // write the child id
     if(!CalPlatform::writeInteger(file, *iteratorChildId))
     {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
     }
   }
@@ -344,7 +344,7 @@ bool CalSaver::saveCoreKeyframe(std::ofstream& file, const std::string& strFilen
 {
   if(!file)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -404,7 +404,7 @@ bool CalSaver::saveCoreKeyframe(std::ofstream& file, const std::string& strFilen
   // check if an error happened
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -415,7 +415,7 @@ bool CalSaver::saveCompressedCoreKeyframe(std::ofstream& file, const std::string
 {
   if(!file)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -457,7 +457,7 @@ bool CalSaver::saveCompressedCoreKeyframe(std::ofstream& file, const std::string
   // check if an error happened
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -484,7 +484,7 @@ bool CalSaver::saveCoreMorphKeyframe(std::ofstream& file, const std::string& str
 {
    if(!file)
    {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
@@ -497,7 +497,7 @@ bool CalSaver::saveCoreMorphKeyframe(std::ofstream& file, const std::string& str
    // check if an error happend
    if(!file)
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
@@ -529,21 +529,21 @@ bool CalSaver::saveCoreMaterial(const std::string& strFilename, CalCoreMaterial 
   file.open(strFilename.c_str(), std::ios::out | std::ios::binary);
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_CREATION_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_CREATION_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write magic tag
   if(!CalPlatform::writeBytes(file, &Cal::MATERIAL_FILE_MAGIC, sizeof(Cal::MATERIAL_FILE_MAGIC)))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write version info
   if(!CalPlatform::writeInteger(file, Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -568,7 +568,7 @@ bool CalSaver::saveCoreMaterial(const std::string& strFilename, CalCoreMaterial 
   // check if an error happened
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -578,7 +578,7 @@ bool CalSaver::saveCoreMaterial(const std::string& strFilename, CalCoreMaterial 
   // write the number of maps
   if(!CalPlatform::writeInteger(file, vectorMap.size()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -597,7 +597,7 @@ bool CalSaver::saveCoreMaterial(const std::string& strFilename, CalCoreMaterial 
 
     if(!ret)
     {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
     }
   }
@@ -633,21 +633,21 @@ bool CalSaver::saveCoreMesh(const std::string& strFilename, CalCoreMesh *pCoreMe
   file.open(strFilename.c_str(), std::ios::out | std::ios::binary);
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_CREATION_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_CREATION_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write magic tag
   if(!CalPlatform::writeBytes(file, &Cal::MESH_FILE_MAGIC, sizeof(Cal::MESH_FILE_MAGIC)))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write version info
   if(!CalPlatform::writeInteger(file, Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -657,7 +657,7 @@ bool CalSaver::saveCoreMesh(const std::string& strFilename, CalCoreMesh *pCoreMe
   // write the number of submeshes
   if(!CalPlatform::writeInteger(file, vectorCoreSubmesh.size()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -705,28 +705,28 @@ bool CalSaver::saveCoreSkeleton(const std::string& strFilename, CalCoreSkeleton 
   file.open(strFilename.c_str(), std::ios::out | std::ios::binary);
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_CREATION_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_CREATION_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write magic tag
   if(!CalPlatform::writeBytes(file, &Cal::SKELETON_FILE_MAGIC, sizeof(Cal::SKELETON_FILE_MAGIC)))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write version info
   if(!CalPlatform::writeInteger(file, Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write the number of bones
   if(!CalPlatform::writeInteger(file, pCoreSkeleton->getVectorCoreBone().size()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -773,14 +773,14 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
 {
   if(!file)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
   // write the core material thread id
   if(!CalPlatform::writeInteger(file, pCoreSubmesh->getCoreMaterialThreadId()))
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -809,7 +809,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
   // check if an error happened
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -845,7 +845,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
       // check if an error happened
       if(!file)
       {
-        CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+        CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
         return false;
       }
     }
@@ -853,7 +853,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
     // write the number of influences
     if(!CalPlatform::writeInteger(file, vertex.vectorInfluence.size()))
     {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
     }
 
@@ -870,7 +870,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
       // check if an error happened
       if(!file)
       {
-        CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+        CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
         return false;
       }
     }
@@ -887,7 +887,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
       // check if an error happened
       if(!file)
       {
-        CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+        CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
         return false;
       }
     }
@@ -908,7 +908,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
     // check if an error happened
     if(!file)
     {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
     }
   }
@@ -990,7 +990,7 @@ bool CalSaver::saveCoreSubmesh(std::ofstream& file, const std::string& strFilena
     // check if an error happened
     if(!file)
     {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
     }
   }
@@ -1017,7 +1017,7 @@ bool CalSaver::saveCoreTrack(std::ofstream& file, const std::string& strFilename
 {
   if(!file)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 
@@ -1045,7 +1045,7 @@ bool CalSaver::saveCoreTrack(std::ofstream& file, const std::string& strFilename
 
      if( !CalPlatform::writeBytes( file, buf, 4 ) )
      {
-        CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+        CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
         return false;
      }
   }
@@ -1054,14 +1054,14 @@ bool CalSaver::saveCoreTrack(std::ofstream& file, const std::string& strFilename
      // write the bone id
      if(!CalPlatform::writeInteger(file, pCoreTrack->getCoreBoneId()))
      {
-        CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+        CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
         return false;
      }
 
      // write the number of keyframes
      if(!CalPlatform::writeInteger(file, pCoreTrack->getCoreKeyframeCount()))
      {
-        CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+        CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
         return false;
      }
   }
@@ -1109,33 +1109,33 @@ bool CalSaver::saveCoreMorphTrack(std::ofstream& file, const std::string& strFil
 {
    if(!file)
    {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
    // write the morph name
    if(!CalPlatform::writeInteger(file, pCoreMorphTrack->getMorphID()))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
 
    // read the number of keyframes
    if(!CalPlatform::writeInteger(file, pCoreMorphTrack->getCoreMorphKeyframeCount()))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
     // read the targetmesh index
    if(!CalPlatform::writeInteger(file,pCoreMorphTrack->getTargetMesh()))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
    // read the number of submeshtarget
    if(!CalPlatform::writeInteger(file,pCoreMorphTrack->getNumTargetSubMeshes()))
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
    //save the target submeshes indices
@@ -1143,7 +1143,7 @@ bool CalSaver::saveCoreMorphTrack(std::ofstream& file, const std::string& strFil
    {
         if(!CalPlatform::writeInteger(file,pCoreMorphTrack->getTargetSubMesh(i)))
        {
-          CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+          CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
           return false;
        }
    }
@@ -1305,7 +1305,7 @@ bool CalSaver::saveXmlCoreSkeleton(const std::string& strFilename, CalCoreSkelet
 
   if(!doc.SaveFile())
   {
-	CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+	CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
   return true;
@@ -1416,7 +1416,7 @@ bool CalSaver::saveXmlCoreAnimation(const std::string& strFilename, CalCoreAnima
 
 	if(!doc.SaveFile())
 	{
-		CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+		CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
 		return false;
 	}
 
@@ -1514,7 +1514,7 @@ bool CalSaver::saveXmlCoreAnimatedMorph(const std::string& strFilename, CalCoreA
 
    if(!doc.SaveFile())
    {
-      CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+      CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
       return false;
    }
    return true;
@@ -1843,7 +1843,7 @@ bool CalSaver::saveXmlCoreMesh(const std::string& strFilename, CalCoreMesh *pCor
 
 	 if(!doc.SaveFile())
 	 {
-		 CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+		 CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
          return false;
 	 }
 
@@ -1956,7 +1956,7 @@ bool CalSaver::saveXmlCoreMaterial(const std::string& strFilename, CalCoreMateri
 
   if(!doc.SaveFile())
   {
-	CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+	CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
     return false;
   }
 

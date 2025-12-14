@@ -113,7 +113,7 @@ CalCoreSubmesh *CalCoreMesh::getCoreSubmesh(int id)
 {
   if((id < 0) || (id >= (int)m_vectorCoreSubmesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -136,7 +136,7 @@ const CalCoreSubmesh *CalCoreMesh::getCoreSubmesh(int id) const
 {
   if((id < 0) || (id >= (int)m_vectorCoreSubmesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -207,12 +207,12 @@ int CalCoreMesh::addAsMorphTarget(CalCoreMesh *pCoreMesh)
   //int othernumsubs = pCoreMesh->getCoreSubmeshCount();
   if (m_vectorCoreSubmesh.size() != otherVectorCoreSubmesh.size())
   {
-    CalError::setLastError(CalError::INTERNAL, BASE_FILENAME, __LINE__, "This mesh has children with a different numbers of submeshes");
+    CalError::setLastError(CalError::INTERNAL, __FILE_NAME__, __LINE__, "This mesh has children with a different numbers of submeshes");
     return -1;
   }
   if (m_vectorCoreSubmesh.size() == 0)
   {
-    CalError::setLastError(CalError::INTERNAL, BASE_FILENAME, __LINE__, "Mesh has no submeshes");
+    CalError::setLastError(CalError::INTERNAL, __FILE_NAME__, __LINE__, "Mesh has no submeshes");
     return -1;
   }
   std::vector<CalCoreSubmesh *>::iterator iteratorCoreSubmesh = m_vectorCoreSubmesh.begin();
@@ -227,7 +227,7 @@ int CalCoreMesh::addAsMorphTarget(CalCoreMesh *pCoreMesh)
     {
 		char buf[2048];
 		snprintf(buf, sizeof(buf), "This mesh has a morph target child with different number of vertices: %d (%d vs child's %d)", subMorphTargetID, count1, count2);
-      CalError::setLastError(CalError::INTERNAL, BASE_FILENAME, __LINE__, buf);
+      CalError::setLastError(CalError::INTERNAL, __FILE_NAME__, __LINE__, buf);
       return -1;
     }
     ++iteratorCoreSubmesh;

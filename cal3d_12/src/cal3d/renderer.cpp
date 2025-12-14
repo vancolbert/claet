@@ -75,7 +75,7 @@ bool CalRenderer::beginRendering()
   // check if there are any meshes attached to the model
   if(vectorMesh.size() == 0)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -244,7 +244,7 @@ Cal::UserData CalRenderer::getMapUserData(int mapId)
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)vectorMap.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -277,7 +277,7 @@ const Cal::UserData CalRenderer::getMapUserData(int mapId) const
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)vectorMap.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -323,7 +323,7 @@ int CalRenderer::getTangentSpaces(int mapId, float *pTangentSpaceBuffer, int str
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)vectorvectorTangentSpace.size()) || !m_pSelectedSubmesh->isTangentsEnabled(mapId))
   {    
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -482,7 +482,7 @@ int CalRenderer::getSubmeshCount(int meshId) const
   // check if the mesh id is valid
   if((meshId < 0) || (meshId >= (int)vectorMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -510,7 +510,7 @@ int CalRenderer::getTextureCoordinates(int mapId, float *pTextureCoordinateBuffe
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)vectorvectorTextureCoordinate.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -792,7 +792,7 @@ int CalRenderer::getVerticesNormalsAndTexCoords(float *pVertexBuffer,int NumTexC
 	{
 	   if(TextureCoordinateCount!=0)
 	   {
-		   CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+		   CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
 		   return -1;
 	   }
 	}
@@ -869,7 +869,7 @@ bool CalRenderer::selectMeshSubmesh(int meshId, int submeshId)
   // check if the mesh id is valid
   if((meshId < 0) || (meshId >= (int)vectorMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 

@@ -105,7 +105,7 @@ CalCoreBone *CalCoreSkeleton::getCoreBone(int coreBoneId)
 {
   if((coreBoneId < 0) || (coreBoneId >= (int)m_vectorCoreBone.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -128,7 +128,7 @@ const CalCoreBone *CalCoreSkeleton::getCoreBone(int coreBoneId) const
 {
   if((coreBoneId < 0) || (coreBoneId >= (int)m_vectorCoreBone.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -186,7 +186,7 @@ int CalCoreSkeleton::getCoreBoneId(const std::string& strName) const
   //Check to make sure the mapping exists
   if (m_mapCoreBoneNames.count(strName) <= 0)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -217,7 +217,7 @@ int CalCoreSkeleton::getCoreBoneId(const std::string& strName) const
 
   // if control flows here, entry does not exist in map,
   // and therefore there has been an error
-  CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+  CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
   return -1;
 }
 

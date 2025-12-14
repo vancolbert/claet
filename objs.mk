@@ -37,7 +37,6 @@ COBJS := 2d_objects.o 3d_objects.o \
 	xz/LzmaDec.o xz/LzmaEnc.o xz/Sha256.o xz/Xz.o xz/XzCrc64.o xz/XzDec.o	\
 	xz/XzEnc.o \
 	$(foreach i,$(FEATURES),$($i_COBJ))
-cal3d_srcs := $(wildcard cal3d/*.cpp)
 CXXOBJS := actor_init.o cal3d_wrapper.o context_menu.o optimizer.o sendvideoinfo.o	\
 	exceptions/extendedexception.o xml/xmlhelper.o quest_log.o\
 	hud_timer.o engine/logging.o elloggingwrapper.o item_info.o io/cal3d_io_wrapper.o \
@@ -57,6 +56,5 @@ CXXOBJS := actor_init.o cal3d_wrapper.o context_menu.o optimizer.o sendvideoinfo
 	eye_candy/effect_mines.o eye_candy/effect_missile.o \
 	eye_candy/orbital_mover.o eye_candy/kepler_orbit.o	\
 	eye_candy/effect_staff.o \
-	$(cal3d_srcs:.cpp=.o) \
 	$(foreach i,$(FEATURES),$($i_CXXOBJ))
 OBJS := $(COBJS) $(CXXOBJS)

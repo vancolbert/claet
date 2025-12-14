@@ -593,7 +593,7 @@ int CalPhysiqueDualQuat::calculateVerticesNormalsAndTexCoords(CalSubmesh *pSubme
   {
     if(TextureCoordinateCount!=0)
     {    
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return -1;
     }
   }

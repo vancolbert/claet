@@ -98,7 +98,7 @@ bool CalModel::attachMesh(int coreMeshId)
   // check if the id is valid
   if((coreMeshId < 0) ||(coreMeshId >= m_pCoreModel->getCoreMeshCount()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -122,7 +122,7 @@ bool CalModel::attachMesh(int coreMeshId)
   CalMesh *pMesh = new(std::nothrow) CalMesh(pCoreMesh);
   if(pMesh == 0)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -153,7 +153,7 @@ bool CalModel::detachMesh(int coreMeshId)
   // check if the id is valid
   if((coreMeshId < 0) ||(coreMeshId >= m_pCoreModel->getCoreMeshCount()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -234,7 +234,7 @@ CalMesh *CalModel::getMesh(int coreMeshId)
   // check if the id is valid
   if((coreMeshId < 0) ||(coreMeshId >= m_pCoreModel->getCoreMeshCount()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -271,7 +271,7 @@ const CalMesh *CalModel::getMesh(int coreMeshId) const
   // check if the id is valid
   if((coreMeshId < 0) ||(coreMeshId >= m_pCoreModel->getCoreMeshCount()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -308,7 +308,7 @@ CalMixer *CalModel::getMixer()
     return 0;
 
   if(m_pMixer->isDefaultMixer() == false) {
-    CalError::setLastError(CalError::INVALID_MIXER_TYPE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_MIXER_TYPE, __FILE_NAME__, __LINE__);
     return 0;
   } else {
     return (CalMixer*)(m_pMixer);
@@ -332,7 +332,7 @@ const CalMixer *CalModel::getMixer() const
     return 0;
 
   if(m_pMixer->isDefaultMixer() == false) {
-    CalError::setLastError(CalError::INVALID_MIXER_TYPE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_MIXER_TYPE, __FILE_NAME__, __LINE__);
     return 0;
   } else {
     return (CalMixer*)(m_pMixer);

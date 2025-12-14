@@ -105,7 +105,6 @@ int etat_sante(float percentage)
 }
 #endif //FR_VERSION
 
-typedef const char *cstr;
 #define countof(a) (sizeof(a)/sizeof(*a))
 enum boss_kinds { BK_NONE, BK_COMBAT, BK_MAGIC, BK_INVASION };
 typedef struct Bossname { char name[30]; Uint8 len, kind; } Bossname;

@@ -13,7 +13,6 @@
 
 #ifdef WINDOWS
  #include <windows.h>
- #include <dbghelp.h>
  #undef WRITE_XML
  char   *win_command_line;
 #endif //WINDOWS
@@ -110,7 +109,7 @@ int show_am=0;
 int gargc;
 char **  gargv;
 /**********************************************************************/
-
+static void free_e3d_object(void *p) { destroy_e3d((e3d_object *)p); }
 void cleanup_mem(void)
 {
 	int i;
@@ -131,7 +130,7 @@ void cleanup_mem(void)
 	/* 3d objects */
 	destroy_all_3d_objects();
 	/* caches */
-	cache_e3d->free_item = [](void *p) { destroy_e3d((e3d_object *)p); };
+	cache_e3d->free_item = free_e3d_object;
 	cache_delete(cache_e3d);
 	cache_e3d = NULL;
 #ifdef NEW_TEXTURES
@@ -548,8 +547,9 @@ static void freemakeargv(char **argv)
 #define MAX_BT 256
 static volatile int thread_counter;
 typedef struct Callsite { void *addr, *from; } Callsite;
-typedef struct Trace { uint8_t n; Callsite a[MAX_BT]; } Trace;
+typedef struct Trace { int n; Callsite a[MAX_BT]; } Trace;
 static Trace thread_traces[MAX_THREADS];
+#if __GNUC__ > 5
 static volatile __thread int thread_id;
 extern "C" {
 void __attribute__((no_instrument_function)) __cyg_profile_func_enter(void *func_addr, void *ret_addr) {
@@ -576,67 +576,84 @@ void __attribute__((no_instrument_function)) __cyg_profile_func_exit(void *func_
 	}
 }
 } // extern "C"
+#endif // __GNUC__ > 5
 static void get_crashlog_path(char *o, int n) {
-	const char *d = get_path_config_base();
-	int l = safe_snprintf(o, n, "%scrashlog0.txt", d);
-	for (int i = 1; i < 10 && file_exists(o); ++i, ++o[l-5]);
+	cstr d = get_path_config_base();
+	int i = 0;
+	do { safe_snprintf(o, n, "%scrashlog%d.txt", d, i); } while (file_exists(o) && ++i < 100);
 }
-static int get_backtrace_via_stackwalk(void **a, int na, CONTEXT *cr) {
-	CONTEXT c = *cr;
-	c.ContextFlags = CONTEXT_ALL;
-	#define x_regs(x) x(PC, Eip, Rip) x(Frame, Ebp, Rbp) x(Stack, Esp, Rsp)
+#include <imagehlp.h>
+static int get_backtrace_via_stackwalk(void **a, int n, CONTEXT *ctx) {
+	CONTEXT c = *ctx;
+	ADDRESS_MODE d = AddrModeFlat;
 	#if __x86_64__
-	DWORD mt = IMAGE_FILE_MACHINE_AMD64;
-	#define as_init(n, e, r) .Addr##n = {.Offset = c.r, .Mode = AddrModeFlat},
+		DWORD m = IMAGE_FILE_MACHINE_AMD64;
+		STACKFRAME f = {{c.Rip,0,d}, {}, {c.Rbp,0,d}, {c.Rsp,0,d}};
 	#else
-	DWORD mt = IMAGE_FILE_MACHINE_I386;
-	#define as_init(n, e, r) .Addr##n = {.Offset = c.e, .Mode = AddrModeFlat},
+		DWORD m = IMAGE_FILE_MACHINE_I386;
+		STACKFRAME f = {{c.Eip,0,d}, {}, {c.Ebp,0,d}, {c.Esp,0,d}};
 	#endif
-	STACKFRAME64 sf = {x_regs(as_init)};
-	HANDLE pr = GetCurrentProcess(), th = GetCurrentThread();
-	SymInitialize(pr, 0, TRUE);
-	int n = 0;
-	while (n < na && StackWalk64(mt, pr, th, &sf, &c, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0) && sf.AddrPC.Offset) {
-		a[n++] = (void *)(uintptr_t)sf.AddrPC.Offset;
-	}
-	SymCleanup(pr);
-	return n;
+	HANDLE p = GetCurrentProcess(), t = GetCurrentThread();
+	int r = 0;
+	while (r < n && StackWalk(m, p, t, &f, &c, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && f.AddrPC.Offset) a[r++] = (void *)(uintptr_t)f.AddrPC.Offset;
+	return r;
 }
+static int get_backtrace_via_capture(void **a, int n) {
+	HMODULE m = LoadLibraryA("ntdll.dll");
+	if (m) {
+		typedef USHORT (WINAPI *rcsbt)(ULONG, ULONG, PVOID *, PULONG);
+		rcsbt f = (rcsbt)GetProcAddress(m, "RtlCaptureStackBackTrace");
+		if (f) return f(0, n, a, 0);
+	}
+	return 0;
+}
+#define x_excpcodes(x) x(ACCESS_VIOLATION) x(ARRAY_BOUNDS_EXCEEDED) x(BREAKPOINT) x(DATATYPE_MISALIGNMENT) x(FLT_DENORMAL_OPERAND) x(FLT_DIVIDE_BY_ZERO) x(FLT_INEXACT_RESULT) x(FLT_INVALID_OPERATION) x(FLT_OVERFLOW) x(FLT_STACK_CHECK) x(FLT_UNDERFLOW) x(ILLEGAL_INSTRUCTION) x(IN_PAGE_ERROR) x(INT_DIVIDE_BY_ZERO) x(INT_OVERFLOW) x(INVALID_DISPOSITION) x(NONCONTINUABLE_EXCEPTION) x(PRIV_INSTRUCTION) x(SINGLE_STEP) x(STACK_OVERFLOW)
+#define as_eccasestr(n) case EXCEPTION_##n: return #n;
+static cstr nameof_excpcode(DWORD c) { switch (c) { x_excpcodes(as_eccasestr) } return "UNKNOWN"; }
+static cstr fmt_addr(char *b, int n, void *a) {
+	HMODULE m;
+	char p[1024], s[4] = {' '}, *f = s+1, *q;
+	if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)a, &m) && m != GetModuleHandle(0) && GetModuleFileName(m, p, sizeof(p)-1)) {
+		for (f = q = p; *q; ++q) if (*q == '/' || *q == '\\') f = q + 1;
+	}
+	safe_snprintf(b, n, "%s%s0x%08llx", f, s + !*f, (Uint64)(uintptr_t)a);
+	return b;
+}
+static int already_crashed;
 static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTERS *ep) {
+	if (already_crashed++) return EXCEPTION_CONTINUE_SEARCH;
 	EXCEPTION_RECORD *er = ep->ExceptionRecord;
 	DWORD ec = er->ExceptionCode;
 	void *ea = er->ExceptionAddress;
+	cstr en = nameof_excpcode(ec);
+	char p[MAX_PATH], ts[64], b[512];
 	#define err(f, ...) fprintf(stderr, f "\n", ##__VA_ARGS__)
-	err("Exception code 0x%lx at address 0x%p", ec, ea);
-	char p[MAX_PATH];
+	#define fp(f, ...) fprintf(outf, f "\n", ##__VA_ARGS__)
+	#define fa(a) fmt_addr(b, sizeof(b)-1, (void *)a)
+	err("Exception code 0x%lx %s at %s", ec, en, fa(ea));
 	get_crashlog_path(p, sizeof(p));
 	FILE *outf = fopen(p, "a");
 	if (!outf) {
 		err("Failed to open '%s' for writing: %s", p, strerror(errno));
-		return EXCEPTION_EXECUTE_HANDLER;
+		return EXCEPTION_CONTINUE_SEARCH;
 	}
-	#define fp(f, ...) fprintf(outf, f "\n", ##__VA_ARGS__)
-	char ts[64];
 	time_t now = time(0);
 	strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", gmtime(&now));
 	fp("timestamp %s", ts);
 	fp("ver_git %s", VER_GIT);
-	fp("exception_code %lx", ec);
-	fp("exception_addr %p", ea);
-	fp("vma_init_stuff %p", init_stuff);
-	fp("vma_start_rendering %p", start_rendering);
-	fp("vma_draw_scene %p", draw_scene);
+	fp("exception_code 0x%lx", ec);
+	fp("exception_name %s", en);
+	fp("exception_addr %s", fa(ea));
+	fp("vma_init_stuff %s", fa(init_stuff));
+	fp("vma_start_rendering %s", fa(start_rendering));
+	fp("vma_draw_scene %s", fa(draw_scene));
 	void *a[MAX_BT];
-	int nb = CaptureStackBackTrace(0, MAX_BT, a, 0);
+	int nb = get_backtrace_via_capture(a, MAX_BT);
 	fp("bt_n %d", nb);
-	for (int i = 0; i < nb; ++i) {
-		fp("bt_addr %p", a[i]);
-	}
+	for (int i = 0; i < nb; ++i) fp("bt_addr %s", fa(a[i]));
 	int ns = get_backtrace_via_stackwalk(a, MAX_BT, ep->ContextRecord);
 	fp("sw_n %d", ns);
-	for (int i = 0; i < ns; ++i) {
-		fp("sw_addr %p", a[i]);
-	}
+	for (int i = 0; i < ns; ++i) fp("sw_addr %s", fa(a[i]));
 	fp("th_count %d", thread_counter);
 	for (int i = 0; i <= thread_counter; ++i) {
 		Trace *t = thread_traces + i;
@@ -644,14 +661,14 @@ static __attribute__((stdcall)) LONG exception_handler(struct _EXCEPTION_POINTER
 			fp("th_index %d", i);
 			fp("th_n %d", t->n);
 			for (Callsite *c = t->a, *ce = c + t->n; c < ce; ++c) {
-				fp("th_addr %p", c->addr);
-				fp("th_from %p", c->from);
+				fp("th_addr %s", fa(c->addr));
+				fp("th_from %s", fa(c->from));
 			}
 		}
 	}
 	fclose(outf);
 	err("Crash log saved to %s", p);
-	return EXCEPTION_EXECUTE_HANDLER;
+	return EXCEPTION_CONTINUE_SEARCH;
 }
 
 int APIENTRY WinMain (HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow)

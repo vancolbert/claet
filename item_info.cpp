@@ -33,6 +33,8 @@
 #include "text.h"
 #include "url.h"
 
+static int is_not_space(int c) { return !std::isspace(c); }
+
 namespace Item_Info
 {
 	//	Class for a single item, holding ids, emu and description
@@ -71,9 +73,8 @@ namespace Item_Info
 		image_id = atoi(fields[1].c_str());
 		emu = atoi(fields[2].c_str());
 		description = fields[3];
-		// thanks http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-		description.erase(description.begin(), std::find_if(description.begin(), description.end(), [](int c){return !isspace(c);}));
-		description.erase(std::find_if(description.rbegin(), description.rend(), [](int c){return !isspace(c);}).base(), description.end());
+		description.erase(description.begin(), std::find_if(description.begin(), description.end(), is_not_space));
+		description.erase(std::find_if(description.rbegin(), description.rend(), is_not_space).base(), description.end());
 		if (description.empty())
 			return;
 		valid = true;

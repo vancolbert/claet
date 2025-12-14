@@ -92,7 +92,7 @@ const std::string& CalCoreMaterial::getMapFilename(int mapId) const
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)m_vectorMap.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     static const std::string strNull;
     return strNull;
   }
@@ -119,7 +119,7 @@ const std::string& CalCoreMaterial::getMapType(int mapId)
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)m_vectorMap.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     static std::string null;
     return null;
   }
@@ -145,7 +145,7 @@ Cal::UserData CalCoreMaterial::getMapUserData(int mapId)
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)m_vectorMap.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -170,7 +170,7 @@ const Cal::UserData CalCoreMaterial::getMapUserData(int mapId) const
   // check if the map id is valid
   if((mapId < 0) || (mapId >= (int)m_vectorMap.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 

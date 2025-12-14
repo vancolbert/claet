@@ -1,5 +1,5 @@
 //****************************************************************************//
-// streamsource.h                                                            //
+// buffersource.h                                                            //
 // Copyright (C) 2001-2003 Bruno 'Beosil' Heidelberger                       //
 //****************************************************************************//
 // This library is free software; you can redistribute it and/or modify it    //
@@ -16,62 +16,60 @@
 // Includes                                                                   //
 //****************************************************************************//
 
-#include "cal3d/streamsource.h"
+#include "cal3d/buffersource.h"
 #include "cal3d/error.h"
-#include "cal3d/platform.h"
 
  /*****************************************************************************/
-/** Constructs a stream source instance from an existing istream.
+/** Constructs a buffer source instance from an existing memory buffer.
   *
-  * This function is the only constructor of the stream source.
+  * This function is the only constructor of the buffer source.
   *
-  * @param inputStream The input stream to use, which should be set up and
-  *                    ready to be read from before making the stream source.
+  * @param inputBuffer The input buffer to read from
   *****************************************************************************/
 
-CalStreamSource::CalStreamSource(std::istream& inputStream)
-  : mInputStream(&inputStream)
+CalBufferSource::CalBufferSource(void *inputBuffer)
+  : mInputBuffer(inputBuffer), mOffset(0)
 {
 }
 
 
 /**
- * Destruct the CalStreamSource. Note that input stream is not closed here;
+ * Destruct the CalBufferSource. Note that the memory is not deleted here;
  * this should be handled externally.
  */
 
-CalStreamSource::~CalStreamSource()
+CalBufferSource::~CalBufferSource()
 {
 }
+
 
  /*****************************************************************************/
 /** Checks whether the data source is in a good state.
   *
-  * This function checks if the istream can be used.
+  * This function checks if the buffer is NULL or not.
   *
   * @return One of the following values:
   *         \li \b true if data source is in a good state
   *         \li \b false if not
   *****************************************************************************/
 
-bool CalStreamSource::ok() const
+bool CalBufferSource::ok() const
 {
-   if (!mInputStream)
+   if (mInputBuffer == NULL)
       return false;
 
    return true;
 }
 
  /*****************************************************************************/
-/** Sets the error code and message related to a streaming source.
+/** Sets the error code and message related to a memory buffer source.
   *
   *****************************************************************************/
 
-void CalStreamSource::setError() const
+void CalBufferSource::setError() const
 {
-   CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+   CalError::setLastError(CalError::NULL_BUFFER, __FILE_NAME__, __LINE__);
 }
-
 
  /*****************************************************************************/
 /** Reads a number of bytes.
@@ -86,13 +84,15 @@ void CalStreamSource::setError() const
   *         \li \b false if an error happened
   *****************************************************************************/
 
-bool CalStreamSource::readBytes(void* pBuffer, int length)
+bool CalBufferSource::readBytes(void *pBuffer, int length)
 {
-   //Check that the stream is usable
-   if (!ok()) return false;
+   //Check that the buffer and the target are usable
+   if (!ok() || (pBuffer == NULL)) return false;
+   
+   bool result = CalPlatform::readBytes( ((char*)mInputBuffer+mOffset), pBuffer, length );
+   mOffset += length;
 
-   return CalPlatform::readBytes( *mInputStream, pBuffer, length );
-
+   return result;
 }
 
  /*****************************************************************************/
@@ -107,15 +107,18 @@ bool CalStreamSource::readBytes(void* pBuffer, int length)
   *         \li \b false if an error happened
   *****************************************************************************/
 
-bool CalStreamSource::readFloat(float& value)
+bool CalBufferSource::readFloat(float& value)
 {
-   //Check that the stream is usable
+   //Check that the buffer is usable
    if (!ok()) return false;
 
-   return CalPlatform::readFloat( *mInputStream, value );
+   bool result = CalPlatform::readFloat( ((char*)mInputBuffer+mOffset), value );
+   mOffset += 4;
+
+   return result;
 }
 
-/*****************************************************************************/
+ /*****************************************************************************/
 /** Reads a short.
   *
   * This function reads a short from this data source.
@@ -127,15 +130,18 @@ bool CalStreamSource::readFloat(float& value)
   *         \li \b false if an error happened
   *****************************************************************************/
 
-bool CalStreamSource::readShort(short& value)
+bool CalBufferSource::readShort(short& value)
 {
-   //Check that the stream is usable
+   //Check that the buffer is usable
    if (!ok()) return false;
 
-   return CalPlatform::readShort( *mInputStream, value );
+   bool result = CalPlatform::readShort( ((char*)mInputBuffer+mOffset), value );
+   mOffset += 2;
+
+   return result;
 }
 
-/*****************************************************************************/
+ /*****************************************************************************/
 /** Reads an integer.
   *
   * This function reads an integer from this data source.
@@ -147,12 +153,15 @@ bool CalStreamSource::readShort(short& value)
   *         \li \b false if an error happened
   *****************************************************************************/
 
-bool CalStreamSource::readInteger(int& value)
+bool CalBufferSource::readInteger(int& value)
 {
-   //Check that the stream is usable
+   //Check that the buffer is usable
    if (!ok()) return false;
 
-   return CalPlatform::readInteger( *mInputStream, value );
+   bool result = CalPlatform::readInteger( ((char*)mInputBuffer+mOffset), value );
+   mOffset += 4;
+
+   return result;
 }
 
  /*****************************************************************************/
@@ -167,10 +176,14 @@ bool CalStreamSource::readInteger(int& value)
   *         \li \b false if an error happened
   *****************************************************************************/
 
-bool CalStreamSource::readString(std::string& strValue)
+bool CalBufferSource::readString(std::string& strValue)
 {
-   //Check that the stream is usable
+   //Check that the buffer is usable
    if (!ok()) return false;
 
-   return CalPlatform::readString( *mInputStream, strValue );
+   bool result = CalPlatform::readString( ((char*)mInputBuffer+mOffset), strValue );
+
+   mOffset += (strValue.length() + 4 + 1); // +1 is for Null-terminator
+   
+   return result;
 }

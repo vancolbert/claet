@@ -559,7 +559,7 @@ bool CalMixer::blendCycle(int id, float weight, float delay)
 {
   if((id < 0) || (id >= (int)m_vectorAnimation.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -584,7 +584,7 @@ bool CalMixer::blendCycle(int id, float weight, float delay)
     CalAnimationCycle *pAnimationCycle = new(std::nothrow) CalAnimationCycle(pCoreAnimation);
     if(pAnimationCycle == 0)
     {
-      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
       return false;
     }
 
@@ -599,7 +599,7 @@ bool CalMixer::blendCycle(int id, float weight, float delay)
   // check if this is really a animation cycle instance
   if(pAnimation->getType() != CalAnimation::TYPE_CYCLE)
   {
-      CalError::setLastError(CalError::INVALID_ANIMATION_TYPE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_ANIMATION_TYPE, __FILE_NAME__, __LINE__);
       return false;
   }
 
@@ -638,7 +638,7 @@ bool CalMixer::clearCycle(int id, float delay)
   // check if the animation id is valid
   if((id < 0) || (id >= (int)m_vectorAnimation.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -652,7 +652,7 @@ bool CalMixer::clearCycle(int id, float delay)
   // check if this is really a animation cycle instance
   if(pAnimation->getType() != CalAnimation::TYPE_CYCLE)
   {
-      CalError::setLastError(CalError::INVALID_ANIMATION_TYPE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_ANIMATION_TYPE, __FILE_NAME__, __LINE__);
       return false;
   }
 
@@ -704,7 +704,7 @@ bool CalMixer::executeAction(int id, float delayIn, float delayOut, float weight
   CalAnimationAction *pAnimationAction = new(std::nothrow) CalAnimationAction(pCoreAnimation);
   if(pAnimationAction == 0)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -776,7 +776,7 @@ CalAnimationAction * CalMixer::newAnimationAction( int coreAnimationId )
    pAnimationAction = new CalAnimationAction(pCoreAnimation);
    if(pAnimationAction == 0)
    {
-      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
       return NULL;
    }
 

@@ -119,7 +119,7 @@ CalSubmesh *CalMesh::getSubmesh(int id)
 {
   if((id < 0) || (id >= (int)m_vectorSubmesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -142,7 +142,7 @@ const CalSubmesh *CalMesh::getSubmesh(int id) const
 {
   if((id < 0) || (id >= (int)m_vectorSubmesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 

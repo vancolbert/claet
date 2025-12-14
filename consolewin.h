@@ -32,6 +32,7 @@ extern int console_out_id; /*!< ID of the console output widget */
 
 extern int locked_to_console; /*!< indicates whether the console win is locked. Used when we don't have any maps. */
 extern int nr_console_lines;
+extern int total_nr_lines;
 extern int console_text_width;
 
 int display_console_handler (window_info *win);
@@ -48,7 +49,6 @@ void toggle_console_scrollbar(int *enable);
 void console_font_resize(float fond_size);
 #endif //ENGLISH
 int get_console_text_width(void);
-int get_total_nr_lines(void);
 
 
 /*!
@@ -59,11 +59,7 @@ int get_total_nr_lines(void);
  *
  * \callgraph
  */
-#ifdef FR_VERSION
-void update_console_win ();
-#else //FR_VERSION
-void update_console_win ();
-#endif //FR_VERSION
+void update_console_win(text_message *msg);
 
 /*!
  * \ingroup interface_console

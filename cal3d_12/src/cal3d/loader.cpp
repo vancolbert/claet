@@ -135,7 +135,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(const std::string& strFilename,
   //make sure it was opened properly
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_NOT_FOUND, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_NOT_FOUND, __FILE_NAME__, __LINE__, strFilename);
     return 0;
   }
 
@@ -197,7 +197,7 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(const std::string& strFilename)
   // make sure it opened properly
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_NOT_FOUND, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_NOT_FOUND, __FILE_NAME__, __LINE__, strFilename);
     return 0;
   }
 
@@ -240,7 +240,7 @@ CalCoreMeshPtr CalLoader::loadCoreMesh(const std::string& strFilename)
   // make sure it opened properly
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_NOT_FOUND, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_NOT_FOUND, __FILE_NAME__, __LINE__, strFilename);
     return 0;
   }
 
@@ -284,7 +284,7 @@ CalCoreSkeletonPtr CalLoader::loadCoreSkeleton(const std::string& strFilename)
   //make sure it opened properly
   if(!file)
   {
-    CalError::setLastError(CalError::FILE_NOT_FOUND, BASE_FILENAME, __LINE__, strFilename);
+    CalError::setLastError(CalError::FILE_NOT_FOUND, __FILE_NAME__, __LINE__, strFilename);
     return 0;
   }
 
@@ -413,7 +413,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(void* inputBuffer, CalCoreSkele
     doc.Parse( static_cast<const char*>(inputBuffer) );
     if (doc.Error())
     {
-        CalError::setLastError(CalError::FILE_PARSER_FAILED, BASE_FILENAME, __LINE__ );
+        CalError::setLastError(CalError::FILE_PARSER_FAILED, __FILE_NAME__, __LINE__ );
        return 0;
     }
     return loadXmlCoreAnimation( doc, skel );
@@ -473,7 +473,7 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(void* inputBuffer)
 		doc.Parse( static_cast<const char*>(inputBuffer) );
 		if (doc.Error())
 		{
-		    CalError::setLastError(CalError::FILE_PARSER_FAILED, BASE_FILENAME, __LINE__ );
+		    CalError::setLastError(CalError::FILE_PARSER_FAILED, __FILE_NAME__, __LINE__ );
  		   return 0;
 		}
 		return loadXmlCoreMaterial( doc );
@@ -506,7 +506,7 @@ CalCoreMeshPtr CalLoader::loadCoreMesh(void* inputBuffer)
 		doc.Parse( static_cast<const char*>(inputBuffer) );
 		if (doc.Error())
 		{
-		    CalError::setLastError(CalError::FILE_PARSER_FAILED, BASE_FILENAME, __LINE__ );
+		    CalError::setLastError(CalError::FILE_PARSER_FAILED, __FILE_NAME__, __LINE__ );
  		   return 0;
 		}
 		return loadXmlCoreMesh( doc );
@@ -539,7 +539,7 @@ CalCoreSkeletonPtr CalLoader::loadCoreSkeleton(void* inputBuffer)
 		doc.Parse( static_cast<const char*>(inputBuffer) );
 		if (doc.Error())
 		{
-		    CalError::setLastError(CalError::FILE_PARSER_FAILED, BASE_FILENAME, __LINE__ );
+		    CalError::setLastError(CalError::FILE_PARSER_FAILED, __FILE_NAME__, __LINE__ );
  		   return 0;
 		}
 		return loadXmlCoreSkeleton( doc );
@@ -569,7 +569,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
   char magic[4];
   if(!dataSrc.readBytes(&magic[0], 4) || (memcmp(&magic[0], Cal::ANIMATION_FILE_MAGIC, 4) != 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -577,7 +577,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
   int version;
   if(!dataSrc.readInteger(version) || (version < Cal::EARLIEST_COMPATIBLE_FILE_VERSION) || (version > Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -585,7 +585,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
   if (Cal::versionHasCompressionFlag(version)) {
      int compressionFlag = 0;
      if (!dataSrc.readInteger(compressionFlag)) {
-        CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+        CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
         return 0;
      }
      // Only really need the first bit.
@@ -597,7 +597,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
   CalCoreAnimationPtr pCoreAnimation(new(std::nothrow) CalCoreAnimation);
   if(!pCoreAnimation)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -605,14 +605,14 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
   float duration;
   if(!dataSrc.readFloat(duration))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
   // check for a valid duration
   if(duration <= 0.0f)
   {
-    CalError::setLastError(CalError::INVALID_ANIMATION_DURATION, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_ANIMATION_DURATION, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -623,7 +623,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
   int trackCount;
   if(!dataSrc.readInteger(trackCount) || (trackCount <= 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -632,7 +632,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
 	if(version >= LIBRARY_VERSION) {
 	  if(!dataSrc.readInteger(flags))
 		{
-			CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+			CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
 			return 0;
 		}
 	}
@@ -646,7 +646,7 @@ CalCoreAnimationPtr CalLoader::loadCoreAnimation(CalDataSource& dataSrc, CalCore
     pCoreTrack = loadCoreTrack(dataSrc,skel, version, useAnimationCompression);
     if(pCoreTrack == 0)
     {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
     }
 
@@ -688,7 +688,7 @@ CalCoreAnimatedMorph *CalLoader::loadCoreAnimatedMorph(CalDataSource& dataSrc)
    char magic[4];
    if(!dataSrc.readBytes(&magic[0], 4) || (memcmp(&magic[0], Cal::ANIMATEDMORPH_FILE_MAGIC, 4) != 0))
    {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -696,7 +696,7 @@ CalCoreAnimatedMorph *CalLoader::loadCoreAnimatedMorph(CalDataSource& dataSrc)
    int version;
    if(!dataSrc.readInteger(version) || (version < Cal::EARLIEST_COMPATIBLE_FILE_VERSION) || (version > Cal::CURRENT_FILE_VERSION))
    {
-      CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -705,7 +705,7 @@ CalCoreAnimatedMorph *CalLoader::loadCoreAnimatedMorph(CalDataSource& dataSrc)
    pCoreAnimatedMorph = new CalCoreAnimatedMorph();
    if(pCoreAnimatedMorph == 0)
    {
-      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -720,7 +720,7 @@ CalCoreAnimatedMorph *CalLoader::loadCoreAnimatedMorph(CalDataSource& dataSrc)
    float duration;
    if(!dataSrc.readFloat(duration))
    {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       pCoreAnimatedMorph->destroy();
       delete pCoreAnimatedMorph;
       return 0;
@@ -729,7 +729,7 @@ CalCoreAnimatedMorph *CalLoader::loadCoreAnimatedMorph(CalDataSource& dataSrc)
    // check for a valid duration
    if(duration <= 0.0f)
    {
-      CalError::setLastError(CalError::INVALID_ANIMATION_DURATION, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_ANIMATION_DURATION, __FILE_NAME__, __LINE__);
       pCoreAnimatedMorph->destroy();
       delete pCoreAnimatedMorph;
       return 0;
@@ -742,7 +742,7 @@ CalCoreAnimatedMorph *CalLoader::loadCoreAnimatedMorph(CalDataSource& dataSrc)
    int trackCount;
    if(!dataSrc.readInteger(trackCount) || (trackCount <= 0))
    {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -787,7 +787,7 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(CalDataSource& dataSrc)
   char magic[4];
   if(!dataSrc.readBytes(&magic[0], 4) || (memcmp(&magic[0], Cal::MATERIAL_FILE_MAGIC, 4) != 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -795,7 +795,7 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(CalDataSource& dataSrc)
   int version;
   if(!dataSrc.readInteger(version) || (version < Cal::EARLIEST_COMPATIBLE_FILE_VERSION) || (version > Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -805,28 +805,28 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(CalDataSource& dataSrc)
   CalCoreMaterialPtr pCoreMaterial = new(std::nothrow) CalCoreMaterial();
   if(!pCoreMaterial)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
   // get the ambient color of the core material
   CalCoreMaterial::Color ambientColor;
   if( !dataSrc.readBytes(&ambientColor, sizeof(ambientColor)) ) {
-     CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+     CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
      return NULL;
   }
 
   // get the diffuse color of the core material
   CalCoreMaterial::Color diffuseColor;
   if( !dataSrc.readBytes(&diffuseColor, sizeof(diffuseColor)) ) {
-     CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+     CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
      return NULL;
   }
 
   // get the specular color of the core material
   CalCoreMaterial::Color specularColor;
   if( !dataSrc.readBytes(&specularColor, sizeof(specularColor)) ) {
-     CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+     CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
      return NULL;
   }
 
@@ -851,14 +851,14 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(CalDataSource& dataSrc)
   int mapCount;
   if(!dataSrc.readInteger(mapCount) || (mapCount < 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
   // reserve memory for all the material data
   if(!pCoreMaterial->reserve(mapCount))
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -885,7 +885,7 @@ CalCoreMaterialPtr CalLoader::loadCoreMaterial(CalDataSource& dataSrc)
     // check if an error happened
     if(!dataSrc.ok())
     {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
     }
 
@@ -915,7 +915,7 @@ CalCoreMeshPtr CalLoader::loadCoreMesh(CalDataSource& dataSrc)
   char magic[4];
   if(!dataSrc.readBytes(&magic[0], 4) || (memcmp(&magic[0], Cal::MESH_FILE_MAGIC, 4) != 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -923,7 +923,7 @@ CalCoreMeshPtr CalLoader::loadCoreMesh(CalDataSource& dataSrc)
   int version;
   if(!dataSrc.readInteger(version) || (version < Cal::EARLIEST_COMPATIBLE_FILE_VERSION) || (version > Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -934,7 +934,7 @@ CalCoreMeshPtr CalLoader::loadCoreMesh(CalDataSource& dataSrc)
   int submeshCount;
   if(!dataSrc.readInteger(submeshCount))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -942,7 +942,7 @@ CalCoreMeshPtr CalLoader::loadCoreMesh(CalDataSource& dataSrc)
   CalCoreMeshPtr pCoreMesh = new(std::nothrow) CalCoreMesh();
   if(!pCoreMesh)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -982,7 +982,7 @@ CalCoreSkeletonPtr CalLoader::loadCoreSkeleton(CalDataSource& dataSrc)
   char magic[4];
   if(!dataSrc.readBytes(&magic[0], 4) || (memcmp(&magic[0], Cal::SKELETON_FILE_MAGIC, 4) != 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -990,7 +990,7 @@ CalCoreSkeletonPtr CalLoader::loadCoreSkeleton(CalDataSource& dataSrc)
   int version;
   if(!dataSrc.readInteger(version) || (version < Cal::EARLIEST_COMPATIBLE_FILE_VERSION) || (version > Cal::CURRENT_FILE_VERSION))
   {
-    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INCOMPATIBLE_FILE_VERSION, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1000,7 +1000,7 @@ CalCoreSkeletonPtr CalLoader::loadCoreSkeleton(CalDataSource& dataSrc)
   int boneCount;
   if(!dataSrc.readInteger(boneCount) || (boneCount <= 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1008,7 +1008,7 @@ CalCoreSkeletonPtr CalLoader::loadCoreSkeleton(CalDataSource& dataSrc)
   CalCoreSkeletonPtr pCoreSkeleton = new(std::nothrow) CalCoreSkeleton();
   if(!pCoreSkeleton)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1138,7 +1138,7 @@ CalCoreBone *CalLoader::loadCoreBones(CalDataSource& dataSrc, int version)
   std::unique_ptr<CalCoreBone> pCoreBone( new(std::nothrow) CalCoreBone(strName) );
   if(pCoreBone.get() == 0)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1160,7 +1160,7 @@ CalCoreBone *CalLoader::loadCoreBones(CalDataSource& dataSrc, int version)
   int childCount;
   if(!dataSrc.readInteger(childCount) || (childCount < 0))
   {
-    CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1170,7 +1170,7 @@ CalCoreBone *CalLoader::loadCoreBones(CalDataSource& dataSrc, int version)
     int childId;
     if(!dataSrc.readInteger(childId) || (childId < 0))
     {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
     }
 
@@ -1245,7 +1245,7 @@ CalCoreKeyframe* CalLoader::loadCoreKeyframe(
      assert( bytesRequired < 100 );
      unsigned char buf[ 100 ];
      if( !dataSrc.readBytes( buf, bytesRequired ) ) {
-        CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+        CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
         return NULL;
      }
      CalVector vec;
@@ -1255,7 +1255,7 @@ CalCoreKeyframe* CalLoader::loadCoreKeyframe(
         translationRequired, highRangeRequired, translationIsDynamic,
         useAnimationCompression);
      if( bytesRead != bytesRequired ) {
-        CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+        CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
         return NULL;
      }
      tx = vec.x;
@@ -1316,7 +1316,7 @@ CalCoreKeyframe* CalLoader::loadCoreKeyframe(
 
   if(pCoreKeyframe == 0)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1530,7 +1530,7 @@ CalLoader::writeCompressedKeyframe( unsigned char * buf, unsigned int bufLen, co
             len = - len;
          }
          if( len > 1.0f ) {
-            CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+            CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
             return 0;
          }
          data = FloatZeroToOneToFixedPoint( len, posBits );
@@ -1554,7 +1554,7 @@ CalLoader::writeCompressedKeyframe( unsigned char * buf, unsigned int bufLen, co
    Removed the animation time limit so Matt can do his ice skating room.
 
    if( steps >= keyframeTimeMax ) {
-   CalError::setLastError(CalError::FILE_WRITING_FAILED, BASE_FILENAME, __LINE__, strFilename);
+   CalError::setLastError(CalError::FILE_WRITING_FAILED, __FILE_NAME__, __LINE__, strFilename);
    return 0;
    }
 
@@ -1608,7 +1608,7 @@ CalCoreMorphKeyframe *CalLoader::loadCoreMorphKeyframe(CalDataSource& dataSrc)
    pCoreMorphKeyframe = new CalCoreMorphKeyframe();
    if(pCoreMorphKeyframe == 0)
    {
-      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -1685,7 +1685,7 @@ CalCoreKeyframe *CalLoader::loadCompressedCoreKeyframe(CalDataSource& dataSrc, c
 
   if(pCoreKeyframe == 0)
   {
-    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -1763,7 +1763,7 @@ CalCoreSubmesh *CalLoader::loadCoreSubmesh(CalDataSource& dataSrc, int version)
 	std::unique_ptr<CalCoreSubmesh> pCoreSubmesh( new(std::nothrow) CalCoreSubmesh() );
 	if(pCoreSubmesh.get() == 0)
 	{
-		CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+		CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
 		return 0;
 	}
 
@@ -1776,7 +1776,7 @@ CalCoreSubmesh *CalLoader::loadCoreSubmesh(CalDataSource& dataSrc, int version)
 	// reserve memory for all the submesh data
 	if(!pCoreSubmesh->reserve(vertexCount, textureCoordinateCount, faceCount, springCount))
 	{
-		CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+		CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
 		return 0;
 	}
 
@@ -2003,7 +2003,7 @@ CalCoreSubmesh *CalLoader::loadCoreSubmesh(CalDataSource& dataSrc, int version)
 		{
 			if(tmp[0]>65535 || tmp[1]>65535 || tmp[2]>65535)
 			{
-				CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+				CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
 				return 0;
 			}
 		}
@@ -2041,7 +2041,7 @@ CalCoreSubmesh *CalLoader::loadCoreSubmesh(CalDataSource& dataSrc, int version)
 			float	crossLength = cross.length();
 			if (crossLength == 0.0f)
 			{
-				CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+				CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
 				return 0;
 			}
 			CalVector faceNormal = cross / crossLength;
@@ -2113,7 +2113,7 @@ CalCoreTrack *CalLoader::loadCoreTrack(
    // and use the 16th bit to record if translation is required.
    if( useAnimationCompression ) {
       if( !dataSrc.readBytes( buf, 4 ) ) {
-         CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
          return NULL;
       }
 
@@ -2124,19 +2124,19 @@ CalCoreTrack *CalLoader::loadCoreTrack(
       translationIsDynamic = ( buf[ 1 ] & 0x20 ) ? true : false;
       keyframeCount = buf[ 2 ] + ( unsigned int ) buf[ 3 ] * 256;
       //if( keyframeCount > keyframeTimeMax ) {
-      //  CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      //  CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       //  return NULL;
       //}
    } else {
       if(!dataSrc.readInteger(coreBoneId) || (coreBoneId < 0)) {
-         CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
          return 0;
       }
 
       // Read the number of keyframes.
       if(!dataSrc.readInteger(keyframeCount) || (keyframeCount <= 0))
       {
-         CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
          return 0;
       }
    }
@@ -2146,7 +2146,7 @@ CalCoreTrack *CalLoader::loadCoreTrack(
    pCoreTrack = new CalCoreTrack();
    if(pCoreTrack == 0)
    {
-      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -2242,7 +2242,7 @@ CalCoreMorphTrack *CalLoader::loadCoreMorphTrack(CalDataSource& dataSrc)
    int morphName;
    if(!dataSrc.readInteger(morphName))
    {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -2251,7 +2251,7 @@ CalCoreMorphTrack *CalLoader::loadCoreMorphTrack(CalDataSource& dataSrc)
    pCoreMorphTrack = new CalCoreMorphTrack();
    if(pCoreMorphTrack == 0)
    {
-      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::MEMORY_ALLOCATION_FAILED, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -2269,7 +2269,7 @@ CalCoreMorphTrack *CalLoader::loadCoreMorphTrack(CalDataSource& dataSrc)
    int keyframeCount;
    if(!dataSrc.readInteger(keyframeCount) || (keyframeCount <= 0))
    {
-      CalError::setLastError(CalError::INVALID_FILE_FORMAT, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_FILE_FORMAT, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -2314,7 +2314,7 @@ CalCoreSkeletonPtr CalLoader::loadXmlCoreSkeleton(const std::string& strFilename
 	TiXmlDocument doc(strFilename);
 	if(!doc.LoadFile())
 	{
-		CalError::setLastError(CalError::FILE_NOT_FOUND, BASE_FILENAME, __LINE__, strFilename);
+		CalError::setLastError(CalError::FILE_NOT_FOUND, __FILE_NAME__, __LINE__, strFilename);
 		return 0;
 	}
 

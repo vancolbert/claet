@@ -354,7 +354,7 @@ bool CalMorphTargetMixer::copy( const CalMorphTargetMixer& inOther )
 {
     if (inOther.m_pModel->getCoreModel() != this->m_pModel->getCoreModel())
     {
-        CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+        CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
         return false;
     }
 

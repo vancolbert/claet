@@ -37,7 +37,7 @@ CalAnimationAction::CalAnimationAction(CalCoreAnimation *pCoreAnimation)
   m_scale = 1.0;
   if(pCoreAnimation == 0)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
   }
 
 }

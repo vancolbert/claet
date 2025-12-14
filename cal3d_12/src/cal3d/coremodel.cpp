@@ -431,7 +431,7 @@ CalCoreAnimation *CalCoreModel::getCoreAnimation(int coreAnimationId)
 {
   if((coreAnimationId < 0) || (coreAnimationId >= (int)m_vectorCoreAnimation.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -458,7 +458,7 @@ const CalCoreAnimation *CalCoreModel::getCoreAnimation(int coreAnimationId) cons
 
     || !m_vectorCoreAnimation[ coreAnimationId ] )
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -502,7 +502,7 @@ CalCoreAnimatedMorph *CalCoreModel::getCoreAnimatedMorph(int coreAnimatedMorphId
       || !m_vectorCoreAnimatedMorph[ coreAnimatedMorphId ] )
 
    {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -518,7 +518,7 @@ const CalCoreAnimatedMorph *CalCoreModel::getCoreAnimatedMorph(int coreAnimatedM
       || !m_vectorCoreAnimatedMorph[ coreAnimatedMorphId ] )
 
    {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return 0;
    }
 
@@ -547,7 +547,7 @@ CalCoreMaterial *CalCoreModel::getCoreMaterial(int coreMaterialId)
 {
   if((coreMaterialId < 0) || (coreMaterialId >= (int)m_vectorCoreMaterial.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -570,7 +570,7 @@ const CalCoreMaterial *CalCoreModel::getCoreMaterial(int coreMaterialId) const
 {
   if((coreMaterialId < 0) || (coreMaterialId >= (int)m_vectorCoreMaterial.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -612,7 +612,7 @@ int CalCoreModel::getCoreMaterialId(int coreMaterialThreadId, int coreMaterialSe
   iteratorCoreMaterialThread = m_mapmapCoreMaterialThread.find(coreMaterialThreadId);
   if(iteratorCoreMaterialThread == m_mapmapCoreMaterialThread.end())
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -624,7 +624,7 @@ int CalCoreModel::getCoreMaterialId(int coreMaterialThreadId, int coreMaterialSe
   iteratorSet = coreMaterialThread.find(coreMaterialSetId);
   if(iteratorSet == coreMaterialThread.end())
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -647,7 +647,7 @@ CalCoreMesh *CalCoreModel::getCoreMesh(int coreMeshId)
 {
   if((coreMeshId < 0) || (coreMeshId >= (int)m_vectorCoreMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -670,7 +670,7 @@ const CalCoreMesh *CalCoreModel::getCoreMesh(int coreMeshId) const
 {
   if((coreMeshId < 0) || (coreMeshId >= (int)m_vectorCoreMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return 0;
   }
 
@@ -764,7 +764,7 @@ int CalCoreModel::loadCoreAnimation(const std::string& strFilename)
   // the core skeleton has to be loaded already
   if(!m_pCoreSkeleton)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -806,12 +806,12 @@ int CalCoreModel::loadCoreAnimation(const std::string& strFilename, const std::s
     // the core skeleton has to be loaded already
     if(!m_pCoreSkeleton)
     {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return -1;
     }
     if(m_vectorCoreAnimation[id])
     {
-      CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
       return -1;
     }
     CalCoreAnimationPtr pCoreAnimation = CalLoader::loadCoreAnimation(strFilename, m_pCoreSkeleton.get());
@@ -840,12 +840,12 @@ int CalCoreModel::loadCoreAnimation(void* buffer, const std::string& strAnimatio
       // the core skeleton has to be loaded already
       if(!m_pCoreSkeleton)
       {
-         CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
          return -1;
       }
       if(m_vectorCoreAnimation[id])
       {
-         CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
          return -1;
       }
       CalCoreAnimationPtr pCoreAnimation = CalLoader::loadCoreAnimation(buffer);
@@ -902,7 +902,7 @@ int CalCoreModel::unloadCoreAnimation(int coreAnimationId)
 {
   if((coreAnimationId < 0) || (coreAnimationId >= (int)m_vectorCoreAnimation.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -928,7 +928,7 @@ int CalCoreModel::loadCoreAnimation(void* buffer)
   // the core skeleton has to be loaded already
   if(m_pCoreSkeleton == 0)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -992,7 +992,7 @@ int CalCoreModel::loadCoreAnimatedMorph(const std::string& strFilename, const st
 
       if(m_vectorCoreAnimatedMorph[id])
       {
-         CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
          return -1;
       }
 
@@ -1038,7 +1038,7 @@ int CalCoreModel::loadCoreAnimatedMorph(void* buffer, unsigned int bufferLength,
 
       if(m_vectorCoreAnimatedMorph[id])
       {
-         CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
          return -1;
       }
 
@@ -1094,7 +1094,7 @@ int CalCoreModel::unloadCoreAnimatedMorph(int coreAnimatedMorphId)
 {
   if((coreAnimatedMorphId < 0) || (coreAnimatedMorphId >= (int)m_vectorCoreAnimatedMorph.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1122,7 +1122,7 @@ int CalCoreModel::loadCoreMaterial(const std::string& strFilename)
   // the core skeleton has to be loaded already
   if(!m_pCoreSkeleton)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1163,12 +1163,12 @@ int CalCoreModel::loadCoreMaterial(const std::string& strFilename, const std::st
     // the core skeleton has to be loaded already
     if(!m_pCoreSkeleton)
     {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return -1;
     }
     if(m_vectorCoreMaterial[id])
     {
-      CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
       return -1;
     }
     CalCoreMaterialPtr pCoreMaterial = CalLoader::loadCoreMaterial(strFilename);
@@ -1197,12 +1197,12 @@ int CalCoreModel::loadCoreMaterial(void* buffer, const std::string& strMaterialN
       // the core skeleton has to be loaded already
       if(!m_pCoreSkeleton)
       {
-         CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
          return -1;
       }
       if(m_vectorCoreMaterial[id])
       {
-         CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
          return -1;
       }
       CalCoreMaterialPtr pCoreMaterial = CalLoader::loadCoreMaterial(buffer);
@@ -1238,7 +1238,7 @@ int CalCoreModel::loadCoreMaterial(void* buffer)
   // the core skeleton has to be loaded already
   if(m_pCoreSkeleton == 0)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1289,7 +1289,7 @@ int CalCoreModel::unloadCoreMaterial(int coreMaterialId)
 {
   if((coreMaterialId < 0) || (coreMaterialId >= (int)m_vectorCoreMaterial.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1315,7 +1315,7 @@ int CalCoreModel::loadCoreMesh(const std::string& strFilename)
   // the core skeleton has to be loaded already
   if(!m_pCoreSkeleton)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1356,12 +1356,12 @@ int CalCoreModel::loadCoreMesh(const std::string& strFilename, const std::string
     // the core skeleton has to be loaded already
     if(!m_pCoreSkeleton)
     {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return -1;
     }
     if(m_vectorCoreMesh[id])
     {
-      CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
       return -1;
     }
     CalCoreMeshPtr pCoreMesh = CalLoader::loadCoreMesh(strFilename);
@@ -1390,12 +1390,12 @@ int CalCoreModel::loadCoreMesh(void* buffer, const std::string& strMeshName)
       // the core skeleton has to be loaded already
       if(!m_pCoreSkeleton)
       {
-         CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
          return -1;
       }
       if(m_vectorCoreMesh[id])
       {
-         CalError::setLastError(CalError::INDEX_BUILD_FAILED, BASE_FILENAME, __LINE__);
+         CalError::setLastError(CalError::INDEX_BUILD_FAILED, __FILE_NAME__, __LINE__);
          return -1;
       }
       CalCoreMeshPtr pCoreMesh = CalLoader::loadCoreMesh(buffer);
@@ -1430,7 +1430,7 @@ int CalCoreModel::loadCoreMesh(void* buffer)
   // the core skeleton has to be loaded already
   if(m_pCoreSkeleton == 0)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1483,7 +1483,7 @@ int CalCoreModel::unloadCoreMesh(int coreMeshId)
 {
   if((coreMeshId < 0) || (coreMeshId >= (int)m_vectorCoreMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return -1;
   }
 
@@ -1554,7 +1554,7 @@ bool CalCoreModel::saveCoreAnimation(const std::string& strFilename, int coreAni
 
     || !m_vectorCoreAnimation[ coreAnimationId ] )
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1589,7 +1589,7 @@ bool CalCoreModel::saveCoreAnimatedMorph(const std::string& strFilename, int cor
 
     || !m_vectorCoreAnimatedMorph[ coreAnimatedMorphId ] )
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1620,7 +1620,7 @@ bool CalCoreModel::saveCoreMaterial(const std::string& strFilename, int coreMate
   // check if the core material id is valid
   if((coreMaterialId < 0) || (coreMaterialId >= (int)m_vectorCoreMaterial.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1646,7 +1646,7 @@ bool CalCoreModel::saveCoreMesh(const std::string& strFilename, int coreMeshId) 
   // check if the core mesh id is valid
   if((coreMeshId < 0) || (coreMeshId >= (int)m_vectorCoreMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1671,7 +1671,7 @@ bool CalCoreModel::saveCoreSkeleton(const std::string& strFilename) const
   // check if we have a core skeleton in this code model
   if(!m_pCoreSkeleton)
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1701,7 +1701,7 @@ bool CalCoreModel::setCoreMaterialId(int coreMaterialThreadId, int coreMaterialS
   iteratorCoreMaterialThread = m_mapmapCoreMaterialThread.find(coreMaterialThreadId);
   if(iteratorCoreMaterialThread == m_mapmapCoreMaterialThread.end())
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1800,7 +1800,7 @@ bool CalCoreModel::addAnimationName(const std::string& strAnimationName, int cor
   // check if the core animation id is valid
   if((coreAnimationId < 0) || (coreAnimationId >= (int)m_vectorCoreAnimation.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1814,7 +1814,7 @@ bool CalCoreModel::addAnimatedMorphName(const std::string& strAnimatedMorphName,
    // check if the core animation id is valid
    if((coreAnimatedMorphId < 0) || (coreAnimatedMorphId >= (int)m_vectorCoreAnimatedMorph.size()))
    {
-      CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+      CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
       return false;
    }
 
@@ -1900,7 +1900,7 @@ bool CalCoreModel::addMaterialName(const std::string& strMaterialName, int coreM
   // check if the core material id is valid
   if((coreMaterialId < 0) || (coreMaterialId >= (int)m_vectorCoreMaterial.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
@@ -1986,7 +1986,7 @@ bool CalCoreModel::addMeshName(const std::string& strMeshName, int coreMeshId)
   // check if the core mesh id is valid
   if((coreMeshId < 0) || (coreMeshId >= (int)m_vectorCoreMesh.size()))
   {
-    CalError::setLastError(CalError::INVALID_HANDLE, BASE_FILENAME, __LINE__);
+    CalError::setLastError(CalError::INVALID_HANDLE, __FILE_NAME__, __LINE__);
     return false;
   }
 
