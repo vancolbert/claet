@@ -368,6 +368,8 @@ static __inline__ float clampf(float x, float l, float u)
 	return min2f(max2f(x,l),u);
 }
 
+static __inline__ Uint64 subgt_u64(Uint64 a, Uint64 b) { return a > b ? a - b : 0; }
+
 /*! @} */
 
 void init_reflection_portals(int size);

@@ -32,6 +32,7 @@ extern int show_coord_2;
 #endif //SHOW_COORD_SETTER
 extern int rot_boussole; //Type de rotation de la boussole
 extern Uint64 exp_lev[200];
+extern int num_exp_lev;
 #else //ENGLISH
 /*!
  * \name Quickbar defines
@@ -411,7 +412,5 @@ void change_max_nutri(int max);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-extern Uint64 exp_lev[200];
 
 #endif	//__HUD_H
