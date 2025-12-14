@@ -107,7 +107,7 @@ void set_last_skill_exp(size_t skill, Uint64 exp)
 		if ((skill != SI_ALL) && (exp >= exp_log_threshold) && (exp_log_threshold > 0))
 		{
 			char str[80];
-			safe_snprintf(str, sizeof(str), "Tu as gagné %llu exp en %s.", exp, statsinfo[skill].skillnames->name);
+			safe_snprintf(str, sizeof(str), "Tu as gagné %" PRIu64 " exp en %s.", exp, statsinfo[skill].skillnames->name);
 			LOG_TO_CONSOLE(c_green2,str);
 		}
 	}
@@ -221,7 +221,7 @@ int display_session_handler(window_info *win)
 #ifdef FR_VERSION
 		if(affixp == 0)
 		{
-			safe_snprintf(buffer, sizeof(buffer), "%-13s%10llu%9.1f%10llu%9.1f%9llu%9llu", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
+			safe_snprintf(buffer, sizeof(buffer), "%-13s%10" PRIu64 "%9.1f%10" PRIu64 "%9.1f%9" PRIu64 "%9" PRIu64, statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
 		} else {
 			if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000000) {
 				millions = (*(statsinfo[i].exp) - fullsession_exp[i]);
@@ -257,7 +257,7 @@ int display_session_handler(window_info *win)
 				} else sprintf(chcentaines, "%d", centaines);
 				sprintf(totxp, "%d'%s", nbmilliers, chcentaines);
 			} else {
-				sprintf(totxp, "%llu", *(statsinfo[i].exp) - fullsession_exp[i]);
+				sprintf(totxp, "%" PRIu64, *(statsinfo[i].exp) - fullsession_exp[i]);
 			}
 			if ((float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f) >= 1000){
 				xpm = (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f);
@@ -311,7 +311,7 @@ int display_session_handler(window_info *win)
 				} else sprintf(chcentaines, "%d", centaines);
 				sprintf(sessxp, "%d'%s", nbmilliers, chcentaines);
 			} else	{
-				sprintf(sessxp, "%llu", *(statsinfo[i].exp) - session_exp[i]);
+				sprintf(sessxp, "%" PRIu64, *(statsinfo[i].exp) - session_exp[i]);
 			}
 			if ((float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f) >= 1000){
 				xpm = (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f);

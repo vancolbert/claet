@@ -219,7 +219,7 @@ int show_exp(char *text, int len) {
 		struct stats_struct *s = statsinfo + i;
 		int b = clampi(s->skillattr->base, 0, num_exp_lev - 1);
 		Uint64 e = *s->exp, n = *s->next_lev, l = exp_lev[b], d = subgt_u64(n, l);
-		safe_snprintf(t, sizeof(t), "%12s : niveau %-3u (%3llu%%) %12llu/%-12llu suivant dans %llu xp",	s->skillnames->name, b, d ? clampi(100 * subgt_u64(e, l) / d, 0, 100) : 100, e, n, subgt_u64(n, e));
+		safe_snprintf(t, sizeof(t), "%12s : niveau %-3u (%3u%%) %12" PRIu64 "/%-12" PRIu64 " suivant dans %" PRIu64 " xp",	s->skillnames->name, b, d ? clampi(100 * subgt_u64(e, l) / d, 0, 100) : 100, e, n, subgt_u64(n, e));
 		LOG_TO_CONSOLE(c_green1, t);
 	}
 	return 1;
@@ -1112,7 +1112,7 @@ static void draw_stats_bar(int x, int y, Sint64 val, int len, float r, float g, 
 	glEnable(GL_TEXTURE_2D);
 
 	// handle the text
-	safe_snprintf(buf, sizeof(buf), "%lld", val);
+	safe_snprintf(buf, sizeof(buf), "%" PRId64, val);
 	//glColor3f(0.8f, 0.8f, 0.8f); moved to next line
 #ifdef ENGLISH
 	draw_string_small_shadowed(x-(1+8*strlen(buf))-1, y-2, (unsigned char*)buf, 1,0.8f, 0.8f, 0.8f,0.0f,0.0f,0.0f);
@@ -1898,7 +1898,7 @@ CHECK_GL_ERRORS();
 				draw_string_small_shadowed(-mod_width, y + gy_adjust, (Uint8 *)str, 1, c[0], c[1], c[2], 0, 0, 0);
 			}
 			if (stat_mouse_is_over == thestat) {
-				int w = SMALL_FONT_X_LEN * safe_snprintf(str, sizeof(str), "%llu", subgt_u64(*statsinfo[thestat].next_lev, *statsinfo[thestat].exp));
+				int w = SMALL_FONT_X_LEN * safe_snprintf(str, sizeof(str), "%" PRIu64, subgt_u64(*statsinfo[thestat].next_lev, *statsinfo[thestat].exp));
 				draw_string_small_shadowed(-mod_width - w, y + gy_adjust, (Uint8 *)str, 1, 1, 1, 1, 0, 0, 0);
 				stat_mouse_is_over = -1;
 			}

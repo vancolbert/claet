@@ -1,3 +1,4 @@
+#define __STDC_FORMAT_MACROS
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -616,7 +617,7 @@ static cstr fmt_addr(char *b, int n, void *a) {
 	if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)a, &m) && m != GetModuleHandle(0) && GetModuleFileName(m, p, sizeof(p)-1)) {
 		for (f = q = p; *q; ++q) if (*q == '/' || *q == '\\') f = q + 1;
 	}
-	safe_snprintf(b, n, "%s%s0x%08llx", f, s + !*f, (Uint64)(uintptr_t)a);
+	safe_snprintf(b, n, "%s%s0x%08" PRIx64, f, s + !*f, (Uint64)(uintptr_t)a);
 	return b;
 }
 static int already_crashed;

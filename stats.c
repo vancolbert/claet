@@ -827,7 +827,7 @@ void get_partial_stat64(int stat_id, Uint64 value) {
 		your_info.overall_exp_next_lev = value;
 		break;
 	default:
-		LOG_ERROR("get_partial_stat64: unhandled stat_id=%d value=%llu\n", stat_id, value);
+		LOG_ERROR("get_partial_stat64: unhandled stat_id=%d value=%" PRIu64 "\n", stat_id, value);
 	}
 }
 
@@ -1026,7 +1026,7 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, Uint64 exp,
 	Uint64 l = exp_lev[clampi(lvl->base, 0, num_exp_lev - 1)];
 	pourcent = exp_next > l ? clampi(100 * subgt_u64(exp, l) / (exp_next - l), 0, 100) : 100;
 	safe_snprintf(lvlstr, sizeof(lvlstr), "%5i/%-3i", lvl->cur, lvl->base);
-	safe_snprintf(expstr, sizeof(expstr), "%10llu %12llu", exp, exp_next);
+	safe_snprintf(expstr, sizeof(expstr), "%10" PRIu64 " %12" PRIu64, exp, exp_next);
 
 	safe_snprintf(str, sizeof(str), "%-11s %-11s %-s %6i%%", lvlstr, niv_nexus, expstr, pourcent);
 
