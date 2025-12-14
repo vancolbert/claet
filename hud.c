@@ -1892,7 +1892,7 @@ CHECK_GL_ERRORS();
    			    draw_string_small_shadowed(x+gx_adjust, y+gy_adjust, (unsigned char*)str, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
 
 			int mod_width = 0;
-			if (thestat != NUM_WATCH_STAT - 2 && floatingmessages_enabled && (skill_modifier = statsinfo[thestat].skillattr->cur - statsinfo[thestat].skillattr->base)) {
+			if (thestat != NUM_WATCH_STAT - 2 && use_floating_messages && (skill_modifier = statsinfo[thestat].skillattr->cur - statsinfo[thestat].skillattr->base)) {
 				mod_width = SMALL_FONT_X_LEN * safe_snprintf(str, sizeof(str), "%+i", skill_modifier);
 				float cl[] = {1,.1f,.2f,.3f,1,.3f}, *c = cl + 3*(skill_modifier > 0);
 				draw_string_small_shadowed(-mod_width, y + gy_adjust, (Uint8 *)str, 1, c[0], c[1], c[2], 0, 0, 0);
