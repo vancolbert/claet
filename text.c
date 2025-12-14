@@ -62,7 +62,7 @@ int max_lines_to_show = 10;
 float scroll_off_secs = 3.0f;
 
 int show_timestamp = 0;
-int dedup_lookback = 10;
+int dedup_lookback = 0;
 char not_from_the_end_console=0;
 
 int dark_channeltext = 0;
