@@ -158,7 +158,7 @@ int display_session_handler(window_info *win)
 	char sessxp[128];
 	char msessxp[128];
 	char compe[32];
-	char lignecomplete[256];
+	char lignecomplete[1024];
 	char chmilliers[16];
 	char chcentaines[16];
 	int millions, milliers, nbmillions, nbmilliers, centaines;
