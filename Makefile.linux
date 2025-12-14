@@ -1,143 +1,72 @@
-.PHONY: clean release docs
-
--include make.conf
-
-# basic compiling and linking - rarely changed
-OPTIONS = -DLINUX -DELC $(foreach FEATURE, $(FEATURES), -D$(FEATURE)) -D_7ZIP_ST -DBASE_FILENAME=\"$(notdir $<)\" -I.
-
-# ajout des options nécessaires selon l'architecture (spécifiée par ARCH= ou détection auto de l'OS)
-SUBARCH := $(shell uname -m | sed -e s/i.86/x86/)
-ARCH ?= $(SUBARCH)
-ifeq ($(ARCH),x86_64)
-	PLATFORM = -march=x86-64
-#	PLATFORM = -march=k8
-#	OPTIONS += -DX86_64
-else
-ifeq ($(ARCH),ppc)
-	PLATFORM = -mpowerpc -malign-natural
-	OPTIONS += -DEL_BIG_ENDIAN
-else
-ifeq ($(ARCH),ppc_64)
-	PLATFORM = -mpowerpc
-	OPTIONS += -DEL_BIG_ENDIAN
-#	OPTIONS += -DX86_64
-endif
-endif
-endif
-
-# Si on veut utiliser gprof décommenter la ligne suivante
-#OPTIONS += -pg
-
-CFLAGS=$(PLATFORM) $(CWARN) -O0 -fexceptions -fno-strict-aliasing -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
-_CFLAGS=$(PLATFORM) -O2 -fexceptions -fno-strict-aliasing -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
-CXXFLAGS=$(PLATFORM) $(CXXWARN) -O0 -fexceptions -fno-strict-aliasing -ggdb -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
-_CXXFLAGS=$(PLATFORM) -O3 -fexceptions -fno-strict-aliasing -fomit-frame-pointer -ffast-math -pipe $(OPTIONS) $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(EXTRA_INCLUDES)
-
-PNG_SCREENSHOT_LIBS = $(shell pkg-config libpng --libs)
-LDFLAGS=$(shell sdl-config --libs) \
-	$(shell pkg-config libxml-2.0 --libs) \
-	$(shell pkg-config SDL_net --libs) \
-	$(shell pkg-config SDL_image --libs) \
-	$(shell pkg-config gl --libs) \
-	$(shell pkg-config glu --libs) \
-	$(shell pkg-config openal --libs) \
-	$(shell pkg-config vorbis --libs) \
-	$(shell pkg-config vorbisfile --libs) \
-	$(shell pkg-config zlib --libs) \
-	$(foreach FEATURE, $(FEATURES), $($(FEATURE)_LIBS)) \
-	$(shell xslt-config --libs) \
-	$(shell pkg-config x11 --libs) -lm -lstdc++
-
-_LDFLAGS=$(XDIR) -lGL -lpthread -lstdc++ -lm -ldl
-
-LIBD=../libs
-STATICLIBS=$(LIBD)/libSDL_net.a $(LIBD)/libSDL.a $(LIBD)/libSDL_image.a $(LIBD)/libopenal.a $(LIBD)/libvorbisfile.a $(LIBD)/libvorbis.a $(LIBD)/libogg.a $(LIBD)/libxml2.a $(LIBD)/libpng.a $(LIBD)/libasound.a $(LIBD)/libGLU.a $(LIBD)/libz.a $(EXTRA_STATICLIBS) -lX11
+.PHONY: clean docs
+-include make.defaults make.conf
+all :
+ARCH :=
+STATIC ?= 0
+BUILD ?= release
+LIBDIR ?= ../libs
+builds := release debug
+build := $(strip $(foreach b,${builds},$(if $(findstring ${BUILD},$b),$b)))
+$(if ${build},,$(error Invalid build type "${BUILD}", expecting one of: ${builds}))
+$(if $(shell [ $(words ${build}) -gt 1 ] && echo 1),$(error "${BUILD}" is ambiguous, expecting one of: ${builds}))
+$(if $(shell [ "${STATIC}" = 0 -o "${STATIC}" = 1 ] && echo 1),,$(error Expecting 0 or 1 for STATIC, not "${STATIC}"))
+arch := $(if ${ARCH},${ARCH},$(shell uname -m))
+static0 := shared
+static1 := static
+linkage := ${static${STATIC}}
+tag := linux.${arch}.${linkage}.${build}
+exe := le.${tag}.bin
+bdir := build.${tag}
 include objs.mk
-HEADER_DIRS = . books eye_candy io pawn fsaa engine xz cal3d
-
-
-DEP_FILES=$(foreach OBJ, $(COBJS), .deps/$(OBJ).P) $(foreach OBJ, $(CXXOBJS), .deps/$(OBJ).P)
-#(shell echo $OBJ |sed s/\.o/\.P/))
-
-EXE=le.$(ARCH).linux.bin
-
-ifndef CC
-CC=gcc
-endif
-ifndef CXX
-CXX=g++
-endif
-ifndef LINK
-LINK=gcc
-endif
-V = 0
-VERBOSE = 0
-at_0 = @
-at := $(at_$(shell echo $$(($(V)+$(VERBOSE)))))
-
-all: $(EXE)
-
-# the compile targets
-$(EXE): $(OBJS)
-	@echo "  LINK $(EXE)"
-	$(at)$(LINK) $(CFLAGS) -o $(EXE) $(OBJS) $(LDFLAGS)
-
-#recompile on Makefile or conf change
-#.depend $(OBJS): Makefile.linux make.conf
-
-DEPS_MAGIC := $(shell mkdir .deps .deps/io .deps/shader .deps/eye_candy .deps/exceptions .deps/xz .deps/xml .deps/fsaa .deps/engine .deps/cal3d > /dev/null 2>&1 || :)
-
-$(COBJS): %.o: %.c Makefile.linux make.conf
-	@echo "  CC   $@"
-	$(at)if $(CC) $(CFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
-		mv ".deps/$@.pp" ".deps/$@.P"; \
-	else rm -f ".deps/$@.pp"; exit 1; \
-	fi
-
-$(CXXOBJS): %.o: %.cpp Makefile.linux make.conf
-	@echo "  CXX  $@"
-	$(at)if $(CXX) $(CXXFLAGS) -MT '$@' -MD -MP -MF '.deps/$@.pp' -c $< -o $@; then \
-		mv ".deps/$@.pp" ".deps/$@.P"; \
-	else rm -f ".deps/$@.pp"; exit 1; \
-	fi
-
-release:
-	@$(MAKE) -f Makefile.linux 'CFLAGS=$(_CFLAGS)' 'CXXFLAGS=$(_CXXFLAGS)'
-
-static:
-	@$(MAKE) -f Makefile.linux 'CFLAGS=$(_CFLAGS)' 'CXXFLAGS=$(_CXXFLAGS)' 'LDFLAGS=$(_LDFLAGS) -lGL' 'OBJS=$(OBJS) $(STATICLIBS)' 'EXE=le.$(ARCH).static.linux.bin'
-
-clean:
-	rm -f $(OBJS) $(EXE)
-	rm -rf .deps
-
-docs:
-	cd docs && doxygen Doxyfile
-
-.depend: $(foreach HEADER_DIR, $(HEADER_DIRS), $(wildcard $(HEADER_DIR)/*.h))
-	$(CC) $(CFLAGS) -MM $(patsubst %.o, %.c, $(COBJS)) >.depend
-	$(CXX) $(CXXFLAGS) -MM $(patsubst %.o, %.cpp, $(CXXOBJS)) >>.depend
-
-make.conf: make.defaults
-	@if (test -f $@ -a '$(UPDATE_CONF)' != 'yes'); \
-	then \
-		echo '**'; \
-		echo '* WARNING: $< is newer than $@!'; \
-		echo '* Proceeding in 10 seconds, hit Ctrl-C to abort...'; \
-		echo '*'; \
-		sleep 10; \
-	else \
-		cp $< $@; \
-	fi
-
-
-pawn_scripts/features.inc: make.conf
-	echo "#if defined _features_included" > $@; \
-	echo "\t#endinput" >> $@; \
-	echo "#endif" >> $@; \
-	echo "#define _features_included" >> $@; \
-	for feature in $(FEATURES); do \
-		echo "#define $$feature" >> $@; \
-	done
-
--include $(DEP_FILES)
+objs = ${OBJS}
+cal3d_dir := cal3d_12/src
+cal3d_srcs := $(filter-out %/calxmlbindings.cpp,$(wildcard ${cal3d_dir}/cal3d/*.cpp))
+cal3d_cppflags := -I${cal3d_dir}
+objs += ${cal3d_srcs:.cpp=.o}
+-include ${objs:%.o=${bdir}/%.d}
+compiler := gcc
+cc.gcc := gcc
+cxx.gcc := g++
+ld.gcc := g++
+cc := ${cc.${compiler}}
+cxx := ${cxx.${compiler}}
+ld := ${ld.${compiler}}
+flags.x86_64 := -march=x86-64 -mtune=generic
+flags.i686 := -march=i686
+flags.ppc := -mpowerpc -malign-natural
+cppflags.ppc += -DEL_BIG_ENDIAN
+flags.ppc64 := -mpowerpc
+cppflags.ppc64 := -DEL_BIG_ENDIAN
+flags.gcc := -Wall -Werror -Wfatal-errors ${flags.${arch}} -pipe -fexceptions -fno-omit-frame-pointer -ffast-math
+flags := ${flags.${compiler}} ${FLAGS}
+cpp_file_name0 = -D__FILE_NAME__=\"$(notdir $<)\"
+cpp_has_file_name := $(shell [ $(firstword $(subst ., ,$(shell ${cc} -dumpversion))) -ge 12 ] && echo 1 || echo 0)
+ver_git := $(shell git describe --always --tag)
+cppflags.static := -DLIBXML_STATIC -DAL_LIBTYPE_STATIC
+cppflags = ${cppflags.${arch}} -DLINUX -DELC -D_7ZIP_ST ${cppflags.${linkage}} -DVER_GIT=\"${ver_git}\" $(foreach f,${FEATURES}, -D$f) ${cal3d_cppflags} ${cpp_file_name${cpp_has_file_name}} ${EXTRA_INCLUDES} ${CPPFLAGS}
+pkgs := sdl libpng libxml-2.0 SDL_net SDL_image gl glu openal vorbis vorbisfile zlib x11
+pkgs_cflags := $(foreach p,${pkgs}, $(shell pkg-config $p --cflags))
+cflags.gcc.release := -O2 -g ${flags}
+cflags.gcc.debug := -O0 -ggdb3 ${flags}
+cflags.gcc := ${cflags.gcc.${build}} ${pkgs_cflags}
+cflags := ${cflags.${compiler}} ${CFLAGS}
+cxxflags.gcc.release := -O2 -g ${flags}
+cxxflags.gcc.debug := -O0 -ggdb3 ${flags}
+cxxflags.gcc := ${cxxflags.gcc.${build}} ${pkgs_cflags} ${CXXFLAGS}
+cxxflags := ${cxxflags.${compiler}} ${CXXFLAGS}
+ldflags := -Wl,-Map=${bdir}/link.map ${ldflags.${build}} ${LDFLAGS}
+libs.shared := $(foreach p,${pkgs}, $(shell pkg-config $p --libs)) $(foreach f,${FEATURES}, ${${f}_LIBS}) -lm -lstdc++
+libnames := SDL SDL_net SDL_image openal vorbisfile vorbis ogg xml2 png asound GLU z
+libs.static := ${libnames:%=${LIBDIR}/lib%.a} ${XDIR} -lGL -lpthread -lstdc++ -lm -ldl -lX11 ${EXTRA_STATICLIBS}
+libs := ${libs.${linkage}} ${LIBS}
+compile.cxx = ${cxx} ${cxxflags} ${cppflags} -MD -MP -c $< -o $@
+compile.c = ${cc} ${cflags} ${cppflags} -MD -MP -c $< -o $@
+link = ${ld} ${ldflags} $^ ${libs} -o $@
+bdirs : ; @mkdir -p $(addprefix ${bdir}/,$(sort $(foreach o,${objs}, $(dir $o))))
+all : bdirs ${exe}
+clean : ; rm -rf ${bdir} ${exe}
+docs : ; cd docs && doxygen Doxyfile
+.SECONDEXPANSION:
+${exe} : $$(addprefix ${bdir}/,$${objs}) ; $(strip ${link})
+${bdir}/%.o : %.c ; $(strip ${compile.c})
+${bdir}/%.o : %.cpp ; $(strip ${compile.cxx})
