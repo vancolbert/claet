@@ -1124,20 +1124,11 @@ CHECK_GL_ERRORS();
 #endif //OPENGL_TRACE
 }
 
-static void draw_side_stats_bar(const int x, const int y, const int baselev, Uint64 cur_exp, Uint64 nl_exp, size_t colour)
-{
-	int len = 58;
-	Uint64 l = exp_lev[clampi(baselev, 0, num_exp_lev-1)];
-	if (nl_exp > cur_exp && nl_exp > l) {
-		len -= 58.0f * (nl_exp - cur_exp) / (nl_exp - l);
-	}
-
-	GLfloat colours[2][2][3] = { { {0.11f, 0.11f, 0.11f}, {0.3f, 0.5f, 0.2f} },
-								 { {0.10f,0.10f,0.80f}, {0.40f,0.40f,1.00f} } };
-
-	if (colour > 1)
-		colour = 0;
-
+static void draw_side_stats_bar(int x, int y, int baselev, Uint64 cur_exp, Uint64 nl_exp, int is_research) {
+	Uint64 l = exp_lev[clampi(baselev, 0, num_exp_lev-1)], d = subgt_u64(nl_exp, l), r = subgt_u64(nl_exp, cur_exp);
+	int len = 58 - (d && r ? 58 * r / d : 0);
+	GLfloat colours[3][2][3] = {{{.11f,.11f,.11f},{.3f,.5f,.2f}}, {{.1f,.1f,.8f},{.4f,.4f,1}}, {{.1f,.6f,.4f},{.1f,1,.8f}}};
+	int colour = !is_research && (!r || !d) ? 2 : is_research;
 #ifdef OPENGL_TRACE
 CHECK_GL_ERRORS();
 #endif //OPENGL_TRACE
@@ -2777,13 +2768,8 @@ void draw_exp_display()
 			unsigned char * name = statsinfo[watch_this_stats[i]-1].skillnames->shortname;
 			unsigned char * full_name = statsinfo[watch_this_stats[i]-1].skillnames->name;
 #endif //ENGLISH
-			int exp_adjusted_x_len = stats_bar_len;
 			Uint64 prev_exp = exp_lev[clampi(baselev, 0, num_exp_lev - 1)], delta_exp = subgt_u64(nl_exp, prev_exp), rem_exp = subgt_u64(nl_exp, cur_exp);
-			if (!cur_exp || !nl_exp) {
-				exp_adjusted_x_len = 0;
-			} else if (delta_exp && rem_exp) {
-				exp_adjusted_x_len -= stats_bar_len * rem_exp / delta_exp;
-			}
+			int exp_adjusted_x_len = stats_bar_len - (delta_exp && rem_exp ? stats_bar_len * rem_exp / delta_exp : 0);
 			name_x = my_exp_bar_start_x + stats_bar_len - strlen((char *)name) * SMALL_FONT_X_LEN;
 			// the the name would overlap with the icons...
 			if (name_x < icon_x)
@@ -2807,8 +2793,8 @@ void draw_exp_display()
 #endif //ENGLISH
 				}
 			}
-			float percent = delta_exp ? clampf(100 - 100.0f * rem_exp / delta_exp, 0, 100) : 100;
-			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, rem_exp, exp_adjusted_x_len, 0.1f, 0.8f, 0.1f, 0.1f, 0.4f, 0.1f);
+			float percent = delta_exp && rem_exp ? clampf(100.f - 100.f * rem_exp / delta_exp, 0, 99.9f) : 100, cl[] = {.1f,.8f,.1f,.1f,.4f,.1f,.1f,1,.8f,.1f,.6f,.4f}, *c = cl + 6*(!delta_exp || !rem_exp);
+			draw_stats_bar(my_exp_bar_start_x, exp_bar_start_y, rem_exp, exp_adjusted_x_len, c[0], c[1], c[2], c[3], c[4], c[5]);
 			// affichage du nom de la compétence sous la barre (uniquement si la barre d'icone est finie)
 			if (my_exp_bar_start_x > windows_list.window[icons_win].len_y) {
 				draw_string_small_shadowed(my_exp_bar_start_x + 3, exp_bar_start_y - 3, name, 1,1.0f,1.0f,1.0f,0.0f,0.0f,0.0f);
