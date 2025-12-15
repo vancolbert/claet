@@ -33,6 +33,7 @@ extern int show_coord_2;
 extern int rot_boussole; //Type de rotation de la boussole
 extern Uint64 exp_lev[200];
 extern int num_exp_lev;
+extern int exp_lev_version;
 #else //ENGLISH
 /*!
  * \name Quickbar defines
@@ -376,7 +377,7 @@ void set_last_heal(int quantity);
  *
  * \sa init_stuff
  */
-void build_levels_table();
+void setup_exp_lev(void);
 
 /*!
  * \ingroup windows

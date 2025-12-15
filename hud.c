@@ -82,6 +82,7 @@
 
 Uint64 exp_lev[200];
 int num_exp_lev;
+int exp_lev_version;
 #ifdef NEW_NEW_CHAR_WINDOW
 hud_interface last_interface = HUD_INTERFACE_NEW_CHAR; //Current interface (game or new character)
 #endif
@@ -2691,47 +2692,49 @@ void reset_quickbar()
 
 #endif //FR_VERSION
 
-void build_levels_table() {
-	int i;
-#ifdef SOFT_CAP
-	num_exp_lev = 101;
-	exp_lev[0] = 0;
-	exp_lev[1] = 440;
-	exp_lev[2] = 728;
-	Uint64 exp = 728;
-	for (i = 3; i < num_exp_lev; ++i) {
-		if (i <= 20) {
-			exp += (exp - exp_lev[i - 2]) * 120 / 100;
-		} else if (i <= 90) {
-			exp += (exp - exp_lev[i - 2]) * 110 / 100;
-		} else if (i <= 98) {
-			exp += (exp - exp_lev[i - 2]) * 160 / 100;
-		} else {
-			exp += (exp - exp_lev[i - 2]) * 170 / 100;
+static int fill_xptab(Uint64 *t, int n, int ver) {
+	int r = 0;
+	if (ver == 1) {
+		t[0] = 0;
+		for (Uint64 e = 100, i = 1, m = (r = min2i(n, 180)); i < m; ++i) {
+			if (i < 11) e += e * 40 / 100;
+			else if (i < 21) e += e * 30 / 100;
+			else if (i < 31) e += e * 20 / 100;
+			else if (i < 41) e += e * 14 / 100;
+			else if (i < 91) e += e * 7 / 100;
+			else e += e * 5 / 100;
+			t[i] = e;
 		}
-		exp_lev[i] = exp;
-	}
-#else
-	num_exp_lev = 180;
-	exp_lev[0] = 0;
-	Uint64 exp = 100;
-	for (i = 1; i < num_exp_lev; ++i) {
-		if (i <= 10) {
-			exp += exp * 40 / 100;
-		} else if (i <= 20) {
-			exp += exp * 30 / 100;
-		} else if (i <= 30) {
-			exp += exp * 20 / 100;
-		} else if (i <= 40) {
-			exp += exp * 14 / 100;
-		} else if (i <= 90) {
-			exp += exp * 7 / 100;
-		} else {
-			exp += exp * 5 / 100;
+	} else if (ver == 2) {
+		t[0] = 0, t[1] = 440, t[2] = 728;
+		for (Uint64 e = t[2], i = 3, m = (r = min2i(n, 101)); i < m; ++i) {
+			if (i < 21) e += (e - t[i-2]) * 120 / 100;
+			else if (i < 91) e += (e - t[i-2]) * 110 / 100;
+			else if (i < 99) e += (e - t[i-2]) * 160 / 100;
+			else e += (e - t[i-2]) * 170 / 100;
+			t[i] = e;
 		}
-		exp_lev[i] = exp;
 	}
-#endif
+	memset(t + r, 0, sizeof(*t)*(n - r));
+	return r;
+}
+
+static int match_stats_to_xptab(Uint64 *t, int n) {
+	#define x_skills(x) x(attack) x(defense) x(harvesting) x(alchemy) x(magic) x(potion) x(summoning) x(manufacturing) x(crafting)
+	#define as_mstxitem(n) {your_info.n##_skill.base, your_info.n##_exp_next_lev},
+	struct { int base; Uint64 next; } s[] = { x_skills(as_mstxitem) };
+	int r = 0;
+	for (int i = 0; !r && i < countof(s); ++i) r += s[i].base < n - 1 && t[s[i].base + 1] == s[i].next;
+	return r;
+}
+
+void setup_exp_lev(void) {
+	for (int v = 1; !exp_lev_version && v < 3; ++v) {
+		num_exp_lev = fill_xptab(exp_lev, countof(exp_lev), v);
+		if (match_stats_to_xptab(exp_lev, num_exp_lev))	exp_lev_version = v;
+	}
+	if (!exp_lev_version) exp_lev_version = 2;
+	if (!num_exp_lev) num_exp_lev = fill_xptab(exp_lev, countof(exp_lev), exp_lev_version);
 }
 
 void draw_exp_display()

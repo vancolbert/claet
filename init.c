@@ -1183,7 +1183,6 @@ void init_stuff()
 	read_bin_cfg();
  	update_loading_win(init_weather_str, 3);
 	weather_init();
-	build_levels_table();//for some HUD stuff
 
 	update_loading_win(load_icons_str, 4);
 	//load the necesary textures

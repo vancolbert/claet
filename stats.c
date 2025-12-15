@@ -285,7 +285,8 @@ void get_the_stats(Sint16 *stats)
 #endif //ENGLISH
 
 	init_session();
-        check_castability();
+	check_castability();
+	setup_exp_lev();
 }
 
 void get_partial_stat(Uint8 name,Sint32 value)
