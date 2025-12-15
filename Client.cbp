@@ -101,7 +101,6 @@
 			<Add directory="..\Librairie\LE_libs\Zlib" />
 		</Compiler>
 		<Linker>
-			<Add option="../Librairie/LE_libs/libxslt/libxslt.lib" />
 			<Add option="../Librairie/LE_libs/Xml2/libxml2.lib" />
 			<Add option="-Wl,-Map=link.map" />
 			<Add library="shell32" />
@@ -1265,6 +1264,8 @@
 		</Unit>
 		<Unit filename="xz\XzEnc.h" />
 		<Extensions>
+			<code_completion />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
