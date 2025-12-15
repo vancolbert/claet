@@ -1289,19 +1289,6 @@ int	display_stats_bar_handler(window_info *win)
 		draw_stats_bar(action_bar_start_x, action_bar_start_y, your_info.action_points.cur, action_adjusted_x_len, 0.8f, 0.3f, 0.8f, 0.5f, 0.1f, 0.5f);
 #endif //ENGLISH
 
-	draw_exp_display();
-
-	if(show_help_text && statbar_cursor_x>=0)
-	{
-		if(over_health_bar) show_help((char*)attributes.material_points.name,health_bar_start_x+stats_bar_len+10,-3);
-		else if(statbar_cursor_x>food_bar_start_x && statbar_cursor_x < food_bar_start_x+stats_bar_len) show_help((char*)attributes.food.name,food_bar_start_x+stats_bar_len+10,-3);
-		else if(statbar_cursor_x>mana_bar_start_x && statbar_cursor_x < mana_bar_start_x+stats_bar_len) show_help((char*)attributes.ethereal_points.name,mana_bar_start_x+stats_bar_len+10,-3);
-		else if(statbar_cursor_x>load_bar_start_x && statbar_cursor_x < load_bar_start_x+stats_bar_len) show_help((char*)attributes.carry_capacity.name,load_bar_start_x+stats_bar_len+10,-3);
-#ifdef ENGLISH
-		else if(show_action_bar && statbar_cursor_x>action_bar_start_x && statbar_cursor_x < action_bar_start_x+stats_bar_len) show_help((char*)attributes.action_points.name,action_bar_start_x+stats_bar_len+10,-3);
-#endif //ENGLISH
-	}
-
 #ifdef SHOW_ATTR_BOOSTED
     //Ajout stats sur le HUD
     if(show_attr_boosted)
@@ -1381,6 +1368,19 @@ int	display_stats_bar_handler(window_info *win)
         draw_string_small_shadowed(xOffsetBuff+10, food_bar_start_y+27, aura_str, 1, r_stat, g_stat, b_stat, 0.0f, 0.0f, 0.0f);
     }
 #endif //SHOW_ATTR_BOOSTED
+
+	draw_exp_display();
+
+	if(show_help_text && statbar_cursor_x>=0)
+	{
+		if(over_health_bar) show_help((char*)attributes.material_points.name,health_bar_start_x+stats_bar_len+10,-3);
+		else if(statbar_cursor_x>food_bar_start_x && statbar_cursor_x < food_bar_start_x+stats_bar_len) show_help((char*)attributes.food.name,food_bar_start_x+stats_bar_len+10,-3);
+		else if(statbar_cursor_x>mana_bar_start_x && statbar_cursor_x < mana_bar_start_x+stats_bar_len) show_help((char*)attributes.ethereal_points.name,mana_bar_start_x+stats_bar_len+10,-3);
+		else if(statbar_cursor_x>load_bar_start_x && statbar_cursor_x < load_bar_start_x+stats_bar_len) show_help((char*)attributes.carry_capacity.name,load_bar_start_x+stats_bar_len+10,-3);
+#ifdef ENGLISH
+		else if(show_action_bar && statbar_cursor_x>action_bar_start_x && statbar_cursor_x < action_bar_start_x+stats_bar_len) show_help((char*)attributes.action_points.name,action_bar_start_x+stats_bar_len+10,-3);
+#endif //ENGLISH
+	}
 
 	if (over_health_bar)
 		draw_last_health_change();
