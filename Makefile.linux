@@ -44,8 +44,12 @@ cpp_has_file_name := $(shell [ $(firstword $(subst ., ,$(shell ${cc} -dumpversio
 ver_git := $(shell git describe --always --tag)
 cppflags.static := -DLIBXML_STATIC -DAL_LIBTYPE_STATIC
 cppflags = ${cppflags.${arch}} -DLINUX -DELC -D_7ZIP_ST ${cppflags.${linkage}} -DVER_GIT=\"${ver_git}\" $(foreach f,${FEATURES}, -D$f) ${cal3d_cppflags} ${cpp_file_name${cpp_has_file_name}} ${EXTRA_INCLUDES} ${CPPFLAGS}
-pkgs := sdl libpng libxml-2.0 SDL_net SDL_image gl glu openal vorbis vorbisfile zlib x11
-pkgs_cflags := $(foreach p,${pkgs}, $(shell pkg-config $p --cflags))
+pkgs_static := SDL_net SDL_image glu libjpeg libpng libxml-2.0 openal sdl vorbis vorbisfile zlib
+pkgs_shared := gl x11
+pkgs := ${pkgs_static} ${pkgs_shared}
+pkgs_cflags.shared := $(foreach p,${pkgs}, $(shell pkgconf $p --cflags))
+pkgs_cflags.static := $(foreach p,${pkgs_static}, $(shell PKG_CONFIG_PATH=${LIBDIR}/pkgconfig pkgconf $p --cflags)) $(foreach p,${pkgs_shared}, $(shell pkgconf $p --cflags))
+pkgs_cflags := ${pkgs_cflags.${linkage}}
 cflags.gcc.release := -O2 -g ${flags}
 cflags.gcc.debug := -O0 -ggdb3 ${flags}
 cflags.gcc := ${cflags.gcc.${build}} ${pkgs_cflags}
@@ -54,10 +58,11 @@ cxxflags.gcc.release := -O2 -g ${flags}
 cxxflags.gcc.debug := -O0 -ggdb3 ${flags}
 cxxflags.gcc := ${cxxflags.gcc.${build}} ${pkgs_cflags} ${CXXFLAGS}
 cxxflags := ${cxxflags.${compiler}} ${CXXFLAGS}
-ldflags := -Wl,-Map=${bdir}/link.map ${ldflags.${build}} ${LDFLAGS}
-libs.shared := $(foreach p,${pkgs}, $(shell pkg-config $p --libs)) $(foreach f,${FEATURES}, ${${f}_LIBS}) -lm -lstdc++
-libnames := SDL SDL_net SDL_image openal vorbisfile vorbis ogg xml2 png asound GLU z
-libs.static := ${libnames:%=${LIBDIR}/lib%.a} ${XDIR} -lGL -lpthread -lstdc++ -lm -ldl -lX11 ${EXTRA_STATICLIBS}
+ldflags.static := -static-libgcc -static-libstdc++
+ldflags := ${ldflags.${linkage}} -Wl,-Map=${bdir}/link.map ${LDFLAGS}
+libnames := GLU SDL_net SDL_image SDL openal vorbisfile vorbis ogg asound xml2 jpeg png ts lzma z
+libs.shared := $(foreach p,${pkgs}, $(shell pkgconf $p --libs)) $(foreach f,${FEATURES}, ${${f}_LIBS}) -lm -lstdc++
+libs.static := ${libnames:%=${LIBDIR}/lib%.a} ${XDIR} -lGL -lpthread -lm -ldl -lX11 ${EXTRA_STATICLIBS}
 libs := ${libs.${linkage}} ${LIBS}
 compile.cxx = ${cxx} ${cxxflags} ${cppflags} -MD -MP -c $< -o $@
 compile.c = ${cc} ${cflags} ${cppflags} -MD -MP -c $< -o $@
