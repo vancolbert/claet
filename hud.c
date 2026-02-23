@@ -2692,49 +2692,66 @@ void reset_quickbar()
 
 #endif //FR_VERSION
 
-static int fill_xptab(Uint64 *t, int n, int ver) {
-	int r = 0;
-	if (ver == 1) {
-		t[0] = 0;
-		for (Uint64 e = 100, i = 1, m = (r = min2i(n, 180)); i < m; ++i) {
-			if (i < 11) e += e * 40 / 100;
-			else if (i < 21) e += e * 30 / 100;
-			else if (i < 31) e += e * 20 / 100;
-			else if (i < 41) e += e * 14 / 100;
-			else if (i < 91) e += e * 7 / 100;
-			else e += e * 5 / 100;
-			t[i] = e;
-		}
-	} else if (ver == 2) {
-		t[0] = 0, t[1] = 440, t[2] = 728;
-		for (Uint64 e = t[2], i = 3, m = (r = min2i(n, 101)); i < m; ++i) {
-			if (i < 21) e += (e - t[i-2]) * 120 / 100;
-			else if (i < 91) e += (e - t[i-2]) * 110 / 100;
-			else if (i < 99) e += (e - t[i-2]) * 160 / 100;
-			else e += (e - t[i-2]) * 170 / 100;
-			t[i] = e;
-		}
-	}
-	memset(t + r, 0, sizeof(*t)*(n - r));
-	return r;
+static inline void build_levels_table_v2(int n) {
+    Uint64 e = 728;
+    exp_lev[0] = 0;
+    exp_lev[1] = 440;
+    exp_lev[2] = 728;
+    for (int i = 3; i < n; ++i) {
+        Uint64 d = e - exp_lev[i - 2];
+        if (i <= 20) e += d * 120 / 100;
+        else if (i <= 90) e += d * 110 / 100;
+        else if (i <= 98) e += d * 160 / 100;
+        else e += d * 170 / 100;
+        exp_lev[i] = e;
+    }
 }
 
-static int match_stats_to_xptab(Uint64 *t, int n) {
+static inline void build_levels_table_v1(int n) {
+    Uint64 e = 100;
+    exp_lev[0] = 0;
+    for (int i = 1; i < n; ++i) {
+        if (i <= 10) e += e * 40 / 100;
+        else if (i <= 20) e += e * 30 / 100;
+        else if (i <= 30) e += e * 20 / 100;
+        else if (i <= 40) e += e * 14 / 100;
+        else if (i <= 90) e += e * 7 / 100;
+        else e += e * 5 / 100;
+        exp_lev[i] = e;
+    }
+}
+
+static int match_stats_to_levels_table(int n) {
 	#define x_skills(x) x(attack) x(defense) x(harvesting) x(alchemy) x(magic) x(potion) x(summoning) x(manufacturing) x(crafting)
-	#define as_mstxitem(n) {your_info.n##_skill.base, your_info.n##_exp_next_lev},
+	#define as_mstxitem(w) {your_info.w##_skill.base, your_info.w##_exp_next_lev},
 	struct { int base; Uint64 next; } s[] = { x_skills(as_mstxitem) };
-	int r = 0;
-	for (int i = 0; !r && i < countof(s); ++i) r += s[i].base < n - 1 && t[s[i].base + 1] == s[i].next;
-	return r;
+	for (int i = 0; i < countof(s); ++i) {
+		if (s[i].base < n - 1 && exp_lev[s[i].base + 1] == s[i].next) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
-void setup_exp_lev(void) {
-	for (int v = 1; !exp_lev_version && v < 3; ++v) {
-		num_exp_lev = fill_xptab(exp_lev, countof(exp_lev), v);
-		if (match_stats_to_xptab(exp_lev, num_exp_lev))	exp_lev_version = v;
+void build_levels_table(void) {
+	struct { void (*f)(int); int n; } a[] = {{0},
+		{build_levels_table_v1, 180},
+		{build_levels_table_v2, 101},
+	};
+	for (int v = 1; !exp_lev_version && v < countof(a); ++v) {
+		a[v].f(a[v].n);
+		if (match_stats_to_levels_table(a[v].n)) {
+			exp_lev_version = v;
+			num_exp_lev = a[v].n;
+		}
 	}
-	if (!exp_lev_version) exp_lev_version = 2;
-	if (!num_exp_lev) num_exp_lev = fill_xptab(exp_lev, countof(exp_lev), exp_lev_version);
+	if (!exp_lev_version) {
+		exp_lev_version = 2;
+	}
+	if (!num_exp_lev) {
+		num_exp_lev = a[exp_lev_version].n;
+		a[exp_lev_version].f(num_exp_lev);
+	}
 }
 
 void draw_exp_display()

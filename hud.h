@@ -377,7 +377,7 @@ void set_last_heal(int quantity);
  *
  * \sa init_stuff
  */
-void setup_exp_lev(void);
+void build_levels_table(void);
 
 /*!
  * \ingroup windows
