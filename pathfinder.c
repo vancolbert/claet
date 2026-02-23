@@ -25,22 +25,9 @@ static SDL_TimerID pf_movement_timer = NULL;
 	pf_open.tiles[i] = b; pf_open.tiles[j] = a;\
 }
 
-static __inline__ int pf_heuristic(int dx, int dy)
-{
-	if (dx < 0) dx = -dx;
-	if (dy < 0) dy = -dy;
-	// Grum: below heuristic overestimates the distance to the target since
-	// it doesn't take diagonal moves into account. The paths it generates
-	// may therefore be slightly too long, but it's much faster than the
-	// more accurate heuristic below (mainly because it expands fewer nodes)
-	return 10 * (dx + dy);
-#if 0
-	// Grum: Is the cost of a diagonal move really sqrt(2) times that of
-	// an aligned move? If not, the below should simply be max(dx, dy), and
-	// the cost function in pf_add_tile_to_open_list() should also be
-	// updated.
-	return dx < dy ? 14*dx + 10*(dy-dx) : 14*dy + 10*(dx-dy);
-#endif
+static __inline__ int pf_heuristic(int sx, int sy) {
+	int dx = abs(sx), dy = abs(sy);
+	return (abs(dx - dy) + 3 * (dx + dy)) / 2;
 }
 
 #ifdef  NO_PF_MACRO
