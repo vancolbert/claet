@@ -24,10 +24,12 @@ static SDL_TimerID pf_movement_timer = NULL;
 	a->open_pos = j; b->open_pos = i;\
 	pf_open.tiles[i] = b; pf_open.tiles[j] = a;\
 }
+#define COST_ADJACENT 10
+#define COST_DIAGONAL 14
 
 static __inline__ int pf_heuristic(int sx, int sy) {
 	int dx = abs(sx), dy = abs(sy);
-	return dx + dy - min2i(dx, dy);
+	return COST_ADJACENT * (dx + dy) + (COST_DIAGONAL - 2*COST_ADJACENT) * min2i(dx, dy);
 }
 
 #ifdef  NO_PF_MACRO
@@ -86,12 +88,10 @@ static void pf_add_tile_to_open_list(PF_TILE *current, PF_TILE *neighbour)
 	{
 		int f, g, h;
 		int diagonal = (neighbour->x != current->x && neighbour->y != current->y);
-
-#ifdef	FUZZY_PATHS
-		g = current->g + (diagonal ? 14 : 10) + rand()%3;
-#else	//FUZZY_PATHS
-		g = current->g + (diagonal ? 14 : 10);
-#endif	//FUZZY_PATHS
+		g = current->g + (diagonal ? COST_DIAGONAL : COST_ADJACENT);
+#ifdef FUZZY_PATHS
+		g += rand() % 3;
+#endif
 		h = PF_HEUR(neighbour, pf_dst_tile);
 		f = g + h;
 
