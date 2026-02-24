@@ -27,7 +27,7 @@ static SDL_TimerID pf_movement_timer = NULL;
 
 static __inline__ int pf_heuristic(int sx, int sy) {
 	int dx = abs(sx), dy = abs(sy);
-	return (abs(dx - dy) + 3 * (dx + dy)) / 2;
+	return dx + dy - min2i(dx, dy);
 }
 
 #ifdef  NO_PF_MACRO
