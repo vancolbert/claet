@@ -45,7 +45,7 @@
 			<Add option="-DWINVER=0x0501" />
 			<Add option="-DELC" />
 			<Add option="-DCLUSTER_INSIDES" />
-			<Add option="-DFUZZY_PATHS" />
+			<!--<Add option="-DFUZZY_PATHS" />-->
 			<Add option="-DNEW_SOUND" />
 			<Add option="-DLARGE_TEXTURES" />
 			<Add option="-DPNG_SCREENSHOT" />
