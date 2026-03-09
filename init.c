@@ -1416,13 +1416,4 @@ void init_stuff()
 	popup_init();
 
 	LOG_DEBUG("Init done!");
-	LOG_TO_CONSOLE(c_yellow2, "ATTENTION: Ceci est une version du programme non officielle, fournie pour tester.");
-	LOG_TO_CONSOLE(c_red2, "");
-	LOG_TO_CONSOLE(c_red2, "   ***   Il n'y a aucune garantie de stabilité ou exactitude.   ***");
-	LOG_TO_CONSOLE(c_red2, "");
-	LOG_TO_CONSOLE(c_yellow2, "En cas de problème ou si vous avez des questions, faites signaler sur le forum ou github:");
-	LOG_TO_CONSOLE(c_grey1, "");
-	LOG_TO_CONSOLE(c_grey1, "   https://www.landes-eternelles.com/phpBB/viewtopic.php?f=104&t=37323");
-	LOG_TO_CONSOLE(c_grey1, "   https://github.com/vancolbert/claet");
-	LOG_TO_CONSOLE(c_grey1, "");
 }
