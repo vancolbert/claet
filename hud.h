@@ -369,16 +369,7 @@ void set_last_damage(int quantity);
  */
 void set_last_heal(int quantity);
 
-/*!
- * \ingroup other
- * \brief   Initializes the levels table.
- *
- *      Initializes the experience levels table.
- *
- * \sa init_stuff
- */
-void build_levels_table(void);
-
+void detect_level_table(void);
 /*!
  * \ingroup windows
  * \brief	Sets the flag of the given window

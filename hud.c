@@ -2733,25 +2733,20 @@ static int match_stats_to_levels_table(int n) {
 	return 0;
 }
 
-void build_levels_table(void) {
-	struct { void (*f)(int); int n; } a[] = {{0},
-		{build_levels_table_v1, 180},
-		{build_levels_table_v2, 101},
-	};
-	for (int v = 1; !exp_lev_version && v < countof(a); ++v) {
+void detect_level_table(void) {
+	struct { void (*f)(int); int n; } a[] = {{0}, {build_levels_table_v1, 180}, {build_levels_table_v2, 101}};
+	for (int v = 1; v < countof(a); ++v) {
 		a[v].f(a[v].n);
 		if (match_stats_to_levels_table(a[v].n)) {
 			exp_lev_version = v;
 			num_exp_lev = a[v].n;
+			break;
 		}
 	}
-	if (!exp_lev_version) {
-		exp_lev_version = 2;
-	}
-	if (!num_exp_lev) {
-		num_exp_lev = a[exp_lev_version].n;
-		a[exp_lev_version].f(num_exp_lev);
-	}
+	if (!exp_lev_version) exp_lev_version = 1;
+	num_exp_lev = a[exp_lev_version].n;
+	memset(exp_lev, 0, sizeof(exp_lev));
+	a[exp_lev_version].f(num_exp_lev);
 }
 
 void draw_exp_display()

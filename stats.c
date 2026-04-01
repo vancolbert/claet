@@ -286,7 +286,7 @@ void get_the_stats(Sint16 *stats)
 
 	init_session();
 	check_castability();
-	build_levels_table();
+	detect_level_table();
 }
 
 void get_partial_stat(Uint8 name,Sint32 value)
