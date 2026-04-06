@@ -170,7 +170,7 @@ Uint32 check_misc(Uint32 interval, void * data)
 
 	if(countdown>0)
 	{
-		countdown --;
+		countdown = 0;
 	}
 	if (update_countdown > 0)
 	{
