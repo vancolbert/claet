@@ -7,6 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="RELEASE">
+				<Option platforms="Windows;" />
 				<Option output="..\Client\Client" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="..\Client" />
 				<Option type="0" />
@@ -14,64 +15,29 @@
 				<Option projectResourceIncludeDirsRelation="0" />
 				<Compiler>
 					<Add option="-march=i686" />
-					<Add option="-Os" />
-					<Add option="-O3" />
-					<Add option="-Wall" />
 					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-O2 -g -fno-omit-frame-pointer" />
 				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 			<Target title="DEBUG">
 				<Option platforms="Windows;" />
-				<Option output="..\Client\Client_debug" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="E:\landes_eternelles\Client" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option parameters="test" />
-				<Compiler>
-					<Add option="-march=i686" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-W" />
-				</Compiler>
-			</Target>
-			<Target title="DEBUG_ERROR">
-				<Option platforms="Windows;" />
-				<Option output="..\Client\Client_debug" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="E:\landes_eternelles\Client" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option parameters="test" />
-				<Compiler>
-					<Add option="-march=i686" />
-					<Add option="-w" />
-					<Add option="-g" />
-				</Compiler>
-			</Target>
-			<Target title="RCM">
-				<Option output="..\Client\Client_rcm" prefix_auto="1" extension_auto="1" />
+				<Option output="..\Client\Client-debug" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="..\Client" />
+				<Option object_output=".objs-debug" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option projectResourceIncludeDirsRelation="0" />
+				<Option parameters="test" />
 				<Compiler>
 					<Add option="-march=i686" />
-					<Add option="-Os" />
-					<Add option="-O3" />
 					<Add option="-Wall" />
-					<Add option="-W" />
-					<Add option="-DFR_RCM_WRAITH" />
+					<Add option="-O0 -g" />
 				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-march=i686" />
-			<Add option="-Wall" />
+			<Add option="-std=c99" />
 			<Add option="-D_WIN32" />
 			<Add option="-D__MINGW32__" />
 			<Add option="-D__WIN32__" />
@@ -79,7 +45,7 @@
 			<Add option="-DWINVER=0x0501" />
 			<Add option="-DELC" />
 			<Add option="-DCLUSTER_INSIDES" />
-			<Add option="-DFUZZY_PATHS" />
+			<!--<Add option="-DFUZZY_PATHS" />-->
 			<Add option="-DNEW_SOUND" />
 			<Add option="-DLARGE_TEXTURES" />
 			<Add option="-DPNG_SCREENSHOT" />
@@ -113,6 +79,12 @@
 			<Add option="-DTOO_MANY_SPELL_BUG_PATCH" />
 			<Add option="-DFR_NECRO_RECETTES" />
 			<Add option="-DADD_SPELL_EFFECT_IMU_RESI_MAGIE" />
+			<Add option="-DSELECT_WITH_MOUSE_ON_BANNER" />
+			<Add option="-DINGENIERIE" />
+			<Add option="-DNEW_EFFECT_ADA_SWORD" />
+			<Add option="-DFR_MORE_MQB" />
+			<Add option="-DSOFT_CAP" />
+			<Add option='-DVER_GIT=\&quot;cb8-$(TDAY)\&quot;' />
 			<Add directory="..\Librairie\LE_libs\Iconv" />
 			<Add directory="..\Librairie\LE_libs\SDL-1.2.14\include" />
 			<Add directory="..\Librairie\LE_libs\SDL_net\include" />
@@ -129,8 +101,8 @@
 			<Add directory="..\Librairie\LE_libs\Zlib" />
 		</Compiler>
 		<Linker>
-			<Add option="../Librairie/LE_libs/libxslt/libxslt.lib" />
 			<Add option="../Librairie/LE_libs/Xml2/libxml2.lib" />
+			<Add option="-Wl,-Map=link.map" />
 			<Add library="shell32" />
 			<Add library="libogg" />
 			<Add library="libvorbisfile" />
@@ -148,6 +120,7 @@
 			<Add library="png13" />
 			<Add library="zlib1" />
 			<Add library="SDL_image" />
+			<Add library="imagehlp" />
 			<Add directory="..\Librairie\LE_libs\Cal3d" />
 			<Add directory="..\Librairie\LE_libs\Iconv" />
 			<Add directory="..\Librairie\LE_libs\Ogg" />
@@ -189,8 +162,6 @@
 		<Unit filename="Makefile.win">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="achievements.cpp" />
-		<Unit filename="achievements.h" />
 		<Unit filename="actor_init.cpp" />
 		<Unit filename="actor_init.h">
 			<Option compilerVar="CC" />
@@ -826,9 +797,8 @@
 		<Unit filename="loginwin.h">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="main.cpp" />
+		<Unit filename="main.h" />
 		<Unit filename="make.defaults">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
@@ -1296,13 +1266,6 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
-			<AutoVersioning>
-				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
-				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
-				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
-				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
-			</AutoVersioning>
-			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

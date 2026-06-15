@@ -83,6 +83,7 @@ x(K_OPAQUEWIN, CTRL|'d', "Fonds de fenêtres opaques") \
 x(K_GRAB_MOUSE, ALT|'g', "Contrôle souris caméra ou IHM") \
 x(K_FIRST_PERSON, ALT|'f', "Point de vue du personnage") \
 x(K_EXTEND_CAM, ALT|'e', "Caméra étendu") \
+x(K_FULLSCREEN, ALT|SDLK_RETURN, "Basculer en mode plein écran") \
 x(K_CUT, CTRL|'x', "Couper texte au presse-papier") \
 x(K_COPY, CTRL|'c', "Copier texte au presse-papier") \
 x(K_PASTE, CTRL|'v', "Coller texte du presse-papier") \

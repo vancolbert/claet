@@ -1846,6 +1846,10 @@ static int reload_skins(char *t, int l) {
 	unload_actor_texture_cache();
 	return 1;
 }
+static int reload_keys(char *t, int l) {
+	read_key_config();
+	return 1;
+}
 
 #ifdef FR_VERSION
 int command_salut (char * text, int len)
@@ -2069,6 +2073,7 @@ add_command("horse", &horse_cmd);
 	add_command(cmd_glinfo, &command_glinfo);
 	add_command(cmd_knowledge_short, &knowledge_command);
 	add_command(cmd_knowledge, &knowledge_command);
+	add_command("anoroc", &command_show_hunt_quest);
 #ifdef DEBUG
 	add_command("log conn data", &command_log_conn_data);
 #endif //DEBUG
@@ -2142,6 +2147,7 @@ add_command("horse", &horse_cmd);
 #endif //ENGLISH
 	add_command(cmd_reload_icons, &reload_icon_window);
 	add_command("reload_skins", &reload_skins);
+	add_command("reload_keys", &reload_keys);
 	add_command(cmd_open_url, &command_open_url);
 	add_command(cmd_show_spell, &command_show_spell);
 	add_command(cmd_cast_spell, &command_cast_spell);

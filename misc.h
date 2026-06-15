@@ -12,8 +12,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef const char *cstr;
-#define countof(a) (sizeof(a)/sizeof(*a))
+#include "global.h"
 
 #define BUTTONRADIUS 15
 
@@ -37,6 +36,11 @@ static __inline__ Uint32 unpack_u32_le(const void *p) {
 	Uint32 a = u[0], b = u[1], c = u[2], d = u[3];
 	return a | b<<8 | c<<16 | d<<24;
 }
+static __inline__ Uint64 unpack_u64_le(const void *p) {
+	const Uint8 *u = (const Uint8 *)p;
+	Uint64 a = u[0], b = u[1], c = u[2], d = u[3], e = u[4], f = u[5], g = u[6], h = u[7];
+	return a | b<<8 | c<<16 | d<<24 | e<<32| f<<40 | g<<48 | h<<56;
+}
 static __inline__ float unpack_f32_le(const void *p) {
 	float t;
 	memcpy(&t, p, sizeof(t));
@@ -53,6 +57,17 @@ static __inline__ void pack_u32_le(void *p, Uint32 v) {
 	o[1] = v >> 8;
 	o[2] = v >> 16;
 	o[3] = v >> 24;
+}
+static __inline__ void pack_u64_le(void *p, Uint64 v) {
+	Uint8 *o = (Uint8 *)p;
+	o[0] = v;
+	o[1] = v >> 8;
+	o[2] = v >> 16;
+	o[3] = v >> 24;
+	o[4] = v >> 32;
+	o[5] = v >> 40;
+	o[6] = v >> 48;
+	o[7] = v >> 56;
 }
 #ifdef _MSC_VER
 #include <math.h>
@@ -321,6 +336,8 @@ static __inline__ unsigned max2u (unsigned x, unsigned y)
 {
 	return (x >= y)? x : y;
 }
+static inline u64 min2q(u64 a, u64 b) { return a < b ? a : b; }
+static inline u64 max2q(u64 a, u64 b) { return a > b ? a : b; }
 
 static __inline__ float min2f (float x, float y)
 {
@@ -336,6 +353,8 @@ static __inline__ float max3f (float x, float y, float z)
 {
 	return max2f(x, max2f(y, z));
 }
+static inline f64 min2d(f64 a, f64 b) { return a < b ? a : b; }
+static inline f64 max2d(f64 a, f64 b) { return a > b ? a : b; }
 
 static __inline__ unsigned clampu(unsigned x, unsigned l, unsigned u)
 {
@@ -351,6 +370,8 @@ static __inline__ float clampf(float x, float l, float u)
 {
 	return min2f(max2f(x,l),u);
 }
+
+static __inline__ Uint64 subgt_u64(Uint64 a, Uint64 b) { return a > b ? a - b : 0; }
 
 /*! @} */
 

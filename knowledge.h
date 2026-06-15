@@ -24,22 +24,18 @@ typedef struct
 	Uint8 mouse_over; /*!< flag, indicating whether the mouse is over an entry in the knowledge window */
 	char name[KNOWLEDGE_NAME_SIZE]; /*!< name of the knowledge */
 	Uint8 has_book; /*!< flag, indicating whether the knowledge item has an assosiated book */
-#ifndef ENGLISH
 	Uint8 is_stored; /*!< flag, indicating whether the knowledge item can be stored */
     Uint8 affiche; /*!< flag indiquant si la connaissance doit etre affiche ou non */
     Uint8 type;
     Uint16 id;
     Uint8 click;
-#endif //ENGLISH
 }knowledge;
 
-#ifndef ENGLISH
 typedef struct
 {
 	char * nom;
 	int numero;
 } translation_categ;
-#endif //ENGLISH
 
 /*!
  * \name windows handlers
@@ -55,7 +51,6 @@ extern knowledge knowledge_list[KNOWLEDGE_LIST_SIZE]; /*!< global array of knowl
 extern char knowledge_string[400];
 extern int	knowledge_count;
 
-#ifndef ENGLISH
 /*!
  * \ingroup knowledge_window
  * \brief   Initialise la liste des categories
@@ -65,8 +60,7 @@ extern int	knowledge_count;
  *
  * \callgraph
  */
-void init_categories();
-#endif //ENGLISH
+void init_categories(void);
 
 /*!
  * \ingroup knowledge_window
@@ -76,22 +70,8 @@ void init_categories();
  *
  * \callgraph
  */
-void display_knowledge();
-
-//int knowledge_mouse_over();
-//int check_knowledge_interface();
-
-/*!
- * \ingroup knowledge_window
- * \brief   Gets the known knowledges from the \a list and stores the state in \ref knowledge_list.
- *
- *      Gets the known knowledges from the given \a list and stores the state in \ref knowledge_list.
- *
- * \param size  the size of \a list
- * \param list  a list of knowledges that are already known by the player.
- *
- */
-void get_knowledge_list (Uint16 size, const char *list);
+void display_knowledge(void);
+void get_knowledge_list(int size, const u8 *bits);
 
 /*!
  * \ingroup knowledge_window
@@ -110,11 +90,11 @@ void get_new_knowledge(Uint16 idx);
  * \ingroup knowledge_window
  * \brief Sets the window handler functions for the knowledge window
  *
- * 	Sets the \ref ELW_HANDLER_DISPLAY, \ref ELW_HANDLER_CLICK and \ref ELW_HANDLER_MOUSEOVER event handler functions for the knowledge window.
+ * Sets the \ref ELW_HANDLER_DISPLAY, \ref ELW_HANDLER_CLICK and \ref ELW_HANDLER_MOUSEOVER event handler functions for the knowledge window.
  *
  * \callgraph
  */
-void fill_knowledge_win ();
+void fill_knowledge_win(void);
 
 /*!
  * \ingroup knowledge_window
@@ -122,7 +102,7 @@ void fill_knowledge_win ();
  *
  * \callgraph
  */
-void check_book_known();
+void check_book_known(void);
 
 /*!
  * \ingroup knowledge_window

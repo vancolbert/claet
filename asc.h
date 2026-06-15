@@ -144,6 +144,13 @@ char* safe_strncpy2(char *dest, const char * source, const size_t dest_len, cons
  * \param	... arguments to be passed to snprintf
  */
 int safe_snprintf(char *dest, const size_t len, const char* format, ...) CHECK_PRINTF(3);
+#define aprintf(a, f, ...) safe_snprintf(a, sizeof(a) - 1, f, ##__VA_ARGS__)
+#define copy_lstr_to_array(l, s, a) do { \
+	u32 _M_l = (l), _M_n = min2u(sizeof(a) - 1, _M_l); \
+	memcpy(a, s, _M_n); \
+	a[_M_n] = 0; \
+} while (0)
+#define copy_cstr_to_array(s, a) copy_lstr_to_array(strlen((cstr)(s)), s, a)
 
 /*!
  * \ingroup     misc_utils

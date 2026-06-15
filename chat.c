@@ -2558,301 +2558,162 @@ CHECK_GL_ERRORS();
 	return 1;
 }
 
-#ifndef ENGLISH
-int add_tab_button (Uint8 channel)
-{
+int add_tab_button(Uint8 channel) {
 	int itab_1, itab_2;
 	const char *label;
 	chan_name *chan;
-
-	for (itab_1 = 0; itab_1 < nb_tab_button_1; itab_1++)
-	{
-		if (tabs_1[itab_1].channel == channel)
-        {
+	for (itab_1 = 0; itab_1 < nb_tab_button_1; itab_1++) {
+		if (tabs_1[itab_1].channel == channel) {
 			// already there
 			return itab_1;
-        }
+		}
 	}
-	for (itab_2 = 0; itab_2 < nb_tab_button_2; itab_2++)
-	{
-		if (tabs_2[itab_2].channel == channel)
-        {
+	for (itab_2 = 0; itab_2 < nb_tab_button_2; itab_2++) {
+		if (tabs_2[itab_2].channel == channel) {
 			// already there
 			return itab_2;
-        }
+		}
 	}
-	if (tabs_in_use >= MAX_CHAT_TABS)
+	if (tabs_in_use >= MAX_CHAT_TABS) {
 		// no more room. Shouldn't happen anyway.
 		return -1;
-
-    // La taille des canaux est plus grande que la largeur de l'affichage
-    // on passe sur la deuxieme ligne
-    if ((window_width-hud_x < tab_bar_width_1+(Uint16)(strlen(tab_label(channel)->name) * 11 * 0.75) + 30*0.75) && changement_barre == 0)
-    {
-    	tabs_2[nb_tab_button_2].channel = channel;
-    	tabs_2[nb_tab_button_2].highlighted = 0;
-    	chan = tab_label (channel);
-    	if(chan == NULL){
-    		return -1;
-    	}
-    	label = chan->name;
-    	tabs_2[nb_tab_button_2].description = chan->description;
-    }
-    else
-    {
-    	tabs_1[nb_tab_button_1].channel = channel;
-    	tabs_1[nb_tab_button_1].highlighted = 0;
-    	chan = tab_label (channel);
-    	if(chan == NULL){
-    		return -1;
-    	}
-    	label = chan->name;
-    	tabs_1[nb_tab_button_1].description = chan->description;
-        changement_barre = 1;
-    }
-
-    // La taille des canaux est plus grande que la largeur de l'affichage
-    // on passe sur la deuxieme ligne
-    if ((window_width-hud_x < tab_bar_width_1+(Uint16)(strlen(tab_label(channel)->name) * 11 * 0.75) + 30*0.75) && changement_barre == 0)
-    {
-        // La deuxieme ligne n'est pas encore cree
-	    if (tab_bar_win_2 < 0)
-    	{
-    		create_tab_bar ();
-    	}
-	    tabs_2[nb_tab_button_2].button = button_add_extended (tab_bar_win_2, cur_button_id_2++, NULL, tab_bar_width_2, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
-    }
-    else // La taille est inferieur, on contiue sur la premiere ligne
-    {
-	    tabs_1[nb_tab_button_1].button = button_add_extended (tab_bar_win_1, cur_button_id_1++, NULL, tab_bar_width_1, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
-    }
-
-    if(channel == CHAT_HIST || channel == CHAT_LIST) {
-		//a couple of special cases
-		widget_set_OnClick (tab_bar_win_1, tabs_1[itab_1].button, tab_special_click);
-		widget_set_color (tab_bar_win_1, tabs_1[itab_1].button, 0.5f, 0.75f, 1.0f);
-	} else {
-		//general case
-        if (nb_ligne_tabs == 1 || changement_barre == 1)
-        {
-		    widget_set_OnClick (tab_bar_win_1, tabs_1[itab_1].button, tab_bar_button_click_1);
-        }
-        else if (nb_ligne_tabs == 2 && changement_barre == 0)
-        {
-		    widget_set_OnClick (tab_bar_win_2, tabs_2[itab_2].button, tab_bar_button_click_2);
-        }
 	}
-
-    if (nb_ligne_tabs == 1 || changement_barre == 1)
-    {
-	    widget_set_OnMouseover (tab_bar_win_1, tabs_1[itab_1].button, chan_tab_mouseover_handler_1);
-    	widget_set_type(tab_bar_win_1, tabs_1[itab_1].button, &square_button_type);
-    }
-    else if (nb_ligne_tabs == 2 && changement_barre == 0)
-    {
-	    widget_set_OnMouseover (tab_bar_win_2, tabs_2[itab_2].button, chan_tab_mouseover_handler_2);
-    	widget_set_type(tab_bar_win_2, tabs_2[itab_2].button, &square_button_type);
-    }
- 	// Handlers for the 'x'
- 	// Make sure it's a CHANNEL first
-
-    if (nb_ligne_tabs == 1 || changement_barre == 1)
-    {
-        if(tabs_1[itab_1].channel == CHAT_CHANNEL1 || tabs_1[itab_1].channel == CHAT_CHANNEL2 ||
-     	   tabs_1[itab_1].channel == CHAT_CHANNEL3 || tabs_1[itab_1].channel == CHAT_CHANNEL4 ||
-           tabs_1[itab_1].channel == CHAT_CHANNEL5)
-        {
-     		widget_set_OnDraw (tab_bar_win_1, tabs_1[itab_1].button, draw_tab_details);
-        }
-    }
-    else if (nb_ligne_tabs == 2 && changement_barre == 0)
-    {
-        if(tabs_2[itab_2].channel == CHAT_CHANNEL1 || tabs_2[itab_2].channel == CHAT_CHANNEL2 ||
-     	   tabs_2[itab_2].channel == CHAT_CHANNEL3 || tabs_2[itab_2].channel == CHAT_CHANNEL4 ||
-           tabs_2[itab_2].channel == CHAT_CHANNEL5)
-        {
-     		widget_set_OnDraw (tab_bar_win_2, tabs_2[itab_2].button, draw_tab_details);
-        }
-    }
-
-    if (nb_ligne_tabs == 1 || changement_barre == 1)
-    {
-	    tab_bar_width_1 += widget_get_width (tab_bar_win_1, tabs_1[nb_tab_button_1].button)+1;
-    	resize_window (tab_bar_win_1, tab_bar_width_1, tab_bar_height);
-        nb_tab_button_1++;
-    }
-    else if (nb_ligne_tabs == 2 && changement_barre == 0)
-    {
-    	tab_bar_width_2 += widget_get_width (tab_bar_win_2, tabs_2[nb_tab_button_2].button)+1;
-    	resize_window (tab_bar_win_2, tab_bar_width_2, tab_bar_height);
-        nb_tab_button_2++;
-    }
-
-    changement_barre = 0;
-	tabs_in_use++;
-	return tabs_in_use - 1;
-}
-
-#else //ENGLISH
-int add_tab_button (Uint8 channel)
-{
-	int itab;
-	const char *label;
-	chan_name *chan;
-
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-		if (tabs[itab].channel == channel)
-			// already there
-			return itab;
-	}
-
-	if (tabs_in_use >= MAX_CHAT_TABS)
-		// no more room. Shouldn't happen anyway.
-		return -1;
-
-	tabs[tabs_in_use].channel = channel;
-	tabs[tabs_in_use].highlighted = 0;
-	chan = tab_label (channel);
-	if(chan == NULL){
-		return -1;
-	}
+	// La taille des canaux est plus grande que la largeur de l'affichage
+	// on passe sur la deuxieme ligne
+	chan = tab_label(channel);
+	if (!chan || !chan->name) return -1;
 	label = chan->name;
-	tabs[tabs_in_use].description = chan->description;
-
-	tabs[tabs_in_use].button = button_add_extended (tab_bar_win, cur_button_id++, NULL, tab_bar_width, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
-	if(channel == CHAT_HIST || channel == CHAT_LIST) {
+	int l = strlen(label), w = tab_bar_width_1 + l*11*0.75 + 30*0.75;
+	if (window_width - hud_x < w && !changement_barre) {
+		tabs_2[nb_tab_button_2].channel = channel;
+		tabs_2[nb_tab_button_2].highlighted = 0;
+		tabs_2[nb_tab_button_2].description = chan->description;
+	} else {
+		tabs_1[nb_tab_button_1].channel = channel;
+		tabs_1[nb_tab_button_1].highlighted = 0;
+		tabs_1[nb_tab_button_1].description = chan->description;
+		changement_barre = 1;
+	}
+	// La taille des canaux est plus grande que la largeur de l'affichage
+	// on passe sur la deuxieme ligne
+	if (window_width - hud_x < w && !changement_barre) {
+		// La deuxieme ligne n'est pas encore cree
+		if (tab_bar_win_2 < 0) {
+			create_tab_bar();
+		}
+		tabs_2[nb_tab_button_2].button = button_add_extended(tab_bar_win_2, cur_button_id_2++, NULL, tab_bar_width_2, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
+	} else { // La taille est inferieur, on contiue sur la premiere ligne
+		tabs_1[nb_tab_button_1].button = button_add_extended(tab_bar_win_1, cur_button_id_1++, NULL, tab_bar_width_1, 0, 0, tab_bar_height, 0, 0.75, 0.77f, 0.57f, 0.39f, label);
+	}
+	if (channel == CHAT_HIST || channel == CHAT_LIST) {
 		//a couple of special cases
-		widget_set_OnClick (tab_bar_win, tabs[itab].button, tab_special_click);
-		widget_set_color (tab_bar_win, tabs[itab].button, 0.5f, 0.75f, 1.0f);
+		widget_set_OnClick(tab_bar_win_1, tabs_1[itab_1].button, tab_special_click);
+		widget_set_color(tab_bar_win_1, tabs_1[itab_1].button, 0.5f, 0.75f, 1.0f);
 	} else {
 		//general case
-		widget_set_OnClick (tab_bar_win, tabs[itab].button, tab_bar_button_click);
+		if (nb_ligne_tabs == 1 || changement_barre == 1) {
+			widget_set_OnClick(tab_bar_win_1, tabs_1[itab_1].button, tab_bar_button_click_1);
+		} else if (nb_ligne_tabs == 2 && changement_barre == 0) {
+			widget_set_OnClick(tab_bar_win_2, tabs_2[itab_2].button, tab_bar_button_click_2);
+		}
 	}
-	widget_set_OnMouseover (tab_bar_win, tabs[itab].button, chan_tab_mouseover_handler);
-	widget_set_type(tab_bar_win, tabs[itab].button, &square_button_type);
- 	// Handlers for the 'x'
- 	// Make sure it's a CHANNEL first
- 	if(tabs[itab].channel == CHAT_CHANNEL1 || tabs[itab].channel == CHAT_CHANNEL2 ||
- 	   tabs[itab].channel == CHAT_CHANNEL3)
- 	{
- 		widget_set_OnDraw (tab_bar_win, tabs[itab].button, draw_tab_details);
- 	}
-	tab_bar_width += widget_get_width (tab_bar_win, tabs[tabs_in_use].button)+1;
-	resize_window (tab_bar_win, tab_bar_width, tab_bar_height);
-
+	if (nb_ligne_tabs == 1 || changement_barre == 1) {
+		widget_set_OnMouseover(tab_bar_win_1, tabs_1[itab_1].button, chan_tab_mouseover_handler_1);
+		widget_set_type(tab_bar_win_1, tabs_1[itab_1].button, &square_button_type);
+	} else if (nb_ligne_tabs == 2 && changement_barre == 0) {
+		widget_set_OnMouseover(tab_bar_win_2, tabs_2[itab_2].button, chan_tab_mouseover_handler_2);
+		widget_set_type(tab_bar_win_2, tabs_2[itab_2].button, &square_button_type);
+	}
+	// Handlers for the 'x'
+	// Make sure it's a CHANNEL first
+	if (nb_ligne_tabs == 1 || changement_barre == 1) {
+		if (tabs_1[itab_1].channel == CHAT_CHANNEL1 || tabs_1[itab_1].channel == CHAT_CHANNEL2 || tabs_1[itab_1].channel == CHAT_CHANNEL3 || tabs_1[itab_1].channel == CHAT_CHANNEL4 || tabs_1[itab_1].channel == CHAT_CHANNEL5) {
+			widget_set_OnDraw(tab_bar_win_1, tabs_1[itab_1].button, draw_tab_details);
+		}
+	} else if (nb_ligne_tabs == 2 && changement_barre == 0) {
+		if (tabs_2[itab_2].channel == CHAT_CHANNEL1 || tabs_2[itab_2].channel == CHAT_CHANNEL2 || tabs_2[itab_2].channel == CHAT_CHANNEL3 || tabs_2[itab_2].channel == CHAT_CHANNEL4 || tabs_2[itab_2].channel == CHAT_CHANNEL5) {
+			widget_set_OnDraw(tab_bar_win_2, tabs_2[itab_2].button, draw_tab_details);
+		}
+	}
+	if (nb_ligne_tabs == 1 || changement_barre == 1) {
+		tab_bar_width_1 += widget_get_width(tab_bar_win_1, tabs_1[nb_tab_button_1].button) + 1;
+		resize_window(tab_bar_win_1, tab_bar_width_1, tab_bar_height);
+		nb_tab_button_1++;
+	} else if (nb_ligne_tabs == 2 && changement_barre == 0) {
+		tab_bar_width_2 += widget_get_width(tab_bar_win_2, tabs_2[nb_tab_button_2].button) + 1;
+		resize_window(tab_bar_win_2, tab_bar_width_2, tab_bar_height);
+		nb_tab_button_2++;
+	}
+	changement_barre = 0;
 	tabs_in_use++;
 	return tabs_in_use - 1;
 }
-#endif //ENGLISH
 
-#ifndef ENGLISH
-void remove_tab_button (Uint8 channel, int ligne)
-{
+void remove_tab_button(Uint8 channel, int ligne) {
 	int itab, w;
-
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-        if (ligne == 1)
-        {
-		    if (tabs_1[itab].channel == channel)
-    			break;
-        }
-        else if (ligne == 2)
-        {
-		    if (tabs_2[itab].channel == channel)
-			    break;
-        }
+	for (itab = 0; itab < tabs_in_use; itab++) {
+		if (ligne == 1) {
+			if (tabs_1[itab].channel == channel) {
+				break;
+			}
+		} else if (ligne == 2) {
+			if (tabs_2[itab].channel == channel) {
+				break;
+			}
+		}
 	}
-	if (itab >= tabs_in_use) return;
-
-    if (ligne == 1)
-    {
-	    w = widget_get_width (tab_bar_win_1, tabs_1[itab].button)+1;
-    	widget_destroy (tab_bar_win_1, tabs_1[itab].button);
-    	for (++itab; itab < nb_tab_button_1; itab++)
-    	{
-    		widget_move_rel (tab_bar_win_1, tabs_1[itab].button, -w, 0);
-    		tabs_1[itab-1] = tabs_1[itab];
-    	}
-    	tabs_in_use--;
-        nb_tab_button_1--;
-
-    	tab_bar_width_1 -= w;
-    	resize_window (tab_bar_win_1, tab_bar_width_1, tab_bar_height);
-
-        // Il y a assez de place pour passer le premier canal de la deuxieme ligne sur la premiere
+	if (itab >= tabs_in_use) {
+		return;
+	}
+	if (ligne == 1) {
+		w = widget_get_width(tab_bar_win_1, tabs_1[itab].button) + 1;
+		widget_destroy(tab_bar_win_1, tabs_1[itab].button);
+		for (++itab; itab < nb_tab_button_1; itab++) {
+			widget_move_rel(tab_bar_win_1, tabs_1[itab].button, -w, 0);
+			tabs_1[itab - 1] = tabs_1[itab];
+		}
+		tabs_in_use--;
+		nb_tab_button_1--;
+		tab_bar_width_1 -= w;
+		resize_window(tab_bar_win_1, tab_bar_width_1, tab_bar_height);
+		// Il y a assez de place pour passer le premier canal de la deuxieme ligne sur la premiere
 		//TODO (TonyFlow): tester aussi si les onglets suivants de la ligne 2 peuvent aller en ligne 1
-        if (nb_ligne_tabs == 2 && (window_width-hud_x > tab_bar_width_1 + widget_get_width (tab_bar_win_2, tabs_2[0].button)+ 1))
-        {
-            Uint8 temp_channel;
-            changement_barre = 1;
-            temp_channel = tabs_2[0].channel;
-            remove_tab_button (tabs_2[0].channel, 2);
-            add_tab_button(temp_channel);
-        }
-   	}
-    else if (ligne == 2)
-    {
-        w = widget_get_width (tab_bar_win_2, tabs_2[itab].button)+1;
-    	widget_destroy (tab_bar_win_2, tabs_2[itab].button);
-    	for (++itab; itab < nb_tab_button_2; itab++)
-    	{
-    		widget_move_rel (tab_bar_win_2, tabs_2[itab].button, -w, 0);
-    		tabs_2[itab-1] = tabs_2[itab];
-    	}
-    	tabs_in_use--;
-        nb_tab_button_2--;
-
-    	tab_bar_width_2 -= w;
-    	resize_window (tab_bar_win_2, tab_bar_width_2, tab_bar_height);
-
-        // Il n'y a plus rien sur la 2eme barre, on la supprime donc
+		if (nb_ligne_tabs == 2 && (window_width - hud_x > tab_bar_width_1 + widget_get_width(tab_bar_win_2, tabs_2[0].button) + 1)) {
+			Uint8 temp_channel;
+			changement_barre = 1;
+			temp_channel = tabs_2[0].channel;
+			remove_tab_button(tabs_2[0].channel, 2);
+			add_tab_button(temp_channel);
+		}
+	} else if (ligne == 2) {
+		w = widget_get_width(tab_bar_win_2, tabs_2[itab].button) + 1;
+		widget_destroy(tab_bar_win_2, tabs_2[itab].button);
+		for (++itab; itab < nb_tab_button_2; itab++) {
+			widget_move_rel(tab_bar_win_2, tabs_2[itab].button, -w, 0);
+			tabs_2[itab - 1] = tabs_2[itab];
+		}
+		tabs_in_use--;
+		nb_tab_button_2--;
+		tab_bar_width_2 -= w;
+		resize_window(tab_bar_win_2, tab_bar_width_2, tab_bar_height);
+		// Il n'y a plus rien sur la 2eme barre, on la supprime donc
 		//TODO (TonyFlow): tester si maintenant le (ou les) premier(s) onglet(s) peuvent aller en ligne 1
-        if (tabs_in_use == nb_tab_button_1)
-        {
+		if (tabs_in_use == nb_tab_button_1) {
 			window_info *console_win = &windows_list.window[console_root_win];
-    		widget_list *console_out_w = widget_find(console_root_win, console_out_id);
-
-            destroy_window (tab_bar_win_2);
-            nb_ligne_tabs = 1;
-            tab_bar_win_2 = -1;
-            cur_button_id_2 = 0;
-            tab_bar_width_2 = 0;
-
+			widget_list *console_out_w = widget_find(console_root_win, console_out_id);
+			destroy_window(tab_bar_win_2);
+			nb_ligne_tabs = 1;
+			tab_bar_win_2 = -1;
+			cur_button_id_2 = 0;
+			tab_bar_width_2 = 0;
 			// On décalle et on change la taille de la console_out
-			widget_move(console_root_win, console_out_id, 10, 10 + nb_ligne_tabs*tab_bar_height);
-			widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_win->len_y - input_widget->len_y - CONSOLE_SEP_HEIGHT - HUD_MARGIN_Y - 10 - nb_ligne_tabs*tab_bar_height);
+			widget_move(console_root_win, console_out_id, 10, 10 + nb_ligne_tabs * tab_bar_height);
+			widget_resize(console_root_win, console_out_id, console_out_w->len_x, console_win->len_y - input_widget->len_y - CONSOLE_SEP_HEIGHT - HUD_MARGIN_Y - 10 - nb_ligne_tabs * tab_bar_height);
 			nr_console_lines = (console_out_w->len_y - 1) / (int)(DEFAULT_FONT_Y_LEN * chat_text_size);
 			display_console_handler((widget_find(console_root_win, console_out_id))->widget_info);
-        }
-    }
-}
-#else //ENGLISH
-void remove_tab_button (Uint8 channel)
-{
-	int itab, w;
-
-	for (itab = 0; itab < tabs_in_use; itab++)
-	{
-		if (tabs[itab].channel == channel)
-			break;
+		}
 	}
-	if (itab >= tabs_in_use) return;
-
-	w = widget_get_width (tab_bar_win, tabs[itab].button)+1;
-	widget_destroy (tab_bar_win, tabs[itab].button);
-	for (++itab; itab < tabs_in_use; itab++)
-	{
-		widget_move_rel (tab_bar_win, tabs[itab].button, -w, 0);
-		tabs[itab-1] = tabs[itab];
-	}
-	tabs_in_use--;
-
-	tab_bar_width -= w;
-	resize_window (tab_bar_win, tab_bar_width, tab_bar_height);
 }
-#endif //ENGLISH
 
 void update_tab_bar (text_message * msg)
 {

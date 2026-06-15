@@ -939,6 +939,14 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			}
 			break;
 
+		case SEND_PARTIAL_STAT64:
+			if (data_length < 12) {
+				LOG_ERROR("not enough bytes to decode SEND_PARTIAL_STAT64 packet (expecting 12, got %d)\n", data_length);
+			} else {
+				get_partial_stat64(in_data[3], unpack_u64_le(in_data + 4));
+			}
+			break;
+
 		case GET_KNOWLEDGE_LIST:
 			{
 				Uint16 size;
@@ -953,7 +961,7 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 				  LOG_WARNING("CAUTION(2): Possibly forged GET_KNOWLEDGE_LIST packet received.\n");
 				  break;
 				}
-				get_knowledge_list(size, (char*)in_data+3);
+				get_knowledge_list(size, in_data+3);
 			}
 			break;
 
@@ -1705,65 +1713,30 @@ void process_message_from_server (const Uint8 *in_data, int data_length)
 			break;
 
 		case NPC_TEXT:
-			{
-#ifdef ENGLISH
-				if (data_length <= 4)
-				{
-				  LOG_WARNING("CAUTION: Possibly forged NPC_TEXT packet received.\n");
-				  break;
+			// Traitement spécial pour le préfixage des Quêtes
+			if (in_data[3] >= 127 && in_data[3] <= 127 + c_grey4 && in_data[4] >= 127 && in_data[4] <= 127 + c_grey4) {
+				if (in_data[5] != '[') {
+					put_small_text_in_box(&in_data[3], data_length - 3, dialogue_menu_x_len - 70, (char *)dialogue_string);
+					display_dialogue();
 				}
-				put_small_text_in_box(&in_data[3], data_length-3, dialogue_menu_x_len-70, (char*)dialogue_string);
+				// Ce n'est pas un message de quêtes silencieux ?
+				else if (in_data[6] != '#') {
+					int len = data_length - 3;
+					char *p = memchr(&in_data[3], ']', data_length - 3);
+					if (p == NULL)
+						return;
+					p++;
+					len -= (p - ((char *)&in_data[3]));
+					// Il faut retirer 127 à la couleur, car la fonction put_small_colored_text_in_box la rajoute
+					put_small_colored_text_in_box(in_data[3] - 127, (const Uint8 *)p, len, dialogue_menu_x_len - 70, (char *)dialogue_string);
+					display_dialogue();
+				}
+				add_questlog((char *)&in_data[4], data_length - 4);
+			} else {
+				put_small_text_in_box(&in_data[3], data_length - 3, dialogue_menu_x_len - 70, (char *)dialogue_string);
 				display_dialogue();
-				if (is_color (in_data[3]) && is_color (in_data[4]))
-				{
-					// double color code, this text
-					// should be added to the quest log
-					safe_strncpy2((char*)text_buf, (char*)&in_data[4], sizeof(text_buf), data_length - 4);
-					add_questlog ((char*)text_buf, strlen((char*)text_buf));
-				}
-#ifdef NEW_QUESTLOG
-				// if we're expecting a quest entry, this will be it
-				else if (waiting_for_questlog_entry())
-				{
-					safe_strncpy2((char*)text_buf, (char*)&in_data[3], sizeof(text_buf), data_length - 3);
-					add_questlog ((char*)text_buf, strlen((char*)text_buf));
-#endif
-					memcpy (text_buf, &in_data[4], len);
-					text_buf[len] = '\0';
-					add_questlog ((char*)text_buf, len);
-#else //ENGLISH
-				// Traitement spécial pour le préfixage des Quêtes
-				if(in_data[3]>=127 && in_data[3]<=127+c_grey4 && in_data[4]>=127 && in_data[4]<=127+c_grey4)
-					{
-						if (in_data[5] != '[')
-							{
-				put_small_text_in_box(&in_data[3],data_length-3,dialogue_menu_x_len-70,(char*)dialogue_string);
-				display_dialogue();
-							}
-						// Ce n'est pas un message de quêtes silencieux ?
-						else if (in_data[6] != '#')
-				{
-								int len = data_length-3;
-								char *p = memchr(&in_data[3], ']', data_length-3);
-								if (p == NULL)
-									return;
-
-								p ++;
-								len -= (p - ((char*)&in_data[3]));
-								// Il faut retirer 127 à la couleur, car la fonction put_small_colored_text_in_box la rajoute
-								put_small_colored_text_in_box(in_data[3]-127, (const Uint8 *)p,len,dialogue_menu_x_len-70,(char*)dialogue_string);
-								display_dialogue();
-							}
-
-						add_questlog((char*)&in_data[4],data_length-4);
-					}
-				else
-					{
-						put_small_text_in_box(&in_data[3],data_length-3,dialogue_menu_x_len-70,(char*)dialogue_string);
-						display_dialogue();
-#endif //ENGLISH
-				}
 			}
+			check_hunt_quest_text(in_data + 3, data_length - 3);
 			break;
 
 		case SEND_NPC_INFO:

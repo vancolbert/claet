@@ -18,12 +18,15 @@ extern Uint32 disconnect_time;
 extern char last_spell_name[60];
 extern unsigned int floating_counter_flags;
 extern int floating_session_counters;
+extern int floating_hunt_quest_counters;
+void check_hunt_quest_text(const void *text, int text_len);
+int command_show_hunt_quest(char *t, int l);
 
-void load_counters();
-void flush_counters();
-void cleanup_counters();
-void fill_counters_win();
-void reset_session_counters();
+void load_counters(void);
+void flush_counters(void);
+void cleanup_counters(void);
+void fill_counters_win(void);
+void reset_session_counters(void);
 void print_session_counters(const char *category);
 
 void increment_death_counter(actor *a);

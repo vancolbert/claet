@@ -4,6 +4,7 @@
 #include "counters.h"
 #include "context_menu.h"
 #include "asc.h"
+#include "dialogues.h"
 #include "elconfig.h"
 #include "elwindows.h"
 #include "errors.h"
@@ -220,6 +221,43 @@ static int cm_floating_flag = 0;
 unsigned int floating_counter_flags = 0;     /* persisted in el.cfg file */
 int floating_session_counters = 0;           /* persisted in el.ini */
 
+int floating_hunt_quest_counters;
+typedef struct Hqcnt { char mob[32], npc[32]; int rem; } Hqcnt;
+static Hqcnt hunt_quest;
+static inline char *scan_past(char *t, cstr s) {
+	char *p;
+	return t && (p = strstr(t, s)) ? p + strlen(s) : 0;
+}
+static inline char *snip_at(char *t, cstr s) {
+	char *p;
+	if (t && (p = strstr(t, s))) *p = 0;
+	return t;
+}
+static inline char *snip_around(char *t, cstr pre, cstr suf) { return snip_at(scan_past(t, pre), suf); }
+void check_hunt_quest_text(const void *d, int dl) {
+	cstr w = (cstr)npc_name;
+	if (strcmp(w, "Anoroc")) return;
+	char b[1024], *p = 0, *m;
+	memcpy(b, d, dl);
+	int done = b[dl] = 0, l;
+	if ((p = snip_around(b, "Il te reste ", " à tuer."))) done = 0;
+	else if ((p = scan_past(b, "tu sais tuer "))) done = 0;
+	else if ((p = snip_around(b, "te débarasser de ", " ! Pour te récompenser"))) done = 1;
+	if (!p) return;
+	Hqcnt *h = &hunt_quest;
+	copy_cstr_to_array(w, h->npc);
+	sscanf(p, "%d %[^\n]31", &h->rem, m = h->mob);
+	if (done) h->rem = *m = 0;
+	else if ((l = strlen(m)) > 1 && m[l - 1] == 's') m[l - 1] = 0;
+}
+int command_show_hunt_quest(char *t, int l) {
+	Hqcnt *h = &hunt_quest;
+	if (!*h->mob) cprintf(c_red1, "Pas de créatures à chasser, ou tu n'as pas parlé à Anoroc.");
+	else if (h->rem > 0) cprintf(c_yellow2, "Il reste %d %s%s à tuer.", h->rem, h->mob, h->rem == 1 ? "" : "s");
+	else cprintf(c_green2, "Tu as fini les %ss, parle à Anoroc pour ta récompense.", h->mob);
+	return 1;
+}
+
 int sort_counter_func(const void *a, const void *b)
 {
    const struct Counter *ca, *cb;
@@ -265,169 +303,152 @@ void sort_counter(int counter_id)
    }
 }
 
-FILE *open_counters_file(char *mode)
-{
-   char filename[256], un[16];
-   int i;
-
-   safe_strncpy(un, username, sizeof(un));
-   for (i = 0; un[i]; i++) {
-	  un[i] = tolower(un[i]);
-   }
-
-   safe_snprintf(filename, sizeof(filename), "counters_%s.dat", un);
-
+FILE *open_counters_file(char *mode) {
+	char filename[256], un[16];
+	int i;
+	safe_strncpy(un, username, sizeof(un));
+	for (i = 0; un[i]; i++) {
+		un[i] = tolower(un[i]);
+	}
+	safe_snprintf(filename, sizeof(filename), "counters_%s.dat", un);
 	LOG_DEBUG("Open counters file '%s'", filename);
-
-   return open_file_config(filename, mode);
+	return open_file_config(filename, mode);
 }
 
-void load_counters()
-{
-   FILE *f;
-   int i, j;
-   Uint8 io_counter_id;
-   Uint8 io_name_len;
-   Uint32 io_extra;
-   Uint32 io_n_total;
+static inline FILE *open_hqc(cstr mode) {
+	char f[512], u[32] = {}, *o = u;
+	for (cstr p = (cstr)username; *p; *o++ = tolower(*p++));
+	aprintf(f, "counters_%s_hunt_quest.txt", u);
+	return open_file_config(f, mode);
+}
+
+void load_counters(void) {
+	FILE *f;
+	int i, j;
+	Uint8 io_counter_id;
+	Uint8 io_name_len;
+	Uint32 io_extra;
+	Uint32 io_n_total;
 #ifdef ENGLISH
-   char io_name[64];
+	char io_name[64];
 #else
-   char io_name[100];
+	char io_name[100];
 #endif
-   int fread_ok = 1;
-
-   if (counters_initialized) {
-      /*
-       * save eny existing counters before reloading
-       * this will take place when relogging after disconnection
-       */
-      flush_counters();
-      return;
-   }
-
+	int fread_ok = 1;
+	if (counters_initialized) {
+		/*
+		 * save eny existing counters before reloading
+		 * this will take place when relogging after disconnection
+		 */
+		flush_counters();
+		return;
+	}
 	ENTER_DEBUG_MARK("load counters");
-
-   for (i = 0; i < NUM_COUNTERS; i++) {
-      counters[i] = NULL;
-      entries[i] = 0;
-      sort_by[i] = 0;
-   }
-
-   /* allocate and set misc event matching strings */
-   search_str = malloc (sizeof (char *) * num_search_str);
-   search_len = malloc (sizeof (size_t) * num_search_str);
-   for (i=0; i<num_search_str; i++)
-   {
-	  size_t max_len = strlen (username) + strlen (temp_event_string[i]) + 1;
-      search_str[i] = malloc (max_len);
-	  safe_snprintf (search_str[i], max_len, temp_event_string[i], username);
-      search_len[i] = strlen (search_str[i]);
-   }
-
-   if (!spell_names[0]) {
-      memset(&spell_names, 0, sizeof(spell_names));
-   }
-
-   if (!(f = open_counters_file("rb"))) {
-      counters_initialized = 1;
-
+	for (i = 0; i < NUM_COUNTERS; i++) {
+		counters[i] = NULL;
+		entries[i] = 0;
+		sort_by[i] = 0;
+	}
+	/* allocate and set misc event matching strings */
+	search_str = malloc(sizeof(char *) * num_search_str);
+	search_len = malloc(sizeof(size_t) * num_search_str);
+	for (i = 0; i < num_search_str; i++) {
+		size_t max_len = strlen(username) + strlen(temp_event_string[i]) + 1;
+		search_str[i] = malloc(max_len);
+		safe_snprintf(search_str[i], max_len, temp_event_string[i], username);
+		search_len[i] = strlen(search_str[i]);
+	}
+	if (!spell_names[0]) {
+		memset(&spell_names, 0, sizeof(spell_names));
+	}
+	if (!(f = open_counters_file("rb"))) {
+		counters_initialized = 1;
 		LEAVE_DEBUG_MARK("load counters");
-
-      return;
-   }
-
-   while (fread(&io_counter_id, sizeof(io_counter_id), 1, f) > 0) {
-      fread_ok = 0;
-      if (fread(&io_name_len, sizeof(io_name_len), 1, f) != 1)
-         break;
+		return;
+	}
+	while (fread(&io_counter_id, sizeof(io_counter_id), 1, f) > 0) {
+		fread_ok = 0;
+		if (fread(&io_name_len, sizeof(io_name_len), 1, f) != 1)
+			break;
 #ifndef ENGLISH
-      //@tosh : prévention d'un buffer overflow
-      if(io_name_len >= sizeof(io_name))
-      {
-         LOG_ERROR("Erreur: nom de compteur trop long !\n");
-         break;
-      }
+		//@tosh : prévention d'un buffer overflow
+		if (io_name_len >= sizeof(io_name)) {
+			LOG_ERROR("Erreur: nom de compteur trop long !\n");
+			break;
+		}
 #endif
-      if (fread(io_name, io_name_len, 1, f) != 1)
-         break;
-      io_name[io_name_len] = '\0';
-
+		if (fread(io_name, io_name_len, 1, f) != 1)
+			break;
+		io_name[io_name_len] = '\0';
 		LOG_DEBUG("Reading counter '%s'", io_name);
-
-      if (fread(&io_extra, sizeof(io_extra), 1, f) != 1)
-         break;
-      if (fread(&io_n_total, sizeof(io_n_total), 1, f) != 1)
-         break;
-      fread_ok = 1;
-
-      if(strlen(io_name)<1 || strlen(io_name)>100){
-         //doesn't seem to have a real name, so we don't want it
-         continue;
-      }
-
-      i = io_counter_id - 1;
-      j = entries[i]++;
-      counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
-      counters[i][j].name = strdup(io_name);
+		if (fread(&io_extra, sizeof(io_extra), 1, f) != 1)
+			break;
+		if (fread(&io_n_total, sizeof(io_n_total), 1, f) != 1)
+			break;
+		fread_ok = 1;
+		if (strlen(io_name) < 1 || strlen(io_name) > 100) {
+			//doesn't seem to have a real name, so we don't want it
+			continue;
+		}
+		i = io_counter_id - 1;
+		j = entries[i]++;
+		counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
+		counters[i][j].name = strdup(io_name);
 #ifndef ENGLISH
-      counters[i][j].n_fullsession = 0;
+		counters[i][j].n_fullsession = 0;
 #endif //ENGLISH
-      counters[i][j].n_session = 0;
-      counters[i][j].n_total = io_n_total;
-      counters[i][j].extra = io_extra;
-   }
-
-   if (!fread_ok)
-      LOG_ERROR("%s error reading counters\n", __FUNCTION__);
-
-   fclose(f);
-
-   counters_initialized = 1;
-
+		counters[i][j].n_session = 0;
+		counters[i][j].n_total = io_n_total;
+		counters[i][j].extra = io_extra;
+	}
+	if (!fread_ok)
+		LOG_ERROR("%s error reading counters\n", __FUNCTION__);
+	fclose(f);
+	if ((f = open_hqc("r"))) {
+		Hqcnt *h = &hunt_quest;
+		for (char l[256]; fgets(l, sizeof(l) - 1, f);) {
+			if (3 == sscanf(l, "%31[^|]|%31[^|]|%d", h->npc, h->mob, &h->rem)) break;
+		}
+		fclose(f);
+	}
+	counters_initialized = 1;
 	LEAVE_DEBUG_MARK("load counters");
 }
 
-void flush_counters()
-{
-   FILE *f;
-   int i, j;
-   Uint8 io_counter_id;
-   Uint8 io_name_len;
-
-   if (!counters_initialized) {
-      return;
-   }
-
-   if (!(f = open_counters_file("wb"))) {
-      return;
-   }
-
+void flush_counters(void) {
+	FILE *f;
+	int i, j;
+	Uint8 io_counter_id;
+	Uint8 io_name_len;
+	if (!counters_initialized) {
+		return;
+	}
+	if (!(f = open_counters_file("wb"))) {
+		return;
+	}
 	ENTER_DEBUG_MARK("flush counters");
-
-   for (i = 0; i < NUM_COUNTERS; i++) {
-      io_counter_id = i + 1;
-
-      for (j = 0; j < entries[i]; j++) {
-         io_name_len = strlen(counters[i][j].name);
-
-			LOG_DEBUG("Writing counter '%s'",
-				counters[i][j].name);
-
-         fwrite(&io_counter_id, sizeof(io_counter_id), 1, f);
-         fwrite(&io_name_len, sizeof(io_name_len), 1, f);
-         fwrite(counters[i][j].name, io_name_len, 1, f);
-         fwrite(&counters[i][j].extra, sizeof(counters[i][j].extra), 1, f);
-         fwrite(&counters[i][j].n_total, sizeof(counters[i][j].n_total), 1, f);
-      }
-   }
-
-   fclose(f);
-
+	for (i = 0; i < NUM_COUNTERS; i++) {
+		io_counter_id = i + 1;
+		for (j = 0; j < entries[i]; j++) {
+			io_name_len = strlen(counters[i][j].name);
+			LOG_DEBUG("Writing counter '%s'", counters[i][j].name);
+			fwrite(&io_counter_id, sizeof(io_counter_id), 1, f);
+			fwrite(&io_name_len, sizeof(io_name_len), 1, f);
+			fwrite(counters[i][j].name, io_name_len, 1, f);
+			fwrite(&counters[i][j].extra, sizeof(counters[i][j].extra), 1, f);
+			fwrite(&counters[i][j].n_total, sizeof(counters[i][j].n_total), 1, f);
+		}
+	}
+	fclose(f);
+	if ((f = open_hqc("w"))) {
+		Hqcnt *h = &hunt_quest;
+		fprintf(f, "%s|%s|%d\n", h->npc, h->mob, h->rem);
+		fclose(f);
+	}
 	LEAVE_DEBUG_MARK("flush counters");
 }
 
-void cleanup_counters()
+void cleanup_counters(void)
 {
    int i, j;
 
@@ -505,61 +526,46 @@ static void increment_product_counter(int counter_id, const char *name, int quan
    counters_set_product_info("",0);
 }
 
-void increment_counter(int counter_id, const char *name, int quantity, int extra)
-{
-   int i, j;
-   int new_entry = 1;
-
-   //printf("%s: counter_id=%d name=[%s] quantity=%d extra=%d\n", __FUNCTION__, counter_id, name, quantity, extra);
-
-   if(name == 0 || strlen(name)<1 || strlen(name)>100){
-      //doesn't seem to have a real name, so no point saving it
-      return;
-   }
-
-   i = counter_id - 1;
-
-   /* Look for an existing entry. */
-   for (j = 0; j < entries[i]; j++) {
-      if ((name && strcasecmp(counters[i][j].name, name)) || counters[i][j].extra != extra) {
-         continue;
-      }
-
-#ifndef ENGLISH
-      counters[i][j].n_fullsession += quantity;
-#endif //ENGLISH
-      counters[i][j].n_session += quantity;
-      counters[i][j].n_total += quantity;
-      new_entry = 0;
-      break;
-   }
-
-   if (new_entry) {
-      /* Create a new entry. */
-      j = entries[i]++;
-		last_selected_counter_id = -1;  /* force recalculation of the scrollbar */
-      counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
-      counters[i][j].name = strdup(name);
-#ifndef ENGLISH
-      counters[i][j].n_fullsession = quantity;
-#endif //ENGLISH
-      counters[i][j].n_session = quantity;
-      counters[i][j].n_total = quantity;
-      counters[i][j].extra = extra;
-#ifdef FR_VERSION
-      // FIX: mettre à jour la scrollbar (utile si c'est la catégorie actuellement affichée)
-      if (i == selected_counter_id - 1) vscrollbar_set_bar_len(counters_win, counters_scroll_id, entries[i]);
-#endif //FR_VERSION
-   }
-
-   if (floating_session_counters && (floating_counter_flags & (1 << i)))
-   {
-      char str[128];
-      safe_snprintf(str, sizeof(str), "%s: %d", name, counters[i][j].n_session);
-      add_floating_message(yourself, str, FLOATINGMESSAGE_NORTH, 0.3, 0.3, 1.0, 1500);
-   }
-
-   sort_counter(counter_id);
+void increment_counter(int counter_id, const char *name, int quantity, int extra) {
+	int i = counter_id - 1, j, new_entry = 1;
+	if (!name || !*name || strlen(name) > 100) return;
+	for (j = 0; j < entries[i]; j++) {
+		if ((name && strcasecmp(counters[i][j].name, name)) || counters[i][j].extra != extra) {
+			continue;
+		}
+		counters[i][j].n_fullsession += quantity;
+		counters[i][j].n_session += quantity;
+		counters[i][j].n_total += quantity;
+		new_entry = 0;
+		break;
+	}
+	if (new_entry) {
+		j = entries[i]++;
+		last_selected_counter_id = -1; /* force recalculation of the scrollbar */
+		counters[i] = realloc(counters[i], entries[i] * sizeof(struct Counter));
+		counters[i][j].name = strdup(name);
+		counters[i][j].n_session = quantity;
+		counters[i][j].n_total = quantity;
+		counters[i][j].extra = extra;
+		// FIX: mettre à jour la scrollbar (utile si c'est la catégorie actuellement affichée)
+		if (i == selected_counter_id - 1) vscrollbar_set_bar_len(counters_win, counters_scroll_id, entries[i]);
+	}
+	char s[128];
+	if (floating_session_counters && (floating_counter_flags & (1 << i))) {
+		aprintf(s, "%s: %d", name, counters[i][j].n_session);
+		add_floating_message(yourself, s, FLOATINGMESSAGE_NORTH, 0.3, 0.3, 1.0, 1500);
+	}
+	Hqcnt *h = &hunt_quest;
+	if (counter_id == KILLS && *h->npc && !strcmp(h->mob, name)) {
+		f32 r = --h->rem > 0 ? 1.0f : 0.3f, g = 1.0f, b = 0.3f;
+		if (floating_hunt_quest_counters) {
+			if (h->rem > 0) aprintf(s, "%s : encore %d", name, h->rem);
+			else if (h->rem > -3) aprintf(s, "%s : FINI", name);
+			else *s = 0;
+			if (*s) add_floating_message(yourself, s, FLOATINGMESSAGE_MIDDLE, r, g, b, 3000);
+		}
+	}
+	sort_counter(counter_id);
 }
 
 void decrement_counter(int counter_id, char *name, int quantity, int extra)
@@ -750,7 +756,7 @@ static int cm_counters_handler(window_info *win, int widget_id, int mx, int my, 
 	return 1;
 }
 
-void fill_counters_win()
+void fill_counters_win(void)
 {
    int idx = selected_counter_id > 0 ? selected_counter_id-1 : 0;
 
@@ -1488,7 +1494,7 @@ void increment_summon_counter(char *string)
 }
 
 
-void reset_session_counters()
+void reset_session_counters(void)
 {
    int i, j;
 

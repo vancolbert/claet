@@ -61,7 +61,8 @@ int osx_right_mouse_cam = 0;
 #ifndef ENGLISH
 int circonflexe = 0;
 #endif
-
+int skip_key_after_compose;
+static int expecting_compose;
 
 void	quick_use(int use_id)
 {
@@ -176,7 +177,13 @@ int HandleEvent (SDL_Event *event)
                sprintf( msg, "key is : key %d Name %s Unicode %d", key, SDL_GetKeyName(event->key.keysym.sym), event->key.keysym.unicode && 0xA0 );
                LOG_TO_CONSOLE(c_yellow1, msg);
 #endif
-
+			if (skip_key_after_compose) {
+				if (expecting_compose) {
+					expecting_compose = 0;
+					break;
+				}
+				if ((expecting_compose = event->key.keysym.sym == SDLK_COMPOSE)) break;
+			}
 			//use the modifiers that were on when the key was pressed, not when we go to check
 			if (event->key.keysym.mod & KMOD_SHIFT) key |= ELW_SHIFT;
 			if (event->key.keysym.mod & KMOD_CTRL) key |= ELW_CTRL;

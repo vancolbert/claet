@@ -285,7 +285,8 @@ void get_the_stats(Sint16 *stats)
 #endif //ENGLISH
 
 	init_session();
-        check_castability();
+	check_castability();
+	detect_level_table();
 }
 
 void get_partial_stat(Uint8 name,Sint32 value)
@@ -817,6 +818,20 @@ void get_partial_stat(Uint8 name,Sint32 value)
 
 }
 
+void get_partial_stat64(int stat_id, Uint64 value) {
+	switch (stat_id) {
+	case OVRL_EXP:
+		set_last_skill_exp(SI_ALL, value - your_info.overall_exp);
+		your_info.overall_exp = value;
+		break;
+	case OVRL_EXP_NEXT:
+		your_info.overall_exp_next_lev = value;
+		break;
+	default:
+		LOG_ERROR("get_partial_stat64: unhandled stat_id=%d value=%" PRIu64 "\n", stat_id, value);
+	}
+}
+
 #ifndef FR_RCM_WRAITH
 
 Sint16 get_base_might() { return (your_info.phy.base+your_info.coo.base)/2;}
@@ -993,19 +1008,7 @@ void draw_stat(int len, int x, int y, attrib_16 * var, names * name)
 	draw_stat_final(len,x,y,name->name,str);
 }
 
-#ifdef FR_FENETRE_STATS
-/**
-    len,
-    x,
-    y,
-    attrib_16 * lvl,
-    names * name,
-    exp,
-    exp_next,
-    cur_nex)
-
-**/
-int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, int exp_next, int cur_nex, int base_nex) {
+int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, Uint64 exp, Uint64 exp_next, int cur_nex, int base_nex) {
 	char str[100];
 	char lvlstr[20];
 	char expstr[25];
@@ -1021,10 +1024,10 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, in
         safe_strncpy(niv_nexus, tab_nexus[cur_nex], 11);
       }
     }
-
-	pourcent = (exp_lev[lvl->base] == exp_next) ? 100 : round(((exp-exp_lev[lvl->base])*100.0)/(exp_next-exp_lev[lvl->base]));
+	Uint64 l = exp_lev[clampi(lvl->base, 0, num_exp_lev - 1)];
+	pourcent = exp_next > l ? clampi(100 * subgt_u64(exp, l) / (exp_next - l), 0, 100) : 100;
 	safe_snprintf(lvlstr, sizeof(lvlstr), "%5i/%-3i", lvl->cur, lvl->base);
-	safe_snprintf(expstr, sizeof(expstr), "%9i %12i", exp, exp_next);
+	safe_snprintf(expstr, sizeof(expstr), "%10" PRIu64 " %12" PRIu64, exp, exp_next);
 
 	safe_snprintf(str, sizeof(str), "%-11s %-11s %-s %6i%%", lvlstr, niv_nexus, expstr, pourcent);
 
@@ -1032,26 +1035,6 @@ int draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, in
 
 	return difference;
 }
-#else //FR_FENETRE_STATS
-void draw_skill(int len, int x, int y, attrib_16 * lvl, names * name, int exp, int exp_next)
-{
-	char str[37];
-	char lvlstr[9];
-	char expstr[25];
-
-#ifdef ENGLISH
-	safe_snprintf(lvlstr, sizeof(lvlstr), "%2i/%-2i", lvl->cur, lvl->base);
-	safe_snprintf(expstr,sizeof(expstr),"[%2i/%-2i]", exp, exp_next);
-	safe_snprintf(str, sizeof(str), "%-7s %-22s", lvlstr, expstr);
-#else
-	int pourcent = (exp_lev[lvl->base] == exp_next) ? 100 : round(((exp-exp_lev[lvl->base])*100)/(exp_next-exp_lev[lvl->base]));
-	safe_snprintf(lvlstr, sizeof(lvlstr), "%3i/%-3i", lvl->cur, lvl->base);
-	safe_snprintf(expstr, sizeof(expstr), "[%9i/%-9i]", exp, exp_next);
-	safe_snprintf(str, sizeof(str), "%-7s %-21s%3i%%", lvlstr, expstr, pourcent);
-#endif
-	draw_stat_final(len, x, y, name->name, str);
-}
-#endif //FR_FENETRE_STATS
 
 void draw_statf(int len, int x, int y, attrib_16f * var, names * name)
 {

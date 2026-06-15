@@ -1,3 +1,4 @@
+#include "platform.h"
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -23,6 +24,8 @@ static int cmpke(const void *p, const void *q) {
 	return d ? d : strncasecmp(a->name, b->name, a->len);
 }
 static inline Kentry *find_kentry(cstr n, int l) {
+	if (*n == '#') ++n, --l;
+	if (*n == 'K' && n[1] == '_') n += 2, l -= 2;
 	Kentry t = {0, n, l};
 	return bsearch(&t, kentries, countof(kentries), sizeof(t), cmpke);
 }
@@ -188,6 +191,8 @@ static void parse_key(Parser *p) {
 	}
 }
 static void init_keydata(void) {
+	#define as_reset_keys(k,s,d) k = s;
+	x_keys(as_reset_keys);
 	qsort(kentries, countof(kentries), sizeof(*kentries), cmpke);
 	qsort(kcodes, countof(kcodes), sizeof(*kcodes), cmpkc);
 	#define as_kctab(n, c) kctab[c] = #n;
@@ -201,12 +206,13 @@ void read_key_config(void) {
 #endif
 	el_file_ptr f = el_open_custom(path);
 	if (f) {
-		char l[512];
+		char l[512], r[2048];
 		Parser _p = {path}, *p = &_p;
 		while (el_fgets(l, sizeof(l), f)) {
 			next_line(p, l);
 			parse_key(p);
 		}
+		cprintf(c_green4, "Les raccourcis clavier ont été chargés de %s", realpath(el_file_name(f), r));
 		el_close(f);
 	} else {
 		LOG_ERROR("el_open_custom failed for key config path \"%s\"", path);

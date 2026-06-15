@@ -16,31 +16,31 @@ ifeq ($(trace), 1)
 	f += -finstrument-functions
 	EXE := trace-$(EXE)
 endif
-f += $(defs) $(CPPFLAGS) -I. $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags)
+f += $(defs) $(CPPFLAGS) -I. $(shell sdl-config --cflags) $(shell xml2-config --cflags) $(shell pkg-config libpng --cflags) $(shell pkg-config openal --cflags)
 warn := -Wall -Werror -Wfatal-errors
 CFLAGS := $f $(warn) -std=gnu17 $(CFLAGS)
 CXXFLAGS := $f $(warn) $(CXXFLAGS)
-winlibs := dbghelp opengl32 glu32 dxguid uuid avrt gdi32 winmm mincore ole32 stdc++
+winlibs := imagehlp opengl32 glu32 dxguid uuid avrt gdi32 winmm mincore ole32 stdc++
 winlibdir := $(SYSROOT)/$(HOST)/lib
 LDFLAGS := -mwindows -Wl,-Map=$(EXE)-link.map $(LDFLAGS)
 ifeq ($(static), 1)
 	LDFLAGS := -static -static-libgcc -static-libstdc++ $(LDFLAGS)
 	extlibdir := $(SYSROOT)/lib
-	extlibs := SDL SDL_net SDL_image OpenAL32 vorbisfile vorbis ogg xml2 png jpeg iconv z
+	extlibs := cal3d SDL SDL_net SDL_image OpenAL32 vorbisfile vorbis ogg xml2 png jpeg iconv z
 	libs := $(extlibs:%=$(extlibdir)/lib%.a) $(winlibs:%=$(winlibdir)/lib%.a)
 else
 	extlibdir := $(SYSROOT)/bin
-	extlibs := SDL SDL_net SDL_image OpenAL32 libvorbisfile-3 libvorbis-0 libogg-0 libxml2-2 libpng16-16 libjpeg-62 libiconv-2 zlib1
+	extlibs := cal3d-12 SDL SDL_net SDL_image OpenAL32 libvorbisfile-3 libvorbis-0 libogg-0 libxml2-2 libpng16-16 libjpeg-62 libiconv-2 zlib1
 	libs := -L$(extlibdir) $(extlibs:%=-l%) -L$(winlibdir) $(winlibs:%=-l%)
 endif
-srcdirs := io shader eye_candy exceptions xz xml fsaa engine cal3d
+srcdirs := io shader eye_candy exceptions xz xml fsaa engine
 include objs.mk
 depdir := .deps
 depflags = -MT $@ -MMD -MP -MF $(depdir)/$@.d
 depfiles := $(OBJS:%=$(depdir)/%.d)
 $(EXE) : $(depdir) $(OBJS) ; $(CXX) $(LDFLAGS) $(OBJS) $(libs) -o $@ && chmod a+rx $@ && cp $@ debug-$@ && strip $@
 $(COBJS) : %.o : %.c ; $(CC) $(CFLAGS) $(depflags) -c $< -o $@
-$(CXXOBJS) : %.o : %.cpp ; $(CXX) $(CXXFLAGS) -DBASE_FILENAME=\"$(notdir $<)\" $(depflags) -c $< -o $@
+$(CXXOBJS) : %.o : %.cpp ; $(CXX) $(CXXFLAGS) $(depflags) -c $< -o $@
 $(depdir) : ; mkdir -p $@ $(srcdirs:%=$(depdir)/%)
 $(depfiles) :
 clean : ; $(RM) $(OBJS) $(EXE) $(depfiles)

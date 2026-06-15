@@ -65,6 +65,8 @@
   #include <stdio.h>
 
   #define snprintf safe_snprintf
+  #include <stdlib.h>
+  #define realpath(n, r) _fullpath((r), (n), MAX_PATH)
  #endif // __MINGW32__
 #elif defined (OSX)
   #ifndef __MACOSX__
@@ -105,18 +107,9 @@
 	#include <OpenAL/alc.h>
 	#include <OpenAL/MacOSX_OALExtensions.h>
 #else
-	#ifdef ENGLISH
-		#include <AL/al.h>
-		#include <AL/alc.h>
-	#endif //ENGLISH
 	#ifdef WINDOWS
-		#if __MINGW32__
-			#include <AL/al.h>
-			#include <AL/alc.h>
-		#else
-			#include <al.h>
-			#include <alc.h>
-		#endif
+		#include <al.h>
+		#include <alc.h>
 	#endif //WINDOWS
 	#ifdef LINUX
 		#include <AL/al.h>
@@ -127,11 +120,6 @@
 	        #include <AL/alc.h>
 	#endif
 #endif //lib location platform checking
-
-#ifndef ENGLISH
-
-#endif //ENGLISH
-
 
 #include <math.h>
 #ifndef M_PI

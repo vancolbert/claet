@@ -33,6 +33,7 @@
  #include "draw_scene.h"
  #include "errors.h"
  #include "elwindows.h"
+ #include "events.h"
  #include "filter.h"
  #include "gamewin.h"
  #include "gl_init.h"
@@ -1557,6 +1558,7 @@ static void init_ELC_vars(void) {
 	cvar_bool(always_pathfinding,"apf", change_var, 0, "Extend the range of the walk cursor", "Extends the range of the walk cursor to as far as you can see.  Using this option, movement may be slightly less responsive on larger maps.", CONTROLS);
 	cvar_bool(use_floating_messages,"fmsg", change_var, 1, "Floating Messages", "Toggles the use of floating experience messages and other graphical enhancements", CONTROLS);
 	cvar_bool(floating_session_counters,"fsc", change_var, 0, "Floating Session Counters", "Toggles the display of floating session counters.  Configure each type using the context menu of the counter category.", CONTROLS);
+	cvar_bool(floating_hunt_quest_counters, "fhqc", change_var, 0, "Messages flottants quêtes de chasse", "Compte à rebours du nombre de créatures qu'il te reste pour les quêtes d'Anoroc. Il faut lui parler pour initialiser le compte.", CONTROLS);
 	cvar_bool(info_combat_console,"icc", change_var, 0, "Info-combat console", "Activer les messages d'infos en combat, dans la console", CONTROLS);
 	cvar_bool(info_combat_float_msg,"icfm", change_var, 0, "Info-combat messages flottants", "Voir les messages flottants sur les informations au combat.", CONTROLS);
 	cvar_bool(exphits.show,"ehs", change_var, 1, "Info-combat compteurs d'expérience", "Montrer le nombre de coups qui donnent de l'expérience durant le combat.", CONTROLS);
@@ -1670,7 +1672,7 @@ static void init_ELC_vars(void) {
 	cvar_int(dark_channeltext,"dctext",change_dark_channeltext,0,0,2,"Couleur texte console","Affiche le texte dans une couleur noire sur les canaux pour un meilleur affichage sur les cartes claires (peut-être difficilement visible en mode consolle F1)",CHAT);
 		cvset_labels("Normal", "Moyen", "Noir");
 		cvset_flags(CVF_HORIZ);
-	cvar_int(dedup_lookback,"dedup",change_int,10,0,100,"Fusionnement des messages similaires","Nombre de messages passés à tester pour la similarité. Zéro désactive. Messages similaires ne sont pas affichés; ils reçoivent un suffixe de répétitions.",CHAT);
+	cvar_int(dedup_lookback,"dedup",change_int,0,0,100,"Fusionnement des messages similaires","Nombre de messages passés à tester pour la similarité. Zéro désactive. Messages similaires ne sont pas affichés; ils reçoivent un suffixe de répétitions.",CHAT);
 	// CHAT TAB
 
 	// FONT TAB
@@ -1836,7 +1838,7 @@ static void init_ELC_vars(void) {
 	cvar_bool(use_compiled_vertex_array,"cva",change_compiled_vertex_array,1,"Compiled Vertex Array","Some systems will not support the new compiled vertex array in EL. Disable this if some 3D objects do not display correctly.",TROUBLESHOOT);
 	cvar_bool(use_draw_range_elements,"dre",change_var,1,"Draw Range Elements","Disable this if objects appear partially stretched.",TROUBLESHOOT);
 	cvar_bool(use_point_particles,"upp",change_point_particles,1,"Point Particles","Some systems will not support the new point based particles in EL. Disable this if your client complains about not having the point based particles extension.",TROUBLESHOOT);
-	cvar_bool(use_loading_snapshot,"uls", change_var, 1, "Capture d'écran lors de chargement", "Utiliser une capture d'écran en arrière-plan lors de chargement d'une carte. À désactiver s'il ne s'affiche qu'une image blanche.", TROUBLESHOOT);
+	cvar_bool(use_loading_snapshot,"uls", change_var, 0, "Capture d'écran lors de chargement", "Utiliser une capture d'écran en arrière-plan lors de chargement d'une carte. À désactiver s'il ne s'affiche qu'une image blanche.", TROUBLESHOOT);
 #ifndef	NEW_TEXTURES
 	cvar_bool(transparency_resolution_fix,"trf",change_var,0,"Transparency Resolution Fix","Use this if your video card or driver has problems with rendering highly blended effects, like teleportation.",TROUBLESHOOT);
 #endif	/* NEW_TEXTURES */
@@ -1846,6 +1848,7 @@ static void init_ELC_vars(void) {
 	cvar_bool(square_buttons,"sqbut",change_var,1,"Square Buttons","Use square buttons rather than rounded",TROUBLESHOOT);
 #endif
 	cvar_bool(poor_man,"poor",change_poor_man,0,"Poor Man","If the game is running very slow for you, toggle this setting.",TROUBLESHOOT);
+	cvar_bool(skip_key_after_compose, "skac", change_var, 0, "Ignore la touche après COMPOSE", "Laisse passer la touche après COMPOSE (normalement ALT droite), à fin d'éviter les erreurs de frappe comme \"'é\" ou \",ç\".", TROUBLESHOOT);
 	// TROUBLESHOOT TAB
 
 	// DEBUGTAB TAB

@@ -1627,25 +1627,10 @@ CHECK_GL_ERRORS();
 	return 1;
 }
 
-int check_quit_or_fullscreen (Uint32 key)
-{
-	int alt_on = key & ELW_ALT;
-	Uint16 keysym = key & 0xffff;
-
-	// first, try to see if we pressed Alt+x or Ctrl+q, to quit.
-	if (key == K_QUIT || key == K_QUIT_ALT)
-	{
-		exit_now = 1;
-	}
-	else if (keysym == SDLK_RETURN && alt_on)
-	{
-		toggle_full_screen ();
-	}
-	else
-	{
-		return 0;
-	}
-
+int check_quit_or_fullscreen(Uint32 key) {
+	if (key == K_QUIT || key == K_QUIT_ALT) exit_now = 1;
+	else if (key == K_FULLSCREEN) toggle_full_screen();
+	else return 0;
 	return 1;
 }
 

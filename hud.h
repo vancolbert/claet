@@ -31,7 +31,9 @@ extern int show_coord;
 extern int show_coord_2;
 #endif //SHOW_COORD_SETTER
 extern int rot_boussole; //Type de rotation de la boussole
-extern Uint32 exp_lev[200];
+extern Uint64 exp_lev[200];
+extern int num_exp_lev;
+extern int exp_lev_version;
 #else //ENGLISH
 /*!
  * \name Quickbar defines
@@ -367,16 +369,7 @@ void set_last_damage(int quantity);
  */
 void set_last_heal(int quantity);
 
-/*!
- * \ingroup other
- * \brief   Initializes the levels table.
- *
- *      Initializes the experience levels table.
- *
- * \sa init_stuff
- */
-void build_levels_table();
-
+void detect_level_table(void);
 /*!
  * \ingroup windows
  * \brief	Sets the flag of the given window
@@ -411,7 +404,5 @@ void change_max_nutri(int max);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-extern Uint32 exp_lev[200];
 
 #endif	//__HUD_H

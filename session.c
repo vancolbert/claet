@@ -35,12 +35,12 @@ static int last_mouse_click_y = -1;
 static int last_mouse_over_y = -1;
 static int distance_moved = -1;
 
-static Uint32 session_exp[NUM_SKILLS];
-static Uint32 max_exp[NUM_SKILLS];
-static Uint32 last_exp[NUM_SKILLS];
+static Uint64 session_exp[NUM_SKILLS];
+static Uint64 max_exp[NUM_SKILLS];
+static Uint64 last_exp[NUM_SKILLS];
 
 #ifndef ENGLISH
-static Uint32 fullsession_exp[NUM_SKILLS];
+static Uint64 fullsession_exp[NUM_SKILLS];
 Uint32 fullsession_start_time;
 #endif //ENGLISH
 Uint32 session_start_time;
@@ -94,26 +94,21 @@ void fill_session_win(void)
 #endif //FR_VERSION
 }
 
-void set_last_skill_exp(size_t skill, int exp)
-{
-	if (skill < NUM_SKILLS)
-	{
-		last_exp[skill] = exp;
-		if (exp > max_exp[skill])
-			max_exp[skill] = exp;
-		if (0 < exp && exp < 1000 && skill <= SI_DEF) {
-			++exphits.n[skill];
-		}
-		if ((skill != SI_ALL) && (exp >= exp_log_threshold) && (exp_log_threshold > 0))
-		{
-			char str[80];
-#ifdef FR_VERSION
-			safe_snprintf(str, sizeof(str), "Tu as gagné %d exp en %s.", exp, statsinfo[skill].skillnames->name);
-#else //FR_VERSION
-			safe_snprintf(str, sizeof(str), "You gained %d exp for %s.", exp, statsinfo[skill].skillnames->name);
-#endif //FR_VERSION
-			LOG_TO_CONSOLE(c_green2,str);
-		}
+void set_last_skill_exp(size_t skill, Sint64 exp) {
+	if (skill >= NUM_SKILLS) return;
+	if (exp < 0) {
+		Sint64 f = fullsession_exp[skill], s = session_exp[skill], d = -exp;
+		fullsession_exp[skill] = d > f ? 0 : f - d;
+		session_exp[skill] = d > s ? 0 : s - d;
+		return;
+	}
+	last_exp[skill] = exp;
+	if (exp > max_exp[skill]) max_exp[skill] = exp;
+	if (exp < 1000 && skill <= SI_DEF) ++exphits.n[skill];
+	if (skill != SI_ALL && exp_log_threshold > 0 && exp >= exp_log_threshold) {
+		char b[256];
+		safe_snprintf(b, sizeof(b), "Tu as gagné %" PRId64 " exp en %s.", exp, statsinfo[skill].skillnames->name);
+		LOG_TO_CONSOLE(c_green2, b);
 	}
 }
 
@@ -141,309 +136,89 @@ void update_session_distance(void)
 	}
 }
 
-int display_session_handler(window_info *win)
-{
-#ifndef ENGLISH
-	int fulltimediff;
-#endif //ENGLISH
-	int i, x, y, timediff;
-	char buffer[128];
-	float oa_exp;
-
-	char correcwarning[32];
-	char provi[32];
-	char *finxpm = NULL;
-	char totxp[128];
-	char mtotxp[128];
-	char sessxp[128];
-	char msessxp[128];
-	char compe[32];
-	char lignecomplete[256];
-	char chmilliers[16];
-	char chcentaines[16];
-	int millions, milliers, nbmillions, nbmilliers, centaines;
-	float xpm;
-	int esp;
-
-	x = 10;
-	y = 21;
-	timediff = 0;
-	oa_exp = 0.0f;
-
+static inline void fmt_xpm(char *b, u64 e, f64 t) {
+    char d[128] = {}, *o = b;
+    int l, m = sizeof(d) - 1, i, n;
+    if (t) l = snprintf(d, m, "%.1f", e / t);
+    else l = snprintf(d, m, "%" PRIu64, e);
+    for (i = 0, n = l - 2*(t != 0); i < n; ++i) {
+        *o++ = d[i];
+        if (n > 3 && n - i > 1 && (n - i) % 3 == 1) *o++ = '\'';
+    }
+    for (i = n; i < l; *o++ = d[i++]);
+    *o = 0;
+}
+int display_session_handler(window_info *win) {
+	char b[512], totxp[128], mtotxp[128], sessxp[128], msessxp[128];
+	int x = 10, y = 21, sb = sizeof(b) - 1;
 	glColor3f(1.0f, 1.0f, 1.0f);
-#ifdef ENGLISH
-	safe_snprintf(buffer, sizeof(buffer), "%-20s%-17s%-17s%-17s", "Skill", "Total Exp", "Max Exp", "Last Exp" );
-	draw_string_small(x, y, (unsigned char*)buffer, 1);
-	glDisable(GL_TEXTURE_2D);
-	glColor3f(0.77f, 0.57f, 0.39f);
-	glBegin(GL_LINES);
-	glVertex3i(0, 37, 0);
-	glVertex3i(win->len_x, 37, 0);
-#else //ENGLISH
 	y -= 16;
-	if (affixp == 0) 
-	{
-		draw_string_small(x + 58, y, (unsigned char*)"Affichage: Normal", 1);
-	} else draw_string_small(x + 58, y, (unsigned char*)"Affichage: Aéré", 1);
-	y += 32;
-	if(affixp == 0)
-	{
-		safe_snprintf(buffer, sizeof(buffer), "%-13s%10s%9s%10s%9s%9s%9s", "Compétences", "Total", "Exp/min", "Session", "Exp/min", "Max", "Dernier" );
-		draw_string_small(x, y, (unsigned char*)buffer, 1);
+	if (affixp) {
+		draw_string_small(x + 58, y, (u8 *)"Affichage: Aéré", 1);
 	} else {
-		safe_snprintf(buffer, sizeof(buffer), "%-14s%-12s%-16s%-12s%-16s", "Compétences   ", "       Total", "      Exp/Minute", "     Session", "      Exp/Minute" );
-		draw_string_small(x, y, (unsigned char*)buffer, 1);
+		draw_string_small(x + 58, y, (u8 *)"Affichage: Normal", 1);
+	}
+	y += 32;
+	if (affixp) {
+		safe_snprintf(b, sb, "%-14s%-12s%-16s%-12s%-16s", "Compétences   ", "       Total", "      Exp/Minute", "     Session", "      Exp/Minute" );
+		draw_string_small(x, y, (u8 *)b, 1);
+	} else {
+		safe_snprintf(b, sb, "%-13s%10s%9s%10s%9s%9s%9s", "Compétences", "Total", "Exp/min", "Session", "Exp/min", "Max", "Dernier" );
+		draw_string_small(x, y, (u8 *)b, 1);
 	}
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.77f, 0.57f, 0.39f);
 	glBegin(GL_LINES);
 	glVertex3i(0, 53, 0);
 	glVertex3i(win->len_x, 53, 0);
-#endif //ENGLISH
 	glEnd();
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
-
 	y = 55;
-#ifndef ENGLISH
-	fulltimediff = cur_time - fullsession_start_time;
-	if(fulltimediff<=0) fulltimediff=1;
-	timediff = cur_time - session_start_time;
-	if(timediff<=0) timediff=1;
-#endif //ENGLISH
-
-	for (i=0; i<NUM_SKILLS; i++)
-	{
-		if ((last_mouse_click_y >= y) && (last_mouse_click_y < y+16))
+	int fulltimediff = max2i(1, cur_time - fullsession_start_time), timediff = max2i(1, cur_time - session_start_time);
+	f32 ft = fulltimediff / 60000.0f, st = timediff / 60000.0f;
+	for (int i = 0; i < NUM_SKILLS; ++i) {
+		if (last_mouse_click_y >= y && last_mouse_click_y < y + 16) {
 			elglColourN("global.mouseselected");
-		else if ((last_mouse_over_y >= y) && (last_mouse_over_y < y+16))
+		} else if (last_mouse_over_y >= y && last_mouse_over_y < y + 16) {
 			elglColourN("global.mousehighlight");
-		else if (i & 1)
+		} else if (i & 1) {
 			elglColourN("global.row.odd");
-		else
-			glColor3f(1.0f, 1.0f, 1.0f);
-#ifdef FR_VERSION
-		if(affixp == 0)
-		{
-			safe_snprintf(buffer, sizeof(buffer), "%-13s%10u%9.1f%10u%9.1f%9u%9u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - fullsession_exp[i], (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f), *(statsinfo[i].exp) - session_exp[i], (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f), max_exp[i], last_exp[i]);
 		} else {
-			if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000000) {
-				millions = (*(statsinfo[i].exp) - fullsession_exp[i]);
-				nbmillions = millions / 1000000;	
-				milliers = millions % 1000000;
-				nbmilliers = milliers / 1000;
-				centaines = milliers % 1000;
-				if (nbmilliers == 0) {
-					sprintf(chmilliers, "000");
-				} else if (nbmilliers < 10) {
-					sprintf(chmilliers, "00%d", nbmilliers);
-				} else if (nbmilliers < 100) {
-					sprintf(chmilliers, "0%d", nbmilliers);
-				} else sprintf(chmilliers, "%d", nbmilliers);
-				if (centaines == 0) {
-					sprintf(chcentaines, "000");
-				} else if (centaines < 10) {
-					sprintf(chcentaines, "00%d", centaines);
-				} else if (centaines < 100) {
-					sprintf(chcentaines, "0%d", centaines);
-				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(totxp, "%d'%s'%s", nbmillions, chmilliers, chcentaines);
-			} else if ((*(statsinfo[i].exp) - fullsession_exp[i]) >= 1000) {
-				milliers = (*(statsinfo[i].exp) - fullsession_exp[i]);
-				nbmilliers = milliers / 1000;
-				centaines = milliers % 1000;
-				if (centaines == 0) {
-					sprintf(chcentaines, "000");
-				} else if (centaines < 10) {
-					sprintf(chcentaines, "00%d", centaines);
-				} else if (centaines < 100) {
-					sprintf(chcentaines, "0%d", centaines);
-				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(totxp, "%d'%s", nbmilliers, chcentaines);
-			} else {
-				sprintf(totxp, "%d", *(statsinfo[i].exp) - fullsession_exp[i]);			
-			}
-			if ((float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f) >= 1000){
-				xpm = (float)(*(statsinfo[i].exp) - fullsession_exp[i])/((float)fulltimediff/60000.0f);
-				sprintf(provi, "%-.1f", xpm);
-				finxpm = strchr(provi, '.');
-				milliers = (int)xpm;
-				nbmilliers = milliers / 1000;
-				centaines = milliers % 1000;
-				if (centaines == 0) {
-					sprintf(chcentaines, "000");
-				} else if (centaines < 10) {
-					sprintf(chcentaines, "00%d", centaines);
-				} else if (centaines < 100) {
-					sprintf(chcentaines, "0%d", centaines);
-				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(mtotxp, "%d'%s%s xp/mn", nbmilliers, chcentaines, finxpm);
-			} else	{
-				sprintf(mtotxp, "%.1lf xp/mn", (float)(*(statsinfo[i].exp)-fullsession_exp[i])/((float)fulltimediff/60000.0f));
-			}
-			if ((*(statsinfo[i].exp) - session_exp[i]) >= 1000000) {
-				millions = (*(statsinfo[i].exp) - session_exp[i]);
-				nbmillions = millions / 1000000;	
-				milliers = millions % 1000000;
-				nbmilliers = milliers / 1000;
-				centaines = milliers % 1000;
-				if (nbmilliers == 0) {
-					sprintf(chmilliers, "000");
-				} else if (nbmilliers < 10) {
-					sprintf(chmilliers, "00%d", nbmilliers);
-				} else if (nbmilliers < 100) {
-					sprintf(chmilliers, "0%d", nbmilliers);
-				} else sprintf(chmilliers, "%d", nbmilliers);
-				if (centaines == 0) {
-					sprintf(chcentaines, "000");
-				} else if (centaines < 10) {
-					sprintf(chcentaines, "00%d", centaines);
-				} else if (centaines < 100) {
-					sprintf(chcentaines, "0%d", centaines);
-				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(sessxp, "%d'%s'%s", nbmillions, chmilliers, chcentaines);
-			} else if ((*(statsinfo[i].exp) - session_exp[i]) >= 1000) {
-				milliers = (*(statsinfo[i].exp) - session_exp[i]);
-				nbmilliers = milliers / 1000;
-				centaines = milliers % 1000;
-				if (centaines == 0) {
-					sprintf(chcentaines, "000");
-				} else if (centaines < 10) {
-					sprintf(chcentaines, "00%d", centaines);
-				} else if (centaines < 100) {
-					sprintf(chcentaines, "0%d", centaines);
-				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(sessxp, "%d'%s", nbmilliers, chcentaines);
-			} else	{
-				sprintf(sessxp, "%d", *(statsinfo[i].exp) - session_exp[i]);
-			}
-			if ((float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f) >= 1000){
-				xpm = (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f);
-				sprintf(provi, "%-.1f", xpm);
-				finxpm = strchr(provi, '.');
-				milliers = (int)xpm;
-				nbmilliers = milliers / 1000;
-				centaines = milliers % 1000;
-				if (centaines == 0) {
-					sprintf(chcentaines, "000");
-				} else if (centaines < 10) {
-					sprintf(chcentaines, "00%d", centaines);
-				} else if (centaines < 100) {
-					sprintf(chcentaines, "0%d", centaines);
-				} else sprintf(chcentaines, "%d", centaines);
-				sprintf(msessxp, "%d'%s%s xp/mn", nbmilliers, chcentaines, finxpm);
-			} else	{
-				sprintf(msessxp, "%.1lf xp/mn", (float)(*(statsinfo[i].exp) - session_exp[i])/((float)timediff/60000.0f));
-			}
-			sprintf(correcwarning, "%s", statsinfo[i].skillnames->name);
-			strcpy(compe, correcwarning);
-			strcpy(correcwarning, "");
-			if (strlen(compe) < 14)
-			{
-			    for (esp = strlen(compe); esp != 14; esp++)
-			    {
-				strcat(correcwarning, " ");
-			    }
-			    strcat(compe, correcwarning);
-			    strcpy(correcwarning, "");
-			}
-			if (strlen(totxp) < 12)
-			{
-			    for (esp = strlen(totxp); esp != 12; esp++)
-			    {
-				strcat(correcwarning, " ");
-			    }
-			    strcat(correcwarning, totxp);
-			    strcpy(totxp, correcwarning);
-			    strcpy(correcwarning, "");
-			}
-			if (strlen(mtotxp) < 16)
-			{
-			    for (esp = strlen(mtotxp); esp != 16; esp++)
-			    {
-				strcat(correcwarning, " ");
-			    }
-			    strcat(correcwarning, mtotxp);
-			    strcpy(mtotxp, correcwarning);
-			    strcpy(correcwarning, "");
-			}
-			if (strlen(sessxp) < 12)
-			{
-			    for (esp = strlen(sessxp); esp != 12; esp++)
-			    {
-				strcat(correcwarning, " ");
-			    }
-			    strcat(correcwarning, sessxp);
-			    strcpy(sessxp, correcwarning);
-			    strcpy(correcwarning, "");
-			}
-			if (strlen(msessxp) < 16)
-			{
-			    for (esp = strlen(msessxp); esp != 16; esp++)
-			    {
-				strcat(correcwarning, " ");
-			    }
-			    strcat(correcwarning, msessxp);
-			    strcpy(msessxp, correcwarning);
-			    strcpy(correcwarning, "");
-			}
-			sprintf(lignecomplete, "%s%s%s%s%s", compe, totxp, mtotxp, sessxp, msessxp);
-			safe_snprintf(buffer, sizeof(buffer), "%s", lignecomplete);
+			glColor3f(1.0f, 1.0f, 1.0f);
 		}
-#else //FR_VERSION
-		safe_snprintf(buffer, sizeof(buffer), "%-20s%-17u%-17u%-17u", statsinfo[i].skillnames->name, *(statsinfo[i].exp) - session_exp[i], max_exp[i], last_exp[i]);
-#endif //FR_VERSION
-		draw_string_small(x, y, (unsigned char*)buffer, 1);
+		cstr skname = (cstr)statsinfo[i].skillnames->name;
+		u64 e = *statsinfo[i].exp, df = min2q(999999999, subgt_u64(e, fullsession_exp[i])), ds = min2q(999999999, subgt_u64(e, session_exp[i]));
+		if (affixp) {
+			fmt_xpm(totxp, df, 0);
+			fmt_xpm(mtotxp, df, ft);
+			fmt_xpm(sessxp, ds, 0);
+			fmt_xpm(msessxp, ds, st);
+			safe_snprintf(b, sb, "%-14s%12s%16s%12s%16s", skname, totxp, mtotxp, sessxp, msessxp);
+		} else {
+			safe_snprintf(b, sb, "%-13s%10" PRIu64 "%9.1f%10" PRIu64 "%9.1f%9" PRIu64 "%9" PRIu64, skname, df, min2f(999999, df / ft), ds, min2f(999999, ds / st), min2q(99999999, max_exp[i]), min2q(99999999, last_exp[i]));
+		}
+		draw_string_small(x, y, (u8 *)b, 1);
 		y += 16;
-		if(i < NUM_SKILLS-1)
-			oa_exp += *(statsinfo[i].exp) - session_exp[i];
 	}
-
 	y += 16;
-
 	glColor3f(1.0f, 1.0f, 1.0f);
-
-#ifdef ENGLISH
-	draw_string_small(x, y, (unsigned char*)"Session Time", 1);
-	timediff = cur_time - session_start_time;
-	safe_snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", timediff/3600000, (timediff/60000)%60, (timediff/1000)%60);
-	draw_string_small(x + 200, y, (unsigned char*)buffer, 1);
-#else //ENGLISH
-	draw_string_small(x, y, (unsigned char*)"Durée de la session", 1);
-	safe_snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", fulltimediff/3600000, (fulltimediff/60000)%60, (fulltimediff/1000)%60);
-	draw_string_small(x + 214, y, (unsigned char*)buffer, 1);
-	safe_snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", timediff/3600000, (timediff/60000)%60, (timediff/1000)%60);
-	draw_string_small(x + 444, y, (unsigned char*)buffer, 1);
-#endif //ENGLISH
-
-#ifdef ENGLISH
+	draw_string_small(x, y, (u8 *)"Durée de la session", 1);
+	safe_snprintf(b, sb, "%02d:%02d:%02d", fulltimediff / 3600000, (fulltimediff / 60000) % 60, (fulltimediff / 1000) % 60);
+	draw_string_small(x + 214, y, (u8 *)b, 1);
+	safe_snprintf(b, sb, "%02d:%02d:%02d", timediff / 3600000, (timediff / 60000) % 60, (timediff / 1000) % 60);
+	draw_string_small(x + 444, y, (u8 *)b, 1);
 	y += 16;
-
-	draw_string_small(x, y, (unsigned char*)"Exp/Min", 1);
-
-	if(timediff<=0){
-		timediff=1;
-	}
-	safe_snprintf(buffer, sizeof(buffer), "%2.2f", oa_exp/((float)timediff/60000.0f));
-	draw_string_small(x + 200, y, (unsigned char*)buffer, 1);
-#endif //ENGLISH
-
-	y += 16;
-	draw_string_small(x, y, (unsigned char*)"Distance", 1);
-
-	safe_snprintf(buffer, sizeof(buffer), "%d", (distance_moved<0) ?0: distance_moved);
-	draw_string_small(x + 200, y, (unsigned char*)buffer, 1);
-	
-	if (show_reset_help)
-	{
+	draw_string_small(x, y, (u8 *)"Distance", 1);
+	safe_snprintf(b, sb, "%d", distance_moved < 0 ? 0 : distance_moved);
+	draw_string_small(x + 200, y, (u8 *)b, 1);
+	if (show_reset_help) {
 		show_help(session_reset_help, 0, win->len_y+10);
 		show_reset_help = 0;
 	}
-
 #ifdef OPENGL_TRACE
-CHECK_GL_ERRORS();
-#endif //OPENGL_TRACE
-
+	CHECK_GL_ERRORS();
+#endif
 	return 1;
 }
 

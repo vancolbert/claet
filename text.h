@@ -97,9 +97,7 @@ extern int emote_filter; //used to ignore text lines of emotes only
 #endif
 
 extern int summoning_filter; //used to ignore text lines of summoning messages
-#ifndef ENGLISH
-void close_chat_log();
-#endif //ENGLISH
+void close_chat_log(void);
 
 /*!
  * \brief Allocate the character buffer for a text_message
@@ -216,9 +214,7 @@ static __inline__ void init_text_message (text_message *msg, Uint16 size)
 	alloc_text_message_data (msg, size);
 	msg->wrap_width = 0;
 	msg->wrap_zoom = 1.0f;
-#ifdef FR_VERSION
 	msg->wrap_font = 0;
-#endif //FR_VERSION
 	msg->wrap_lines = 0;
 	msg->deleted = 0;
 	msg->max_line_width = 0.0f;
@@ -240,7 +236,7 @@ static __inline__ int text_message_is_empty (const text_message *msg)
  *
  *      Initializes the text buffers.
  */
-void init_text_buffers ();
+void init_text_buffers(void);
 
 /*!
  * \ingroup text_font
@@ -249,7 +245,7 @@ void init_text_buffers ();
  *      Writes a timestamp to the logfile.
  *
  */
-void timestamp_chat_log();
+void timestamp_chat_log(void);
 
 /*!
  * \ingroup text_font
@@ -261,7 +257,7 @@ void timestamp_chat_log();
  * \param data    The data to write to the logfile
  * \param len     The length of data.
  */
-void write_to_log (Uint8 channel, const Uint8* const data, int len);
+void write_to_log(Uint8 channel, const Uint8 *data, int len);
 
 /*!
  * \ingroup text_font
@@ -408,18 +404,6 @@ int find_last_lines_time (int *msg, int *offset, Uint8 filter, int width);
  */
 int find_line_nr (int nr_lines, int line, Uint8 filter, int *msg, int *offset, float zoom, int width);
 
-// XXX FIXME (Grum): obsolete
-///*!
-// * \ingroup interface_console
-// * \brief displays the console text
-// *
-// *      Switches to console mode and displays the txt.
-// *
-// * \callgraph
-// */
-//void display_console_text();
-
-
 /*!
  * \ingroup text_font
  * \brief Clears the text buffer
@@ -428,7 +412,7 @@ int find_line_nr (int nr_lines, int line, Uint8 filter, int *msg, int *offset, f
  *
  * \callgraph
  */
-void clear_display_text_buffer ();
+void clear_display_text_buffer(void);
 
 /*!
  * \ingroup text_font
@@ -442,58 +426,24 @@ void clear_display_text_buffer ();
  * \param cursor cursor passed to \sa reset_soft_breaks
  * \retval       the number of lines after wrapping
  */
-#ifdef FR_VERSION
-int rewrap_message(text_message * msg, float zoom, int font, int width, int * cursor);
-#else //FR_VERSION
-int rewrap_message(text_message * buf, float zoom, int width, int * cursor);
-#endif //FR_VERSION
-
+int rewrap_message(text_message *msg, float zoom, int font, int width, int *cursor);
 void cleanup_text_buffers(void);
-
-
-
 /*!
  * \ingroup text_font
  * \brief Start or stop the harvesting effect
  *
- *       Start or stop the harvesting eye candy effect dependent on the
- * 	state of the \sa harvesting flag
+ * Start or stop the harvesting eye candy effect dependent on the
+ * state of the \sa harvesting flag
  *
  * \callgraph
  */
 void check_harvesting_effect(void);
-
-#ifdef ENGLISH
-/*!
- * \ingroup text_font
- * \brief return special day status
- *
- * \retval       true is today is special
- *
- * \callgraph
- */
-int today_is_special_day(void);
-
-/*!
- * \ingroup text_font
- * \brief set is special day
- *
- * \callgraph
- */
-void set_today_is_special_day(void);
-
-/*!
- * \ingroup text_font
- * \brief clear is special day
- *
- * \callgraph
- */
-void clear_today_is_special_day(void);
-#endif //ENGLISH
-
-
 #define LOG_TO_CONSOLE(color,buffer)	put_colored_text_in_buffer(color,CHAT_SERVER,(const Uint8*)buffer,-1) /*!< logs the text in buffer with the specified color to the console. */
-
+#define cprintf(c, f, ...) do { \
+	char _Mb[1024]; \
+	safe_snprintf(_Mb, sizeof(_Mb) - 1, f, ##__VA_ARGS__); \
+	LOG_TO_CONSOLE(c, _Mb); \
+} while (0)
 #ifdef __cplusplus
 } // extern "C"
 #endif
